@@ -1,20 +1,33 @@
 {
-	"name": "meal-planner",
-	"type": "module",
+	"name": "my-app",
+	"private": true,
 	"version": "0.0.1",
-	"engines": {
-		"node": ">=22.12.0"
-	},
+	"type": "module",
 	"scripts": {
-		"dev": "astro dev --open --host=5678",
-		"build": "astro build",
-		"preview": "astro preview",
-		"astro": "astro"
+		"dev": "vite dev --open --port=5123",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./jsconfig.json --watch",
+		"lint": "prettier --check . && eslint .",
+		"format": "prettier --write ."
 	},
-	"dependencies": {
-		"astro": "7.3.5"
-	},
-	"allowScripts": {
-		"esbuild": true
+	"devDependencies": {
+		"@eslint/js": "10.0.1",
+		"@sveltejs/adapter-auto": "7.0.1",
+		"@sveltejs/kit": "2.70.3",
+		"@sveltejs/vite-plugin-svelte": "7.3.1",
+		"@types/node": "26.6.3",
+		"eslint": "10.11.0",
+		"eslint-config-prettier": "10.1.8",
+		"eslint-plugin-svelte": "3.23.0",
+		"globals": "17.12.0",
+		"prettier": "3.9.9",
+		"prettier-plugin-svelte": "4.1.1",
+		"svelte": "5.57.1",
+		"svelte-check": "4.7.6",
+		"typescript": "7.0.2",
+		"vite": "8.3.1"
 	}
 }
