@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-static';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
@@ -11,10 +11,12 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 
-			// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
-			// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
-			// See https://svelte.dev/docs/kit/adapters for more information about adapters.
-			adapter: adapter()
+			// All data is in the browser, so the output is a single-page app made of static files.
+			// The fallback page serves every route. See https://svelte.dev/docs/kit/single-page-apps
+			adapter: adapter({ fallback: 'index.html' }),
+
+			// The service worker serves one cached page for every route, so asset URLs must be absolute.
+			paths: { relative: false }
 		})
 	]
 });

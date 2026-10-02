@@ -1,0 +1,53 @@
+/* One label with one control. */
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-1);
+
+	& .field__label {
+		font-weight: 600;
+	}
+
+	& .field__hint {
+		color: var(--color-muted);
+		font-size: 0.9rem;
+	}
+
+	& .field__control {
+		inline-size: 100%;
+		min-block-size: var(--tap);
+		padding: var(--space-2) var(--space-3);
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+	}
+
+	& textarea.field__control {
+		min-block-size: 8rem;
+		resize: vertical;
+	}
+
+	/* A checkbox or radio with its label on one line. */
+	&.field--inline {
+		flex-direction: row;
+		align-items: center;
+		gap: var(--space-2);
+		min-block-size: var(--tap);
+	}
+
+	&.field--narrow {
+		max-inline-size: 8rem;
+	}
+}
+
+.fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
+
+	& .fieldset__legend {
+		padding: 0;
+		margin-block-end: var(--space-2);
+		font-weight: 600;
+	}
+}

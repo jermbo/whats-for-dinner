@@ -174,6 +174,8 @@ The first and third methods need the least data. They do not need quantities.
 
 ### 8.1 Current state of the repository
 
+Update, 2026-10-02: The owner changed the project from Astro to SvelteKit. Sections 8.1 and 8.2 describe the Astro project and are history only.
+
 - `astro` 7.3.5 is the only dependency. Vite 8.3.1 is installed with it. **[V]**
 - `astro.config.mjs` has an empty configuration. There is no adapter, no UI framework, and no PWA integration. **[V]**
 - There is one page: `src/pages/index.astro`. **[V]**

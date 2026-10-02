@@ -8,6 +8,13 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	// The Barcode Detection API is not in the TypeScript library yet.
+	// https://developer.mozilla.org/en-US/docs/Web/API/Barcode_Detection_API
+	class BarcodeDetector {
+		constructor(options?: { formats?: string[] });
+		detect(source: ImageBitmapSource): Promise<{ rawValue: string }[]>;
+	}
 }
 
 export {};

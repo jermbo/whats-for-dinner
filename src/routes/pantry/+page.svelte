@@ -1,0 +1,52 @@
+<script>
+	import { resolve } from '$app/paths';
+	import PantryAddForm from '$lib/components/pantry/PantryAddForm.svelte';
+	import PantryItemRow from '$lib/components/pantry/PantryItemRow.svelte';
+	import PageHeader from '$lib/components/ui/PageHeader.svelte';
+	import { pantryGroups } from '$lib/data/pantry-view';
+	import { useKitchen } from '$lib/kitchen.svelte';
+
+	const kitchen = useKitchen();
+
+	let search = $state('');
+
+	const groups = $derived(pantryGroups(kitchen.pantry, kitchen.ingredientsById, search));
+</script>
+
+<PageHeader title="Pantry">
+	<a class="button button--primary" href={resolve('/pantry/scan')}>Scan</a>
+	<a class="button" href={resolve('/pantry/check')}>Pantry check</a>
+</PageHeader>
+
+<div class="field">
+	<label class="field__label" for="pantry-search">Do I have this?</label>
+	<input
+		class="field__control"
+		id="pantry-search"
+		type="search"
+		bind:value={search}
+		autocomplete="off"
+	/>
+</div>
+
+{#each groups as group (group.location)}
+	<section class="stack stack--tight" aria-labelledby="pantry-{group.location}">
+		<h2 id="pantry-{group.location}">{group.label}</h2>
+		<ul class="list">
+			{#each group.rows as row (row.item.id)}
+				<PantryItemRow item={row.item} ingredient={row.ingredient} />
+			{/each}
+		</ul>
+	</section>
+{:else}
+	<p class="muted" role="status">
+		{search ? `"${search}" is not in the pantry.` : 'The pantry is empty.'}
+	</p>
+{/each}
+
+<details>
+	<summary class="button">Add an item by hand</summary>
+	<div class="card">
+		<PantryAddForm ingredients={kitchen.ingredients} />
+	</div>
+</details>

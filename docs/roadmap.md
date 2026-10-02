@@ -24,9 +24,9 @@ The owner can plan a meal, shop, confirm that the meal was cooked, and see a cor
 
 | Area | Item | Note |
 |---|---|---|
-| Foundation | Astro with static output on Vercel. No adapter, no server routes, no login. | |
-| Foundation | Installable PWA with an offline application shell. | The first task is a test of the PWA tooling. `@vite-pwa/astro` does not support Astro 7 (research, section 8.2). |
-| Foundation | IndexedDB for all data. **[Owner]** | The proposal is Dexie as the wrapper. |
+| Foundation | SvelteKit 2 as a single-page application with static output on Vercel. No server routes, no login. **[Owner]** | The owner changed from Astro to SvelteKit (2026-10-02). JavaScript with JSDoc types. |
+| Foundation | Installable PWA with an offline application shell. | Uses the service worker support of SvelteKit and a manifest file. No PWA package. |
+| Foundation | IndexedDB for all data, with Dexie as the wrapper. **[Owner]** | |
 | Foundation | Request for persistent storage at the first start. | The browser can delete best-effort data (research, section 8.3). |
 | Foundation | Each record has a unique ID and a "last changed" time. | Makes later sync possible with no data migration. |
 | Ingredients | One list of ingredients. Each ingredient has a name, a store category, a default unit, and a "perishable" mark. | Recipes and the pantry point to this list. |
@@ -88,13 +88,15 @@ Thus the MVP is not one large delivery. It is a sequence of small slices. Each s
 
 | Slice | Content | What the owner can feel |
 |---|---|---|
-| 0 | Astro static site on Vercel. Installable PWA. Works offline. IndexedDB. | The tool installs on the phone and opens with no connection. |
+| 0 | SvelteKit static site on Vercel. Installable PWA. Works offline. IndexedDB. | The tool installs on the phone and opens with no connection. |
 | 1 | Recipes (manual entry, source, meal type). Week menu. "Today" screen. "Cooked" with rating and note. Undo. | The daily loop: open, select, cook, confirm. No pantry yet. |
 | 2 | Ingredients with one unit. Pantry with fast edits, locations, "used", and "thrown away". "Cooked" subtracts from the pantry. Full backup export and import. | "Cooked means deducted." |
 | 3 | Pantry check. Shopping list from the week menu minus the pantry. "Bought" action. Pantry search. | The week session and the store visit. |
 | 4 | Barcode scan with product lookup and the link to an ingredient. | A scan in the pantry check and in the store. |
 | 5 | Preparation steps with a lead time. "Ready to cook now" and "needs preparation". The answer when no meal is ready. Leftovers. | The 18:00 problem. |
 | 6 | Recipe export and import. "To try" group. "In rotation" mark. | Recipes typed on the desktop. New recipes on the menu. |
+
+Status, 2026-10-02: The owner tested slice 0 and accepted it. Then the owner asked for all slices in one step. The code for slices 1 to 6 is written. The type check, the lint, and the build pass. The owner did not test slices 1 to 6 yet.
 
 Rules for each slice:
 
@@ -185,14 +187,14 @@ There is no sequence in this table. Real use in v1 gives the sequence (vision, p
 14. The week menu continues. A meal stays until the owner cooks it or removes it.
 15. The seven defaults: the "used" action for food that is not a recipe, the owner decides the detail of each ingredient, a location for each pantry item, the pantry check shows all items by location, fast choices for weights, the pantry search, and a recipe form for desktop and phone.
 16. Build in small slices. Use each slice. Report. Iterate.
+17. The framework is SvelteKit, not Astro. The IndexedDB wrapper is Dexie.
+18. Few dependencies. Each new package needs the permission of the owner.
 
 ### 4.2 Open
 
 1. Can a recipe have more than one meal type? Is "snack" a type?
-2. The proposal for the IndexedDB wrapper is Dexie.
-3. The UI framework for the interactive screens is not selected.
-4. Fresh produce usually has no barcode. The owner adds these items manually or from the shopping list.
-5. The definitions in [open-questions.md](open-questions.md), Group 3: "healthy", the target number of cooked meals, the household size, "snack", and the number of stores. They do not stop the build. Real use gives the answers.
+2. Fresh produce usually has no barcode. The owner adds these items manually or from the shopping list.
+3. The definitions in [open-questions.md](open-questions.md), Group 3: "healthy", the target number of cooked meals, the household size, "snack", and the number of stores. They do not stop the build. Real use gives the answers.
 
 ### 4.3 Rejected
 

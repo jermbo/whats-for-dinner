@@ -1,0 +1,22 @@
+/* A list of rows with a line between them. */
+.list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	& .list__item {
+		padding-block: var(--space-3);
+		border-block-end: 1px solid var(--color-border);
+
+		&:first-child {
+			border-block-start: 1px solid var(--color-border);
+		}
+	}
+
+	& .list__link {
+		display: flex;
+		align-items: center;
+		min-block-size: var(--tap);
+		font-weight: 600;
+	}
+}

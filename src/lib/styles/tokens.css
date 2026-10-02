@@ -1,0 +1,26 @@
+:root {
+	color-scheme: light dark;
+
+	--color-bg: light-dark(#ffffff, #121512);
+	--color-surface: light-dark(#f3f6f3, #1d221d);
+	--color-text: light-dark(#1b1f1b, #e8ece8);
+	--color-muted: light-dark(#566056, #a3ada3);
+	--color-border: light-dark(#b9c3b9, #414a41);
+	--color-accent: light-dark(#2e7d32, #81c784);
+	--color-on-accent: light-dark(#ffffff, #0f1a10);
+	--color-danger: light-dark(#b3261e, #f2b8b5);
+	--color-notice: light-dark(#fff4d6, #3f3410);
+
+	--space-1: 0.25rem;
+	--space-2: 0.5rem;
+	--space-3: 0.75rem;
+	--space-4: 1rem;
+	--space-6: 1.5rem;
+
+	--radius: 0.5rem;
+
+	/* The smallest size of a control that a finger must hit. */
+	--tap: 2.75rem;
+
+	--nav-height: 3.75rem;
+}
