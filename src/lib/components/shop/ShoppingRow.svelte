@@ -49,7 +49,7 @@
 			</div>
 		{/if}
 
-		<button class="button button--primary" type="submit">
+		<button class="button button--strong" type="submit">
 			Bought <span class="visually-hidden">: {ingredient.name}</span>
 		</button>
 	</form>

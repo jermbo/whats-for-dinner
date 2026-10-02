@@ -30,7 +30,7 @@
 	</span>
 
 	<span class="cluster">
-		<button class="button button--primary" type="button" onclick={bought}>
+		<button class="button button--strong" type="button" onclick={bought}>
 			Bought <span class="visually-hidden">: {item.name}</span>
 		</button>
 		<button class="button" type="button" onclick={() => removeManualItem(item.id)}>

@@ -48,13 +48,17 @@
 </section>
 
 {#if entries.length > 0}
-	<a class="button button--primary" href={resolve('/shop')}>Open the shopping list</a>
+	<div>
+		<a class="button button--primary" href={resolve('/shop')}>Open the shopping list</a>
+	</div>
 {/if}
 
 <section class="stack" aria-labelledby="menu-add">
 	<h2 id="menu-add">Add meals</h2>
 	<MealFilter bind:value={filter} />
+</section>
 
+<div class="grid">
 	{#each groups as group (group.title)}
 		<RecipePicker
 			title={group.title}
@@ -69,4 +73,4 @@
 			<a href={resolve('/recipes/new')}>Add a recipe.</a>
 		</p>
 	{/each}
-</section>
+</div>

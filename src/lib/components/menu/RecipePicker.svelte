@@ -45,7 +45,7 @@
 						{/if}
 					</span>
 				</span>
-				<button class="button" type="button" onclick={() => onadd(recipe)}>
+				<button class="button button--strong" type="button" onclick={() => onadd(recipe)}>
 					Add <span class="visually-hidden">{recipe.name} to the menu</span>
 				</button>
 			</li>

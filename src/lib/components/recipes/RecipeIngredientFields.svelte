@@ -23,7 +23,7 @@
 	}
 </script>
 
-<fieldset class="fieldset">
+<fieldset class="fieldset ingredient-fields">
 	<legend class="fieldset__legend">Ingredients</legend>
 
 	<div class="stack stack--tight">
@@ -85,6 +85,10 @@
 </fieldset>
 
 <style>
+	.ingredient-fields {
+		container-type: inline-size;
+	}
+
 	.ingredient-row {
 		display: grid;
 		grid-template-columns: 1fr 5.5rem;
@@ -97,7 +101,7 @@
 		padding-block-end: var(--space-3);
 		border-block-end: 1px solid var(--color-border);
 
-		@media (min-width: 34rem) {
+		@container (min-width: 32rem) {
 			grid-template-columns: 1fr 6rem 5.5rem auto;
 			grid-template-areas: 'name quantity unit remove';
 			padding-block-end: 0;

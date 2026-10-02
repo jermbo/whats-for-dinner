@@ -25,7 +25,7 @@
 				<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
 			{/each}
 		</ul>
-		<button class="button button--primary" type="button" onclick={() => onprep(entry)}>
+		<button class="button button--strong" type="button" onclick={() => onprep(entry)}>
 			Preparation done <span class="visually-hidden">for {name}</span>
 		</button>
 	{:else if entry.state === 'waiting' && entry.readyAt}
@@ -33,7 +33,7 @@
 	{/if}
 
 	<button
-		class={['button', entry.state === 'ready' && 'button--primary']}
+		class={['button', entry.state === 'ready' && 'button--strong']}
 		type="button"
 		onclick={() => oncook(entry)}
 	>

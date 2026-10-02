@@ -43,7 +43,7 @@
 				</button>
 			</span>
 		{:else}
-			<button class="button button--primary" type="button" onclick={() => oncheck(true)}>
+			<button class="button button--strong" type="button" onclick={() => oncheck(true)}>
 				Correct <span class="visually-hidden">: {ingredient.name}</span>
 			</button>
 		{/if}

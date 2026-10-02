@@ -21,7 +21,7 @@
 			{#each recipes as recipe (recipe.id)}
 				<li class="list__item cluster cluster--between">
 					<a href={resolve('/recipes/[id]', { id: recipe.id })}>{recipe.name}</a>
-					<button class="button" type="button" onclick={() => onadd(recipe)}>
+					<button class="button button--strong" type="button" onclick={() => onadd(recipe)}>
 						Add <span class="visually-hidden">{recipe.name}</span> to the menu
 					</button>
 				</li>

@@ -81,7 +81,8 @@
 		display: inline-flex;
 		align-items: center;
 		min-block-size: var(--tap);
-		color: var(--color-accent);
+		color: var(--color-accent-strong);
+		font-weight: 600;
 		cursor: pointer;
 	}
 </style>

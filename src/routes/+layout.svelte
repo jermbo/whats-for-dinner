@@ -15,7 +15,7 @@
 <div class="app">
 	<a class="app__skip" href="#main">Skip to content</a>
 
-	<main class="app__main stack" id="main" tabindex="-1">
+	<main class="app__main stack stack--loose" id="main" tabindex="-1">
 		{@render children()}
 	</main>
 
@@ -26,10 +26,12 @@
 <style>
 	.app__skip {
 		position: absolute;
+		z-index: 1;
 		inset-block-start: var(--space-2);
 		inset-inline-start: var(--space-2);
 		padding: var(--space-2) var(--space-4);
-		background: var(--color-bg);
+		background: var(--color-surface);
+		border-radius: var(--radius-pill);
 		transform: translateY(-200%);
 
 		&:focus {
@@ -38,14 +40,39 @@
 	}
 
 	.app__main {
-		max-inline-size: 40rem;
+		max-inline-size: 44rem;
 		margin-inline: auto;
-		padding: var(--space-4);
+		padding: var(--space-6) var(--space-5);
 		/* Room for the navigation that is fixed to the bottom. */
-		padding-block-end: calc(var(--nav-height) + env(safe-area-inset-bottom) + 5rem);
+		padding-block-end: calc(var(--nav-height) + env(safe-area-inset-bottom) + 7rem);
 
 		&:focus {
 			outline: none;
+		}
+	}
+
+	/* Desktop: the navigation is a column on the left, and the main area is wide. */
+	@media (min-width: 60rem) {
+		.app {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr);
+			align-items: start;
+			max-inline-size: 90rem;
+			margin-inline: auto;
+		}
+
+		.app__main {
+			grid-column: 2;
+			grid-row: 1;
+			inline-size: 100%;
+			max-inline-size: none;
+			margin-inline: 0;
+			padding: var(--space-8);
+
+			/* Text and forms stay at a reading width. A grid uses the full width. */
+			& > :global(:not(.grid, .wide)) {
+				max-inline-size: 44rem;
+			}
 		}
 	}
 </style>

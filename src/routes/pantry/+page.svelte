@@ -29,20 +29,22 @@
 	/>
 </div>
 
-{#each groups as group (group.location)}
-	<section class="stack stack--tight" aria-labelledby="pantry-{group.location}">
-		<h2 id="pantry-{group.location}">{group.label}</h2>
-		<ul class="list">
-			{#each group.rows as row (row.item.id)}
-				<PantryItemRow item={row.item} ingredient={row.ingredient} />
-			{/each}
-		</ul>
-	</section>
-{:else}
-	<p class="muted" role="status">
-		{search ? `"${search}" is not in the pantry.` : 'The pantry is empty.'}
-	</p>
-{/each}
+<div class="grid">
+	{#each groups as group (group.location)}
+		<section class="stack stack--tight" aria-labelledby="pantry-{group.location}">
+			<h2 id="pantry-{group.location}">{group.label}</h2>
+			<ul class="list">
+				{#each group.rows as row (row.item.id)}
+					<PantryItemRow item={row.item} ingredient={row.ingredient} />
+				{/each}
+			</ul>
+		</section>
+	{:else}
+		<p class="muted" role="status">
+			{search ? `"${search}" is not in the pantry.` : 'The pantry is empty.'}
+		</p>
+	{/each}
+</div>
 
 <details>
 	<summary class="button">Add an item by hand</summary>

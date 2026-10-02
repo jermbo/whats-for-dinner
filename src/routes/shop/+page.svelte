@@ -33,18 +33,20 @@
 	The list has the ingredients of the meals on the menu, minus the items that the pantry has.
 </p>
 
-{#each categories as [category, items] (category)}
-	<section class="stack stack--tight" aria-labelledby="shop-{category}">
-		<h2 id="shop-{category}">{category}</h2>
-		<ul class="list">
-			{#each items as need (need.ingredient.id)}
-				<ShoppingRow {need} />
-			{/each}
-		</ul>
-	</section>
-{:else}
-	<p class="card" role="status">The pantry has all ingredients for the menu.</p>
-{/each}
+<div class="grid">
+	{#each categories as [category, items] (category)}
+		<section class="stack stack--tight" aria-labelledby="shop-{category}">
+			<h2 id="shop-{category}">{category}</h2>
+			<ul class="list">
+				{#each items as need (need.ingredient.id)}
+					<ShoppingRow {need} />
+				{/each}
+			</ul>
+		</section>
+	{:else}
+		<p class="card" role="status">The pantry has all ingredients for the menu.</p>
+	{/each}
+</div>
 
 <section class="stack stack--tight" aria-labelledby="shop-other">
 	<h2 id="shop-other">Other items</h2>

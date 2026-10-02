@@ -1,26 +1,49 @@
 :root {
-	color-scheme: light dark;
+	/* The design is light only. It does not follow the dark setting of the device. */
+	color-scheme: light;
 
-	--color-bg: light-dark(#ffffff, #121512);
-	--color-surface: light-dark(#f3f6f3, #1d221d);
-	--color-text: light-dark(#1b1f1b, #e8ece8);
-	--color-muted: light-dark(#566056, #a3ada3);
-	--color-border: light-dark(#b9c3b9, #414a41);
-	--color-accent: light-dark(#2e7d32, #81c784);
-	--color-on-accent: light-dark(#ffffff, #0f1a10);
-	--color-danger: light-dark(#b3261e, #f2b8b5);
-	--color-notice: light-dark(#fff4d6, #3f3410);
+	/* The fonts fall back to the system font until the font files are installed. */
+	--font-body: 'Figtree Variable', system-ui, sans-serif;
+	--font-heading: 'Outfit Variable', var(--font-body);
+
+	/* The page has a soft tint. The cards and controls on it are white. */
+	--color-bg: #eaf5f2;
+	--color-bg-glow: #cfecee;
+	--color-surface: #ffffff;
+	--color-surface-soft: #f6f6f6;
+
+	--color-text: #000000;
+	--color-muted: #575759;
+
+	--color-border: #d3dfde;
+
+	/* The palette of the design: teal for the main action, black for the actions in a card. */
+	--color-accent: #00bbca;
+	--color-on-accent: #ffffff;
+	--color-accent-soft: #e3f3fb;
+	--color-strong: #000000;
+	--color-on-strong: #ffffff;
+	/* A darker teal for links and focus outlines, which need more contrast. */
+	--color-accent-strong: #007a85;
+
+	--color-danger: #b3261e;
+	--color-notice: #fff3d9;
+
+	--shadow: 0 0.5rem 1.5rem rgb(20 70 75 / 0.07);
 
 	--space-1: 0.25rem;
 	--space-2: 0.5rem;
 	--space-3: 0.75rem;
 	--space-4: 1rem;
+	--space-5: 1.25rem;
 	--space-6: 1.5rem;
+	--space-8: 2rem;
 
-	--radius: 0.5rem;
+	--radius: 1.5rem;
+	--radius-pill: 999px;
 
 	/* The smallest size of a control that a finger must hit. */
-	--tap: 2.75rem;
+	--tap: 3rem;
 
-	--nav-height: 3.75rem;
+	--nav-height: 3.25rem;
 }

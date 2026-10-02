@@ -14,7 +14,7 @@
 
 <div class="stepper">
 	<button
-		class="button"
+		class="button button--round"
 		type="button"
 		aria-label="Use {stepText} of {ingredient.name}"
 		disabled={item.quantity <= 0}
@@ -24,7 +24,7 @@
 	</button>
 	<output class="stepper__value">{formatQuantity(item.quantity, ingredient.unit)}</output>
 	<button
-		class="button"
+		class="button button--round"
 		type="button"
 		aria-label="Add {stepText} of {ingredient.name}"
 		onclick={() => changeQuantity(ingredient.id, step, 'corrected')}
@@ -37,7 +37,10 @@
 	.stepper {
 		display: flex;
 		align-items: center;
-		gap: var(--space-2);
+		gap: var(--space-1);
+		padding: var(--space-1);
+		background: var(--color-surface-soft);
+		border-radius: var(--radius-pill);
 	}
 
 	.stepper__value {
@@ -45,5 +48,13 @@
 		font-weight: 600;
 		text-align: center;
 		font-variant-numeric: tabular-nums;
+	}
+
+	.stepper .button {
+		inline-size: 2.5rem;
+		min-inline-size: 2.5rem;
+		min-block-size: 2.5rem;
+		color: var(--color-text);
+		border-color: transparent;
 	}
 </style>

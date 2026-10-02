@@ -1,14 +1,16 @@
-/* A list of rows with a line between them. */
+/* A white panel of rows with a soft line between them. */
 .list {
 	margin: 0;
-	padding: 0;
+	padding: var(--space-1) var(--space-5);
 	list-style: none;
+	background: var(--color-surface);
+	border-radius: var(--radius);
+	box-shadow: var(--shadow);
 
 	& .list__item {
-		padding-block: var(--space-3);
-		border-block-end: 1px solid var(--color-border);
+		padding-block: var(--space-4);
 
-		&:first-child {
+		& + .list__item {
 			border-block-start: 1px solid var(--color-border);
 		}
 	}

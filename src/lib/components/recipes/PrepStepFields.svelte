@@ -8,7 +8,7 @@
 	const uid = $props.id();
 </script>
 
-<fieldset class="fieldset">
+<fieldset class="fieldset prep-fields">
 	<legend class="fieldset__legend">Preparation before the cook day</legend>
 
 	<div class="stack stack--tight">
@@ -56,6 +56,10 @@
 </fieldset>
 
 <style>
+	.prep-fields {
+		container-type: inline-size;
+	}
+
 	.prep-row {
 		display: grid;
 		grid-template-columns: 1fr 7rem auto;
@@ -66,7 +70,7 @@
 	.prep-row__text {
 		grid-column: 1 / -1;
 
-		@media (min-width: 34rem) {
+		@container (min-width: 32rem) {
 			grid-column: auto;
 		}
 	}

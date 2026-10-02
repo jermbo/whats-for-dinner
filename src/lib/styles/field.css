@@ -1,29 +1,35 @@
-/* One label with one control. */
+/* One label with one control. The control is a white pill with a thin line, as in the design. */
 .field {
 	display: flex;
 	flex-direction: column;
-	gap: var(--space-1);
+	gap: var(--space-2);
 
 	& .field__label {
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	& .field__hint {
 		color: var(--color-muted);
-		font-size: 0.9rem;
+		font-size: 0.925rem;
 	}
 
 	& .field__control {
 		inline-size: 100%;
 		min-block-size: var(--tap);
-		padding: var(--space-2) var(--space-3);
-		background: var(--color-bg);
+		padding: var(--space-2) var(--space-5);
+		background: var(--color-surface);
 		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
+		border-radius: var(--radius-pill);
+
+		&::placeholder {
+			color: var(--color-muted);
+		}
 	}
 
 	& textarea.field__control {
 		min-block-size: 8rem;
+		padding-block: var(--space-4);
+		border-radius: var(--radius);
 		resize: vertical;
 	}
 
@@ -31,23 +37,26 @@
 	&.field--inline {
 		flex-direction: row;
 		align-items: center;
-		gap: var(--space-2);
+		gap: var(--space-3);
 		min-block-size: var(--tap);
 	}
 
 	&.field--narrow {
-		max-inline-size: 8rem;
+		max-inline-size: 9rem;
 	}
 }
 
 .fieldset {
+	min-inline-size: 0;
 	margin: 0;
 	padding: 0;
 	border: 0;
 
 	& .fieldset__legend {
 		padding: 0;
-		margin-block-end: var(--space-2);
+		margin-block-end: var(--space-3);
+		font-family: var(--font-heading);
+		font-size: 1.1rem;
 		font-weight: 600;
 	}
 }

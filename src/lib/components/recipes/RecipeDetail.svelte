@@ -42,37 +42,39 @@
 
 	<RecipeSource source={current.source} />
 
-	<button class="button button--primary button--wide" type="button" onclick={add}>
-		Add to the menu
-	</button>
+	<div>
+		<button class="button button--primary" type="button" onclick={add}>Add to the menu</button>
+	</div>
 
-	<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
-		<h2 id="recipe-ingredients">Ingredients</h2>
-		<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
-	</section>
-
-	{#if current.prepSteps.length > 0}
-		<section class="stack stack--tight" aria-labelledby="recipe-prep">
-			<h2 id="recipe-prep">Preparation</h2>
-			<ul>
-				{#each current.prepSteps as step, index (index)}
-					<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
-				{/each}
-			</ul>
+	<div class="grid">
+		<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
+			<h2 id="recipe-ingredients">Ingredients</h2>
+			<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
 		</section>
-	{/if}
 
-	{#if current.steps}
-		<section class="stack stack--tight" aria-labelledby="recipe-steps">
-			<h2 id="recipe-steps">Steps</h2>
-			<p class="recipe-detail__steps">{current.steps}</p>
+		{#if current.prepSteps.length > 0}
+			<section class="stack stack--tight" aria-labelledby="recipe-prep">
+				<h2 id="recipe-prep">Preparation</h2>
+				<ul>
+					{#each current.prepSteps as step, index (index)}
+						<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
+					{/each}
+				</ul>
+			</section>
+		{/if}
+
+		{#if current.steps}
+			<section class="stack stack--tight" aria-labelledby="recipe-steps">
+				<h2 id="recipe-steps">Steps</h2>
+				<p class="recipe-detail__steps">{current.steps}</p>
+			</section>
+		{/if}
+
+		<section class="stack stack--tight" aria-labelledby="recipe-history">
+			<h2 id="recipe-history">Cook history</h2>
+			<CookHistory sessions={sessions.current} />
 		</section>
-	{/if}
-
-	<section class="stack stack--tight" aria-labelledby="recipe-history">
-		<h2 id="recipe-history">Cook history</h2>
-		<CookHistory sessions={sessions.current} />
-	</section>
+	</div>
 {:else}
 	<PageHeader title="Recipe" />
 	<p class="muted">This recipe is not on this device.</p>

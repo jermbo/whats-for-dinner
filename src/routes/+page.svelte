@@ -69,24 +69,30 @@
 
 <MealFilter bind:value={filter} />
 
-<section class="stack" aria-labelledby="today-ready">
+<section class="stack wide" aria-labelledby="today-ready">
 	<h2 id="today-ready">Ready to cook now</h2>
 
-	{#each ready as entry (entry.item.id)}
-		<MenuCard {entry} oncook={cooked} onprep={prepared} />
-	{:else}
-		<PantryIdeas recipes={ideas} onadd={add} />
-	{/each}
+	<div class="grid">
+		{#each ready as entry (entry.item.id)}
+			<MenuCard {entry} oncook={cooked} onprep={prepared} />
+		{:else}
+			<PantryIdeas recipes={ideas} onadd={add} />
+		{/each}
+	</div>
 </section>
 
 {#if preparing.length > 0}
-	<section class="stack" aria-labelledby="today-prep">
+	<section class="stack wide" aria-labelledby="today-prep">
 		<h2 id="today-prep">Needs preparation</h2>
 
-		{#each preparing as entry (entry.item.id)}
-			<MenuCard {entry} oncook={cooked} onprep={prepared} />
-		{/each}
+		<div class="grid">
+			{#each preparing as entry (entry.item.id)}
+				<MenuCard {entry} oncook={cooked} onprep={prepared} />
+			{/each}
+		</div>
 	</section>
 {/if}
 
-<a class="button" href={resolve('/menu')}>Change the menu</a>
+<div>
+	<a class="button" href={resolve('/menu')}>Change the menu</a>
+</div>

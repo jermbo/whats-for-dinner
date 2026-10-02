@@ -49,37 +49,40 @@
 
 	.segmented__legend {
 		padding: 0;
-		margin-block-end: var(--space-1);
+		margin-block-end: var(--space-2);
 		font-weight: 600;
 	}
 
+	/* One white pill that holds the options. */
 	.segmented__options {
 		display: flex;
-		flex-wrap: wrap;
 		gap: var(--space-1);
+		padding: var(--space-2);
+		background: var(--color-surface);
+		border-radius: var(--radius-pill);
+		box-shadow: var(--shadow);
 	}
 
 	.segmented__option {
 		display: grid;
 		flex: 1;
 		place-items: center;
-		min-block-size: var(--tap);
+		min-block-size: calc(var(--tap) - var(--space-2));
 		min-inline-size: var(--tap);
 		padding-inline: var(--space-3);
-		font-weight: 600;
-		background: var(--color-bg);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius);
+		color: var(--color-muted);
+		border-radius: var(--radius-pill);
 		cursor: pointer;
 
+		/* The selected option has a fill and bold text. Color is not the only sign. */
 		&:has(:checked) {
-			color: var(--color-on-accent);
-			background: var(--color-accent);
-			border-color: var(--color-accent);
+			font-weight: 600;
+			color: var(--color-text);
+			background: var(--color-accent-soft);
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent);
+			outline: 3px solid var(--color-accent-strong);
 			outline-offset: 2px;
 		}
 	}

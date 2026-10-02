@@ -1,31 +1,54 @@
+/* The default button is the quiet one: a white pill with a thin line, as "Skip" in the design. */
 .button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	min-block-size: var(--tap);
 	min-inline-size: var(--tap);
-	padding: var(--space-2) var(--space-4);
-	font-weight: 600;
+	padding: var(--space-2) var(--space-5);
+	font-weight: 500;
 	text-decoration: none;
-	color: var(--color-text);
+	color: var(--color-muted);
 	background: var(--color-surface);
 	border: 1px solid var(--color-border);
-	border-radius: var(--radius);
+	border-radius: var(--radius-pill);
 	cursor: pointer;
+	transition:
+		background-color 0.15s,
+		border-color 0.15s;
 
 	&:hover {
-		border-color: var(--color-accent);
+		color: var(--color-text);
+		border-color: var(--color-muted);
 	}
 
 	&:disabled {
-		opacity: 0.5;
+		opacity: 0.45;
 		cursor: not-allowed;
 	}
 
+	/* The main action of a screen: teal, as "Checkout" in the design. */
 	&.button--primary {
+		font-weight: 600;
 		color: var(--color-on-accent);
 		background: var(--color-accent);
 		border-color: var(--color-accent);
+
+		&:hover {
+			background: color-mix(in srgb, var(--color-accent), black 8%);
+		}
+	}
+
+	/* The action of one card or one row: black, as "Order Now" in the design. */
+	&.button--strong {
+		font-weight: 600;
+		color: var(--color-on-strong);
+		background: var(--color-strong);
+		border-color: var(--color-strong);
+
+		&:hover {
+			background: color-mix(in srgb, var(--color-strong), white 20%);
+		}
 	}
 
 	&.button--danger {
@@ -35,5 +58,15 @@
 
 	&.button--wide {
 		inline-size: 100%;
+		min-block-size: 3.5rem;
+		font-size: 1.05rem;
+	}
+
+	/* A circle for one symbol, such as plus or minus. */
+	&.button--round {
+		inline-size: var(--tap);
+		padding: 0;
+		font-size: 1.35rem;
+		line-height: 1;
 	}
 }

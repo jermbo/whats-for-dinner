@@ -50,23 +50,25 @@
 
 <p role="status"><strong>{checked.size} of {total} items checked.</strong></p>
 
-{#each groups as group (group.location)}
-	<section class="stack stack--tight" aria-labelledby="check-{group.location}">
-		<h2 id="check-{group.location}">{group.label}</h2>
-		<ul class="list">
-			{#each group.rows as row (row.item.id)}
-				<PantryCheckRow
-					item={row.item}
-					ingredient={row.ingredient}
-					checked={checked.has(row.item.id)}
-					oncheck={(value) => check(row.item.id, value)}
-				/>
-			{/each}
-		</ul>
-	</section>
-{:else}
-	<p class="muted">The pantry is empty. Scan or add the items that you have.</p>
-{/each}
+<div class="grid">
+	{#each groups as group (group.location)}
+		<section class="stack stack--tight" aria-labelledby="check-{group.location}">
+			<h2 id="check-{group.location}">{group.label}</h2>
+			<ul class="list">
+				{#each group.rows as row (row.item.id)}
+					<PantryCheckRow
+						item={row.item}
+						ingredient={row.ingredient}
+						checked={checked.has(row.item.id)}
+						oncheck={(value) => check(row.item.id, value)}
+					/>
+				{/each}
+			</ul>
+		</section>
+	{:else}
+		<p class="muted">The pantry is empty. Scan or add the items that you have.</p>
+	{/each}
+</div>
 
 <button class="button button--primary button--wide" type="button" onclick={finish}>
 	Finish the check and plan the menu
