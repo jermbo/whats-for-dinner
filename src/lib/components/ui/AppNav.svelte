@@ -52,6 +52,7 @@
 		border: 1.5px solid var(--color-accent);
 		border-radius: var(--radius-pill);
 		box-shadow: var(--shadow);
+		view-transition-name: app-nav;
 	}
 
 	.app-nav__brand {
@@ -75,11 +76,20 @@
 		color: var(--color-text);
 		border: 1px solid var(--color-border);
 		border-radius: 50%;
+		transition:
+			background-color 0.2s,
+			scale 0.25s var(--ease-spring);
+
+		&:active {
+			scale: 0.9;
+		}
 
 		&[aria-current='page'] {
 			color: var(--color-on-accent);
 			background: var(--color-accent);
 			border-color: var(--color-accent);
+			/* The page transition moves this marker from the old item to the new item. */
+			view-transition-name: nav-active;
 		}
 	}
 

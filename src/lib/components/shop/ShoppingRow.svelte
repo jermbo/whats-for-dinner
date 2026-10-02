@@ -1,4 +1,5 @@
 <script>
+	import { collapse } from '$lib/motion/transitions';
 	import { buy } from '$lib/data/shopping';
 	import { status } from '$lib/status.svelte';
 	import { unitLabel } from '$lib/util/format';
@@ -23,7 +24,7 @@
 	}
 </script>
 
-<li class="list__item">
+<li class="list__item" transition:collapse>
 	<form class="shopping-row" onsubmit={submit}>
 		<div class="shopping-row__name stack stack--tight">
 			<strong>{ingredient.name}</strong>

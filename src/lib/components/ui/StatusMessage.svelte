@@ -20,9 +20,13 @@
 		box-shadow: var(--shadow);
 		text-align: center;
 		pointer-events: none;
+		transition:
+			opacity 0.2s,
+			translate 0.45s var(--ease-spring);
 
 		&:empty {
 			opacity: 0;
+			translate: 0 1.5rem;
 		}
 	}
 

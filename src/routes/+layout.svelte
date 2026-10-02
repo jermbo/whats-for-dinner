@@ -4,8 +4,11 @@
 	import AppNav from '$lib/components/ui/AppNav.svelte';
 	import StatusMessage from '$lib/components/ui/StatusMessage.svelte';
 	import { requestPersistence } from '$lib/db/persistence';
+	import { usePageTransitions } from '$lib/motion/page-transition';
 
 	let { children } = $props();
+
+	usePageTransitions();
 
 	onMount(() => {
 		requestPersistence();

@@ -1,4 +1,5 @@
 <script>
+	import { collapse } from '$lib/motion/transitions';
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import { LOCATIONS, STOCK_STATES } from '$lib/data/options';
 	import { removeItem, setLocation, setState } from '$lib/data/pantry';
@@ -23,7 +24,7 @@
 	}
 </script>
 
-<li class="list__item stack stack--tight">
+<li class="list__item stack stack--tight" transition:collapse>
 	<div class="cluster cluster--between">
 		<strong>{ingredient.name}</strong>
 

@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
+	import RecipeCard from '$lib/components/recipes/RecipeCard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { MEAL_TYPES, labelOf } from '$lib/data/options';
 	import { db } from '$lib/db/db';
 	import { live } from '$lib/live.svelte';
 	import { sortByName } from '$lib/util/collections';
@@ -17,16 +17,24 @@
 {#if sorted.length === 0}
 	<p class="muted">There are no recipes. Add the first one.</p>
 {:else}
-	<ul class="list">
-		{#each sorted as recipe (recipe.id)}
-			<li class="list__item">
-				<a class="list__link" href={resolve('/recipes/[id]', { id: recipe.id })}>{recipe.name}</a>
-				<span class="muted">
-					{labelOf(MEAL_TYPES, recipe.mealType)}
-					{#if recipe.ingredients.length === 0}· Reference recipe{/if}
-					{#if recipe.inRotation}· In rotation{/if}
-				</span>
-			</li>
+	<ul class="grid recipe-grid">
+		{#each sorted as recipe, index (recipe.id)}
+			<RecipeCard {recipe} {index} />
 		{/each}
 	</ul>
 {/if}
+
+<style>
+	/* Two photo cards side by side on a phone, and more on a desktop. */
+	.recipe-grid {
+		--grid-min: 9.5rem;
+
+		margin: 0;
+		padding: 0;
+		gap: var(--space-4);
+
+		@media (min-width: 40rem) {
+			--grid-min: 14rem;
+		}
+	}
+</style>

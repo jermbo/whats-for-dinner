@@ -10,6 +10,7 @@ export function blankRecipe() {
 		servings: 2,
 		steps: '',
 		source: '',
+		photo: '',
 		inRotation: false,
 		ingredients: [],
 		prepSteps: [],
@@ -30,6 +31,7 @@ export async function saveRecipe(recipe) {
 		id: recipe.id || newId(),
 		name: recipe.name.trim(),
 		source: recipe.source.trim(),
+		photo: recipe.photo?.trim() ?? '',
 		servings: Number(recipe.servings) || 1,
 		// An empty number field gives null, so each number is made safe here.
 		ingredients: recipe.ingredients

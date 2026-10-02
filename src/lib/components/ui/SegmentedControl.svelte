@@ -73,6 +73,14 @@
 		color: var(--color-muted);
 		border-radius: var(--radius-pill);
 		cursor: pointer;
+		transition:
+			background-color 0.25s,
+			color 0.25s,
+			scale 0.25s var(--ease-spring);
+
+		&:active {
+			scale: 0.95;
+		}
 
 		/* The selected option has a fill and bold text. Color is not the only sign. */
 		&:has(:checked) {

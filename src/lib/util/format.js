@@ -45,3 +45,19 @@ export function nowMs() {
 export function isUrl(text) {
 	return /^https?:\/\//i.test(text.trim());
 }
+
+/** A greeting for the time of day. */
+export function greeting() {
+	const hour = new Date().getHours();
+	if (hour < 12) return 'Good morning';
+	return hour < 18 ? 'Good afternoon' : 'Good evening';
+}
+
+/** The date of today in words, for example "Friday, October 2". */
+export function todayInWords() {
+	return new Date().toLocaleDateString(undefined, {
+		weekday: 'long',
+		month: 'long',
+		day: 'numeric'
+	});
+}

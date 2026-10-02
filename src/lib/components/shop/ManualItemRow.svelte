@@ -1,4 +1,5 @@
 <script>
+	import { collapse } from '$lib/motion/transitions';
 	import { buyManualItem, removeManualItem } from '$lib/data/shopping';
 	import { status } from '$lib/status.svelte';
 	import { formatQuantity } from '$lib/util/format';
@@ -19,7 +20,7 @@
 	}
 </script>
 
-<li class="list__item cluster cluster--between">
+<li class="list__item cluster cluster--between" transition:collapse>
 	<span>
 		<strong>{item.name}</strong>
 		{#if ingredient?.tracking === 'quantity' && item.quantity > 0}

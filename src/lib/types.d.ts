@@ -41,6 +41,8 @@ export interface Recipe {
 	steps: string;
 	/** A URL, or a book name and a page. */
 	source: string;
+	/** The URL of a photo. Empty or absent: the screens show a placeholder photo. */
+	photo?: string;
 	inRotation: boolean;
 	/** Empty for a reference recipe. */
 	ingredients: RecipeIngredient[];

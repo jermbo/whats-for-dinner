@@ -77,6 +77,20 @@
 				<span class="field__hint" id="{uid}-source-hint">A URL, or a book name and a page.</span>
 			</div>
 
+			<div class="field">
+				<label class="field__label" for="{uid}-photo">Photo URL (optional)</label>
+				<input
+					class="field__control"
+					id="{uid}-photo"
+					type="url"
+					bind:value={form.photo}
+					aria-describedby="{uid}-photo-hint"
+				/>
+				<span class="field__hint" id="{uid}-photo-hint">
+					Empty: the recipe gets a placeholder photo.
+				</span>
+			</div>
+
 			<label class="field field--inline">
 				<input type="checkbox" bind:checked={form.inRotation} />
 				<span>In my rotation</span>

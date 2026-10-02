@@ -15,7 +15,14 @@
 	cursor: pointer;
 	transition:
 		background-color 0.15s,
-		border-color 0.15s;
+		border-color 0.15s,
+		color 0.15s,
+		box-shadow 0.2s,
+		scale 0.25s var(--ease-spring);
+
+	&:active:not(:disabled) {
+		scale: 0.95;
+	}
 
 	&:hover {
 		color: var(--color-text);
@@ -36,6 +43,7 @@
 
 		&:hover {
 			background: color-mix(in srgb, var(--color-accent), black 8%);
+			box-shadow: 0 0.4rem 1rem rgb(0 187 202 / 0.35);
 		}
 	}
 

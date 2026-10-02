@@ -1,0 +1,165 @@
+/*
+ * Motion: the easing curves, the shared keyframes, and the page transition.
+ * base.css turns all of it off for a person who asks for reduced motion.
+ */
+
+:root {
+	/* A fast start and a soft stop. */
+	--ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+	/* A small overshoot, as a spring. */
+	--ease-spring: linear(
+		0,
+		0.009,
+		0.035 2.1%,
+		0.141,
+		0.281 6.7%,
+		0.723 12.9%,
+		0.938 16.7%,
+		1.017,
+		1.077,
+		1.121,
+		1.149 24.3%,
+		1.159,
+		1.163,
+		1.161,
+		1.154 29.9%,
+		1.129 32.8%,
+		1.051 39.6%,
+		1.017 43.1%,
+		0.991,
+		0.977 51%,
+		0.974 53.8%,
+		0.975 57.1%,
+		0.997 69.8%,
+		1.003 76.9%,
+		1.004 83.8%,
+		1
+	);
+
+	/* Lets a closed <details> grow to its natural height with a transition. */
+	interpolate-size: allow-keywords;
+}
+
+@keyframes rise {
+	from {
+		opacity: 0;
+		translate: 0 0.75rem;
+	}
+}
+
+@keyframes pop {
+	from {
+		scale: 0.6;
+	}
+}
+
+@keyframes shimmer {
+	to {
+		background-position: -200% 0;
+	}
+}
+
+/* An element that comes in from below. Set --i to its position in a list for a stagger. */
+.rise {
+	animation: rise 0.45s var(--ease-out) backwards;
+	animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+/* ---- Page transition ---------------------------------------------------- */
+
+@keyframes page-out {
+	to {
+		opacity: 0;
+		translate: 0 -0.5rem;
+	}
+}
+
+@keyframes page-in {
+	from {
+		opacity: 0;
+		translate: 0 0.75rem;
+	}
+}
+
+::view-transition-old(root) {
+	animation: page-out 0.16s ease-in both;
+}
+
+::view-transition-new(root) {
+	animation: page-in 0.36s var(--ease-out) both;
+}
+
+/* The photo of a recipe grows from the card that was tapped into the top of the recipe page. */
+::view-transition-group(recipe-photo) {
+	animation-duration: 0.42s;
+	animation-timing-function: var(--ease-out);
+}
+
+::view-transition-old(recipe-photo),
+::view-transition-new(recipe-photo) {
+	block-size: 100%;
+	object-fit: cover;
+}
+
+/* The teal marker of the navigation moves from the old item to the new item. */
+::view-transition-group(nav-active) {
+	animation-duration: 0.4s;
+	animation-timing-function: var(--ease-spring);
+}
+
+/* ---- Native elements ---------------------------------------------------- */
+
+dialog {
+	opacity: 0;
+	translate: 0 1.5rem;
+	transition:
+		opacity 0.25s,
+		translate 0.35s var(--ease-out),
+		overlay 0.35s allow-discrete,
+		display 0.35s allow-discrete;
+
+	&[open] {
+		opacity: 1;
+		translate: 0;
+
+		@starting-style {
+			opacity: 0;
+			translate: 0 1.5rem;
+		}
+	}
+
+	&::backdrop {
+		opacity: 0;
+		transition:
+			opacity 0.3s,
+			overlay 0.3s allow-discrete,
+			display 0.3s allow-discrete;
+	}
+
+	&[open]::backdrop {
+		opacity: 1;
+
+		@starting-style {
+			opacity: 0;
+		}
+	}
+}
+
+details::details-content {
+	block-size: 0;
+	overflow: clip;
+	opacity: 0;
+	transition:
+		block-size 0.35s var(--ease-out),
+		opacity 0.25s,
+		content-visibility 0.35s allow-discrete;
+}
+
+details[open]::details-content {
+	block-size: auto;
+	opacity: 1;
+}
+
+input[type='checkbox']:checked {
+	animation: pop 0.3s var(--ease-spring);
+}

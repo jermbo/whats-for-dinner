@@ -99,7 +99,10 @@ dialog {
 }
 
 @media (prefers-reduced-motion: reduce) {
-	* {
+	*,
+	::view-transition-group(*),
+	::view-transition-old(*),
+	::view-transition-new(*) {
 		scroll-behavior: auto !important;
 		transition: none !important;
 		animation: none !important;

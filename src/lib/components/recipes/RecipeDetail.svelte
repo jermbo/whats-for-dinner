@@ -9,6 +9,7 @@
 	import { indexBy } from '$lib/util/collections';
 	import CookHistory from './CookHistory.svelte';
 	import RecipeIngredientList from './RecipeIngredientList.svelte';
+	import RecipePhoto from './RecipePhoto.svelte';
 	import RecipeSource from './RecipeSource.svelte';
 
 	/** @type {{ id: string }} */
@@ -30,6 +31,10 @@
 
 {#if recipe.current}
 	{@const current = recipe.current}
+
+	<div class="wide">
+		<RecipePhoto recipe={current} variant="hero" />
+	</div>
 
 	<PageHeader title={current.name}>
 		<a class="button" href={resolve('/recipes/[id]/edit', { id })}>Edit</a>

@@ -11,7 +11,7 @@
 	import { cook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone, menuEntries } from '$lib/data/menu';
 	import { status } from '$lib/status.svelte';
-	import { nowMs } from '$lib/util/format';
+	import { greeting, nowMs, todayInWords } from '$lib/util/format';
 
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
@@ -65,7 +65,7 @@
 	}
 </script>
 
-<PageHeader title="Today" />
+<PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()} />
 
 <MealFilter bind:value={filter} />
 
@@ -73,8 +73,8 @@
 	<h2 id="today-ready">Ready to cook now</h2>
 
 	<div class="grid">
-		{#each ready as entry (entry.item.id)}
-			<MenuCard {entry} oncook={cooked} onprep={prepared} />
+		{#each ready as entry, index (entry.item.id)}
+			<MenuCard {entry} {index} oncook={cooked} onprep={prepared} />
 		{:else}
 			<PantryIdeas recipes={ideas} onadd={add} />
 		{/each}
@@ -86,8 +86,8 @@
 		<h2 id="today-prep">Needs preparation</h2>
 
 		<div class="grid">
-			{#each preparing as entry (entry.item.id)}
-				<MenuCard {entry} oncook={cooked} onprep={prepared} />
+			{#each preparing as entry, index (entry.item.id)}
+				<MenuCard {entry} {index} oncook={cooked} onprep={prepared} />
 			{/each}
 		</div>
 	</section>

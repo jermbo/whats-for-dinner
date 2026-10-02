@@ -1,5 +1,6 @@
 <script>
 	import { changeQuantity } from '$lib/data/pantry';
+	import { pop } from '$lib/motion/transitions';
 	import { formatQuantity, stepFor } from '$lib/util/format';
 
 	/**
@@ -22,7 +23,11 @@
 	>
 		−
 	</button>
-	<output class="stepper__value">{formatQuantity(item.quantity, ingredient.unit)}</output>
+	<output class="stepper__value">
+		{#key item.quantity}
+			<span class="stepper__number" in:pop>{formatQuantity(item.quantity, ingredient.unit)}</span>
+		{/key}
+	</output>
 	<button
 		class="button button--round"
 		type="button"
@@ -48,6 +53,10 @@
 		font-weight: 600;
 		text-align: center;
 		font-variant-numeric: tabular-nums;
+	}
+
+	.stepper__number {
+		display: inline-block;
 	}
 
 	.stepper .button {
