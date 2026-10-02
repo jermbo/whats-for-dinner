@@ -1,7 +1,8 @@
 <script>
 	import { resolve } from '$app/paths';
 	import PantryAddForm from '$lib/components/pantry/PantryAddForm.svelte';
-	import PantryItemRow from '$lib/components/pantry/PantryItemRow.svelte';
+	import PantryGauge from '$lib/components/pantry/PantryGauge.svelte';
+	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { pantryGroups } from '$lib/data/pantry-view';
 	import { useKitchen } from '$lib/kitchen.svelte';
@@ -9,6 +10,8 @@
 	const kitchen = useKitchen();
 
 	let search = $state('');
+	/** @type {PantryItemSheet | undefined} */
+	let sheet = $state();
 
 	const groups = $derived(pantryGroups(kitchen.pantry, kitchen.ingredientsById, search));
 </script>
@@ -29,13 +32,21 @@
 	/>
 </div>
 
+{#if groups.length > 0}
+	<p class="muted">Slide a row, or tap it, to change the amount.</p>
+{/if}
+
 <div class="grid">
 	{#each groups as group (group.location)}
 		<section class="stack stack--tight" aria-labelledby="pantry-{group.location}">
 			<h2 id="pantry-{group.location}">{group.label}</h2>
-			<ul class="list">
+			<ul class="gauges">
 				{#each group.rows as row (row.item.id)}
-					<PantryItemRow item={row.item} ingredient={row.ingredient} />
+					<PantryGauge
+						item={row.item}
+						ingredient={row.ingredient}
+						onmore={() => sheet?.open(row)}
+					/>
 				{/each}
 			</ul>
 		</section>
@@ -52,3 +63,5 @@
 		<PantryAddForm ingredients={kitchen.ingredients} />
 	</div>
 </details>
+
+<PantryItemSheet bind:this={sheet} />

@@ -10,6 +10,10 @@
 	import { status } from '$lib/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 	import { formatQuantity } from '$lib/util/format';
+	import CookDeduction from './CookDeduction.svelte';
+
+	/** A session that is this new shows the change of the pantry as it occurs, in milliseconds. */
+	const FRESH_MS = 20_000;
 
 	/**
 	 * The screen after "Cooked": what the pantry lost, plus the optional rating, note,
@@ -22,7 +26,30 @@
 
 	const session = live(() => db.sessions.get(id), undefined);
 	const ingredients = live(() => db.ingredients.toArray(), []);
+	const pantry = live(() => db.pantry.toArray(), undefined);
+	const recipe = live(async () => {
+		const current = await db.sessions.get(id);
+		return current && db.recipes.get(current.recipeId);
+	}, undefined);
+
 	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
+	const pantryByIngredient = $derived(indexBy(pantry.current ?? [], 'ingredientId'));
+
+	// An old session shows only the amounts: the pantry of today is not the pantry of that day.
+	const opened = Date.now();
+	const fresh = $derived(
+		session.current !== undefined && Date.parse(session.current.cookedAt) > opened - FRESH_MS
+	);
+
+	/** The ingredients of the meal that have only a state. "Cooked" does not change them. */
+	const uncounted = $derived(
+		session.current?.kind === 'recipe'
+			? (recipe.current?.ingredients ?? [])
+					.map((row) => ingredientsById.get(row.ingredientId))
+					.filter((ingredient) => ingredient?.tracking === 'state')
+					.map((ingredient) => ingredient?.name)
+			: []
+	);
 
 	/** @param {import('$lib/types').CookSession} current */
 	async function undo(current) {
@@ -47,6 +74,19 @@
 		<h2 id="{uid}-pantry">Pantry update</h2>
 		{#if current.deductions.length === 0}
 			<p class="muted">The pantry did not change.</p>
+		{:else if fresh}
+			{#if pantry.current}
+				<p class="muted">The pantry has less now. Slide a row if you used a different amount.</p>
+				<ul class="gauges">
+					{#each current.deductions as deduction, index (index)}
+						{@const ingredient = ingredientsById.get(deduction.ingredientId)}
+						{@const item = pantryByIngredient.get(deduction.ingredientId)}
+						{#if ingredient && item}
+							<CookDeduction {deduction} {ingredient} {item} {index} />
+						{/if}
+					{/each}
+				</ul>
+			{/if}
 		{:else}
 			<ul class="list">
 				{#each current.deductions as deduction, index (index)}
@@ -59,6 +99,12 @@
 					{/if}
 				{/each}
 			</ul>
+		{/if}
+
+		{#if uncounted.length > 0}
+			<p class="muted">
+				Not counted: {uncounted.join(', ')}. The app does not measure them.
+			</p>
 		{/if}
 	</section>
 

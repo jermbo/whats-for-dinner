@@ -120,6 +120,23 @@ export interface ShoppingItem {
 	updatedAt: string;
 }
 
+/** How a gauge row shows a value, and how a place on the row becomes a value. */
+export interface LevelScale {
+	/** The value now. */
+	value: number;
+	max: number;
+	/** The change for one press of an arrow key. */
+	step: number;
+	/** The number of blocks that the row shows. Zero gives one smooth fill. */
+	blocks: number;
+	/** The fill of the row for a value, from 0 to 1. */
+	toFraction(value: number): number;
+	/** The value at a place on the row, from 0 to 1. */
+	fromFraction(fraction: number): number;
+	/** The value in words, for example "500 g" or "Low". */
+	text(value: number): string;
+}
+
 export interface Meta {
 	key: string;
 	value: unknown;

@@ -23,6 +23,10 @@
 	<p>
 		Ingredients, recipes, pantry items, a menu, and cook history for tests. Your own data stays.
 	</p>
+	<p class="muted">
+		A reset removes the changes that you made to the sample data. It also sets the date of the last
+		pantry check to 5 days ago.
+	</p>
 
 	<p role="status">
 		<strong>{loaded ? 'The sample data is on this device.' : 'There is no sample data.'}</strong>

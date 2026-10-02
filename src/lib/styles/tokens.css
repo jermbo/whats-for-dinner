@@ -26,6 +26,10 @@
 	/* A darker teal for links and focus outlines, which need more contrast. */
 	--color-accent-strong: #007a85;
 
+	/* Amber for a level that is low. The text on it stays black. */
+	--color-low: #ffd480;
+	--color-low-strong: #c98300;
+
 	--color-danger: #b3261e;
 	--color-notice: #fff3d9;
 

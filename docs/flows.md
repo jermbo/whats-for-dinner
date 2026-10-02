@@ -46,10 +46,16 @@ The owner makes the pantry in the tool agree with the real pantry. **[Owner]** (
 
 | Step | Action of the owner | Action of the tool | Label |
 |---|---|---|---|
-| 1 | Starts the pantry check. | Shows the pantry items one location at a time: pantry, refrigerator, freezer. | [Proposed] |
-| 2 | Looks at each real item. Taps "correct", changes the quantity, or taps "gone". | Saves each change with the cause "corrected". Asks if a "gone" item was used or thrown away. | [Proposed] |
+| 1 | Starts the pantry check. | Shows the items that it has a doubt about, each with the reason. The other items are in a closed group. | [Proposed] |
+| 2 | Looks at the real items. Slides a row to the real amount. Does not touch a row that is correct. | Saves each change with the cause "corrected". The "more" button of a row has "used up" and "thrown away". | [Proposed] |
 | 3 | Scans an item that is not in the list. | Adds the item. A known barcode needs one tap. | [Owner] for the scan |
-| 4 | Completes the check. | Saves the date of the check. | [Proposed] |
+| 4 | Taps "The rest is correct". | Saves the date of the check. | [Proposed] |
+
+The tool has a doubt about an item in these conditions (the rules are in `src/lib/data/doubt.js`): **[Proposed]**
+
+- A weight or a volume that a meal used since the last look.
+- A "have, low, or out" item that is low, or that 3 or more meals used since the last look.
+- A perishable item, not in the freezer, with no new stock for 7 days.
 
 Effect on the design: the pantry is correct one time each week. Thus pantry drift between two checks is acceptable. **[Proposed]**
 
@@ -114,7 +120,7 @@ This list is **[Proposed]**.
 | Screen | Flows | Purpose |
 |---|---|---|
 | Today | C, D | Home screen. The meals that remain on the week menu: ready, or needs preparation. The answer when no meal is ready. |
-| Pantry check | A | Fast check of each item by location. Scan. |
+| Pantry check | A | Check of the items that the tool has a doubt about. Scan. |
 | Pantry | A, B | Full list, search, and fast edits between checks. |
 | Week menu | A | Add and remove the meals for the week. |
 | Recipes | A, D | List, detail, add, and edit. |
@@ -125,7 +131,7 @@ This list is **[Proposed]**.
 
 1. Answered (2026-10-02): The store visit comes after the pantry check and the week menu. The two can occur on the same day. This is not important for the design.
 2. Answered (2026-10-02): The day check can occur at any time. The owner thinks it will be the morning. The week menu removes the need for a fixed time.
-3. Does the pantry check show all items, or only the perishable items and the items that the last week changed?
+3. Proposed (2026-10-02): The pantry check shows the items with a doubt first. The other items are in a closed group. The owner must test this.
 4. Answered (2026-10-02): The week menu is one list. Each recipe has a meal type (breakfast, lunch, dinner). The "Today" screen and the week menu can filter by the type.
 5. Answered (2026-10-02): The meal stays on the week menu until the owner cooks it or removes it. The week session shows the meals that remain.
 6. Which meals must the owner cook first? Some ingredients (fresh fish) spoil before others (dry pasta).

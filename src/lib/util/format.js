@@ -20,11 +20,12 @@ export function unitLabel(unit) {
 }
 
 /**
- * The amount that one tap on plus or minus changes.
- * @param {import('$lib/types').Unit} unit
+ * A number with its noun, for example "1 item" or "3 items".
+ * @param {number} count
+ * @param {string} noun
  */
-export function stepFor(unit) {
-	return unit === 'count' ? 1 : 50;
+export function plural(count, noun) {
+	return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
 
 /** @param {string | number} date */

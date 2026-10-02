@@ -22,3 +22,15 @@
 		font-weight: 600;
 	}
 }
+
+/* A column of rows that are each a panel, such as the gauges of the pantry. */
+.gauges {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+
+	/* A margin, not a gap: the transition of a row that goes out can close a margin. */
+	& > li + li {
+		margin-block-start: var(--space-2);
+	}
+}
