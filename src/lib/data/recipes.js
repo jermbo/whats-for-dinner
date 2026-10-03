@@ -48,21 +48,19 @@ export async function saveRecipe(recipe) {
 }
 
 /**
- * Groups for the menu screen, each in the sequence of the names. "To try" is automatic: a
- * recipe with no cook session.
- * @template {{ recipe: import('$lib/types').Recipe }} T
- * @param {T[]} items The rows of the screen. Each one has its recipe.
+ * Groups for the menu screen. "To try" is automatic: a recipe with no cook session.
+ * @param {import('$lib/types').Recipe[]} recipes
  * @param {Set<string>} cookedIds The IDs of the recipes that have a cook session.
- * @returns {{ title: string, items: T[] }[]}
+ * @returns {{ title: string, recipes: import('$lib/types').Recipe[] }[]}
  */
-export function recipeGroups(items, cookedIds) {
-	const sorted = [...items].sort((a, b) => a.recipe.name.localeCompare(b.recipe.name));
-	const cooked = sorted.filter((item) => cookedIds.has(item.recipe.id));
+export function recipeGroups(recipes, cookedIds) {
+	const sorted = [...recipes].sort((a, b) => a.name.localeCompare(b.name));
+	const cooked = sorted.filter((recipe) => cookedIds.has(recipe.id));
 	return [
-		{ title: 'To try', items: sorted.filter((item) => !cookedIds.has(item.recipe.id)) },
-		{ title: 'In rotation', items: cooked.filter((item) => item.recipe.inRotation) },
-		{ title: 'Other recipes', items: cooked.filter((item) => !item.recipe.inRotation) }
-	].filter((group) => group.items.length > 0);
+		{ title: 'To try', recipes: sorted.filter((recipe) => !cookedIds.has(recipe.id)) },
+		{ title: 'In rotation', recipes: cooked.filter((recipe) => recipe.inRotation) },
+		{ title: 'Other recipes', recipes: cooked.filter((recipe) => !recipe.inRotation) }
+	].filter((group) => group.recipes.length > 0);
 }
 
 /** @param {string} id */

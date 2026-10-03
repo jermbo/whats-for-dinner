@@ -71,8 +71,7 @@ export function useSoon(pantry, ingredientsById, changesByIngredient, totals, ti
 /**
  * The recipes that use up the most of the food to use first. Each item counts, and an older item
  * counts more. Then a recipe that the pantry can make comes before a recipe that needs shopping.
- * A reference recipe has no ingredients: it uses no food, and its count is 0 of 0.
- * @param {Recipe[]} recipes The recipes to look at.
+ * @param {Recipe[]} recipes The recipes to look at. A reference recipe is not an idea.
  * @param {SoonItem[]} soon
  * @param {Map<string, Ingredient>} ingredientsById
  * @param {Map<string, PantryItem>} pantryByIngredient
@@ -84,6 +83,7 @@ export function useUpIdeas(recipes, soon, ingredientsById, pantryByIngredient) {
 	);
 
 	return recipes
+		.filter((recipe) => recipe.ingredients.length > 0)
 		.map((recipe) => {
 			const uses = recipe.ingredients
 				.map((row) => open.get(row.ingredientId))

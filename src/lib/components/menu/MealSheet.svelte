@@ -18,15 +18,18 @@
 	 * back grows from the place of the card to the full screen. "Turn back" does the reverse.
 	 * It is a modal dialog: it is above the pile, and it keeps the focus.
 	 * It reads the meal from "entries", so that a change, such as "Preparation done", shows at once.
+	 * The foot has the action of the screen: "Cooked" with "oncook", and "Remove from the menu"
+	 * with "onremove".
 	 * @type {{
 	 *   entries: MenuEntry[],
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
-	 *   oncook: (entry: MenuEntry) => void,
+	 *   oncook?: (entry: MenuEntry) => void,
+	 *   onremove?: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown
 	 * }}
 	 */
-	let { entries, kitchen, lastSessions, oncook, onprep } = $props();
+	let { entries, kitchen, lastSessions, oncook, onremove, onprep } = $props();
 
 	const uid = $props.id();
 
@@ -157,6 +160,15 @@
 		moving = false;
 	}
 
+	/**
+	 * The card turns back first. Then the meal goes off the menu, and its card goes out of the row.
+	 * @param {MenuEntry} target
+	 */
+	async function remove(target) {
+		await close();
+		onremove?.(target);
+	}
+
 	/** @param {Event} event */
 	function cancel(event) {
 		// The Escape key: the same turn back as the button.
@@ -199,13 +211,24 @@
 
 			<footer class="meal-sheet__foot">
 				<a class="button" href={resolve('/recipes/[id]', { id: entry.recipe.id })}>Full recipe</a>
-				<button
-					class="button button--strong meal-sheet__cook"
-					type="button"
-					onclick={() => oncook(entry)}
-				>
-					Cooked
-				</button>
+				{#if onremove}
+					<button
+						class="button button--danger meal-sheet__action"
+						type="button"
+						onclick={() => remove(entry)}
+					>
+						Remove from the menu
+					</button>
+				{/if}
+				{#if oncook}
+					<button
+						class="button button--strong meal-sheet__action"
+						type="button"
+						onclick={() => oncook(entry)}
+					>
+						Cooked
+					</button>
+				{/if}
 			</footer>
 		</div>
 	{/if}
@@ -291,7 +314,7 @@
 		border-block-start: 1px solid var(--color-border);
 	}
 
-	.meal-sheet__cook {
+	.meal-sheet__action {
 		flex: 1;
 	}
 
