@@ -1,16 +1,16 @@
 <script>
 	import { resolve } from '$app/paths';
 	import NewProductDialog from '$lib/components/shop/NewProductDialog.svelte';
-	import PutAwayRow from '$lib/components/shop/PutAwayRow.svelte';
-	import TripCost from '$lib/components/shop/TripCost.svelte';
+	import PutAwayCard from '$lib/components/shop/PutAwayCard.svelte';
+	import Receipt from '$lib/components/shop/Receipt.svelte';
+	import ReceiptLine from '$lib/components/shop/ReceiptLine.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import SuccessMark from '$lib/components/ui/SuccessMark.svelte';
 	import { canMake } from '$lib/data/availability';
 	import { setProduct } from '$lib/data/cart';
 	import { productsByIngredient } from '$lib/data/products';
-	import { lastPurchases, putAway } from '$lib/data/put-away';
+	import { cartEntry, lastPurchases, putAway, toLine } from '$lib/data/put-away';
 	import { shoppingNeeds } from '$lib/data/shopping';
-	import { lastPrices } from '$lib/data/trips';
+	import { lastPrices, tripCost } from '$lib/data/trips';
 	import { db } from '$lib/db/db';
 	import { useKitchen } from '$lib/kitchen.svelte';
 	import { live } from '$lib/live.svelte';
@@ -19,10 +19,8 @@
 
 	/**
 	 * @typedef {import('$lib/types').Purchase} Purchase
-	 * @typedef {import('$lib/data/put-away').Line} Line
+	 * @typedef {import('$lib/data/put-away').CartEntry} CartEntry
 	 */
-
-	const uid = $props.id();
 
 	const kitchen = useKitchen();
 	const products = live(() => db.products.toArray(), []);
@@ -35,11 +33,10 @@
 
 	const purchases = $derived(history.current ?? []);
 
-	/** The cart is the purchases that are not put away, in the sequence of the taps in the store. */
-	const cart = $derived(
-		purchases
-			.filter((purchase) => !purchase.putAwayAt)
-			.sort((a, b) => a.cartAt.localeCompare(b.cartAt))
+	/** The receipt is the open trip. With no open trip, it is the trip that ended last. */
+	const trip = $derived(
+		trips.current.find((entry) => !entry.completedAt) ??
+			trips.current.findLast((entry) => entry.completedAt)
 	);
 
 	const productsOf = $derived(productsByIngredient(products.current, purchases));
@@ -58,22 +55,29 @@
 		)
 	);
 
-	/**
-	 * The values of each row. "Put all away" reads them. It is not state: the screen does not
-	 * show it.
-	 * @type {Map<string, Line>}
-	 */
-	const lines = new Map();
+	/** The lines of the receipt, in the sequence of the taps in the store. */
+	const entries = $derived(
+		purchases
+			.filter((purchase) => purchase.tripId === trip?.id)
+			.sort((a, b) => a.cartAt.localeCompare(b.cartAt))
+			.map((purchase) =>
+				cartEntry({
+					purchase,
+					ingredient: kitchen.ingredientsById.get(purchase.ingredientId ?? '') ?? null,
+					products: productsOf.get(purchase.ingredientId ?? '') ?? [],
+					last: last.get(purchase.ingredientId ?? ''),
+					need: needs.get(purchase.ingredientId ?? '') ?? 0,
+					prices
+				})
+			)
+	);
 
-	/** The owner put an item away in this visit to the screen. */
-	let worked = $state(false);
-	/** @type {NewProductDialog | undefined} */
-	let dialog = $state();
+	/** The items that are in the cart. */
+	const waiting = $derived(entries.filter((entry) => !entry.purchase.putAwayAt));
 
-	/** The trip that ended last, with its purchases. */
-	const lastTrip = $derived(trips.current.findLast((trip) => trip.completedAt));
-	const lastTripPurchases = $derived(
-		purchases.filter((purchase) => purchase.tripId === lastTrip?.id)
+	/** The total of the receipt has the prices that the lines show. */
+	const cost = $derived(
+		tripCost(entries.map((entry) => ({ ...entry.purchase, price: entry.price })))
 	);
 
 	/** The meals on the menu that have ingredients, and those that the pantry can make in full. */
@@ -87,16 +91,26 @@
 		meals.filter((recipe) => canMake(recipe, kitchen.ingredientsById, kitchen.pantryByIngredient))
 	);
 
-	async function putAllAway() {
-		const all = cart.flatMap((purchase) => lines.get(purchase.id) ?? []);
-		await putAway(all);
-		worked = true;
-		status.say(`${plural(all.length, 'item')} ${all.length === 1 ? 'is' : 'are'} put away.`);
+	/** @type {PutAwayCard | undefined} */
+	let card = $state();
+	/** @type {NewProductDialog | undefined} */
+	let dialog = $state();
+
+	/** @param {CartEntry} entry */
+	async function putOneAway(entry) {
+		await putAway([toLine(entry)]);
+		const { name } = entry.purchase;
+		status.say(entry.ingredient ? `${name} is in the pantry.` : `${name} is put away.`);
 	}
 
-	/** @param {Purchase} purchase */
-	function newProduct(purchase) {
-		const ingredient = kitchen.ingredientsById.get(purchase.ingredientId ?? '');
+	async function putAllAway() {
+		const count = waiting.length;
+		await putAway(waiting.map(toLine));
+		status.say(`${plural(count, 'item')} ${count === 1 ? 'is' : 'are'} put away.`);
+	}
+
+	/** @param {CartEntry} entry */
+	function newProduct({ purchase, ingredient }) {
 		if (ingredient) dialog?.open(ingredient, (product) => setProduct(purchase, product.id));
 	}
 </script>
@@ -105,82 +119,59 @@
 <div class="stack">
 	<PageHeader
 		title="Put away"
-		eyebrow={cart.length > 0 ? `${plural(cart.length, 'item')} in the cart` : undefined}
+		eyebrow={waiting.length > 0 ? `${plural(waiting.length, 'item')} in the cart` : undefined}
 	>
-		{#if cart.length > 0}
+		{#if waiting.length > 0}
 			<button class="button" type="button" onclick={putAllAway}>Put all away</button>
 		{/if}
 	</PageHeader>
 
 	{#if !history.current}
 		<!-- The database did not answer yet. -->
-	{:else if cart.length > 0}
-		<ul class="put-away">
-			{#each cart as purchase (purchase.id)}
-				<PutAwayRow
-					{purchase}
-					ingredient={kitchen.ingredientsById.get(purchase.ingredientId ?? '') ?? null}
-					products={productsOf.get(purchase.ingredientId ?? '') ?? []}
-					last={last.get(purchase.ingredientId ?? '')}
-					need={needs.get(purchase.ingredientId ?? '') ?? 0}
-					{prices}
-					{lines}
-					onnew={() => newProduct(purchase)}
-					ondone={() => (worked = true)}
+	{:else if trip}
+		<Receipt {trip} {cost}>
+			{#each entries as entry (entry.purchase.id)}
+				<ReceiptLine
+					{entry}
+					onputaway={() => putOneAway(entry)}
+					onopen={() => card?.open(entry.purchase.id)}
 				/>
 			{/each}
-		</ul>
-	{:else}
-		<section class="stack" aria-labelledby="{uid}-empty">
-			{#if worked}
-				<SuccessMark />
-			{/if}
-			<h2 id="{uid}-empty">The cart is empty</h2>
+		</Receipt>
 
-			{#if lastTrip}
-				<div class="put-away__result stack stack--tight">
-					<TripCost trip={lastTrip} purchases={lastTripPurchases} />
-					{#if meals.length > 0}
-						<p>
-							The pantry has all the food for
-							<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
-						</p>
-					{/if}
-				</div>
+		{#if trip.completedAt}
+			{#if meals.length > 0}
+				<p class="put-away__result">
+					The pantry has all the food for
+					<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
+				</p>
 			{/if}
 
 			<div class="cluster">
 				<a class="button button--primary" href={resolve('/')}>Today</a>
 				<a class="button" href={resolve('/shop')}>Shopping list</a>
-				{#if lastTrip}
-					<a class="button" href={resolve('/shop/trips')}>All trips</a>
-				{/if}
+				<a class="button" href={resolve('/shop/trips')}>All trips</a>
 			</div>
-		</section>
+		{/if}
+	{:else}
+		<p class="muted">The cart is empty. Tap the items on the shopping list in the store.</p>
+		<div>
+			<a class="button button--primary" href={resolve('/shop')}>Shopping list</a>
+		</div>
 	{/if}
 </div>
 
+<PutAwayCard bind:this={card} entries={waiting} onputaway={putOneAway} onnew={newProduct} />
 <NewProductDialog bind:this={dialog} />
 
 <style>
-	.put-away {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-
-		/* A margin, not a gap: the transition of a row that goes out can close a margin. */
-		& > :global(li + li) {
-			margin-block-start: var(--space-3);
-		}
-	}
-
 	/* The answer of the app is the largest text on the screen. */
 	.put-away__result {
 		font-family: var(--font-heading);
 		font-size: 1.35rem;
 		line-height: 1.25;
 
-		& :global(strong) {
+		& strong {
 			color: var(--color-accent-strong);
 		}
 	}

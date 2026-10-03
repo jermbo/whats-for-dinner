@@ -105,6 +105,8 @@ dialog {
 
 @media (prefers-reduced-motion: reduce) {
 	*,
+	*::before,
+	*::after,
 	::view-transition-group(*),
 	::view-transition-old(*),
 	::view-transition-new(*) {

@@ -106,7 +106,10 @@ export interface Purchase {
 	/** The item that the owner added to the list by hand, if this purchase is for one. */
 	shoppingItemId: string | null;
 	packages: number;
-	/** In the unit of the ingredient. Null until the item is put away, and for an item with no count. */
+	/**
+	 * In the unit of the ingredient. Null for an item with no count, and while the item is in
+	 * the cart and the owner did not correct the quantity that the app proposes.
+	 */
 	quantity: number | null;
 	/** The price of one package. Null when the owner gave no price. */
 	price: number | null;

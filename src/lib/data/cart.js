@@ -107,6 +107,16 @@ export function setPackages(purchase, packages) {
 }
 
 /**
+ * Stores what the owner corrects at home, before the item is put away: the quantity or the
+ * price. Null: the app proposes the value again.
+ * @param {Purchase} purchase
+ * @param {{ quantity?: number | null, price?: number | null }} values
+ */
+export function correct(purchase, values) {
+	return change(purchase, values);
+}
+
+/**
  * Tells the app which product a purchase is. Null: the owner does not tell.
  * @param {Purchase} purchase
  * @param {string | null} productId
