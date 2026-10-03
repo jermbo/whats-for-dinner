@@ -40,6 +40,20 @@ export function missingFor(recipe, ingredientsById, pantryByIngredient) {
 }
 
 /**
+ * How many ingredients of a recipe the pantry has, of how many the recipe needs.
+ * A reference recipe has no ingredients: the count is 0 of 0.
+ * @param {Recipe} recipe
+ * @param {Map<string, Ingredient>} ingredientsById
+ * @param {Map<string, PantryItem>} pantryByIngredient
+ * @returns {{ have: number, need: number }}
+ */
+export function pantryCount(recipe, ingredientsById, pantryByIngredient) {
+	const need = recipe.ingredients.filter((row) => ingredientsById.has(row.ingredientId)).length;
+	const missing = missingFor(recipe, ingredientsById, pantryByIngredient).length;
+	return { have: need - missing, need };
+}
+
+/**
  * A reference recipe has no ingredients, so the tool cannot know. It counts as "no".
  * @param {Recipe} recipe
  * @param {Map<string, Ingredient>} ingredientsById

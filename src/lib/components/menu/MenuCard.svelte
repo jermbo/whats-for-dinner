@@ -1,7 +1,9 @@
 <script>
 	import { resolve } from '$app/paths';
+	import PantryCount from '$lib/components/recipes/PantryCount.svelte';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { pantryCount } from '$lib/data/availability';
 	import { entryName } from '$lib/data/menu';
 	import { photoMorph } from '$lib/motion/photo-morph';
 	import { formatWhen } from '$lib/util/format';
@@ -15,17 +17,23 @@
 	 * uses this for a shuffle.
 	 * A meal that is not ready has a flag on the photo: amber when it needs preparation, teal while
 	 * it waits. The back of the card shows what the preparation is.
+	 * The count next to the name tells how many of the ingredients the pantry has. Leftovers use
+	 * no ingredients, so they have no count.
 	 * @type {{
 	 *   entry: MenuEntry,
+	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
 	 *   facedown?: boolean,
 	 *   onturn?: (card: HTMLElement) => void,
 	 *   oncook: (entry: MenuEntry) => void
 	 * }}
 	 */
-	let { entry, facedown = false, onturn, oncook } = $props();
+	let { entry, kitchen, facedown = false, onturn, oncook } = $props();
 
 	const name = $derived(entryName(entry));
 	const lead = $derived(Math.max(0, ...entry.recipe.prepSteps.map((step) => step.leadHours)));
+	const count = $derived(
+		pantryCount(entry.recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
+	);
 
 	/** @type {HTMLElement | undefined} */
 	let card = $state();
@@ -72,9 +80,14 @@
 		{/if}
 
 		<div class="card__body">
-			<h3 class="card__title">
-				<a href={resolve('/recipes/[id]', { id: entry.recipe.id })}>{name}</a>
-			</h3>
+			<div class="meal-card__head">
+				<h3 class="card__title">
+					<a href={resolve('/recipes/[id]', { id: entry.recipe.id })}>{name}</a>
+				</h3>
+				{#if entry.item.kind === 'recipe'}
+					<PantryCount {...count} />
+				{/if}
+			</div>
 
 			{#if entry.state === 'todo'}
 				<p class="muted">Turn the card to see the preparation.</p>
@@ -240,6 +253,14 @@
 	.meal-card__turn--hint {
 		box-shadow: 0 0 0 2px var(--color-low);
 		animation: breathe 2.4s ease-in-out infinite;
+	}
+
+	/* The name, and the pantry count at its right. */
+	.meal-card__head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--space-3);
 	}
 
 	/* "Cooked" stays at the bottom of a tall card. */

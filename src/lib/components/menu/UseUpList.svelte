@@ -3,8 +3,8 @@
 	import UseUpCard from './UseUpCard.svelte';
 
 	/**
-	 * The recipes that use up food, best first. A recipe moves to its new place when the order
-	 * changes. A recipe that goes on the menu leaves the list.
+	 * Recipes that can go on the menu. A recipe moves to its new place when the order changes.
+	 * A recipe that goes on the menu leaves the list.
 	 * @type {{
 	 *   ideas: import('$lib/data/use-up').UseUpIdea[],
 	 *   selected: Set<string>,

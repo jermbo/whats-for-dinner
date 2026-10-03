@@ -1,6 +1,8 @@
 <script>
 	import { resolve } from '$app/paths';
+	import ActionBar from '$lib/components/ui/ActionBar.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
+	import { pantryCount } from '$lib/data/availability';
 	import { addToMenu, recipesOnMenu } from '$lib/data/menu';
 	import { MEAL_TYPES, labelOf } from '$lib/data/options';
 	import { db } from '$lib/db/db';
@@ -8,6 +10,7 @@
 	import { status } from '$lib/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 	import CookHistory from './CookHistory.svelte';
+	import PantryCount from './PantryCount.svelte';
 	import RecipeIngredientList from './RecipeIngredientList.svelte';
 	import RecipePhoto from './RecipePhoto.svelte';
 	import RecipeSource from './RecipeSource.svelte';
@@ -24,6 +27,19 @@
 
 	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
 	const pantryByIngredient = $derived(indexBy(pantry.current, 'ingredientId'));
+
+	const count = $derived(
+		recipe.current
+			? pantryCount(recipe.current, ingredientsById, pantryByIngredient)
+			: { have: 0, need: 0 }
+	);
+	const toBuy = $derived(count.need - count.have);
+
+	/** The label tells the result before the tap: how many ingredients the owner must buy. */
+	const addLabel = $derived.by(() => {
+		if (count.need === 0) return 'Add to the menu';
+		return toBuy > 0 ? `Add to the menu · ${toBuy} to buy` : 'Add to the menu · the pantry has all';
+	});
 
 	async function add() {
 		await addToMenu(id);
@@ -49,17 +65,29 @@
 
 	<RecipeSource source={current.source} />
 
-	<div>
-		{#if onMenu}
+	{#if !onMenu}
+		<ActionBar>
+			<button class="button button--primary button--wide" type="button" onclick={add}>
+				{addLabel}
+			</button>
+		</ActionBar>
+	{:else}
+		<div>
 			<span class="badge badge--good">On the menu</span>
-		{:else}
-			<button class="button button--primary" type="button" onclick={add}>Add to the menu</button>
+		</div>
+		{#if toBuy > 0}
+			<ActionBar>
+				<a class="button button--wide" href={resolve('/shop')}>Open the shopping list</a>
+			</ActionBar>
 		{/if}
-	</div>
+	{/if}
 
 	<div class="grid">
 		<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
-			<h2 id="recipe-ingredients">Ingredients</h2>
+			<div class="cluster cluster--between">
+				<h2 id="recipe-ingredients">Ingredients</h2>
+				<PantryCount {...count} />
+			</div>
 			<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
 		</section>
 

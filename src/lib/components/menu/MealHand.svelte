@@ -3,6 +3,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { entryName } from '$lib/data/menu';
+	import { getMeta, setMeta } from '$lib/db/meta';
 	import { throwCard } from '$lib/input/throw-card';
 	import { gsap } from '$lib/motion/gsap';
 	import { pose } from '$lib/motion/pile';
@@ -17,6 +18,8 @@
 	const THROW_S = 0.35;
 	/** The time between two cards that drop back on the pile after a shuffle, in seconds. */
 	const DROP_GAP_S = 0.06;
+	/** The note that this device showed the hint of the hand. */
+	const HINT_KEY = 'handHintSeen';
 
 	/**
 	 * The meals on the menu as a pile of cards in your hand. Only the top card is in view.
@@ -26,6 +29,7 @@
 	 * right, and drop back on the pile in a new order, with a ready meal on top.
 	 * Buttons do the same for the keyboard.
 	 * Turn a card, and its back opens on the full screen.
+	 * The first time, the top card shows that it can move: see "hint".
 	 * @type {{
 	 *   entries: MenuEntry[],
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
@@ -80,6 +84,30 @@
 	const wait = (ms) => new Promise((done) => setTimeout(done, ms));
 
 	/**
+	 * One time only on a device: the top card goes to the side and comes back, and its turn
+	 * button turns. This shows that you can throw the card and turn it.
+	 * A finger on the card stops the hint.
+	 * @param {HTMLElement} node
+	 */
+	async function hint(node) {
+		if (cards.length < 2 || (await getMeta(HINT_KEY)) || busy) return;
+		await setMeta(HINT_KEY, true);
+
+		const timeline = gsap
+			.timeline()
+			.to(node, { x: -64, rotation: -5, duration: 0.4, ease: 'power2.out' })
+			.to(node, { ...pose(0), duration: 0.8, ease: 'elastic.out(1, 0.55)' });
+		const turn = node.querySelector('.meal-card__turn');
+		if (turn) {
+			timeline.to(
+				turn,
+				{ rotation: 360, duration: 0.7, ease: 'back.out(1.6)', clearProps: 'transform' },
+				'-=0.4'
+			);
+		}
+	}
+
+	/**
 	 * Deals a new card into the hand: it comes up from below. The bottom card comes first.
 	 * @param {HTMLElement} node
 	 * @param {number} at
@@ -100,7 +128,10 @@
 				delay: 0.15 + (cards.length - 1 - at) * 0.08,
 				ease: 'back.out(1.2)',
 				// A shuffle or a finger can stop the deal. Then the card is free to move too.
-				onComplete: () => dealing.delete(node),
+				onComplete: () => {
+					dealing.delete(node);
+					if (at === 0) hint(node);
+				},
 				onInterrupt: () => dealing.delete(node)
 			}
 		);
@@ -280,6 +311,7 @@
 			>
 				<MenuCard
 					{entry}
+					{kitchen}
 					facedown={down}
 					onturn={(card) => sheet?.open(entry.item.id, card)}
 					{oncook}

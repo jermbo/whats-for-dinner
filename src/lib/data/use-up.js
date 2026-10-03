@@ -1,5 +1,5 @@
 import { round } from '$lib/util/format';
-import { missingFor } from './availability';
+import { pantryCount } from './availability';
 import { daysInStock } from './freshness';
 
 /**
@@ -18,8 +18,15 @@ import { daysInStock } from './freshness';
  *   days: the days since the new stock. free: the amount that no meal on the menu uses
  *   (1 or 0 for a "have, low, or out" item). planned: the meals on the menu that use it.
  *
- * @typedef {{ recipe: Recipe, uses: SoonItem[], missing: number, score: number }} UseUpIdea
- *   uses: the food to use first that the recipe uses. missing: the ingredients to buy.
+ * @typedef {{
+ *   recipe: Recipe,
+ *   uses: SoonItem[],
+ *   count: { have: number, need: number },
+ *   missing: number,
+ *   score: number
+ * }} UseUpIdea
+ *   uses: the food to use first that the recipe uses. count: the ingredients that the pantry
+ *   has, of those that the recipe needs. missing: the ingredients to buy.
  */
 
 /** The age that counts the most. An item that is older counts the same. */
@@ -64,7 +71,8 @@ export function useSoon(pantry, ingredientsById, changesByIngredient, totals, ti
 /**
  * The recipes that use up the most of the food to use first. Each item counts, and an older item
  * counts more. Then a recipe that the pantry can make comes before a recipe that needs shopping.
- * @param {Recipe[]} recipes The recipes to look at. A reference recipe is not an idea.
+ * A reference recipe has no ingredients: it uses no food, and its count is 0 of 0.
+ * @param {Recipe[]} recipes The recipes to look at.
  * @param {SoonItem[]} soon
  * @param {Map<string, Ingredient>} ingredientsById
  * @param {Map<string, PantryItem>} pantryByIngredient
@@ -76,15 +84,15 @@ export function useUpIdeas(recipes, soon, ingredientsById, pantryByIngredient) {
 	);
 
 	return recipes
-		.filter((recipe) => recipe.ingredients.length > 0)
 		.map((recipe) => {
 			const uses = recipe.ingredients
 				.map((row) => open.get(row.ingredientId))
 				.filter((item) => item !== undefined);
-			const missing = missingFor(recipe, ingredientsById, pantryByIngredient).length;
+			const count = pantryCount(recipe, ingredientsById, pantryByIngredient);
+			const missing = count.need - count.have;
 			const rescue = uses.reduce((sum, item) => sum + 1 + Math.min(item.days, MAX_DAYS) / 7, 0);
-			const have = (recipe.ingredients.length - missing) / recipe.ingredients.length;
-			return { recipe, uses, missing, score: rescue * 3 + have * 2 - missing * 0.5 };
+			const have = count.need > 0 ? count.have / count.need : 0;
+			return { recipe, uses, count, missing, score: rescue * 3 + have * 2 - missing * 0.5 };
 		})
 		.sort((a, b) => b.score - a.score || a.recipe.name.localeCompare(b.recipe.name));
 }

@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import MealFilter from '$lib/components/menu/MealFilter.svelte';
 	import MealHand from '$lib/components/menu/MealHand.svelte';
 	import PantryIdeas from '$lib/components/menu/PantryIdeas.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
@@ -24,7 +23,6 @@
 	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
 	const lastSessions = $derived(indexBy(sessions.current, 'recipeId'));
 
-	let filter = $state('all');
 	let time = $state(nowMs());
 
 	// A meal becomes ready when its lead time is over, so the clock must move.
@@ -33,12 +31,7 @@
 		return () => clearInterval(timer);
 	});
 
-	/** @param {import('$lib/types').Recipe} recipe */
-	const matches = (recipe) => filter === 'all' || recipe.mealType === filter;
-
-	const entries = $derived(
-		menuEntries(kitchen.menu, kitchen.recipesById, time).filter((entry) => matches(entry.recipe))
-	);
+	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, time));
 
 	/** The hand: the meals that you can cook now. */
 	const ready = $derived(entries.filter((entry) => entry.state === 'ready'));
@@ -58,7 +51,6 @@
 			? []
 			: kitchen.recipes.filter(
 					(recipe) =>
-						matches(recipe) &&
 						!onMenu.has(recipe.id) &&
 						recipe.prepSteps.length === 0 &&
 						canMake(recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
@@ -85,8 +77,6 @@
 </script>
 
 <PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()} />
-
-<MealFilter bind:value={filter} />
 
 {#if hand.length > 0}
 	<MealHand entries={hand} {kitchen} {lastSessions} oncook={cooked} onprep={prepared} />

@@ -14,7 +14,7 @@
 	let { items, selected, ontoggle } = $props();
 </script>
 
-<ul class="soon-shelf">
+<ul class="soon-shelf" aria-label="Food to use first">
 	{#each items as soon (soon.ingredient.id)}
 		<li class="soon-shelf__item" animate:reorder>
 			<SoonItem
@@ -27,8 +27,14 @@
 </ul>
 
 <style>
-	/* The row goes to the edges of the screen. */
+	/*
+	 * The row goes to the edges of the screen.
+	 * "position: relative" keeps the hidden texts of the items in the row. Without it, a hidden
+	 * text takes its place from the page: an item far to the right then makes the page scroll
+	 * sideways.
+	 */
 	.soon-shelf {
+		position: relative;
 		display: flex;
 		gap: var(--space-3);
 		margin: 0 calc(-1 * var(--space-5));

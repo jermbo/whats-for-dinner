@@ -1,9 +1,9 @@
 <script>
-	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
+	import SelectChip from '$lib/components/ui/SelectChip.svelte';
 	import { MEAL_FILTERS } from '$lib/data/options';
 
 	/** @type {{ value: string }} */
 	let { value = $bindable('all') } = $props();
 </script>
 
-<SegmentedControl legend="Meal type" hideLegend options={MEAL_FILTERS} bind:value />
+<SelectChip label="Meal type" options={MEAL_FILTERS} bind:value active={value !== 'all'} />

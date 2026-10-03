@@ -34,7 +34,7 @@ export const MEAL_TYPES = [
 	{ value: 'dinner', label: 'Dinner' }
 ];
 
-export const MEAL_FILTERS = [{ value: 'all', label: 'All' }, ...MEAL_TYPES];
+export const MEAL_FILTERS = [{ value: 'all', label: 'All meals' }, ...MEAL_TYPES];
 
 export const CATEGORIES = [
 	'Produce',

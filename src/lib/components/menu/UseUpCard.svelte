@@ -1,12 +1,13 @@
 <script>
 	import { resolve } from '$app/paths';
+	import PantryCount from '$lib/components/recipes/PantryCount.svelte';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import { photoMorph } from '$lib/motion/photo-morph';
 
 	/** @typedef {import('$lib/types').Recipe} Recipe */
 
 	/**
-	 * A recipe that uses up food: the food that it uses, if the pantry has the rest, and "Add".
+	 * One recipe that can go on the menu: the food that it uses up, the pantry count, and "Add".
 	 * @type {{
 	 *   idea: import('$lib/data/use-up').UseUpIdea,
 	 *   selected: Set<string>,
@@ -16,11 +17,6 @@
 	let { idea, selected, onadd } = $props();
 
 	const recipe = $derived(idea.recipe);
-
-	const pantry = $derived.by(() => {
-		if (idea.missing > 0) return `To buy: ${idea.missing}`;
-		return idea.uses.length > 0 ? 'The pantry has the rest' : 'The pantry has all';
-	});
 </script>
 
 <div class="use-up" use:photoMorph>
@@ -43,7 +39,10 @@
 		{/if}
 
 		<p class="use-up__pantry">
-			<span class={['badge', idea.missing === 0 && 'badge--good']}>{pantry}</span>
+			<PantryCount {...idea.count} />
+			{#if recipe.ingredients.length === 0}
+				<span class="badge">Reference recipe</span>
+			{/if}
 			{#if recipe.prepSteps.length > 0}
 				<span class="badge">Needs preparation</span>
 			{/if}
