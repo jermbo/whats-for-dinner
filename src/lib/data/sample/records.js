@@ -3,12 +3,9 @@ import { sampleIngredients } from './ingredients';
 import { daysAgo, hoursAgo, id } from './keys';
 import { samplePantry } from './pantry';
 import { sampleRecipes } from './recipes';
+import { sampleProducts, sampleShopping, sampleTrips } from './shopping';
 
-/**
- * @typedef {import('$lib/types').MenuItem} MenuItem
- * @typedef {import('$lib/types').Product} Product
- * @typedef {import('$lib/types').ShoppingItem} ShoppingItem
- */
+/** @typedef {import('$lib/types').MenuItem} MenuItem */
 
 /**
  * A meal on the menu. The states are different on purpose: ready, needs preparation,
@@ -38,6 +35,7 @@ export function sampleRecords() {
 	const recipes = sampleRecipes();
 	const stock = samplePantry();
 	const history = sampleHistory(recipes, ingredients);
+	const shopped = sampleTrips();
 
 	/** @type {MenuItem[]} */
 	const menu = [
@@ -54,42 +52,6 @@ export function sampleRecords() {
 		menuItem('banana-smoothie', 15)
 	];
 
-	/** @type {Product[]} */
-	const products = [
-		{
-			barcode: '8076800195057',
-			name: 'Barilla Spaghetti n.5',
-			ingredientId: id('spaghetti'),
-			quantity: 500,
-			updatedAt: daysAgo(12)
-		}
-	];
-
-	/** @type {ShoppingItem[]} */
-	const shopping = [
-		{
-			id: id('shopping-paper-towels'),
-			name: 'Paper towels',
-			ingredientId: null,
-			quantity: 1,
-			updatedAt: daysAgo(0)
-		},
-		{
-			id: id('shopping-dish-soap'),
-			name: 'Dish soap',
-			ingredientId: null,
-			quantity: 0,
-			updatedAt: daysAgo(0)
-		},
-		{
-			id: id('shopping-eggs'),
-			name: 'Eggs',
-			ingredientId: id('eggs'),
-			quantity: 12,
-			updatedAt: daysAgo(0)
-		}
-	];
-
 	return {
 		ingredients,
 		recipes,
@@ -97,8 +59,10 @@ export function sampleRecords() {
 		pantryLog: [...stock.log, ...history.log],
 		menu,
 		sessions: history.sessions,
-		products,
-		shopping,
+		products: sampleProducts(),
+		trips: shopped.trips,
+		purchases: shopped.purchases,
+		shopping: sampleShopping(),
 		lastPantryCheckAt: daysAgo(CHECK_DAYS)
 	};
 }

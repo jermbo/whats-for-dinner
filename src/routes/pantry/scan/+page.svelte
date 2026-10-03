@@ -7,12 +7,12 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import { stock } from '$lib/data/pantry';
-	import { findProduct, lookupProduct } from '$lib/data/products';
+	import { blankProduct, findProduct, lookupProduct } from '$lib/data/products';
 	import { db } from '$lib/db/db';
 	import { useKitchen } from '$lib/kitchen.svelte';
 	import { status } from '$lib/status.svelte';
 
-	/** @typedef {Omit<import('$lib/types').Product, 'updatedAt'>} ProductDraft */
+	/** @typedef {import('$lib/data/products').ProductDraft} ProductDraft */
 
 	const CAUSES = [
 		{ value: 'bought', label: 'New purchase' },
@@ -24,7 +24,7 @@
 	/** @type {'scan' | 'searching' | 'known' | 'form'} */
 	let step = $state('scan');
 	/** @type {ProductDraft} */
-	let draft = $state.raw({ barcode: '', name: '', ingredientId: '', quantity: 0 });
+	let draft = $state.raw(blankProduct(''));
 	let cause = $state('bought');
 
 	/** @param {string} barcode */
@@ -40,7 +40,7 @@
 		}
 
 		const info = await lookupProduct(barcode);
-		draft = { barcode, name: info?.name ?? '', ingredientId: '', quantity: info?.quantity ?? 0 };
+		draft = { ...blankProduct('', barcode), name: info?.name ?? '', quantity: info?.quantity ?? 0 };
 		step = 'form';
 	}
 

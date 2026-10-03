@@ -4,7 +4,7 @@
 	/**
 	 * A product that the owner scanned before. One tap adds it to the pantry.
 	 * @type {{
-	 *   product: Omit<import('$lib/types').Product, 'updatedAt'>,
+	 *   product: import('$lib/data/products').ProductDraft,
 	 *   ingredient: import('$lib/types').Ingredient | undefined,
 	 *   onadd: () => void,
 	 *   onedit: () => void,

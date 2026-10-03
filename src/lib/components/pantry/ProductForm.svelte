@@ -4,14 +4,14 @@
 	import { sortByName } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
 
-	/** @typedef {import('$lib/types').Product} Product */
+	/** @typedef {import('$lib/data/products').ProductDraft} ProductDraft */
 
 	/**
 	 * Links a scanned product to an ingredient. The owner does this one time for each product.
 	 * @type {{
-	 *   product: Omit<Product, 'updatedAt'>,
+	 *   product: ProductDraft,
 	 *   ingredients: import('$lib/types').Ingredient[],
-	 *   onsave: (product: Omit<Product, 'updatedAt'>) => void,
+	 *   onsave: (product: ProductDraft) => void,
 	 *   oncancel: () => void
 	 * }}
 	 */
@@ -30,9 +30,7 @@
 	/** @param {SubmitEvent} event */
 	async function submit(event) {
 		event.preventDefault();
-		const saved = { ...$state.snapshot(form), quantity: Number(form.quantity) || 0 };
-		await saveProduct(saved);
-		onsave(saved);
+		onsave(await saveProduct({ ...$state.snapshot(form), quantity: Number(form.quantity) || 0 }));
 	}
 </script>
 

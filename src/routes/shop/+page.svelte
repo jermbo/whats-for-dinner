@@ -1,68 +1,195 @@
 <script>
 	import { resolve } from '$app/paths';
-	import ManualItemForm from '$lib/components/shop/ManualItemForm.svelte';
-	import ManualItemRow from '$lib/components/shop/ManualItemRow.svelte';
+	import AddItemForm from '$lib/components/shop/AddItemForm.svelte';
+	import CartRow from '$lib/components/shop/CartRow.svelte';
+	import ScanDialog from '$lib/components/shop/ScanDialog.svelte';
+	import ShopMeals from '$lib/components/shop/ShopMeals.svelte';
 	import ShoppingRow from '$lib/components/shop/ShoppingRow.svelte';
+	import Icon from '$lib/components/ui/Icon.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { shoppingNeeds } from '$lib/data/shopping';
+	import { take } from '$lib/data/cart';
+	import { productsByIngredient } from '$lib/data/products';
+	import {
+		aisles,
+		inCart,
+		removeManualItem,
+		shopMeals,
+		shoppingList,
+		shoppingNeeds
+	} from '$lib/data/shopping';
 	import { db } from '$lib/db/db';
 	import { useKitchen } from '$lib/kitchen.svelte';
 	import { live } from '$lib/live.svelte';
-	import { groupBy } from '$lib/util/collections';
+	import { status } from '$lib/status.svelte';
+	import { indexBy } from '$lib/util/collections';
+
+	/**
+	 * @typedef {import('$lib/data/shopping').ListRow} ListRow
+	 * @typedef {import('$lib/types').Product} Product
+	 */
+
+	const uid = $props.id();
 
 	const kitchen = useKitchen();
 	const manualItems = live(() => db.shopping.toArray(), []);
+	const products = live(() => db.products.toArray(), []);
+	const purchases = live(() => db.purchases.toArray(), []);
 
-	const needs = $derived(
-		shoppingNeeds(
-			kitchen.menu,
-			kitchen.recipesById,
-			kitchen.ingredientsById,
-			kitchen.pantryByIngredient
+	/** The recipe ID of the meal whose items the list shows. Empty: all items. */
+	let mealId = $state('');
+	/** @type {ScanDialog | undefined} */
+	let scanner = $state();
+
+	const productsById = $derived(indexBy(products.current, 'id'));
+	const productsOf = $derived(productsByIngredient(products.current, purchases.current));
+
+	/** The cart is the purchases that are not put away. The item of the last tap is first. */
+	const cart = $derived(
+		purchases.current
+			.filter((purchase) => !purchase.putAwayAt)
+			.sort((a, b) => b.cartAt.localeCompare(a.cartAt))
+	);
+
+	const list = $derived(
+		shoppingList(
+			shoppingNeeds(
+				kitchen.menu,
+				kitchen.recipesById,
+				kitchen.ingredientsById,
+				kitchen.pantryByIngredient
+			),
+			manualItems.current,
+			kitchen.ingredientsById
 		)
 	);
-	const categories = $derived(groupBy(needs, (need) => need.ingredient.category));
+	const needed = $derived(list.filter((row) => !inCart(row, cart)));
+	const meals = $derived(shopMeals(kitchen.menu, kitchen.recipesById, needed));
+
+	/** The meal that is selected. When it goes off the menu, the list shows all items again. */
+	const meal = $derived(meals.find((entry) => entry.recipe.id === mealId)?.recipe);
+	const mealIngredients = $derived(new Set(meal?.ingredients.map((row) => row.ingredientId)));
+
+	const shownNeeded = $derived(
+		meal ? needed.filter((row) => row.recipeIds.includes(meal.id)) : needed
+	);
+	const shownCart = $derived(
+		meal ? cart.filter((purchase) => mealIngredients.has(purchase.ingredientId ?? '')) : cart
+	);
+	const groups = $derived(aisles(shownNeeded));
+
+	const total = $derived(cart.length + needed.length);
+
+	/**
+	 * @param {ListRow} row
+	 * @param {Product | null} product
+	 */
+	async function taken(row, product) {
+		await take(row, product);
+		status.say(`${row.name} is in the cart.`);
+	}
+
+	/**
+	 * A scan gives the same result as a tap on the photo of the product.
+	 * @param {Product} product
+	 */
+	async function scanned(product) {
+		const ingredient = kitchen.ingredientsById.get(product.ingredientId);
+		if (!ingredient) {
+			status.say(`The ingredient of ${product.name} does not exist.`);
+			return;
+		}
+		const row = list.find((entry) => entry.ingredient?.id === ingredient.id);
+		await take({ name: ingredient.name, ingredient, item: row?.item ?? null }, product);
+		status.say(`${product.name || ingredient.name} is in the cart.`);
+	}
 </script>
 
-<PageHeader title="Shopping list">
-	<a class="button" href={resolve('/pantry')}>Do I have this?</a>
-	<a class="button" href={resolve('/pantry/scan')}>Scan</a>
-</PageHeader>
+<!-- One block, so that the parts are closer than the parts of other screens. -->
+<div class="stack">
+	<div class="stack stack--tight">
+		<PageHeader title="Shopping list">
+			<button class="button button--round" type="button" onclick={() => scanner?.open()}>
+				<Icon name="scan" />
+				<span class="visually-hidden">Scan a barcode</span>
+			</button>
+		</PageHeader>
 
-<p class="muted">
-	The list has the ingredients of the meals on the menu, minus the items that the pantry has.
-</p>
+		{#if meals.length > 0}
+			<ShopMeals {meals} selected={meal?.id ?? ''} onselect={(id) => (mealId = id)} />
+		{/if}
 
-<div class="grid">
-	{#each categories as [category, items] (category)}
-		<section class="stack stack--tight" aria-labelledby="shop-{category}">
-			<h2 id="shop-{category}">{category}</h2>
+		<p class="shop__progress">
+			{#if total === 0}
+				The pantry has all ingredients for the menu.
+			{:else if needed.length === 0}
+				You have all items: <strong>{cart.length} of {total}</strong> in the cart.
+			{:else}
+				<strong>{cart.length} of {total}</strong> in the cart
+			{/if}
+		</p>
+	</div>
+
+	{#if groups.length > 0}
+		<div class="grid">
+			{#each groups as aisle, index (aisle.name)}
+				<section class="stack stack--tight" aria-labelledby="{uid}-aisle-{index}">
+					<h2 class="shop__aisle" id="{uid}-aisle-{index}">{aisle.name}</h2>
+					<ul class="list">
+						{#each aisle.rows as row (row.key)}
+							<!-- Only an item that no meal needs can be removed from the list. -->
+							{@const added = row.quantity === 0 ? row.item : null}
+							<ShoppingRow
+								{row}
+								products={productsOf.get(row.ingredient?.id ?? '') ?? []}
+								ontake={(product) => taken(row, product)}
+								onremove={added ? () => removeManualItem(added.id) : undefined}
+							/>
+						{/each}
+					</ul>
+				</section>
+			{/each}
+		</div>
+	{/if}
+
+	{#if shownCart.length > 0}
+		<section class="stack stack--tight" aria-labelledby="{uid}-cart">
+			<div class="cluster cluster--between">
+				<h2 class="shop__aisle" id="{uid}-cart">In the cart</h2>
+				<a class="button button--primary" href={resolve('/shop/put-away')}>Put away</a>
+			</div>
 			<ul class="list">
-				{#each items as need (need.ingredient.id)}
-					<ShoppingRow {need} />
+				{#each shownCart as purchase (purchase.id)}
+					<CartRow
+						{purchase}
+						product={productsById.get(purchase.productId ?? '')}
+						unit={kitchen.ingredientsById.get(purchase.ingredientId ?? '')?.unit}
+					/>
 				{/each}
 			</ul>
 		</section>
-	{:else}
-		<p class="card" role="status">The pantry has all ingredients for the menu.</p>
-	{/each}
-</div>
-
-<section class="stack stack--tight" aria-labelledby="shop-other">
-	<h2 id="shop-other">Other items</h2>
-
-	{#if manualItems.current.length > 0}
-		<ul class="list">
-			{#each manualItems.current as item (item.id)}
-				<ManualItemRow
-					{item}
-					ingredient={item.ingredientId
-						? kitchen.ingredientsById.get(item.ingredientId)
-						: undefined}
-				/>
-			{/each}
-		</ul>
 	{/if}
 
-	<ManualItemForm ingredients={kitchen.ingredients} />
-</section>
+	<AddItemForm ingredients={kitchen.ingredients} />
+</div>
+
+<ScanDialog bind:this={scanner} onfound={scanned} />
+
+<style>
+	.shop__progress {
+		color: var(--color-muted);
+
+		& strong {
+			color: var(--color-text);
+			font-variant-numeric: tabular-nums;
+		}
+	}
+
+	/* An aisle is a label of the list, not a part of the page: its title is small. */
+	.shop__aisle {
+		font-family: var(--font-body);
+		font-size: 0.925rem;
+		font-weight: 600;
+		letter-spacing: 0;
+		color: var(--color-muted);
+	}
+</style>

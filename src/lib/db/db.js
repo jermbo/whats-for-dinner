@@ -1,4 +1,5 @@
 import Dexie from 'dexie';
+import { newId } from './ids';
 
 export const db = /** @type {import('$lib/types').Database} */ (new Dexie('meal-planner'));
 
@@ -17,3 +18,30 @@ db.version(2).stores({
 	shopping: 'id',
 	meta: 'key'
 });
+
+// A product gets an ID, because a product does not need a barcode. A table cannot change its
+// key, so the change has two steps: version 3 moves the products to a temporary table, and
+// version 4 makes the table again and moves them back.
+db.version(3)
+	.stores({
+		products: null,
+		productsByBarcode: 'barcode'
+	})
+	.upgrade(async (tx) => {
+		await tx.table('productsByBarcode').bulkAdd(await tx.table('products').toArray());
+	});
+
+db.version(4)
+	.stores({
+		productsByBarcode: null,
+		products: 'id, ingredientId, barcode',
+		photos: 'id',
+		trips: 'id, startedAt',
+		purchases: 'id, tripId, ingredientId, productId'
+	})
+	.upgrade(async (tx) => {
+		const old = await tx.table('productsByBarcode').toArray();
+		await tx
+			.table('products')
+			.bulkAdd(old.map((product) => ({ ...product, id: newId(), photoId: null })));
+	});

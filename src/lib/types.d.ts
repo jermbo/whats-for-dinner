@@ -62,13 +62,57 @@ export interface PantryItem {
 	updatedAt: string;
 }
 
-/** A scanned product and the ingredient that it is. */
+/** One exact item on a shelf. It is one ingredient. */
 export interface Product {
-	barcode: string;
-	name: string;
+	id: string;
 	ingredientId: string;
+	name: string;
 	/** Package size in the unit of the ingredient. */
 	quantity: number;
+	photoId: string | null;
+	/** Optional. A scan finds the product. */
+	barcode: string | null;
+	updatedAt: string;
+}
+
+/** The picture of one product: a small JPEG. */
+export interface Photo {
+	id: string;
+	blob: Blob;
+}
+
+/** One visit to a store: from the first tap until the cart is empty. */
+export interface Trip {
+	id: string;
+	startedAt: string;
+	/** The time when the cart became empty. Null while the trip is open. */
+	completedAt: string | null;
+	updatedAt: string;
+}
+
+/**
+ * The record of one item in one trip. It is in the cart until the owner puts it away.
+ * Then it is the history of the item.
+ */
+export interface Purchase {
+	id: string;
+	tripId: string;
+	/** Null for an item that is not an ingredient, such as soap. */
+	ingredientId: string | null;
+	/** The name of the item at the time of the purchase. */
+	name: string;
+	/** Null when the owner did not tell which product it is. */
+	productId: string | null;
+	/** The item that the owner added to the list by hand, if this purchase is for one. */
+	shoppingItemId: string | null;
+	packages: number;
+	/** In the unit of the ingredient. Null until the item is put away, and for an item with no count. */
+	quantity: number | null;
+	/** The price of one package. Null when the owner gave no price. */
+	price: number | null;
+	cartAt: string;
+	/** Null while the item is in the cart. */
+	putAwayAt: string | null;
 	updatedAt: string;
 }
 
@@ -115,6 +159,7 @@ export interface PantryChange {
 export interface ShoppingItem {
 	id: string;
 	name: string;
+	/** Null for an item that is not an ingredient, such as soap. */
 	ingredientId: string | null;
 	quantity: number;
 	updatedAt: string;
@@ -146,7 +191,10 @@ export type Database = Dexie & {
 	ingredients: EntityTable<Ingredient, 'id'>;
 	recipes: EntityTable<Recipe, 'id'>;
 	pantry: EntityTable<PantryItem, 'id'>;
-	products: EntityTable<Product, 'barcode'>;
+	products: EntityTable<Product, 'id'>;
+	photos: EntityTable<Photo, 'id'>;
+	trips: EntityTable<Trip, 'id'>;
+	purchases: EntityTable<Purchase, 'id'>;
 	menu: EntityTable<MenuItem, 'id'>;
 	sessions: EntityTable<CookSession, 'id'>;
 	pantryLog: EntityTable<PantryChange, 'id'>;

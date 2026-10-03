@@ -1,78 +1,135 @@
 <script>
+	import Icon from '$lib/components/ui/Icon.svelte';
+	import { isCounted } from '$lib/data/put-away';
 	import { collapse } from '$lib/motion/transitions';
-	import { buy } from '$lib/data/shopping';
-	import { status } from '$lib/status.svelte';
-	import { unitLabel } from '$lib/util/format';
+	import { formatQuantity } from '$lib/util/format';
+	import ProductTile from './ProductTile.svelte';
+
+	/** @typedef {import('$lib/types').Product} Product */
+
+	/** The row shows the photos of this many products: the newest purchases. */
+	const MAX_PHOTOS = 3;
 
 	/**
-	 * One item that the menu needs and the pantry does not have.
-	 * "Bought" puts it into the pantry. The owner can change the quantity first.
-	 * @type {{ need: import('$lib/data/shopping').Need }}
+	 * One item of the shopping list that is not in the cart. A tap on the row puts the item in
+	 * the cart. A tap on a photo does the same, and tells the app which product it is.
+	 * An item that only the owner added has a button that removes it from the list.
+	 * @type {{
+	 *   row: import('$lib/data/shopping').ListRow,
+	 *   products: Product[],
+	 *   ontake: (product: Product | null) => void,
+	 *   onremove?: () => void
+	 * }}
 	 */
-	let { need } = $props();
+	let { row, products, ontake, onremove } = $props();
 
-	const uid = $props.id();
-	const ingredient = $derived(need.ingredient);
-	const counted = $derived(ingredient.tracking === 'quantity');
+	const unit = $derived(row.ingredient?.unit);
+	const amount = $derived(
+		row.ingredient && isCounted(row.ingredient) && row.quantity > 0
+			? formatQuantity(row.quantity, row.ingredient.unit)
+			: ''
+	);
+	const shown = $derived(products.slice(0, MAX_PHOTOS));
 
-	/** @param {SubmitEvent & { currentTarget: HTMLFormElement }} event */
-	async function submit(event) {
-		event.preventDefault();
-		const quantity = Number(new FormData(event.currentTarget).get('quantity')) || need.quantity;
-		await buy(ingredient, quantity);
-		status.say(`${ingredient.name} is in the pantry.`);
+	/** The row goes out after a tap. A second tap in that time must not take a second package. */
+	let taken = false;
+
+	/** @param {Product | null} product */
+	function take(product) {
+		if (taken) return;
+		taken = true;
+		ontake(product);
 	}
 </script>
 
-<li class="list__item" transition:collapse>
-	<form class="shopping-row" onsubmit={submit}>
-		<div class="shopping-row__name stack stack--tight">
-			<strong>{ingredient.name}</strong>
-			<span class="muted">For: {need.recipes.join(', ')}</span>
-		</div>
-
-		{#if counted}
-			<div class="field shopping-row__quantity">
-				<label class="field__label" for="{uid}-quantity">
-					<span class="visually-hidden">Quantity of {ingredient.name} in</span>
-					{unitLabel(ingredient.unit)}
-				</label>
-				<input
-					class="field__control"
-					id="{uid}-quantity"
-					name="quantity"
-					type="number"
-					inputmode="decimal"
-					min="0"
-					step="any"
-					value={need.quantity}
-				/>
-			</div>
+<li class="list__item shopping-row" transition:collapse>
+	<!-- This button covers the full row. The photos and "Remove" lie on it. -->
+	<button class="shopping-row__take" type="button" onclick={() => take(null)}>
+		<span class="visually-hidden">Put in the cart:</span>
+		<strong>{row.name}</strong>
+		{#if amount}
+			<span class="muted">{amount}</span>
 		{/if}
+	</button>
 
-		<button class="button button--strong" type="submit">
-			Bought <span class="visually-hidden">: {ingredient.name}</span>
+	{#if shown.length > 0}
+		<ul class="shopping-row__products" aria-label="Products of {row.name}">
+			{#each shown as product (product.id)}
+				<li>
+					<ProductTile
+						{product}
+						{unit}
+						label="Put in the cart: {product.name}"
+						onclick={() => take(product)}
+					/>
+				</li>
+			{/each}
+		</ul>
+	{/if}
+
+	{#if onremove}
+		<button class="button button--round shopping-row__remove" type="button" onclick={onremove}>
+			<Icon name="close" />
+			<span class="visually-hidden">Remove {row.name} from the list</span>
 		</button>
-	</form>
+	{/if}
 </li>
 
 <style>
-	.shopping-row {
-		display: grid;
-		grid-template-columns: 1fr 6rem auto;
-		align-items: end;
+	.list__item.shopping-row {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: var(--space-3);
+		padding-block: var(--space-2);
+	}
+
+	.shopping-row__take {
+		display: flex;
+		flex: 1;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-2);
+		min-inline-size: 0;
+		min-block-size: var(--tap);
+		padding: 0;
+		align-content: center;
+		text-align: start;
+		background: none;
+		border: 0;
+		cursor: pointer;
+
+		&::after {
+			position: absolute;
+			inset: 0 calc(-1 * var(--space-3));
+			content: '';
+			border-radius: 0.75rem;
+		}
+
+		&:active::after {
+			background: rgb(0 0 0 / 0.05);
+		}
+
+		&:focus-visible {
+			outline: none;
+
+			&::after {
+				outline: 3px solid var(--color-accent-strong);
+			}
+		}
+	}
+
+	.shopping-row__products {
+		position: relative;
+		display: flex;
 		gap: var(--space-2);
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
-	.shopping-row__name {
-		align-self: center;
-	}
-
-	.shopping-row__quantity {
-		grid-column: 2;
-	}
-
-	.shopping-row > .button {
-		grid-column: 3;
+	.shopping-row__remove {
+		position: relative;
+		flex: none;
 	}
 </style>

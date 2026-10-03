@@ -21,7 +21,8 @@
 	<h2 class="card__title" id="sample-title">Sample data</h2>
 
 	<p>
-		Ingredients, recipes, pantry items, a menu, and cook history for tests. Your own data stays.
+		Ingredients, recipes, pantry items, a menu, cook history, products with photos, and two shopping
+		trips for tests. Your own data stays.
 	</p>
 	<p class="muted">
 		A reset removes the changes that you made to the sample data. It also sets the date of the last

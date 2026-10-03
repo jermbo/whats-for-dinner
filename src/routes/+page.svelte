@@ -4,6 +4,7 @@
 	import { resolve } from '$app/paths';
 	import MealHand from '$lib/components/menu/MealHand.svelte';
 	import PantryIdeas from '$lib/components/menu/PantryIdeas.svelte';
+	import CartReminder from '$lib/components/shop/CartReminder.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { canMake } from '$lib/data/availability';
 	import { cook } from '$lib/data/cooking';
@@ -76,7 +77,11 @@
 	}
 </script>
 
-<PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()} />
+<!-- One block, so that the reminder is close to the title. -->
+<div class="stack stack--tight">
+	<PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()} />
+	<CartReminder />
+</div>
 
 {#if hand.length > 0}
 	<MealHand entries={hand} {kitchen} {lastSessions} oncook={cooked} onprep={prepared} />

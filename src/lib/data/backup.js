@@ -1,6 +1,7 @@
 import { db } from '$lib/db/db';
 import { setMeta } from '$lib/db/meta';
-import { now } from '$lib/db/ids';
+import { newId, now } from '$lib/db/ids';
+import { photoFromText, photoToText } from './photo-storage';
 
 /**
  * The JSON format. It is the contract between devices now, and with a server later.
@@ -13,13 +14,17 @@ import { now } from '$lib/db/ids';
  */
 
 const FORMAT = 'meal-planner';
-const VERSION = 1;
+// Version 2: a product has an ID and a photo, and the file has photos, trips, and purchases.
+const VERSION = 2;
 
 const TABLES = /** @type {const} */ ([
 	'ingredients',
 	'recipes',
 	'pantry',
 	'products',
+	'photos',
+	'trips',
+	'purchases',
 	'menu',
 	'sessions',
 	'pantryLog',
@@ -40,6 +45,8 @@ export async function exportAll() {
 	/** @type {Record<string, any[]>} */
 	const data = {};
 	for (const name of TABLES) data[name] = await db.table(name).toArray();
+	// A photo is a block of bytes. JSON can contain only text.
+	data.photos = await Promise.all(data.photos.map(photoToText));
 	await setMeta('lastBackupAt', now());
 	return envelope('all', data);
 }
@@ -72,13 +79,28 @@ export async function importFile(file) {
  * @param {BackupFile} backup
  */
 async function replaceAll(backup) {
+	/** @type {Record<string, any[]>} */
+	const data = {
+		...backup.data,
+		products: (backup.data.products ?? []).map(withId),
+		photos: (backup.data.photos ?? []).map(photoFromText)
+	};
+
 	await db.transaction('rw', db.tables, async () => {
 		for (const name of TABLES) {
 			await db.table(name).clear();
-			await db.table(name).bulkPut(backup.data[name] ?? []);
+			await db.table(name).bulkPut(data[name] ?? []);
 		}
 	});
 	return 'The full backup replaced all data on this device.';
+}
+
+/**
+ * A product from a file of version 1 has a barcode and no ID. It gets an ID here.
+ * @param {Record<string, any>} product
+ */
+function withId(product) {
+	return product.id ? product : { ...product, id: newId(), photoId: null };
 }
 
 /**

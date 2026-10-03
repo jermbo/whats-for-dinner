@@ -28,6 +28,23 @@ export function plural(count, noun) {
 	return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
 
+/**
+ * An amount of money with two decimals, for example "42.80". All prices are in one currency,
+ * so there is no symbol.
+ * @param {number} amount
+ */
+export function formatMoney(amount) {
+	return amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+/**
+ * A day with no year, for example "October 3".
+ * @param {string | number} date
+ */
+export function formatDay(date) {
+	return new Date(date).toLocaleDateString(undefined, { day: 'numeric', month: 'long' });
+}
+
 /** @param {string | number} date */
 export function formatDate(date) {
 	return new Date(date).toLocaleDateString(undefined, { dateStyle: 'medium' });

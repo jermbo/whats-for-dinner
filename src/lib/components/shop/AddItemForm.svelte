@@ -2,8 +2,8 @@
 	import { addManualItem } from '$lib/data/shopping';
 
 	/**
-	 * Adds an item to the shopping list by hand.
-	 * A name that is an ingredient goes into the pantry when it is bought.
+	 * Adds an item that no meal needs, such as soap. It has one text field.
+	 * A name that is an ingredient goes into the pantry when the owner puts it away.
 	 * @type {{ ingredients: import('$lib/types').Ingredient[] }}
 	 */
 	let { ingredients } = $props();
@@ -14,23 +14,23 @@
 	async function submit(event) {
 		event.preventDefault();
 		const form = event.currentTarget;
-		const data = new FormData(form);
-		const name = String(data.get('name') ?? '').trim();
+		const name = String(new FormData(form).get('name') ?? '').trim();
 		if (!name) return;
-		await addManualItem(name, Number(data.get('quantity')) || 0, ingredients);
+		await addManualItem(name, ingredients);
 		form.reset();
 	}
 </script>
 
-<form class="manual-item" onsubmit={submit}>
+<form class="add-item" onsubmit={submit}>
 	<div class="field">
-		<label class="field__label" for="{uid}-name">Item</label>
+		<label class="field__label" for="{uid}-name">Add an item</label>
 		<input
 			class="field__control"
 			id="{uid}-name"
 			name="name"
 			list="{uid}-names"
 			autocomplete="off"
+			enterkeyhint="done"
 			required
 		/>
 		<datalist id="{uid}-names">
@@ -40,26 +40,13 @@
 		</datalist>
 	</div>
 
-	<div class="field">
-		<label class="field__label" for="{uid}-quantity">Quantity</label>
-		<input
-			class="field__control"
-			id="{uid}-quantity"
-			name="quantity"
-			type="number"
-			inputmode="decimal"
-			min="0"
-			step="any"
-		/>
-	</div>
-
 	<button class="button" type="submit">Add</button>
 </form>
 
 <style>
-	.manual-item {
+	.add-item {
 		display: grid;
-		grid-template-columns: 1fr 6rem auto;
+		grid-template-columns: 1fr auto;
 		align-items: end;
 		gap: var(--space-2);
 	}
