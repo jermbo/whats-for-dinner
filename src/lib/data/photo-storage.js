@@ -1,9 +1,10 @@
 import { db } from '$lib/db/db';
-import { newId } from '$lib/db/ids';
+import { newId, now } from '$lib/db/ids';
 
 /**
  * @typedef {import('$lib/types').Photo} Photo
- * @typedef {{ id: string, type: string, data: string }} PhotoText A photo as a backup file has it.
+ * @typedef {{ id: string, type: string, takenAt?: string, data: string }} PhotoText
+ *   A photo as a backup file has it.
  */
 
 /**
@@ -13,7 +14,7 @@ import { newId } from '$lib/db/ids';
  */
 export async function savePhoto(blob) {
 	const id = newId();
-	await db.photos.add({ id, blob });
+	await db.photos.add({ id, blob, takenAt: now() });
 	return id;
 }
 
@@ -34,7 +35,7 @@ export function photoToText(photo) {
 		reader.onload = () => {
 			// The result is "data:image/jpeg;base64,…". The file keeps only the part after the comma.
 			const data = String(reader.result).split(',')[1] ?? '';
-			resolve({ id: photo.id, type: photo.blob.type, data });
+			resolve({ id: photo.id, type: photo.blob.type, takenAt: photo.takenAt, data });
 		};
 		reader.readAsDataURL(photo.blob);
 	});
@@ -47,5 +48,8 @@ export function photoToText(photo) {
  */
 export function photoFromText(text) {
 	const bytes = Uint8Array.from(atob(text.data), (letter) => letter.charCodeAt(0));
-	return { id: text.id, blob: new Blob([bytes], { type: text.type }) };
+	/** @type {Photo} */
+	const photo = { id: text.id, blob: new Blob([bytes], { type: text.type }) };
+	if (text.takenAt) photo.takenAt = text.takenAt;
+	return photo;
 }

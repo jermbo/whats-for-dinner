@@ -1,4 +1,5 @@
 import { daysAgo, id, SAMPLE_PREFIX } from './keys';
+import { stepId } from './recipes';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -26,6 +27,20 @@ const MEALS = [
 	['chicken-bowl', 2, 5, 'More garlic was correct.'],
 	['lentil-soup', 1, 4, 'Add lemon juice at the end.']
 ];
+
+/**
+ * The notes that the owner wrote on a step while cooking: session name, step number, and text.
+ * A session with a note is a session from Cook mode, so it also has a start time.
+ * @type {Record<string, [number, string][]>}
+ */
+const STEP_NOTES = {
+	'chicken-bowl-13': [[3, 'Two garlic cloves are not sufficient. Use four.']],
+	'fried-rice-6': [[1, 'Boil the rice the day before.']],
+	'lentil-soup-1': [[4, 'Add lemon juice at the end.']]
+};
+
+/** A cook from Cook mode started this many minutes before "Cooked". */
+const COOK_MINUTES = 35;
 
 /** The meal on the menu that is the leftovers of the last lentil soup. */
 export const LEFTOVER_MENU_ID = id('menu-leftover-lentil-soup');
@@ -93,11 +108,25 @@ export function sampleHistory(recipes, ingredients) {
 			);
 		}
 
+		const notes = STEP_NOTES[`${key}-${days}`] ?? [];
+
 		sessions.push({
 			id: sessionId,
 			recipeId: recipe.id,
 			recipeName: recipe.name,
 			kind: 'recipe',
+			startedAt: notes.length > 0 ? daysAgo(days + COOK_MINUTES / (24 * 60)) : null,
+			servings: recipe.servings,
+			photoId: null,
+			visits: [],
+			stepNotes: notes.map(([number, text]) => ({
+				id: id(`note-${key}-${days}-${number}`),
+				stepId: stepId(key, number),
+				text,
+				at: daysAgo(days)
+			})),
+			timers: [],
+			checked: [],
 			menuItem: {
 				id: id(`menu-old-${key}-${days}`),
 				kind: 'recipe',

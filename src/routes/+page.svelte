@@ -8,7 +8,7 @@
 	import CartReminder from '$lib/components/shop/CartReminder.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { canMake } from '$lib/data/availability';
-	import { cook } from '$lib/data/cooking';
+	import { cook, cookedSessions, isCooking, openSessions, startCook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone, menuEntries, recipesOnMenu } from '$lib/data/menu';
 	import { menuTotals } from '$lib/data/shopping';
 	import { useSoon } from '$lib/data/use-up';
@@ -22,7 +22,8 @@
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
-	const sessions = live(() => db.sessions.orderBy('cookedAt').toArray(), []);
+	const sessions = live(cookedSessions, []);
+	const open = live(openSessions, []);
 	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
 
 	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
@@ -75,6 +76,21 @@
 		)
 	);
 
+	/** The meals that the owner is in the middle of: their cards show "Continue". */
+	const cooking = $derived(
+		new Set(
+			open.current
+				.filter((session) => isCooking(session, time))
+				.map((session) => session.menuItem.id)
+		)
+	);
+
+	/** @param {MenuEntry} entry */
+	async function start(entry) {
+		const id = await startCook(entry.item);
+		goto(resolve('/cook/[id]', { id }));
+	}
+
 	/** @param {MenuEntry} entry */
 	async function cooked(entry) {
 		const id = await cook(entry.item);
@@ -102,7 +118,15 @@
 	</PageHeader>
 
 	{#if hand.length > 0}
-		<MealHand entries={hand} {kitchen} {lastSessions} oncook={cooked} onprep={prepared} />
+		<MealHand
+			entries={hand}
+			{kitchen}
+			{lastSessions}
+			{cooking}
+			onstart={start}
+			oncook={cooked}
+			onprep={prepared}
+		/>
 	{/if}
 
 	<div class="split__side">

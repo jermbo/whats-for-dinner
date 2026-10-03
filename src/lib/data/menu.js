@@ -1,5 +1,6 @@
 import { db } from '$lib/db/db';
 import { newId, now } from '$lib/db/ids';
+import { dropFinishedPhoto } from './finished-photos';
 
 /**
  * @typedef {import('$lib/types').MenuItem} MenuItem
@@ -41,9 +42,20 @@ export function addToMenu(recipeId, kind = 'recipe') {
 	});
 }
 
-/** @param {string} id */
+/**
+ * Removes a meal from the menu. A cook session that is open for the meal is not history yet,
+ * so it goes with the meal.
+ * @param {string} id
+ */
 export function removeFromMenu(id) {
-	return db.menu.delete(id);
+	return db.transaction('rw', db.menu, db.sessions, db.recipes, db.photos, async () => {
+		const open = await db.sessions.where('cookedAt').equals('').toArray();
+		for (const session of open.filter((session) => session.menuItem.id === id)) {
+			await dropFinishedPhoto(session);
+			await db.sessions.delete(session.id);
+		}
+		await db.menu.delete(id);
+	});
 }
 
 /** @param {string} id */

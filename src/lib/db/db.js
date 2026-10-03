@@ -1,5 +1,6 @@
 import Dexie from 'dexie';
 import { newId } from './ids';
+import { recipeShape, sessionShape } from './shape';
 
 export const db = /** @type {import('$lib/types').Database} */ (new Dexie('meal-planner'));
 
@@ -44,4 +45,26 @@ db.version(4)
 		await tx
 			.table('products')
 			.bulkAdd(old.map((product) => ({ ...product, id: newId(), photoId: null })));
+	});
+
+// The steps of a recipe are a list, and a cook session has the facts of Cook mode. The tables
+// and their keys are the same, so this version only changes the records.
+db.version(5)
+	.stores({
+		recipes: 'id, name',
+		sessions: 'id, recipeId, cookedAt'
+	})
+	.upgrade(async (tx) => {
+		await tx
+			.table('recipes')
+			.toCollection()
+			.modify((recipe) => {
+				Object.assign(recipe, recipeShape(recipe));
+			});
+		await tx
+			.table('sessions')
+			.toCollection()
+			.modify((session) => {
+				Object.assign(session, sessionShape(session));
+			});
 	});

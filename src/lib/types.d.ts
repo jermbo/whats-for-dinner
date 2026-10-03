@@ -33,21 +33,39 @@ export interface PrepStep {
 	leadHours: number;
 }
 
+/** One action of a recipe. Cook mode shows one step on one card. */
+export interface RecipeStep {
+	/** It never changes. The photos and the notes of the step name the step by it. */
+	id: string;
+	/** The app reads the times and the ingredient names from this text. */
+	text: string;
+	/** The IDs of a maximum of three photos, oldest first. */
+	photoIds: string[];
+	/** The photo that the step card shows. Null: the step has no photo. */
+	selectedPhotoId: string | null;
+}
+
 export interface Recipe {
 	id: string;
 	name: string;
 	mealType: MealType;
 	servings: number;
-	steps: string;
+	steps: RecipeStep[];
 	/** A URL, or a book name and a page. */
 	source: string;
-	/** The URL of a photo. Empty or absent: the screens show a placeholder photo. */
+	/** The URL of a photo. The screens use it only when the recipe has no cover. */
 	photo?: string;
+	/** The finished photo that the lists show. Null: the screens show a placeholder photo. */
+	coverPhotoId: string | null;
 	inRotation: boolean;
 	/** Empty for a reference recipe. */
 	ingredients: RecipeIngredient[];
 	prepSteps: PrepStep[];
 	createdAt: string;
+	/**
+	 * The time of the last change of the text: the name, the ingredients, and the steps.
+	 * A new photo does not change it, so that an import can compare the text of two devices.
+	 */
 	updatedAt: string;
 }
 
@@ -75,10 +93,15 @@ export interface Product {
 	updatedAt: string;
 }
 
-/** The picture of one product: a small JPEG. */
+/**
+ * One picture: a small JPEG. A photo does not know what it shows. The record that uses the
+ * photo has its ID: a product, a step, a cook session, or a recipe for its cover.
+ */
 export interface Photo {
 	id: string;
 	blob: Blob;
+	/** The time when the owner took it. A photo from an older version has none. */
+	takenAt?: string;
 }
 
 /** One visit to a store: from the first tap until the cart is empty. */
@@ -133,18 +156,59 @@ export interface Deduction {
 	amount: number;
 }
 
+/** One card that the owner opened in Cook mode. The times give the real time of each step. */
+export interface CardVisit {
+	/** 'ingredients', 'finished', or the ID of a step. */
+	card: string;
+	at: string;
+}
+
+/** Some words that the owner wrote on a step while cooking. The next cook shows them. */
+export interface StepNote {
+	id: string;
+	stepId: string;
+	text: string;
+	at: string;
+}
+
+/** A timer that runs. It stores the time when it must end, and not a count. */
+export interface CookTimer {
+	id: string;
+	stepId: string;
+	/** The place of the time in the text of the step: 0 for the first time. */
+	index: number;
+	seconds: number;
+	endsAt: string;
+}
+
+/**
+ * The record of one time that the owner cooked one recipe. It stores the raw facts, and the
+ * insights calculate from them.
+ */
 export interface CookSession {
 	id: string;
 	recipeId: string;
 	recipeName: string;
 	kind: MenuKind;
-	/** The menu item that this session removed. The undo puts it back. */
+	/** The menu item of this session. "Cooked" removes it, and the undo puts it back. */
 	menuItem: MenuItem;
+	/** The time when Cook mode started. Null: "Cooked" with no Cook mode. */
+	startedAt: string | null;
+	/** The time of "Cooked". Empty: the session is open, and the meal is not cooked yet. */
 	cookedAt: string;
+	/** The servings of the recipe at that time. */
+	servings: number;
 	rating: number | null;
 	note: string;
 	deductions: Deduction[];
 	leftoverMenuId: string | null;
+	/** The photo of the finished meal. */
+	photoId: string | null;
+	visits: CardVisit[];
+	stepNotes: StepNote[];
+	timers: CookTimer[];
+	/** The ingredients that the owner checked on the ingredients card. */
+	checked: string[];
 	updatedAt: string;
 }
 

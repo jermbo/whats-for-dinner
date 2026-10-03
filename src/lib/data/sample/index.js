@@ -32,10 +32,25 @@ async function clearShopping() {
 }
 
 /**
+ * Removes the photos that the owner took of the sample recipes: the step photos, the covers,
+ * and the finished photos of the cook sessions.
+ */
+async function clearRecipePhotos() {
+	const recipes = await db.recipes.where('id').startsWith(SAMPLE_PREFIX).toArray();
+	const sessions = await db.sessions.where('recipeId').startsWith(SAMPLE_PREFIX).toArray();
+	await db.photos.bulkDelete([
+		...recipes.flatMap((recipe) => recipe.steps.flatMap((step) => step.photoIds)),
+		...recipes.flatMap((recipe) => recipe.coverPhotoId ?? []),
+		...sessions.flatMap((session) => session.photoId ?? [])
+	]);
+}
+
+/**
  * Removes the sample records, and all records that use a sample ingredient or a sample recipe.
  * Call it in a transaction.
  */
 async function clear() {
+	await clearRecipePhotos();
 	await db.menu.where('recipeId').startsWith(SAMPLE_PREFIX).delete();
 	await db.sessions.where('recipeId').startsWith(SAMPLE_PREFIX).delete();
 	await db.pantry.where('ingredientId').startsWith(SAMPLE_PREFIX).delete();

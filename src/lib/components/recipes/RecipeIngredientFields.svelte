@@ -1,13 +1,18 @@
 <script>
+	import Icon from '$lib/components/ui/Icon.svelte';
 	import { indexBy } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
+	import IngredientLine from './IngredientLine.svelte';
+
+	/** @typedef {import('$lib/types').Ingredient} Ingredient */
 
 	/**
-	 * The ingredient rows of the recipe form.
+	 * The ingredients of the recipe form. One line at the top adds an ingredient. Each row
+	 * below it has the name, the quantity, and the unit of the ingredient.
 	 * @type {{
 	 *   rows: import('$lib/types').RecipeIngredient[],
-	 *   ingredients: import('$lib/types').Ingredient[],
-	 *   onnew: () => void
+	 *   ingredients: Ingredient[],
+	 *   onnew: (name: string, quantity: number) => void
 	 * }}
 	 */
 	let { rows = $bindable(), ingredients, onnew } = $props();
@@ -15,11 +20,16 @@
 	const uid = $props.id();
 	const byId = $derived(indexBy(ingredients, 'id'));
 
-	/** @param {string} ingredientId */
-	function unitOf(ingredientId) {
-		const ingredient = byId.get(ingredientId);
-		if (!ingredient) return '';
-		return ingredient.tracking === 'state' ? 'not counted' : unitLabel(ingredient.unit);
+	/**
+	 * Adds a row. An ingredient is in a recipe one time: a second line for the same ingredient
+	 * changes the quantity of its row.
+	 * @param {Ingredient} ingredient
+	 * @param {number} quantity
+	 */
+	export function add(ingredient, quantity) {
+		const row = rows.find((item) => item.ingredientId === ingredient.id);
+		if (row) row.quantity = quantity || row.quantity;
+		else rows.push({ ingredientId: ingredient.id, quantity });
 	}
 </script>
 
@@ -27,102 +37,118 @@
 	<legend class="fieldset__legend">Ingredients</legend>
 
 	<div class="stack stack--tight">
-		<p class="muted">
-			Leave this list empty for a reference recipe. A reference recipe does not update the pantry.
-		</p>
+		<IngredientLine {ingredients} onadd={add} {onnew} />
 
-		{#each rows as row, index (index)}
-			<div class="ingredient-row">
-				<div class="field ingredient-row__name">
-					<label class="visually-hidden" for="{uid}-name-{index}">Ingredient {index + 1}</label>
-					<select class="field__control" id="{uid}-name-{index}" bind:value={row.ingredientId}>
-						<option value="">Select an ingredient</option>
-						{#each ingredients as ingredient (ingredient.id)}
-							<option value={ingredient.id}>{ingredient.name}</option>
-						{/each}
-					</select>
-				</div>
+		{#if rows.length === 0}
+			<p class="muted">A recipe with no ingredients does not update the pantry.</p>
+		{:else}
+			<ul class="ingredient-fields__rows">
+				{#each rows as row, index (index)}
+					{@const ingredient = byId.get(row.ingredientId)}
+					{@const name = ingredient?.name ?? 'An ingredient that is not on this device'}
+					<li class="ingredient-row">
+						{#if ingredient?.tracking === 'state'}
+							<span class="ingredient-row__name">{name}</span>
+							<span class="ingredient-row__unit ingredient-row__unit--wide">Not counted</span>
+						{:else}
+							<label class="ingredient-row__name" for="{uid}-quantity-{index}">{name}</label>
+							<input
+								class="ingredient-row__quantity"
+								id="{uid}-quantity-{index}"
+								type="number"
+								inputmode="decimal"
+								min="0"
+								step="any"
+								bind:value={row.quantity}
+							/>
+							<span class="ingredient-row__unit"
+								>{ingredient ? unitLabel(ingredient.unit) : ''}</span
+							>
+						{/if}
 
-				<div class="field ingredient-row__quantity">
-					<label class="visually-hidden" for="{uid}-quantity-{index}">
-						Quantity of ingredient {index + 1}
-					</label>
-					<input
-						class="field__control"
-						id="{uid}-quantity-{index}"
-						type="number"
-						inputmode="decimal"
-						min="0"
-						step="any"
-						bind:value={row.quantity}
-					/>
-				</div>
-
-				<span class="ingredient-row__unit">{unitOf(row.ingredientId)}</span>
-
-				<button
-					class="button"
-					type="button"
-					aria-label="Remove ingredient {index + 1}"
-					onclick={() => rows.splice(index, 1)}
-				>
-					Remove
-				</button>
-			</div>
-		{/each}
-
-		<div class="cluster">
-			<button
-				class="button"
-				type="button"
-				onclick={() => rows.push({ ingredientId: '', quantity: 0 })}
-			>
-				Add ingredient row
-			</button>
-			<button class="button" type="button" onclick={onnew}>New ingredient</button>
-		</div>
+						<button
+							class="ingredient-row__remove"
+							type="button"
+							onclick={() => rows.splice(index, 1)}
+						>
+							<Icon name="close" />
+							<span class="visually-hidden">Remove {name}</span>
+						</button>
+					</li>
+				{/each}
+			</ul>
+		{/if}
 	</div>
 </fieldset>
 
 <style>
-	.ingredient-fields {
-		container-type: inline-size;
+	.ingredient-fields__rows {
+		margin: 0;
+		padding: 0;
+		list-style: none;
 	}
 
+	/* One line for each ingredient: name, quantity, unit, and the remove button. */
 	.ingredient-row {
 		display: grid;
-		grid-template-columns: 1fr 5.5rem;
-		grid-template-areas:
-			'name name'
-			'quantity unit'
-			'remove remove';
+		grid-template-columns: minmax(0, 1fr) 5rem 2.75rem var(--tap);
 		align-items: center;
 		gap: var(--space-2);
-		padding-block-end: var(--space-3);
-		border-block-end: 1px solid var(--color-border);
+		padding-block: var(--space-1);
 
-		@container (min-width: 32rem) {
-			grid-template-columns: 1fr 6rem 5.5rem auto;
-			grid-template-areas: 'name quantity unit remove';
-			padding-block-end: 0;
-			border-block-end: 0;
+		& + .ingredient-row {
+			border-block-start: 1px solid var(--color-border);
 		}
 	}
 
 	.ingredient-row__name {
-		grid-area: name;
+		font-weight: 500;
+		overflow-wrap: anywhere;
 	}
 
 	.ingredient-row__quantity {
-		grid-area: quantity;
+		inline-size: 100%;
+		min-block-size: 2.5rem;
+		padding: var(--space-1) var(--space-3);
+		text-align: end;
+		font-variant-numeric: tabular-nums;
+		background: var(--color-surface);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius-pill);
 	}
 
 	.ingredient-row__unit {
-		grid-area: unit;
 		color: var(--color-muted);
+		font-size: 0.925rem;
+
+		&.ingredient-row__unit--wide {
+			grid-column: span 2;
+			text-align: end;
+		}
 	}
 
-	.ingredient-row > .button {
-		grid-area: remove;
+	.ingredient-row__remove {
+		display: grid;
+		place-items: center;
+		inline-size: var(--tap);
+		block-size: var(--tap);
+		padding: 0;
+		color: var(--color-muted);
+		background: none;
+		border: 0;
+		border-radius: 50%;
+		cursor: pointer;
+
+		& :global(.icon) {
+			inline-size: 1.25rem;
+			block-size: 1.25rem;
+		}
+
+		@media (hover: hover) {
+			&:hover {
+				color: var(--color-danger);
+				background: var(--color-surface-soft);
+			}
+		}
 	}
 </style>

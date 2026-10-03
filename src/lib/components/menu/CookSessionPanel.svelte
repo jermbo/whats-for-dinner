@@ -9,15 +9,18 @@
 	import { live } from '$lib/live.svelte';
 	import { status } from '$lib/status.svelte';
 	import { indexBy } from '$lib/util/collections';
-	import { formatQuantity } from '$lib/util/format';
+	import { formatQuantity, plural } from '$lib/util/format';
+	import FinishedPhotoField from '$lib/components/cook/FinishedPhotoField.svelte';
 	import CookDeduction from './CookDeduction.svelte';
 
 	/** A session that is this new shows the change of the pantry as it occurs, in milliseconds. */
 	const FRESH_MS = 20_000;
+	const MINUTE = 60 * 1000;
 
 	/**
-	 * The screen after "Cooked": what the pantry lost, plus the optional rating, note,
-	 * leftovers, and undo.
+	 * The screen after "Cooked": what the pantry lost, plus the optional photo of the finished
+	 * meal, rating, note, leftovers, and undo.
+	 * A session from Cook mode also tells how long the cook took.
 	 * @type {{ id: string }}
 	 */
 	let { id } = $props();
@@ -51,6 +54,13 @@
 			: []
 	);
 
+	/** The minutes from the start of Cook mode to "Cooked". Zero: the session has no start. */
+	const minutes = $derived.by(() => {
+		const current = session.current;
+		if (!current?.startedAt || !current.cookedAt) return 0;
+		return Math.round((Date.parse(current.cookedAt) - Date.parse(current.startedAt)) / MINUTE);
+	});
+
 	/** @param {import('$lib/types').CookSession} current */
 	async function undo(current) {
 		await undoCook(current);
@@ -59,7 +69,14 @@
 	}
 </script>
 
-{#if session.current}
+{#if session.current && !session.current.cookedAt}
+	<!-- An open session: Cook mode started, and "Cooked" did not occur yet. -->
+	<PageHeader title={session.current.recipeName} />
+	<p class="muted">This meal is not cooked yet.</p>
+	<div>
+		<a class="button button--primary" href={resolve('/cook/[id]', { id })}>Continue to cook</a>
+	</div>
+{:else if session.current}
 	{@const current = session.current}
 
 	<SuccessMark />
@@ -67,7 +84,9 @@
 	<PageHeader
 		title="Cooked: {current.recipeName}"
 		heading={current.recipeName}
-		eyebrow="Cooked. Nice work."
+		eyebrow={minutes > 0
+			? `Cooked in ${plural(minutes, 'minute')}. Nice work.`
+			: 'Cooked. Nice work.'}
 	/>
 
 	<section class="stack stack--tight" aria-labelledby="{uid}-pantry">
@@ -106,6 +125,11 @@
 				Not counted: {uncounted.join(', ')}. The app does not measure them.
 			</p>
 		{/if}
+	</section>
+
+	<section class="stack stack--tight" aria-labelledby="{uid}-photo">
+		<h2 id="{uid}-photo">Photo (optional)</h2>
+		<FinishedPhotoField session={current} />
 	</section>
 
 	<RatingInput

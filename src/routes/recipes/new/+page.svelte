@@ -12,8 +12,9 @@
 
 <PageHeader title="New recipe" />
 
+<!-- A form with no text made no recipe: "Done" then goes back to the list. -->
 <RecipeForm
 	recipe={blankRecipe()}
 	ingredients={ingredients.current}
-	onsave={(recipe) => goto(resolve('/recipes/[id]', { id: recipe.id }))}
+	ondone={(id) => goto(id ? resolve('/recipes/[id]', { id }) : resolve('/recipes'))}
 />

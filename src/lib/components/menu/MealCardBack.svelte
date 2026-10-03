@@ -4,10 +4,8 @@
 	import { shortfall } from '$lib/data/availability';
 	import { STOCK_STATES, labelOf } from '$lib/data/options';
 	import { pantryScale } from '$lib/data/pantry-scale';
+	import { splitByTimes } from '$lib/data/step-text';
 	import { formatAgo, formatQuantity } from '$lib/util/format';
-
-	/** A time in a step, for example "12 minutes". The back shows it in bold. */
-	const TIME = /(\d+\s*(?:seconds?|minutes?|hours?))/i;
 
 	/**
 	 * The back of a meal card: first what the meal needs before you can cook it, then the rating
@@ -50,13 +48,9 @@
 		})
 	);
 
-	/** Each line of the steps is one step. The parts at odd places are times. */
+	/** The text of each step in parts. A part that is a time, such as "12 minutes", is bold. */
 	const steps = $derived(
-		recipe.steps
-			.split('\n')
-			.map((line) => line.trim())
-			.filter(Boolean)
-			.map((line) => line.split(TIME))
+		recipe.steps.filter((step) => step.text).map((step) => splitByTimes(step.text))
 	);
 </script>
 
@@ -123,7 +117,7 @@
 				{#each steps as parts, index (index)}
 					<li>
 						{#each parts as part, partIndex (partIndex)}
-							{#if partIndex % 2 === 1}<strong>{part}</strong>{:else}{part}{/if}
+							{#if part.seconds}<strong>{part.text}</strong>{:else}{part.text}{/if}
 						{/each}
 					</li>
 				{/each}

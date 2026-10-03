@@ -1,9 +1,12 @@
 <script>
 	import { recipePhoto } from '$lib/data/photos';
+	import { photoAddress } from '$lib/photo-address.svelte';
 
 	/**
-	 * The photo of a recipe. It shows a soft shimmer until the photo loads, then the photo
-	 * comes in. If the photo cannot load (no connection), the soft color stays.
+	 * The photo of a recipe: its cover, which is a photo of the finished meal from the database.
+	 * A recipe with no cover shows a placeholder photo.
+	 * It shows a soft shimmer until the photo loads, then the photo comes in. If the placeholder
+	 * cannot load (no connection), the soft color stays.
 	 * The photo is decoration: the name of the recipe is always next to it.
 	 * @type {{ recipe: import('$lib/types').Recipe, variant?: 'thumb' | 'card' | 'hero' }}
 	 */
@@ -14,7 +17,10 @@
 	let loaded = $state(false);
 	let failed = $state(false);
 
-	const src = $derived(recipePhoto(recipe, SIZES[variant][0], SIZES[variant][1]));
+	const cover = photoAddress(() => recipe.coverPhotoId);
+	const src = $derived(
+		recipe.coverPhotoId ? cover.current : recipePhoto(recipe, SIZES[variant][0], SIZES[variant][1])
+	);
 </script>
 
 <div
@@ -26,7 +32,7 @@
 	]}
 	data-recipe-photo
 >
-	{#if !failed}
+	{#if !failed && src}
 		<img
 			class="recipe-photo__image"
 			{src}

@@ -37,6 +37,20 @@ export function rise(node, { delay = 0 } = {}) {
 }
 
 /**
+ * A card of Cook mode. The new card comes in from the side where the owner goes, and the
+ * old card goes out at the other side. "direction" is 1 for the next card and -1 for back.
+ * @param {Element} node
+ * @param {{ direction?: number, leave?: boolean }} [options]
+ */
+export function turnPage(node, { direction = 1, leave = false } = {}) {
+	return fly(node, {
+		x: (leave ? -1 : 1) * direction * 48,
+		duration: ms(leave ? 140 : 280),
+		easing: cubicOut
+	});
+}
+
+/**
  * An element of a keyed list that moves to its new place when the order changes.
  * @param {Element} node
  * @param {{ from: DOMRect, to: DOMRect }} rects

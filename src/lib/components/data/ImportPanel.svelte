@@ -31,8 +31,8 @@
 	<h2 id="{uid}-title">Import</h2>
 
 	<p>
-		A full backup replaces all data on this device. A recipe file adds and updates recipes, and
-		changes nothing else.
+		A full backup replaces all data on this device. A recipe file adds new recipes and merges the
+		others: the newer text wins, and no photo is lost. It changes nothing else.
 	</p>
 
 	<div class="field">

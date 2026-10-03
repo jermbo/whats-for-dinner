@@ -4,6 +4,7 @@
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { pantryCount } from '$lib/data/availability';
+	import { stepsToCook } from '$lib/data/cook-cards';
 	import { entryName } from '$lib/data/menu';
 	import { photoMorph } from '$lib/motion/photo-morph';
 	import { formatWhen } from '$lib/util/format';
@@ -19,15 +20,23 @@
 	 * it waits. The back of the card shows what the preparation is.
 	 * The count next to the name tells how many of the ingredients the pantry has. Leftovers use
 	 * no ingredients, so they have no count.
+	 * A recipe with steps has two actions. "Cook" opens Cook mode with "onstart": it reads
+	 * "Continue" when the owner is in the middle of the meal. "Cooked" is the one-tap path for
+	 * a meal that the owner knows from memory.
 	 * @type {{
 	 *   entry: MenuEntry,
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
 	 *   facedown?: boolean,
+	 *   cooking?: boolean,
 	 *   onturn?: (card: HTMLElement) => void,
+	 *   onstart?: (entry: MenuEntry) => void,
 	 *   oncook: (entry: MenuEntry) => void
 	 * }}
 	 */
-	let { entry, kitchen, facedown = false, onturn, oncook } = $props();
+	let { entry, kitchen, facedown = false, cooking = false, onturn, onstart, oncook } = $props();
+
+	/** Cook mode shows the steps of a recipe. Leftovers have no steps to do. */
+	const hasSteps = $derived(entry.item.kind === 'recipe' && stepsToCook(entry.recipe).length > 0);
 
 	const name = $derived(entryName(entry));
 	const lead = $derived(Math.max(0, ...entry.recipe.prepSteps.map((step) => step.leadHours)));
@@ -93,13 +102,28 @@
 				<p class="muted">Turn the card to see the preparation.</p>
 			{/if}
 
-			<button
-				class={['button', 'meal-card__cook', entry.state === 'ready' && 'button--strong']}
-				type="button"
-				onclick={() => oncook(entry)}
-			>
-				Cooked <span class="visually-hidden">: {name}</span>
-			</button>
+			<div class="meal-card__actions">
+				{#if onstart && hasSteps}
+					<button
+						class={['button', 'meal-card__cook', entry.state === 'ready' && 'button--strong']}
+						type="button"
+						onclick={() => onstart(entry)}
+					>
+						{cooking ? 'Continue' : 'Cook'} <span class="visually-hidden">: {name}</span>
+					</button>
+					<button class="button" type="button" onclick={() => oncook(entry)}>
+						Cooked <span class="visually-hidden">: {name}</span>
+					</button>
+				{:else}
+					<button
+						class={['button', 'meal-card__cook', entry.state === 'ready' && 'button--strong']}
+						type="button"
+						onclick={() => oncook(entry)}
+					>
+						Cooked <span class="visually-hidden">: {name}</span>
+					</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 
@@ -268,8 +292,15 @@
 		flex: 1;
 	}
 
-	.meal-card__cook {
+	.meal-card__actions {
+		display: flex;
+		gap: var(--space-2);
 		margin-block-start: auto;
+	}
+
+	/* The main action of the card is the wide one. */
+	.meal-card__cook {
+		flex: 1;
 	}
 
 	.card__title a {

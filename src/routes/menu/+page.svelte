@@ -6,6 +6,7 @@
 	import MenuHand from '$lib/components/menu/MenuHand.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
+	import { cookedSessions } from '$lib/data/cooking';
 	import {
 		addToMenu,
 		entryName,
@@ -26,7 +27,7 @@
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
-	const sessions = live(() => db.sessions.orderBy('cookedAt').toArray(), []);
+	const sessions = live(cookedSessions, []);
 	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
 
 	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */

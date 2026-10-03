@@ -28,7 +28,7 @@
 			Export a full backup
 		</button>
 		<button class="button" type="button" onclick={async () => download(await exportRecipes())}>
-			Export the recipes only
+			Export all recipes, with their photos
 		</button>
 	</div>
 </section>

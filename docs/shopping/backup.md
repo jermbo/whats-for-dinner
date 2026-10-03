@@ -18,7 +18,7 @@ The file is JSON: text that a person and a program can read. It has a header and
 ```json
 {
 	"format": "meal-planner",
-	"version": 2,
+	"version": 3,
 	"scope": "all",
 	"exportedAt": "2026-10-03T18:20:00Z",
 	"data": {

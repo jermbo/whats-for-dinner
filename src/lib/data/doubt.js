@@ -81,8 +81,8 @@ export async function findDoubts() {
 	/** @type {Map<string, string[]>} The times of the meals that had each ingredient. */
 	const usesByIngredient = new Map();
 	for (const session of sessions) {
-		// Leftovers use no ingredients.
-		if (session.kind !== 'recipe') continue;
+		// Leftovers use no ingredients. An open session is a meal that is not cooked yet.
+		if (session.kind !== 'recipe' || !session.cookedAt) continue;
 		for (const row of recipesById.get(session.recipeId)?.ingredients ?? []) {
 			usesByIngredient.set(row.ingredientId, [
 				...(usesByIngredient.get(row.ingredientId) ?? []),

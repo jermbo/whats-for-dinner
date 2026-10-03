@@ -14,9 +14,10 @@ The pages describe the system that we want to have. The code moves to that goal,
 
 ## Topics
 
-| Topic                          | What you learn                                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------- |
-| [Shopping](shopping/README.md) | How food goes from the shopping list into the pantry, and how the app remembers products, photos, and prices. |
+| Topic                          | What you learn                                                                                                     |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| [Shopping](shopping/README.md) | How food goes from the shopping list into the pantry, and how the app remembers products, photos, and prices.      |
+| [Recipes](recipes/README.md)   | How you write a recipe, cook from it one step at a time, and how the photos and notes of each cook make it better. |
 
 ## How to read it
 

@@ -34,11 +34,14 @@
 	 *   entries: MenuEntry[],
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
+	 *   cooking?: Set<string>,
+	 *   onstart: (entry: MenuEntry) => void,
 	 *   oncook: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown
 	 * }}
+	 *   cooking: the IDs of the menu items that are open in Cook mode.
 	 */
-	let { entries, kitchen, lastSessions, oncook, onprep } = $props();
+	let { entries, kitchen, lastSessions, cooking, onstart, oncook, onprep } = $props();
 
 	/**
 	 * The IDs from the top of the pile down. A meal that is not in it comes on top: a meal that
@@ -313,7 +316,9 @@
 					{entry}
 					{kitchen}
 					facedown={down}
+					cooking={cooking?.has(entry.item.id)}
 					onturn={(card) => sheet?.open(entry.item.id, card)}
+					{onstart}
 					{oncook}
 				/>
 			</div>

@@ -3,6 +3,13 @@ import { daysAgo, id } from './keys';
 /** @typedef {import('$lib/types').Recipe} Recipe */
 
 /**
+ * The ID of a step of a sample recipe.
+ * @param {string} key The key of the recipe.
+ * @param {number} number The number of the step: 1 for the first step.
+ */
+export const stepId = (key, number) => id(`${key}-step-${number}`);
+
+/**
  * @param {string} key
  * @param {string} name
  * @param {Recipe['mealType']} mealType
@@ -16,8 +23,15 @@ function recipe(key, name, mealType, rows, { steps = [], ...options } = {}) {
 		name,
 		mealType,
 		servings: 2,
-		steps: steps.join('\n'),
+		// Each step has a fixed ID, so that a reset keeps the notes of the sample history on it.
+		steps: steps.map((text, index) => ({
+			id: stepId(key, index + 1),
+			text,
+			photoIds: [],
+			selectedPhotoId: null
+		})),
 		source: '',
+		coverPhotoId: null,
 		inRotation: false,
 		ingredients: rows.map(([ingredientKey, quantity]) => ({
 			ingredientId: id(ingredientKey),

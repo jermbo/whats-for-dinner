@@ -1,21 +1,24 @@
 import { db } from '$lib/db/db';
 import { setMeta } from '$lib/db/meta';
 import { newId, now } from '$lib/db/ids';
+import { recipeShape, sessionShape } from '$lib/db/shape';
+import { mergeRecipes } from './merge';
 import { photoFromText, photoToText } from './photo-storage';
 
 /**
  * The JSON format. It is the contract between devices now, and with a server later.
- * A file has a scope: 'all' is a full backup, 'recipes' has only recipes and their ingredients.
+ * A file has a scope: 'all' is a full backup, 'recipes' has only recipes, their ingredients,
+ * and their photos.
  *
- * @typedef {import('$lib/types').Ingredient} Ingredient
- * @typedef {import('$lib/types').Recipe} Recipe
  * @typedef {'all' | 'recipes'} Scope
  * @typedef {{ format: string, version: number, scope: Scope, exportedAt: string, data: Record<string, any[]> }} BackupFile
  */
 
 const FORMAT = 'meal-planner';
 // Version 2: a product has an ID and a photo, and the file has photos, trips, and purchases.
-const VERSION = 2;
+// Version 3: the steps of a recipe are a list, a recipe file has photos, and a cook session
+// has the facts of Cook mode.
+const VERSION = 3;
 
 const TABLES = /** @type {const} */ ([
 	'ingredients',
@@ -51,12 +54,27 @@ export async function exportAll() {
 	return envelope('all', data);
 }
 
-/** @returns {Promise<BackupFile>} */
-export async function exportRecipes() {
-	const recipes = await db.recipes.toArray();
+/**
+ * A recipe file: recipes, the ingredients that they use, their step photos, and their covers.
+ * The other finished photos are a part of the cook history, so they stay on the device.
+ * @param {string[]} [ids] The recipes of the file. With no IDs, the file has all recipes.
+ * @returns {Promise<BackupFile>}
+ */
+export async function exportRecipes(ids) {
+	const all = await db.recipes.toArray();
+	const recipes = ids ? all.filter((recipe) => ids.includes(recipe.id)) : all;
+
 	const used = new Set(recipes.flatMap((recipe) => recipe.ingredients.map((r) => r.ingredientId)));
 	const ingredients = (await db.ingredients.toArray()).filter((i) => used.has(i.id));
-	return envelope('recipes', { ingredients, recipes });
+
+	const photoIds = recipes.flatMap((recipe) => [
+		...recipe.steps.flatMap((step) => step.photoIds),
+		...(recipe.coverPhotoId ? [recipe.coverPhotoId] : [])
+	]);
+	const stored = (await db.photos.bulkGet(photoIds)).filter((photo) => photo !== undefined);
+	const photos = await Promise.all(stored.map(photoToText));
+
+	return envelope('recipes', { ingredients, recipes, photos });
 }
 
 /**
@@ -71,7 +89,7 @@ export async function importFile(file) {
 	if (backup.version > VERSION) {
 		throw new Error('This file is from a newer version of Meal Planner.');
 	}
-	return backup.scope === 'recipes' ? mergeRecipes(backup) : replaceAll(backup);
+	return backup.scope === 'recipes' ? mergeRecipes(backup.data) : replaceAll(backup);
 }
 
 /**
@@ -82,6 +100,9 @@ async function replaceAll(backup) {
 	/** @type {Record<string, any[]>} */
 	const data = {
 		...backup.data,
+		// A file from an older version gets the fields of this version.
+		recipes: (backup.data.recipes ?? []).map(recipeShape),
+		sessions: (backup.data.sessions ?? []).map(sessionShape),
 		products: (backup.data.products ?? []).map(withId),
 		photos: (backup.data.photos ?? []).map(photoFromText)
 	};
@@ -104,54 +125,37 @@ function withId(product) {
 }
 
 /**
- * A recipe file adds new recipes and updates changed recipes. It changes nothing else.
- * An ingredient with the same name as a local ingredient becomes that local ingredient.
+ * The name of the file of an export, for example "meal-planner-all-2026-10-03.json".
+ * @param {BackupFile} backup
+ * @param {string} [label] The name of the one recipe in the file.
+ */
+export function fileName(backup, label = backup.scope) {
+	const slug = label
+		.toLowerCase()
+		.replace(/[^\p{L}\d]+/gu, '-')
+		.replace(/^-|-$/g, '');
+	return `meal-planner-${slug || backup.scope}-${backup.exportedAt.slice(0, 10)}.json`;
+}
+
+/**
+ * The text of the file. A recipe file is for a different device, so it has no line breaks:
+ * it is smaller.
  * @param {BackupFile} backup
  */
-async function mergeRecipes(backup) {
-	const incomingIngredients = /** @type {Ingredient[]} */ (backup.data.ingredients ?? []);
-	const incomingRecipes = /** @type {Recipe[]} */ (backup.data.recipes ?? []);
-	let changed = 0;
-
-	await db.transaction('rw', db.ingredients, db.recipes, async () => {
-		const local = await db.ingredients.toArray();
-		/** @type {Map<string, string>} Incoming ingredient ID to local ingredient ID. */
-		const ids = new Map();
-
-		for (const ingredient of incomingIngredients) {
-			const same =
-				local.find((i) => i.id === ingredient.id) ??
-				local.find((i) => i.name.toLowerCase() === ingredient.name.toLowerCase());
-			ids.set(ingredient.id, same?.id ?? ingredient.id);
-			if (!same) await db.ingredients.add(ingredient);
-		}
-
-		for (const recipe of incomingRecipes) {
-			const existing = await db.recipes.get(recipe.id);
-			if (existing && existing.updatedAt >= recipe.updatedAt) continue;
-			await db.recipes.put({
-				...recipe,
-				ingredients: recipe.ingredients.map((row) => ({
-					...row,
-					ingredientId: ids.get(row.ingredientId) ?? row.ingredientId
-				}))
-			});
-			changed += 1;
-		}
-	});
-
-	return `Recipes added or updated: ${changed} of ${incomingRecipes.length}.`;
+export function fileText(backup) {
+	return JSON.stringify(backup, null, backup.scope === 'all' ? '\t' : undefined);
 }
 
 /**
  * Gives the file to the browser as a download.
  * @param {BackupFile} backup
+ * @param {string} [name]
  */
-export function download(backup) {
-	const blob = new Blob([JSON.stringify(backup, null, '\t')], { type: 'application/json' });
+export function download(backup, name = fileName(backup)) {
+	const blob = new Blob([fileText(backup)], { type: 'application/json' });
 	const link = document.createElement('a');
 	link.href = URL.createObjectURL(blob);
-	link.download = `meal-planner-${backup.scope}-${backup.exportedAt.slice(0, 10)}.json`;
+	link.download = name;
 	link.click();
 	// The browser needs the URL until the download starts.
 	setTimeout(() => URL.revokeObjectURL(link.href), 1000);
