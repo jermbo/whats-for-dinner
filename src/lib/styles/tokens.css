@@ -31,6 +31,10 @@
 	--color-low-strong: #c98300;
 
 	--color-danger: #b3261e;
+
+	/* Yellow, as a sticky note: the tags of the food to use up. */
+	--color-note: #fff1a6;
+	--color-note-ink: #3d3200;
 	--color-notice: #fff3d9;
 
 	--shadow: 0 0.5rem 1.5rem rgb(20 70 75 / 0.07);

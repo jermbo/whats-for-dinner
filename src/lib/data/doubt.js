@@ -2,6 +2,7 @@ import { db } from '$lib/db/db';
 import { getMeta } from '$lib/db/meta';
 import { groupBy } from '$lib/util/collections';
 import { plural } from '$lib/util/format';
+import { daysInStock } from './freshness';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -9,7 +10,6 @@ import { plural } from '$lib/util/format';
  * @typedef {import('$lib/types').PantryChange} PantryChange
  */
 
-const DAY = 24 * 60 * 60 * 1000;
 /** A perishable item with no new stock for this many days gets a doubt. */
 const STALE_DAYS = 7;
 /** A 'state' item that this many meals used gets a doubt. Cooking does not change its state. */
@@ -52,11 +52,7 @@ export function doubtOf({ item, ingredient, changes, uses, since, time }) {
 
 	const inStock = ingredient.tracking === 'state' ? item.state !== 'out' : item.quantity > 0;
 	if (ingredient.perishable && item.location !== 'freezer' && inStock) {
-		const stocked =
-			changes.findLast(
-				(change) => change.cause === 'bought' || (change.cause === 'corrected' && change.delta > 0)
-			)?.at ?? item.updatedAt;
-		const days = Math.floor((time - Date.parse(stocked)) / DAY);
+		const days = daysInStock(changes, item, time);
 		if (days >= STALE_DAYS) return `Perishable. No new stock for ${days} days.`;
 	}
 

@@ -65,7 +65,13 @@ export function undoCook(session) {
 			await changeQuantity(ingredientId, amount, 'undo', { sessionId: session.id });
 		}
 		if (session.leftoverMenuId) await db.menu.delete(session.leftoverMenuId);
-		await db.menu.put(session.menuItem);
+
+		// A recipe is on the menu one time only. If it was added again after "Cooked", it stays.
+		const { menuItem } = session;
+		const items = await db.menu.where('recipeId').equals(menuItem.recipeId).toArray();
+		const again = menuItem.kind === 'recipe' && items.some((item) => item.kind === 'recipe');
+		if (!again) await db.menu.put(menuItem);
+
 		await db.sessions.delete(session.id);
 	});
 }

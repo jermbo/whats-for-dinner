@@ -46,8 +46,11 @@ export function sampleRecords() {
 		menuItem('chicken-bowl', 19),
 		menuItem('beef-chili', 18),
 		menuItem('baked-fish', 17),
-		// The preparation is done, but the 8 hours are not over.
-		menuItem('overnight-oats', 16, { prepDoneAt: hoursAgo(3) }),
+		// The 8 hours of preparation are over 2 minutes after a reset: its card changes from
+		// "In preparation" to "Ready" while you look.
+		menuItem('overnight-oats', 16, { prepDoneAt: hoursAgo(8 - 2 / 60) }),
+		// The 24 hours of preparation are over tomorrow: a note with a clock.
+		menuItem('coconut-curry', 14, { prepDoneAt: hoursAgo(6) }),
 		menuItem('banana-smoothie', 15)
 	];
 

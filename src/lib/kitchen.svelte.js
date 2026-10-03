@@ -2,6 +2,8 @@ import { db } from '$lib/db/db';
 import { live } from '$lib/live.svelte';
 import { indexBy } from '$lib/util/collections';
 
+/** @typedef {ReturnType<typeof useKitchen>} Kitchen */
+
 /**
  * The data that the menu, the "Today" screen, and the shopping list all read.
  * Call it during component setup.

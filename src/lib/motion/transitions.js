@@ -1,9 +1,10 @@
+import { flip } from 'svelte/animate';
 import { backOut, cubicOut } from 'svelte/easing';
 import { prefersReducedMotion } from 'svelte/motion';
 import { fly, scale, slide } from 'svelte/transition';
 
 /**
- * The transitions for elements that come into the page or go out of it.
+ * The transitions for elements that come into the page, go out of it, or change place.
  * Each one has no duration for a person who asks for reduced motion.
  */
 
@@ -33,4 +34,13 @@ export function pop(node) {
  */
 export function rise(node, { delay = 0 } = {}) {
 	return fly(node, { y: 14, duration: ms(360), delay: ms(delay), easing: cubicOut });
+}
+
+/**
+ * An element of a keyed list that moves to its new place when the order changes.
+ * @param {Element} node
+ * @param {{ from: DOMRect, to: DOMRect }} rects
+ */
+export function reorder(node, rects) {
+	return flip(node, rects, { duration: ms(450), easing: cubicOut });
 }

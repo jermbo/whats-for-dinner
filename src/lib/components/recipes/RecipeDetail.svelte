@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { addToMenu } from '$lib/data/menu';
+	import { addToMenu, recipesOnMenu } from '$lib/data/menu';
 	import { MEAL_TYPES, labelOf } from '$lib/data/options';
 	import { db } from '$lib/db/db';
 	import { live } from '$lib/live.svelte';
@@ -19,6 +19,8 @@
 	const sessions = live(() => db.sessions.where('recipeId').equals(id).toArray(), []);
 	const ingredients = live(() => db.ingredients.toArray(), []);
 	const pantry = live(() => db.pantry.toArray(), []);
+	const menu = live(() => db.menu.where('recipeId').equals(id).toArray(), []);
+	const onMenu = $derived(recipesOnMenu(menu.current).has(id));
 
 	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
 	const pantryByIngredient = $derived(indexBy(pantry.current, 'ingredientId'));
@@ -48,7 +50,11 @@
 	<RecipeSource source={current.source} />
 
 	<div>
-		<button class="button button--primary" type="button" onclick={add}>Add to the menu</button>
+		{#if onMenu}
+			<span class="badge badge--good">On the menu</span>
+		{:else}
+			<button class="button button--primary" type="button" onclick={add}>Add to the menu</button>
+		{/if}
 	</div>
 
 	<div class="grid">

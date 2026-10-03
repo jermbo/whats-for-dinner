@@ -14,14 +14,13 @@ import { stock } from './pantry';
  */
 
 /**
- * The shopping list: all ingredients of the meals on the menu, minus the pantry stock.
+ * What the meals on the menu use of each ingredient, and the names of those meals.
+ * Leftovers use no ingredients.
  * @param {MenuItem[]} menu
  * @param {Map<string, Recipe>} recipesById
- * @param {Map<string, Ingredient>} ingredientsById
- * @param {Map<string, PantryItem>} pantryByIngredient
- * @returns {Need[]}
+ * @returns {Map<string, { total: number, recipes: string[] }>} By ingredient ID.
  */
-export function shoppingNeeds(menu, recipesById, ingredientsById, pantryByIngredient) {
+export function menuTotals(menu, recipesById) {
 	/** @type {Map<string, { total: number, recipes: string[] }>} */
 	const totals = new Map();
 
@@ -34,10 +33,21 @@ export function shoppingNeeds(menu, recipesById, ingredientsById, pantryByIngred
 			totals.set(row.ingredientId, entry);
 		}
 	}
+	return totals;
+}
 
+/**
+ * The shopping list: all ingredients of the meals on the menu, minus the pantry stock.
+ * @param {MenuItem[]} menu
+ * @param {Map<string, Recipe>} recipesById
+ * @param {Map<string, Ingredient>} ingredientsById
+ * @param {Map<string, PantryItem>} pantryByIngredient
+ * @returns {Need[]}
+ */
+export function shoppingNeeds(menu, recipesById, ingredientsById, pantryByIngredient) {
 	/** @type {Need[]} */
 	const needs = [];
-	for (const [ingredientId, { total, recipes }] of totals) {
+	for (const [ingredientId, { total, recipes }] of menuTotals(menu, recipesById)) {
 		const ingredient = ingredientsById.get(ingredientId);
 		if (!ingredient) continue;
 		const quantity = round(shortfall(ingredient, total, pantryByIngredient.get(ingredientId)));

@@ -11,19 +11,33 @@ import { newId, now } from '$lib/db/ids';
 const HOUR = 60 * 60 * 1000;
 
 /**
+ * The recipes that are on the menu as a meal to cook. Leftovers do not count.
+ * @param {MenuItem[]} menu
+ * @returns {Set<string>} The recipe IDs.
+ */
+export function recipesOnMenu(menu) {
+	return new Set(menu.filter((item) => item.kind === 'recipe').map((item) => item.recipeId));
+}
+
+/**
+ * Adds a recipe to the menu. A recipe is on the menu one time only: when it is there already,
+ * nothing changes. Leftovers are a different meal, so they can be on the menu with the recipe.
  * @param {string} recipeId
  * @param {import('$lib/types').MenuKind} [kind]
- * @returns {Promise<string>} The ID of the new menu item.
+ * @returns {Promise<string>} The ID of the menu item, new or the one that was there.
  */
 export function addToMenu(recipeId, kind = 'recipe') {
-	const time = now();
-	return db.menu.add({
-		id: newId(),
-		kind,
-		recipeId,
-		addedAt: time,
-		prepDoneAt: null,
-		updatedAt: time
+	return db.transaction('rw', db.menu, async () => {
+		if (kind === 'recipe') {
+			const items = await db.menu.where('recipeId').equals(recipeId).toArray();
+			const there = items.find((item) => item.kind === 'recipe');
+			if (there) return there.id;
+		}
+
+		const time = now();
+		const id = newId();
+		await db.menu.add({ id, kind, recipeId, addedAt: time, prepDoneAt: null, updatedAt: time });
+		return id;
 	});
 }
 

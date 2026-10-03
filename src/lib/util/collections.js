@@ -32,3 +32,18 @@ export function groupBy(list, key) {
 export function sortByName(list) {
 	return [...list].sort((a, b) => a.name.localeCompare(b.name));
 }
+
+/**
+ * A copy of a list in a random order.
+ * @template T
+ * @param {T[]} list
+ * @returns {T[]}
+ */
+export function shuffled(list) {
+	const copy = [...list];
+	for (let index = copy.length - 1; index > 0; index -= 1) {
+		const other = Math.floor(Math.random() * (index + 1));
+		[copy[index], copy[other]] = [copy[other], copy[index]];
+	}
+	return copy;
+}

@@ -11,16 +11,18 @@
 
 	/**
 	 * A group of recipes that the owner can add to the menu.
-	 * Each recipe shows if the pantry can make it now.
+	 * Each recipe shows if the pantry can make it now. A recipe that is on the menu already
+	 * shows "On the menu", because a recipe is on the menu one time only.
 	 * @type {{
 	 *   title: string,
 	 *   recipes: Recipe[],
 	 *   ingredientsById: Map<string, import('$lib/types').Ingredient>,
 	 *   pantryByIngredient: Map<string, import('$lib/types').PantryItem>,
+	 *   onMenu: Set<string>,
 	 *   onadd: (recipe: Recipe) => void
 	 * }}
 	 */
-	let { title, recipes, ingredientsById, pantryByIngredient, onadd } = $props();
+	let { title, recipes, ingredientsById, pantryByIngredient, onMenu, onadd } = $props();
 
 	const uid = $props.id();
 
@@ -63,18 +65,18 @@
 					</span>
 				</span>
 
-				<button
-					class={['button', added.has(recipe.id) ? 'button--primary' : 'button--strong']}
-					type="button"
-					onclick={() => add(recipe)}
-				>
-					{#if added.has(recipe.id)}
+				{#if added.has(recipe.id)}
+					<span class="button button--primary recipe-row__state" role="status">
 						<span class="recipe-row__added" in:pop><Icon name="check" /></span>
 						<span class="visually-hidden">{recipe.name} is added to the menu</span>
-					{:else}
+					</span>
+				{:else if onMenu.has(recipe.id)}
+					<span class="badge badge--good">On the menu</span>
+				{:else}
+					<button class="button button--strong" type="button" onclick={() => add(recipe)}>
 						Add <span class="visually-hidden">{recipe.name} to the menu</span>
-					{/if}
-				</button>
+					</button>
+				{/if}
 			</li>
 		{/each}
 	</ul>
@@ -96,5 +98,10 @@
 
 	.recipe-row__added {
 		display: grid;
+	}
+
+	/* "Added" is a moment of feedback, not a control. */
+	.recipe-row__state {
+		cursor: default;
 	}
 </style>

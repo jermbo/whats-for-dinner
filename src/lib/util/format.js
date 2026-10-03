@@ -33,6 +33,31 @@ export function formatDate(date) {
 	return new Date(date).toLocaleDateString(undefined, { dateStyle: 'medium' });
 }
 
+/**
+ * The time since a date in words, for example "yesterday" or "3 days ago".
+ * @param {string | number} date
+ */
+export function formatAgo(date) {
+	const days = Math.round((Date.now() - new Date(date).getTime()) / (24 * 60 * 60 * 1000));
+	return new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(-days, 'day');
+}
+
+/**
+ * A moment in the next days in words, for example "today at 7:30 PM" or "tomorrow at 9:00 AM".
+ * @param {number} ms
+ */
+export function formatWhen(ms) {
+	const date = new Date(ms);
+	const start = (/** @type {Date} */ day) => new Date(day).setHours(0, 0, 0, 0);
+	const days = Math.round((start(date) - start(new Date())) / (24 * 60 * 60 * 1000));
+	const day =
+		days >= 0 && days <= 1
+			? new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(days, 'day')
+			: date.toLocaleDateString(undefined, { weekday: 'long' });
+	const time = date.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+	return `${day} at ${time}`;
+}
+
 /** @param {string | number} date */
 export function formatDateTime(date) {
 	return new Date(date).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
