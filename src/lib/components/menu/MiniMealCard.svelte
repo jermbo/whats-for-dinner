@@ -46,10 +46,19 @@
 		position: relative;
 		display: grid;
 		gap: var(--space-1);
-		transition: scale 0.25s var(--ease-spring);
+		transition:
+			scale 0.25s var(--ease-spring),
+			translate 0.3s var(--ease-out);
 
 		&:active {
 			scale: 0.95;
+		}
+
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover {
+				translate: 0 -0.15rem;
+			}
 		}
 
 		& :global(.recipe-photo) {

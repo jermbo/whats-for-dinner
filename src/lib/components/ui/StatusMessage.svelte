@@ -9,7 +9,8 @@
 	.status-message {
 		position: fixed;
 		inset-inline: var(--space-4);
-		inset-block-end: calc(var(--nav-height) + env(safe-area-inset-bottom) + 3.5rem);
+		/* Above the navigation, when the navigation is at the bottom of the screen. */
+		inset-block-end: calc(var(--nav-space) + var(--space-6));
 		max-inline-size: 38rem;
 		margin-inline: auto;
 		padding: var(--space-3) var(--space-5);
@@ -27,12 +28,6 @@
 		&:empty {
 			opacity: 0;
 			translate: 0 1.5rem;
-		}
-	}
-
-	@media (min-width: 60rem) {
-		.status-message {
-			inset-block-end: var(--space-6);
 		}
 	}
 </style>

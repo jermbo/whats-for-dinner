@@ -354,8 +354,8 @@
 
 <style>
 	.hand {
-		/* The pile goes to the edges of the screen, so that a thrown card can fly out of it. */
-		--bleed: var(--space-5);
+		/* The pile goes to the edges of the main area, so that a thrown card can fly out of it. */
+		--bleed: var(--gutter);
 
 		display: flex;
 		flex-direction: column;
@@ -378,10 +378,15 @@
 	}
 
 	/* All cards lie in one cell. The pile is as tall as the tallest card, plus its edges. */
+	/*
+	 * Each card has a z-index for its place in the pile. "isolation" keeps those numbers in the
+	 * pile: without it, a card is above the navigation and the message of the last action.
+	 */
 	.hand__pile {
 		display: grid;
 		inline-size: min(100%, 22rem);
 		padding-block-end: var(--space-8);
+		isolation: isolate;
 	}
 
 	.hand__card {
@@ -424,11 +429,5 @@
 
 	.hand__action {
 		gap: var(--space-2);
-	}
-
-	@media (min-width: 60rem) {
-		.hand {
-			--bleed: var(--space-8);
-		}
 	}
 </style>

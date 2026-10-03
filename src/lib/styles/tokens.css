@@ -54,4 +54,18 @@
 	--tap: 3rem;
 
 	--nav-height: 3.25rem;
+
+	/*
+	 * The three values below tell a block where it is on the screen. The root layout changes the
+	 * last two when the navigation is at the side of the screen.
+	 */
+
+	/* The widest that text, a list, or a form can be and still be easy to read. */
+	--measure: 44rem;
+
+	/* The space between the edge of the main area and its content. */
+	--gutter: var(--space-5);
+
+	/* The height that the navigation uses at the bottom of the screen. */
+	--nav-space: calc(var(--nav-height) + env(safe-area-inset-bottom) + 2rem);
 }

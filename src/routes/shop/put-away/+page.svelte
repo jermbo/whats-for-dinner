@@ -8,7 +8,7 @@
 	import { canMake } from '$lib/data/availability';
 	import { setProduct } from '$lib/data/cart';
 	import { productsByIngredient } from '$lib/data/products';
-	import { cartEntry, lastPurchases, putAway, toLine } from '$lib/data/put-away';
+	import { amend, cartEntry, lastPurchases, putAway, toLine } from '$lib/data/put-away';
 	import { shoppingNeeds } from '$lib/data/shopping';
 	import { lastPrices, tripCost } from '$lib/data/trips';
 	import { db } from '$lib/db/db';
@@ -103,6 +103,15 @@
 		status.say(entry.ingredient ? `${name} is in the pantry.` : `${name} is put away.`);
 	}
 
+	/**
+	 * A correction of an item that is put away.
+	 * @param {CartEntry} entry
+	 */
+	async function amendOne(entry) {
+		await amend(toLine(entry));
+		status.say(`${entry.purchase.name} is corrected.`);
+	}
+
 	async function putAllAway() {
 		const count = waiting.length;
 		await putAway(waiting.map(toLine));
@@ -115,8 +124,11 @@
 	}
 </script>
 
-<!-- One block, so that the parts are closer than the parts of other screens. -->
-<div class="stack">
+<!--
+	One block, so that the parts are closer than the parts of other screens.
+	The receipt is the main column. The card of an item is the side column: it stays in view.
+-->
+<div class="split">
 	<PageHeader
 		title="Put away"
 		eyebrow={waiting.length > 0 ? `${plural(waiting.length, 'item')} in the cart` : undefined}
@@ -139,29 +151,40 @@
 			{/each}
 		</Receipt>
 
-		{#if trip.completedAt}
-			{#if meals.length > 0}
-				<p class="put-away__result">
-					The pantry has all the food for
-					<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
-				</p>
+		<div class="split__side split__side--sticky">
+			{#if trip.completedAt}
+				{#if meals.length > 0}
+					<p class="put-away__result">
+						The pantry has all the food for
+						<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
+					</p>
+				{/if}
+
+				<div class="cluster">
+					<a class="button button--primary" href={resolve('/')}>Today</a>
+					<a class="button" href={resolve('/shop')}>Shopping list</a>
+					<a class="button" href={resolve('/shop/trips')}>All trips</a>
+				</div>
 			{/if}
 
-			<div class="cluster">
-				<a class="button button--primary" href={resolve('/')}>Today</a>
-				<a class="button" href={resolve('/shop')}>Shopping list</a>
-				<a class="button" href={resolve('/shop/trips')}>All trips</a>
-			</div>
-		{/if}
+			<PutAwayCard
+				bind:this={card}
+				{entries}
+				onputaway={putOneAway}
+				onamend={amendOne}
+				onnew={newProduct}
+			/>
+		</div>
 	{:else}
-		<p class="muted">The cart is empty. Tap the items on the shopping list in the store.</p>
-		<div>
-			<a class="button button--primary" href={resolve('/shop')}>Shopping list</a>
+		<div class="stack">
+			<p class="muted">The cart is empty. Tap the items on the shopping list in the store.</p>
+			<div>
+				<a class="button button--primary" href={resolve('/shop')}>Shopping list</a>
+			</div>
 		</div>
 	{/if}
 </div>
 
-<PutAwayCard bind:this={card} entries={waiting} onputaway={putOneAway} onnew={newProduct} />
 <NewProductDialog bind:this={dialog} />
 
 <style>

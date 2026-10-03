@@ -56,7 +56,7 @@
 {/if}
 
 <style>
-	/* Two photo cards side by side on a phone, and more on a desktop. */
+	/* Two photo cards side by side on a phone, and larger cards in a wider main area. */
 	.recipe-grid {
 		--grid-min: 9.5rem;
 
@@ -64,7 +64,7 @@
 		padding: 0;
 		gap: var(--space-4);
 
-		@media (min-width: 40rem) {
+		@container main (min-width: 38rem) {
 			--grid-min: 14rem;
 		}
 	}

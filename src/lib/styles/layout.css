@@ -1,3 +1,11 @@
+/*
+ * The main area of the app is a query container with the name "main": see the root layout.
+ * A block asks how wide the main area is, and not how wide the screen is. Two widths change a
+ * layout:
+ *   38rem  The main area is wider than a phone.
+ *   50rem  The main area has room for a side column.
+ */
+
 /* Vertical rhythm between the children of a block. */
 .stack {
 	display: flex;
@@ -26,8 +34,9 @@
 }
 
 /*
- * Columns that fill the width. A phone gets one column. A desktop gets two or more.
- * The main area keeps other content at a reading width, and lets a grid use the full width.
+ * Columns that fill the width. A narrow container gets one column. A wide container gets two
+ * or more. The main area keeps other content at a reading width, and lets a grid use the full
+ * width.
  */
 .grid {
 	display: grid;
@@ -39,4 +48,119 @@
 /* A block that uses the full width of the main area, as a grid does. */
 .wide {
 	max-inline-size: none;
+}
+
+/*
+ * A main column and a side column.
+ * A narrow main area has one column: all blocks are in the sequence of the page.
+ * A wide main area has the side column next to the main column. The main column has one block
+ * or two blocks. The side column is one "split__side" element, at any place in the sequence.
+ * "--split-columns" sets the widths of the two columns.
+ */
+.split {
+	--split-gap: var(--space-5);
+
+	display: flex;
+	flex-direction: column;
+	gap: var(--split-gap);
+
+	&.split--loose {
+		--split-gap: var(--space-8);
+	}
+
+	/* One column: the blocks of the side column are blocks of the page. */
+	& > .split__side {
+		display: contents;
+	}
+
+	/* A block that only a side column has room for. */
+	& .split__extra {
+		display: none;
+	}
+}
+
+@container main (min-width: 50rem) {
+	/* A split with no side column keeps one column. */
+	.split:has(> .split__side) {
+		display: grid;
+		grid-template-columns: var(--split-columns, minmax(0, 3fr) minmax(0, 2fr));
+		/* The last row gets the height that is left: a tall side column makes no space between
+		   the blocks of the main column. */
+		grid-template-rows: auto 1fr;
+		align-items: start;
+		column-gap: var(--space-8);
+
+		& > * {
+			grid-column: 1;
+		}
+
+		/* The blocks in the side column ask how wide the column is, and not the main area. */
+		& > .split__side {
+			display: flex;
+			flex-direction: column;
+			gap: var(--split-gap);
+			grid-column: 2;
+			grid-row: 1 / -1;
+			container-type: inline-size;
+		}
+
+		& .split__extra {
+			display: block;
+		}
+
+		/* The side column is at the left. */
+		&.split--reverse {
+			grid-template-columns: var(--split-columns, minmax(0, 2fr) minmax(0, 3fr));
+
+			& > * {
+				grid-column: 2;
+			}
+
+			& > .split__side {
+				grid-column: 1;
+			}
+		}
+
+		/*
+		 * The side column stays in view while the main column scrolls. A column that is taller
+		 * than the screen scrolls in its box. The padding is room for the shadows of the panels:
+		 * a box that scrolls cuts them at its edge.
+		 */
+		& > .split__side.split__side--sticky {
+			position: sticky;
+			inset-block-start: var(--space-4);
+			max-block-size: calc(100dvh - 2 * var(--space-4));
+			margin: calc(-1 * var(--space-4));
+			padding: var(--space-4);
+			overflow: hidden auto;
+			scrollbar-width: thin;
+		}
+	}
+}
+
+/*
+ * One row of small items. In a narrow main area, the row scrolls sideways and goes to the
+ * edges of the screen. In a wider main area, the items wrap.
+ * "position: relative" keeps the hidden texts of the items in the row. Without it, a hidden
+ * text takes its place from the page: an item far to the right then makes the page scroll
+ * sideways.
+ */
+.shelf {
+	position: relative;
+	display: flex;
+	gap: var(--space-3);
+	margin: 0 calc(-1 * var(--gutter));
+	padding: var(--space-2) var(--gutter);
+	overflow-x: auto;
+	list-style: none;
+	scrollbar-width: none;
+}
+
+@container main (min-width: 38rem) {
+	.shelf {
+		flex-wrap: wrap;
+		margin-inline: 0;
+		padding-inline: 0;
+		overflow-x: visible;
+	}
 }

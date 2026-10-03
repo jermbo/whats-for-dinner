@@ -5,6 +5,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { entryName } from '$lib/data/menu';
 	import { MEAL_TYPES, labelOf } from '$lib/data/options';
+	import { sideColumn } from '$lib/layout/side-column';
 	import { gsap } from '$lib/motion/gsap';
 	import MealCardBack from './MealCardBack.svelte';
 
@@ -16,6 +17,7 @@
 	/**
 	 * The back of a meal card on the full screen. "open" turns the card to its edge, and then the
 	 * back grows from the place of the card to the full screen. "Turn back" does the reverse.
+	 * On a page that has a side column, the back covers only that column: it is next to the card.
 	 * It is a modal dialog: it is above the pile, and it keeps the focus.
 	 * It reads the meal from "entries", so that a change, such as "Preparation done", shows at once.
 	 * The foot has the action of the screen: "Cooked" with "oncook", and "Remove from the menu"
@@ -46,6 +48,23 @@
 	/** The level bars fill when the back is open. */
 	let filled = $state(false);
 	let moving = false;
+	/**
+	 * The place of the side column of the page, in pixels: the distance from its right edge to
+	 * the right edge of the screen, and its width. Null: the page has one column.
+	 * @type {{ end: number, size: number } | null}
+	 */
+	let side = $state.raw(null);
+
+	/** Finds the side column next to the card. The back then opens on that column. */
+	function place() {
+		const column = card && sideColumn(card);
+		if (!column) {
+			side = null;
+			return;
+		}
+		const box = column.getBoundingClientRect();
+		side = { end: document.documentElement.clientWidth - box.right, size: box.width };
+	}
 
 	/**
 	 * The transform that puts the full sheet exactly on a box, from the center.
@@ -83,6 +102,7 @@
 		openId = id;
 		card = from;
 		filled = false;
+		place();
 		await tick();
 		if (!dialog || !inner) {
 			moving = false;
@@ -183,8 +203,13 @@
 	}
 </script>
 
+<!-- A new size of the window can move the side column. -->
+<svelte:window onresize={() => dialog?.open && place()} />
+
 <dialog
-	class="meal-sheet"
+	class={['meal-sheet', side && 'meal-sheet--side']}
+	style:--side-end={side ? `${side.end}px` : null}
+	style:--side-size={side ? `${side.size}px` : null}
 	bind:this={dialog}
 	aria-labelledby="{uid}-title"
 	oncancel={cancel}
@@ -236,7 +261,8 @@
 
 <style>
 	/*
-	 * Phone: the full screen. A large screen: a large card in the middle.
+	 * Phone: the full screen. A wider main area: a large card in the middle of the screen.
+	 * A page with a side column: a panel on that column.
 	 * GSAP moves the sheet, so the open and close styles of other dialogs are off here.
 	 * The selector has two classes, so that it is stronger than the styles of "dialog".
 	 */
@@ -309,6 +335,7 @@
 
 	.meal-sheet__foot {
 		display: flex;
+		flex-wrap: wrap;
 		gap: var(--space-3);
 		padding: var(--space-4) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
 		border-block-start: 1px solid var(--color-border);
@@ -318,13 +345,31 @@
 		flex: 1;
 	}
 
-	@media (min-width: 48rem) {
+	@container main (min-width: 38rem) {
 		.meal-sheet.meal-sheet {
 			inline-size: min(40rem, 100% - 4rem);
 			block-size: min(52rem, 100dvh - 4rem);
 			margin: auto;
 			border-radius: var(--radius);
 			box-shadow: var(--shadow);
+		}
+	}
+
+	/*
+	 * The script gives the place of the side column. The panel is as wide as the column, but
+	 * not too narrow for its buttons: then it grows to the left.
+	 * The page stays in view, so the backdrop is light.
+	 */
+	.meal-sheet.meal-sheet.meal-sheet--side {
+		inset-inline: auto var(--side-end);
+		inline-size: max(var(--side-size), 24rem);
+		block-size: calc(100dvh - 2 * var(--space-4));
+		margin: var(--space-4) 0;
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+
+		&::backdrop {
+			background: rgb(4 40 44 / 0.3);
 		}
 	}
 </style>

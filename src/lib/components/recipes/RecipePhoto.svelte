@@ -77,7 +77,8 @@
 		/* The photo of the tapped card grows into this one. See motion/photo-morph.js. */
 		view-transition-name: recipe-photo;
 
-		@media (min-width: 60rem) {
+		/* In a wide container, the photo is a band: it is not tall. */
+		@container (min-width: 38rem) {
 			aspect-ratio: 21 / 8;
 		}
 	}

@@ -42,6 +42,8 @@
 	/* Phone: a floating pill above the bottom edge of the screen, as in the design. */
 	.app-nav {
 		position: fixed;
+		/* The navigation is always above the content of the screen. */
+		z-index: 10;
 		inset-inline: 0;
 		inset-block-end: calc(var(--space-4) + env(safe-area-inset-bottom));
 		inline-size: fit-content;

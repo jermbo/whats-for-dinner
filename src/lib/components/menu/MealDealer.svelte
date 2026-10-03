@@ -188,8 +188,8 @@
 
 <style>
 	.dealer {
-		/* The section goes to the edges of the screen, so that a card can go out to the side. */
-		--bleed: var(--space-5);
+		/* The section goes to the edges of its column, so that a card can go out to the side. */
+		--bleed: var(--gutter);
 
 		display: flex;
 		flex-direction: column;
@@ -229,12 +229,6 @@
 			outline: 3px solid var(--color-accent-strong);
 			outline-offset: 2px;
 			scale: 1.04;
-		}
-	}
-
-	@media (min-width: 60rem) {
-		.dealer {
-			--bleed: 0rem;
 		}
 	}
 </style>

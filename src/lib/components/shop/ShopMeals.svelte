@@ -3,7 +3,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 
 	/**
-	 * The meals on the menu, in one row that scrolls sideways. Each meal shows how many of its
+	 * The meals on the menu, in one row: a "shelf" of the layout. Each meal shows how many of its
 	 * items are not in the cart, or "Ready" when you have them all. A tap on a meal shows only
 	 * the items of that meal. A second tap shows all items again.
 	 * @type {{
@@ -15,7 +15,7 @@
 	let { meals, selected, onselect } = $props();
 </script>
 
-<ul class="shop-meals" aria-label="Meals on the menu">
+<ul class="shelf" aria-label="Meals on the menu">
 	{#each meals as meal (meal.item.id)}
 		{@const ready = meal.toBuy === 0}
 		{@const pressed = selected === meal.recipe.id}
@@ -43,31 +43,25 @@
 </ul>
 
 <style>
-	/*
-	 * The row goes to the edges of the screen.
-	 * "position: relative" keeps the hidden texts of the cards in the row: see SoonShelf.
-	 */
-	.shop-meals {
-		position: relative;
-		display: flex;
-		gap: var(--space-3);
-		margin: 0 calc(-1 * var(--space-5));
-		padding: var(--space-2) var(--space-5);
-		overflow-x: auto;
-		list-style: none;
-		scrollbar-width: none;
-	}
-
 	.shop-meal {
 		position: relative;
 		display: grid;
 		flex: none;
 		gap: var(--space-1);
 		inline-size: 4.5rem;
-		transition: scale 0.25s var(--ease-spring);
+		transition:
+			scale 0.25s var(--ease-spring),
+			translate 0.3s var(--ease-out);
 
 		&:active {
 			scale: 0.95;
+		}
+
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover {
+				translate: 0 -0.15rem;
+			}
 		}
 
 		& :global(.recipe-photo) {
@@ -141,15 +135,6 @@
 			inline-size: 0.875rem;
 			block-size: 0.875rem;
 			stroke-width: 2.5;
-		}
-	}
-
-	@media (min-width: 60rem) {
-		.shop-meals {
-			flex-wrap: wrap;
-			margin-inline: 0;
-			padding-inline: 0;
-			overflow-x: visible;
 		}
 	}
 </style>

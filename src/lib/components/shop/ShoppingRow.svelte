@@ -110,6 +110,13 @@
 			background: rgb(0 0 0 / 0.05);
 		}
 
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover::after {
+				background: rgb(0 0 0 / 0.03);
+			}
+		}
+
 		&:focus-visible {
 			outline: none;
 

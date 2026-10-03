@@ -49,5 +49,6 @@
 		grid-template-columns: 1fr auto;
 		align-items: end;
 		gap: var(--space-2);
+		max-inline-size: var(--measure);
 	}
 </style>

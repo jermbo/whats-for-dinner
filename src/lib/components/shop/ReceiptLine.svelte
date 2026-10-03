@@ -2,7 +2,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { correct } from '$lib/data/cart';
 	import { isCounted } from '$lib/data/put-away';
-	import { formatMoney, formatQuantity, plural } from '$lib/util/format';
+	import { formatQuantity, plural } from '$lib/util/format';
 
 	/**
 	 * One line of the receipt: one item of the trip, with its quantity and its price.
@@ -11,7 +11,8 @@
 	 * selects the product. The price is a field in the line, so that the owner can type the
 	 * prices down the column of the paper receipt.
 	 * A line that needs an answer has "?" in the place of the ring, and the card opens first.
-	 * A line that is put away has a check, and nothing on it can change.
+	 * A line that is put away has a check in the place of the ring. The owner can still correct
+	 * it: the price in the line, and the quantity and the product on the card.
 	 * @type {{
 	 *   entry: import('$lib/data/put-away').CartEntry,
 	 *   onputaway: () => void,
@@ -39,14 +40,14 @@
 
 	/**
 	 * The text of the price while the owner types. Null: the field shows the price of the record,
-	 * or the last price of the product.
+	 * or, for an item in the cart, the last price of the product.
 	 * @type {string | null}
 	 */
 	let typed = $state(null);
 	const priceText = $derived(typed ?? entry.price?.toFixed(2) ?? '');
 
 	/**
-	 * Each letter goes into the record at once, so that a tap on "Put away" directly after has
+	 * Each letter goes into the record at once, so that a tap on the ring directly after has
 	 * the new price.
 	 * @param {Event & { currentTarget: HTMLInputElement }} event
 	 */
@@ -61,56 +62,44 @@
 	{#if done}
 		<span class="receipt-line__mark receipt-line__mark--done">
 			<Icon name="check" />
-			<span class="visually-hidden">Put away:</span>
+			<span class="visually-hidden">Put away.</span>
 		</span>
-		<span class="receipt-line__text">
-			<span class="receipt-line__name">{purchase.name}</span>
-			<span class="receipt-line__amount">{amount}</span>
-			{#if detail}
-				<span class="receipt-line__detail">{detail}</span>
-			{/if}
-		</span>
-		<span class="receipt-line__price">
-			{entry.price === null ? '–' : formatMoney(entry.price)}
-		</span>
-	{:else}
-		{#if entry.asks}
-			<button class="receipt-line__mark receipt-line__mark--asks" type="button" onclick={onopen}>
-				<span aria-hidden="true">?</span>
-				<span class="visually-hidden">{purchase.name}: the app needs an answer</span>
-			</button>
-		{:else}
-			<button class="receipt-line__mark" type="button" onclick={onputaway}>
-				<span class="visually-hidden">
-					Put away: {purchase.name}{amount ? `, ${amount}` : ''}
-				</span>
-			</button>
-		{/if}
-
-		<button class="receipt-line__text" type="button" onclick={onopen}>
-			<span class="receipt-line__name">{purchase.name}</span>
-			<span class="receipt-line__amount">{amount}</span>
-			{#if detail}
-				<span class={['receipt-line__detail', entry.asks && 'receipt-line__detail--asks']}>
-					{detail}
-				</span>
-			{/if}
-			<span class="visually-hidden">: open the card</span>
+	{:else if entry.asks}
+		<button class="receipt-line__mark receipt-line__mark--asks" type="button" onclick={onopen}>
+			<span aria-hidden="true">?</span>
+			<span class="visually-hidden">{purchase.name}: the app needs an answer</span>
 		</button>
-
-		<input
-			class="receipt-line__price"
-			type="number"
-			inputmode="decimal"
-			min="0"
-			step="any"
-			placeholder="0.00"
-			aria-label="Price of {purchase.packages > 1 ? 'one package of ' : ''}{purchase.name}"
-			value={priceText}
-			oninput={typePrice}
-			onblur={() => (typed = null)}
-		/>
+	{:else}
+		<button class="receipt-line__mark" type="button" onclick={onputaway}>
+			<span class="visually-hidden">
+				Put away: {purchase.name}{amount ? `, ${amount}` : ''}
+			</span>
+		</button>
 	{/if}
+
+	<button class="receipt-line__text" type="button" onclick={onopen}>
+		<span class="receipt-line__name">{purchase.name}</span>
+		<span class="receipt-line__amount">{amount}</span>
+		{#if detail}
+			<span class={['receipt-line__detail', entry.asks && 'receipt-line__detail--asks']}>
+				{detail}
+			</span>
+		{/if}
+		<span class="visually-hidden">: {done ? 'correct the item' : 'open the card'}</span>
+	</button>
+
+	<input
+		class="receipt-line__price"
+		type="number"
+		inputmode="decimal"
+		min="0"
+		step="any"
+		placeholder="0.00"
+		aria-label="Price of {purchase.packages > 1 ? 'one package of ' : ''}{purchase.name}"
+		value={priceText}
+		oninput={typePrice}
+		onblur={() => (typed = null)}
+	/>
 </li>
 
 <style>
@@ -167,6 +156,13 @@
 			scale: 0.85;
 		}
 
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover:not(.receipt-line__mark--done)::before {
+				scale: 1.15;
+			}
+		}
+
 		/* Amber, as a level that is low: the line needs an answer. */
 		&.receipt-line__mark--asks::before {
 			background: var(--color-low);
@@ -205,10 +201,15 @@
 		text-align: start;
 		background: none;
 		border: 0;
-	}
-
-	button.receipt-line__text {
 		cursor: pointer;
+
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover .receipt-line__name {
+				text-decoration: underline;
+				text-underline-offset: 0.2em;
+			}
+		}
 	}
 
 	.receipt-line__name {
@@ -230,14 +231,11 @@
 		}
 	}
 
+	/* The price is a field with no box: a broken line below it, as a place to write on paper. */
 	.receipt-line__price {
 		inline-size: 100%;
-		text-align: end;
-	}
-
-	/* The price is a field with no box: a broken line below it, as a place to write on paper. */
-	input.receipt-line__price {
 		min-block-size: 2.25rem;
+		text-align: end;
 		padding: 0;
 		font: inherit;
 		color: inherit;

@@ -5,10 +5,11 @@
 	 * The food to use first, and how much of it the menu uses. An item is "planned" when the
 	 * meals on the menu use it completely. When all items are planned, the plan is done.
 	 * A tap on an item selects it: the dealer then shows only the recipes that use it.
+	 * With no "ontoggle", the plan only shows the food.
 	 * @type {{
 	 *   items: import('$lib/data/use-up').SoonItem[],
-	 *   selected: Set<string>,
-	 *   ontoggle: (ingredientId: string) => void
+	 *   selected?: Set<string>,
+	 *   ontoggle?: (ingredientId: string) => void
 	 * }}
 	 */
 	let { items, selected, ontoggle } = $props();

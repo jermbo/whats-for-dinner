@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import FoodPlan from '$lib/components/menu/FoodPlan.svelte';
 	import MealHand from '$lib/components/menu/MealHand.svelte';
 	import PantryIdeas from '$lib/components/menu/PantryIdeas.svelte';
 	import CartReminder from '$lib/components/shop/CartReminder.svelte';
@@ -9,17 +10,20 @@
 	import { canMake } from '$lib/data/availability';
 	import { cook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone, menuEntries, recipesOnMenu } from '$lib/data/menu';
+	import { menuTotals } from '$lib/data/shopping';
+	import { useSoon } from '$lib/data/use-up';
 	import { db } from '$lib/db/db';
 	import { useKitchen } from '$lib/kitchen.svelte';
 	import { live } from '$lib/live.svelte';
 	import { status } from '$lib/status.svelte';
-	import { indexBy } from '$lib/util/collections';
+	import { groupBy, indexBy } from '$lib/util/collections';
 	import { greeting, nowMs, todayInWords } from '$lib/util/format';
 
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
 	const sessions = live(() => db.sessions.orderBy('cookedAt').toArray(), []);
+	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
 
 	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
 	const lastSessions = $derived(indexBy(sessions.current, 'recipeId'));
@@ -58,6 +62,19 @@
 				)
 	);
 
+	/**
+	 * The food to use first. Only a side column shows it: on a phone, it is on the "Menu" screen.
+	 */
+	const soon = $derived(
+		useSoon(
+			kitchen.pantry,
+			kitchen.ingredientsById,
+			new Map(groupBy(log.current, (change) => change.ingredientId)),
+			menuTotals(kitchen.menu, kitchen.recipesById),
+			time
+		)
+	);
+
 	/** @param {MenuEntry} entry */
 	async function cooked(entry) {
 		const id = await cook(entry.item);
@@ -77,22 +94,28 @@
 	}
 </script>
 
-<!-- One block, so that the reminder is close to the title. -->
-<div class="stack stack--tight">
-	<PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()} />
-	<CartReminder />
-</div>
+<!-- The pile of meal cards is the main column. The plan for the food is the side column. -->
+<div class="split split--loose">
+	<!-- The reminder is in the row of the title, so that it does not move the meal cards down. -->
+	<PageHeader title="Today" heading={greeting()} eyebrow={todayInWords()}>
+		<CartReminder />
+	</PageHeader>
 
-{#if hand.length > 0}
-	<MealHand entries={hand} {kitchen} {lastSessions} oncook={cooked} onprep={prepared} />
-{/if}
+	{#if hand.length > 0}
+		<MealHand entries={hand} {kitchen} {lastSessions} oncook={cooked} onprep={prepared} />
+	{/if}
 
-{#if ready.length === 0}
-	<div class="grid">
-		<PantryIdeas recipes={ideas} onadd={add} />
+	<div class="split__side">
+		{#if ready.length === 0}
+			<PantryIdeas recipes={ideas} onadd={add} />
+		{/if}
+
+		<div class="split__extra">
+			<FoodPlan items={soon} />
+		</div>
+
+		<div>
+			<a class="button" href={resolve('/menu')}>Change the menu</a>
+		</div>
 	</div>
-{/if}
-
-<div>
-	<a class="button" href={resolve('/menu')}>Change the menu</a>
 </div>

@@ -1,30 +1,46 @@
 <script>
+	import { tick } from 'svelte';
 	import { correct, setProduct } from '$lib/data/cart';
 	import { isCounted } from '$lib/data/put-away';
+	import { sideColumn } from '$lib/layout/side-column';
 	import { round, unitLabel } from '$lib/util/format';
 	import PackagesButton from './PackagesButton.svelte';
 	import ProductPhoto from './ProductPhoto.svelte';
 	import ProductPicker from './ProductPicker.svelte';
 
-	/** @typedef {import('$lib/data/put-away').CartEntry} CartEntry */
+	/**
+	 * @typedef {import('$lib/data/put-away').CartEntry} CartEntry
+	 * @typedef {import('$lib/types').Product} Product
+	 */
 
 	/** One tap on minus or plus changes a weight or a volume by this number. A count: by one. */
 	const STEP = 50;
 
 	/**
-	 * The card of one item of the cart, for a line of the receipt that needs the owner: the photo
-	 * of the product, the question "Which one?", and the quantity as the largest text, with minus
-	 * and plus. "Put away" is at the right, and "Later" is at the left, as on the card of the
-	 * Menu screen.
+	 * The card of one item of the receipt: the photo of the product, the question "Which one?",
+	 * and the quantity as the largest text, with minus and plus. The main button is at the right,
+	 * as on the card of the Menu screen.
+	 *
+	 * An item in the cart: "Put away" puts it into the pantry. A change on the card goes into the
+	 * record at once, so the receipt shows it after "Later" too.
+	 * An item that is put away: the card corrects it. The changes go into the record with "Save",
+	 * so that the pantry changes one time. "Cancel" makes no change.
+	 *
 	 * The card reads the item from "entries", so that a change, such as a new product, shows at
-	 * once. A change of the quantity goes into the record, so the receipt shows it too.
+	 * once.
+	 *
+	 * On a page with one column, the card is a modal sheet above the page. On a page with a side
+	 * column, the card is a panel in that column: put the card in the "split__side" element.
+	 * The receipt stays in use next to the panel. After "Put away", the panel shows the next item
+	 * that is in the cart.
 	 * @type {{
 	 *   entries: CartEntry[],
 	 *   onputaway: (entry: CartEntry) => void,
+	 *   onamend: (entry: CartEntry) => void,
 	 *   onnew: (entry: CartEntry) => void
 	 * }}
 	 */
-	let { entries, onputaway, onnew } = $props();
+	let { entries, onputaway, onamend, onnew } = $props();
 
 	const uid = $props.id();
 
@@ -32,32 +48,106 @@
 	let dialog = $state();
 	/** The ID of the purchase that is open. */
 	let openId = $state('');
+	/** True when the card opened for an item that is put away. */
+	let amending = $state(false);
+	/**
+	 * The quantity and the product that the owner set for an item that is put away. They wait
+	 * for "Save". Null: no change.
+	 * @type {number | null}
+	 */
+	let newQuantity = $state(null);
+	/** @type {Product | null} */
+	let newProduct = $state(null);
 
-	const entry = $derived(
-		entries.find((item) => item.purchase.id === openId && !item.purchase.putAwayAt)
-	);
+	const entry = $derived(entries.find((item) => item.purchase.id === openId));
+	const product = $derived(newProduct ?? entry?.product);
+	const quantity = $derived(newQuantity ?? entry?.quantity ?? 0);
 	const counted = $derived(isCounted(entry?.ingredient));
 	const unit = $derived(entry?.ingredient?.unit);
 
+	/** True when the card is open as a panel in the side column. */
+	const isPanel = () => Boolean(dialog?.open && !dialog.matches(':modal'));
+
 	/** @param {string} purchaseId */
-	export function open(purchaseId) {
+	export async function open(purchaseId) {
+		if (!dialog) return;
+		// The panel is open, and the focus is in it: the focus must go to the new item.
+		const inPanel = isPanel() && dialog.contains(document.activeElement);
+
 		openId = purchaseId;
-		dialog?.showModal();
+		amending = entries.some((item) => item.purchase.id === purchaseId && item.purchase.putAwayAt);
+		newQuantity = null;
+		newProduct = null;
+
+		if (isPanel() && sideColumn(dialog)) {
+			// The panel stays open. Only its item changes.
+			if (!inPanel) return;
+			await tick();
+			/** @type {HTMLElement | null} */ (dialog.querySelector('button, input'))?.focus();
+			return;
+		}
+
+		if (dialog.open) dialog.close();
+		if (sideColumn(dialog)) dialog.show();
+		else dialog.showModal();
 	}
 
-	// The item is put away, on the card or with "Put all away": the card has nothing to show.
+	/** In a narrow window, the page has no side column: a panel has no place, and it closes. */
+	function fit() {
+		if (dialog && isPanel() && !sideColumn(dialog)) dialog.close();
+	}
+
+	// The panel does not cover the receipt. The ring of a line, or "Put all away", can put the
+	// open item away: then its card closes.
 	$effect(() => {
-		if (!entry && dialog?.open) dialog.close();
+		if (!amending && entry?.purchase.putAwayAt && isPanel()) dialog?.close();
 	});
 
 	/**
-	 * @param {CartEntry} item
-	 * @param {number} quantity Not a number: the app proposes the quantity again.
+	 * The next item of the receipt that is in the cart, after this one.
+	 * @param {CartEntry} current
 	 */
-	function setQuantity(item, quantity) {
-		correct(item.purchase, {
-			quantity: Number.isFinite(quantity) ? Math.max(0, round(quantity)) : null
-		});
+	function nextWaiting(current) {
+		const at = entries.findIndex((item) => item.purchase.id === current.purchase.id);
+		return [...entries.slice(at + 1), ...entries.slice(0, at)].find(
+			(item) => !item.purchase.putAwayAt
+		);
+	}
+
+	/**
+	 * @param {CartEntry} item
+	 * @param {number} value Not a number: the card shows the quantity of the record again.
+	 */
+	function setQuantity(item, value) {
+		const next = Number.isFinite(value) ? Math.max(0, round(value)) : null;
+		if (amending) newQuantity = next;
+		else correct(item.purchase, { quantity: next });
+	}
+
+	/**
+	 * @param {CartEntry} item
+	 * @param {Product} selected
+	 */
+	function select(item, selected) {
+		if (amending) newProduct = selected;
+		else setProduct(item.purchase, selected.id);
+	}
+
+	/**
+	 * A new product goes into the record when it is made, also for an item that is put away.
+	 * @param {CartEntry} item
+	 */
+	function startProduct(item) {
+		newProduct = null;
+		onnew(item);
+	}
+
+	/**
+	 * @param {CartEntry} item
+	 * @param {number} price
+	 */
+	function setPrice(item, price) {
+		if (!amending) correct(item.purchase, { price: Number.isFinite(price) ? price : null });
 	}
 
 	/**
@@ -71,121 +161,154 @@
 
 		const data = new FormData(event.currentTarget);
 		const price = String(data.get('price') ?? '').trim();
-		onputaway({
+		const values = {
 			...entry,
+			product,
 			quantity: counted ? Number(data.get('quantity')) || 0 : null,
 			price: price && Number.isFinite(Number(price)) ? Number(price) : null
-		});
+		};
+
+		// The panel goes on to the next item in the cart.
+		const next = !amending && isPanel() ? nextWaiting(entry) : undefined;
+
+		if (amending) onamend(values);
+		else onputaway(values);
+
+		if (next) open(next.purchase.id);
+		else dialog?.close();
 	}
 </script>
+
+<svelte:window onresize={fit} />
 
 <dialog class="item-card" bind:this={dialog} aria-labelledby="{uid}-title">
 	{#if entry}
 		{@const item = entry}
-		{@const { purchase, ingredient, product } = item}
+		{@const { purchase, ingredient } = item}
 
-		<form class="item-card__form" onsubmit={submit}>
-			{#if product?.photoId}
-				{#key product.id}
-					<div class="item-card__photo"><ProductPhoto {product} /></div>
-				{/key}
-			{/if}
-
-			<div>
-				<h2 id="{uid}-title">{purchase.name}</h2>
-				{#if product && product.name !== purchase.name}
-					<p class="muted">{product.name}</p>
+		<!-- A new key gives new fields for each item: the panel goes from one item to the next. -->
+		{#key purchase.id}
+			<form class="item-card__form" onsubmit={submit}>
+				{#if product?.photoId}
+					{#key product.id}
+						<div class="item-card__photo"><ProductPhoto {product} /></div>
+					{/key}
 				{/if}
-			</div>
 
-			{#if ingredient}
-				<ProductPicker
-					name={purchase.name}
-					products={item.products}
-					unit={counted ? unit : undefined}
-					selected={product}
-					asking={counted && !product && item.products.length > 1}
-					onselect={(selected) => setProduct(purchase, selected.id)}
-					onnew={() => onnew(item)}
-				/>
-			{/if}
+				<div>
+					<h2 id="{uid}-title">{purchase.name}</h2>
+					{#if product && product.name !== purchase.name}
+						<p class="muted">{product.name}</p>
+					{/if}
+				</div>
 
-			{#if counted && unit}
-				{@const step = unit === 'count' ? 1 : STEP}
-				<div class="item-card__quantity">
-					<button
-						class="button button--round"
-						type="button"
-						onclick={() => setQuantity(item, (item.quantity ?? 0) - step)}
-					>
-						<span aria-hidden="true">−</span>
-						<span class="visually-hidden">Less</span>
-					</button>
+				{#if ingredient}
+					<ProductPicker
+						name={purchase.name}
+						products={item.products}
+						unit={counted ? unit : undefined}
+						selected={product}
+						asking={counted && !product && item.products.length > 1}
+						onselect={(selected) => select(item, selected)}
+						onnew={() => startProduct(item)}
+					/>
+				{/if}
 
-					<label class="item-card__number">
-						<span class="visually-hidden">
-							Quantity of {purchase.name} in {unitLabel(unit)}
-						</span>
+				{#if counted && unit}
+					{@const step = unit === 'count' ? 1 : STEP}
+					<div class="item-card__quantity">
+						<button
+							class="button button--round"
+							type="button"
+							onclick={() => setQuantity(item, quantity - step)}
+						>
+							<span aria-hidden="true">−</span>
+							<span class="visually-hidden">Less</span>
+						</button>
+
+						<label class="item-card__number">
+							<span class="visually-hidden">
+								Quantity of {purchase.name} in {unitLabel(unit)}
+							</span>
+							<input
+								class="item-card__input"
+								name="quantity"
+								type="number"
+								inputmode="decimal"
+								min="0"
+								step="any"
+								required
+								value={quantity || ''}
+								onchange={(event) => setQuantity(item, event.currentTarget.valueAsNumber)}
+							/>
+							{#if unit !== 'count'}
+								<span class="item-card__unit" aria-hidden="true">{unitLabel(unit)}</span>
+							{/if}
+						</label>
+
+						<button
+							class="button button--round"
+							type="button"
+							onclick={() => setQuantity(item, quantity + step)}
+						>
+							<span aria-hidden="true">+</span>
+							<span class="visually-hidden">More</span>
+						</button>
+					</div>
+				{/if}
+
+				<div class="item-card__price">
+					<PackagesButton {purchase} />
+					<div class="field">
+						<label class="field__label" for="{uid}-price">
+							{purchase.packages > 1 ? 'Price of 1 package' : 'Price'}
+						</label>
 						<input
-							class="item-card__input"
-							name="quantity"
+							class="field__control"
+							id="{uid}-price"
+							name="price"
 							type="number"
 							inputmode="decimal"
 							min="0"
 							step="any"
-							required
-							value={item.quantity || ''}
-							onchange={(event) => setQuantity(item, event.currentTarget.valueAsNumber)}
+							placeholder="0.00"
+							value={item.price?.toFixed(2) ?? ''}
+							onchange={(event) => setPrice(item, event.currentTarget.valueAsNumber)}
 						/>
-						{#if unit !== 'count'}
-							<span class="item-card__unit" aria-hidden="true">{unitLabel(unit)}</span>
-						{/if}
-					</label>
+					</div>
+				</div>
 
-					<button
-						class="button button--round"
-						type="button"
-						onclick={() => setQuantity(item, (item.quantity ?? 0) + step)}
-					>
-						<span aria-hidden="true">+</span>
-						<span class="visually-hidden">More</span>
+				<div class="item-card__actions">
+					<button class="button" type="button" onclick={() => dialog?.close()}>
+						{amending ? 'Cancel' : 'Later'}
+					</button>
+					<button class="button button--primary" type="submit">
+						{amending ? 'Save' : 'Put away'}
 					</button>
 				</div>
-			{/if}
-
-			<div class="item-card__price">
-				<PackagesButton {purchase} />
-				<div class="field">
-					<label class="field__label" for="{uid}-price">
-						{purchase.packages > 1 ? 'Price of 1 package' : 'Price'}
-					</label>
-					<input
-						class="field__control"
-						id="{uid}-price"
-						name="price"
-						type="number"
-						inputmode="decimal"
-						min="0"
-						step="any"
-						placeholder="0.00"
-						value={item.price?.toFixed(2) ?? ''}
-						onchange={(event) => {
-							const price = event.currentTarget.valueAsNumber;
-							correct(purchase, { price: Number.isFinite(price) ? price : null });
-						}}
-					/>
-				</div>
-			</div>
-
-			<div class="item-card__actions">
-				<button class="button" type="button" onclick={() => dialog?.close()}>Later</button>
-				<button class="button button--primary" type="submit">Put away</button>
-			</div>
-		</form>
+			</form>
+		{/key}
 	{/if}
 </dialog>
 
+<!-- The side column is empty while the panel is closed. This line tells how to open it. -->
+<p class="item-card__hint muted split__extra">Select a line of the receipt to see its card.</p>
+
 <style>
+	/* A panel in the side column of the page: it is in the page, and not above it. */
+	.item-card:not(:modal) {
+		position: static;
+		inline-size: 100%;
+		max-inline-size: none;
+		max-block-size: none;
+		margin: 0;
+	}
+
+	/* The browser sets "open", so the selector is global. */
+	.item-card:global([open]) + .item-card__hint {
+		display: none;
+	}
+
 	.item-card__form {
 		display: flex;
 		flex-direction: column;
@@ -256,7 +379,7 @@
 		}
 	}
 
-	/* "Later" is at the left and "Put away" is at the right, and "Put away" is the wide one. */
+	/* The main button is at the right, and it is the wide one. */
 	.item-card__actions {
 		display: grid;
 		grid-template-columns: 1fr 1.6fr;

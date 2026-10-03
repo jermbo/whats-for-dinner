@@ -104,69 +104,76 @@
 	}
 </script>
 
-<!-- One block, so that the parts are closer than the parts of other screens. -->
-<div class="stack">
-	<div class="stack stack--tight">
-		<PageHeader title="Shopping list">
-			<button class="button button--round" type="button" onclick={() => scanner?.open()}>
-				<Icon name="scan" />
-				<span class="visually-hidden">Scan a barcode</span>
-			</button>
-		</PageHeader>
+<!--
+	One block, so that the parts are closer than the parts of other screens.
+	The list is the main column. The cart is the side column: it stays in view.
+-->
+<div class="split shop">
+	<div class="stack">
+		<div class="stack stack--tight">
+			<PageHeader title="Shopping list">
+				<button class="button button--round" type="button" onclick={() => scanner?.open()}>
+					<Icon name="scan" />
+					<span class="visually-hidden">Scan a barcode</span>
+				</button>
+			</PageHeader>
 
-		{#if meals.length > 0}
-			<ShopMeals {meals} selected={meal?.id ?? ''} onselect={(id) => (mealId = id)} />
-		{/if}
-
-		<p class="shop__progress">
-			{#if total === 0}
-				The pantry has all ingredients for the menu.
-			{:else if needed.length === 0}
-				You have all items: <strong>{cart.length} of {total}</strong> in the cart.
-			{:else}
-				<strong>{cart.length} of {total}</strong> in the cart
+			{#if meals.length > 0}
+				<ShopMeals {meals} selected={meal?.id ?? ''} onselect={(id) => (mealId = id)} />
 			{/if}
-		</p>
+
+			<p class="shop__progress">
+				{#if total === 0}
+					The pantry has all ingredients for the menu.
+				{:else if needed.length === 0}
+					You have all items: <strong>{cart.length} of {total}</strong> in the cart.
+				{:else}
+					<strong>{cart.length} of {total}</strong> in the cart
+				{/if}
+			</p>
+		</div>
+
+		{#if groups.length > 0}
+			<div class="grid shop__aisles">
+				{#each groups as aisle, index (aisle.name)}
+					<section class="stack stack--tight" aria-labelledby="{uid}-aisle-{index}">
+						<h2 class="shop__aisle" id="{uid}-aisle-{index}">{aisle.name}</h2>
+						<ul class="list">
+							{#each aisle.rows as row (row.key)}
+								<!-- Only an item that no meal needs can be removed from the list. -->
+								{@const added = row.quantity === 0 ? row.item : null}
+								<ShoppingRow
+									{row}
+									products={productsOf.get(row.ingredient?.id ?? '') ?? []}
+									ontake={(product) => taken(row, product)}
+									onremove={added ? () => removeManualItem(added.id) : undefined}
+								/>
+							{/each}
+						</ul>
+					</section>
+				{/each}
+			</div>
+		{/if}
 	</div>
 
-	{#if groups.length > 0}
-		<div class="grid">
-			{#each groups as aisle, index (aisle.name)}
-				<section class="stack stack--tight" aria-labelledby="{uid}-aisle-{index}">
-					<h2 class="shop__aisle" id="{uid}-aisle-{index}">{aisle.name}</h2>
-					<ul class="list">
-						{#each aisle.rows as row (row.key)}
-							<!-- Only an item that no meal needs can be removed from the list. -->
-							{@const added = row.quantity === 0 ? row.item : null}
-							<ShoppingRow
-								{row}
-								products={productsOf.get(row.ingredient?.id ?? '') ?? []}
-								ontake={(product) => taken(row, product)}
-								onremove={added ? () => removeManualItem(added.id) : undefined}
-							/>
-						{/each}
-					</ul>
-				</section>
-			{/each}
-		</div>
-	{/if}
-
 	{#if shownCart.length > 0}
-		<section class="stack stack--tight" aria-labelledby="{uid}-cart">
-			<div class="cluster cluster--between">
-				<h2 class="shop__aisle" id="{uid}-cart">In the cart</h2>
-				<a class="button button--primary" href={resolve('/shop/put-away')}>Put away</a>
-			</div>
-			<ul class="list">
-				{#each shownCart as purchase (purchase.id)}
-					<CartRow
-						{purchase}
-						product={productsById.get(purchase.productId ?? '')}
-						unit={kitchen.ingredientsById.get(purchase.ingredientId ?? '')?.unit}
-					/>
-				{/each}
-			</ul>
-		</section>
+		<div class="split__side split__side--sticky">
+			<section class="stack stack--tight" aria-labelledby="{uid}-cart">
+				<div class="cluster cluster--between">
+					<h2 class="shop__aisle" id="{uid}-cart">In the cart</h2>
+					<a class="button button--primary" href={resolve('/shop/put-away')}>Put away</a>
+				</div>
+				<ul class="list">
+					{#each shownCart as purchase (purchase.id)}
+						<CartRow
+							{purchase}
+							product={productsById.get(purchase.productId ?? '')}
+							unit={kitchen.ingredientsById.get(purchase.ingredientId ?? '')?.unit}
+						/>
+					{/each}
+				</ul>
+			</section>
+		</div>
 	{/if}
 
 	<AddItemForm ingredients={kitchen.ingredients} />
@@ -175,6 +182,16 @@
 <ScanDialog bind:this={scanner} onfound={scanned} />
 
 <style>
+	/* The cart has a fixed width. The list gets the width that is left. */
+	.shop {
+		--split-columns: minmax(0, 1fr) 22rem;
+	}
+
+	/* An aisle is as wide as the list on a phone: a wide main column has two aisles side by side. */
+	.shop__aisles {
+		--grid-min: 21rem;
+	}
+
 	.shop__progress {
 		color: var(--color-muted);
 

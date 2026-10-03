@@ -7,7 +7,7 @@
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
 	/**
-	 * The meals that are on the menu now, as one row of small meal cards that scrolls sideways.
+	 * The meals that are on the menu now, as one row of small meal cards: a "shelf" of the layout.
 	 * These are the cards of the hand on the "Today" screen. A tap turns a card: its back opens
 	 * on the full screen, and "Remove from the menu" is there.
 	 * @type {{
@@ -44,7 +44,7 @@
 {#if entries.length === 0}
 	<p class="muted">The menu is empty. Add the meal below, or look at the next one.</p>
 {:else}
-	<ul class="menu-hand" aria-label="Meals on the menu" bind:this={row}>
+	<ul class="shelf" aria-label="Meals on the menu" bind:this={row}>
 		{#each entries as entry (entry.item.id)}
 			<li class="menu-hand__item" animate:reorder transition:pop>
 				<MiniMealCard {entry} onturn={(card) => sheet?.open(entry.item.id, card)} />
@@ -56,32 +56,8 @@
 <MealSheet bind:this={sheet} {entries} {kitchen} {lastSessions} {onremove} {onprep} />
 
 <style>
-	/*
-	 * The row goes to the edges of the screen.
-	 * "position: relative" keeps the hidden texts of the cards in the row: see SoonShelf.
-	 */
-	.menu-hand {
-		position: relative;
-		display: flex;
-		gap: var(--space-3);
-		margin: 0 calc(-1 * var(--space-5));
-		padding: var(--space-2) var(--space-5);
-		overflow-x: auto;
-		list-style: none;
-		scrollbar-width: none;
-	}
-
 	.menu-hand__item {
 		flex: none;
 		inline-size: 4.5rem;
-	}
-
-	@media (min-width: 60rem) {
-		.menu-hand {
-			flex-wrap: wrap;
-			margin-inline: 0;
-			padding-inline: 0;
-			overflow-x: visible;
-		}
 	}
 </style>

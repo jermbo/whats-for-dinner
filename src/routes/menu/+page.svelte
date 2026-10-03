@@ -128,8 +128,11 @@
 	}
 </script>
 
-<!-- One block, so that the parts are closer than the parts of other screens. -->
-<div class="stack">
+<!--
+	One block, so that the parts are closer than the parts of other screens.
+	The menu and the food to use are the main column. The dealer is the side column.
+-->
+<div class="split">
 	<div class="stack stack--tight">
 		<PageHeader title="Menu">
 			{#if entries.length > 0}
@@ -146,18 +149,20 @@
 		<MenuHand {entries} {kitchen} {lastSessions} onremove={remove} onprep={prepared} />
 	</div>
 
-	<MealDealer
-		title={selected.size === 0 ? 'Next best meal' : `With ${selectedNames}`}
-		{deck}
-		{selected}
-		{empty}
-		onadd={add}
-	>
-		<div class="cluster cluster--between">
-			<ToggleChip label="Cook now ({able.length})" bind:checked={cookNow} />
-			<a class="button" href={resolve('/recipes')}>All recipes</a>
-		</div>
-	</MealDealer>
+	<div class="split__side">
+		<MealDealer
+			title={selected.size === 0 ? 'Next best meal' : `With ${selectedNames}`}
+			{deck}
+			{selected}
+			{empty}
+			onadd={add}
+		>
+			<div class="cluster cluster--between">
+				<ToggleChip label="Cook now ({able.length})" bind:checked={cookNow} />
+				<a class="button" href={resolve('/recipes')}>All recipes</a>
+			</div>
+		</MealDealer>
+	</div>
 
 	<FoodPlan items={soon} {selected} ontoggle={toggle} />
 </div>

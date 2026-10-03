@@ -32,7 +32,7 @@
 </script>
 
 <form class="recipe-form stack stack--loose wide" onsubmit={submit}>
-	<div class="recipe-form__columns">
+	<div class="split split--loose recipe-form__columns">
 		<div class="stack">
 			<div class="field">
 				<label class="field__label" for="{uid}-name">Name</label>
@@ -102,7 +102,7 @@
 			</div>
 		</div>
 
-		<div class="stack stack--loose">
+		<div class="split__side">
 			<RecipeIngredientFields
 				bind:rows={form.ingredients}
 				ingredients={sortByName(ingredients)}
@@ -125,13 +125,9 @@
 />
 
 <style>
+	/* The rows of the ingredients need more width than the fields. */
 	.recipe-form__columns {
-		display: grid;
-		gap: var(--space-8);
-
-		@media (min-width: 60rem) {
-			grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
-		}
+		--split-columns: minmax(0, 1fr) minmax(0, 1.2fr);
 	}
 
 	.recipe-form__actions {

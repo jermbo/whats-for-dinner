@@ -1,7 +1,7 @@
 import { db } from '$lib/db/db';
 import { now } from '$lib/db/ids';
 import { round } from '$lib/util/format';
-import { stock } from './pantry';
+import { changeQuantity, defaultLocation, stock } from './pantry';
 import { settleTrip } from './trips';
 
 /**
@@ -150,5 +150,25 @@ export function putAway(lines) {
 		for (const tripId of new Set(lines.map((line) => line.purchase.tripId))) {
 			await settleTrip(tripId);
 		}
+	});
+}
+
+/**
+ * Corrects an item after it is put away: the product, the quantity, or the price.
+ * The pantry changes by the difference between the new quantity and the old quantity.
+ * @param {Line} line The item with its correct values.
+ */
+export function amend({ purchase, ingredient, productId, quantity, price }) {
+	return db.transaction('rw', [db.purchases, db.pantry, db.pantryLog], async () => {
+		const current = await db.purchases.get(purchase.id);
+		if (!current?.putAwayAt) return;
+
+		const next = isCounted(ingredient) ? (quantity ?? 0) : null;
+		const difference = round((next ?? 0) - (current.quantity ?? 0));
+		if (ingredient && difference !== 0) {
+			const location = defaultLocation(ingredient);
+			await changeQuantity(ingredient.id, difference, 'corrected', { location });
+		}
+		await db.purchases.update(purchase.id, { productId, quantity: next, price, updatedAt: now() });
 	});
 }

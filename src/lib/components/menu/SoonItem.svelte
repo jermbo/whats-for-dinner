@@ -9,10 +9,11 @@
 	/**
 	 * One food item to use first. A tap selects it, and the ideas show only the recipes with the
 	 * selected food. An item that the menu uses completely has a check, and no tap.
+	 * With no "ontoggle", the item only shows the food, and it has no tap.
 	 * @type {{
 	 *   soon: import('$lib/data/use-up').SoonItem,
 	 *   pressed: boolean,
-	 *   ontoggle: () => void
+	 *   ontoggle?: () => void
 	 * }}
 	 */
 	let { soon, pressed, ontoggle } = $props();
@@ -28,29 +29,37 @@
 	);
 </script>
 
+{#snippet food()}
+	<span class="soon__name">{soon.ingredient.name}</span>
+	<span class="soon__amount">
+		{#key amount}<span in:pop>{amount}</span>{/key}
+	</span>
+	<span class="soon__age">
+		<Icon name="clock" />
+		<span class="visually-hidden">In stock:</span>
+		{age}
+	</span>
+{/snippet}
+
 {#if planned}
 	<div class="soon soon--planned">
 		<span class="soon__name">{soon.ingredient.name}</span>
 		<span class="soon__amount" in:pop><Icon name="check" /> On the menu</span>
 		<span class="soon__age"><span class="visually-hidden">In stock:</span> {age}</span>
 	</div>
-{:else}
+{:else if ontoggle}
 	<button
-		class={['soon', soon.days >= OLD_DAYS && 'soon--old']}
+		class={['soon', 'soon--tap', soon.days >= OLD_DAYS && 'soon--old']}
 		type="button"
 		aria-pressed={pressed}
 		onclick={ontoggle}
 	>
-		<span class="soon__name">{soon.ingredient.name}</span>
-		<span class="soon__amount">
-			{#key amount}<span in:pop>{amount}</span>{/key}
-		</span>
-		<span class="soon__age">
-			<Icon name="clock" />
-			<span class="visually-hidden">In stock:</span>
-			{age}
-		</span>
+		{@render food()}
 	</button>
+{:else}
+	<div class={['soon', soon.days >= OLD_DAYS && 'soon--old']}>
+		{@render food()}
+	</div>
 {/if}
 
 <style>
@@ -65,20 +74,31 @@
 		border: 2px solid transparent;
 		border-radius: 1rem;
 		box-shadow: var(--shadow);
-		cursor: pointer;
 		transition:
 			background-color 0.2s,
 			border-color 0.2s,
 			scale 0.25s var(--ease-spring);
 
-		&:active {
-			scale: 0.95;
-		}
-
 		/* Selected: a teal line and a teal tint. The line is the sign, not only the color. */
 		&[aria-pressed='true'] {
 			background: var(--color-accent-soft);
 			border-color: var(--color-accent-strong);
+		}
+	}
+
+	/* An item that a tap selects. */
+	.soon--tap {
+		cursor: pointer;
+
+		&:active {
+			scale: 0.95;
+		}
+
+		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
+		@media (hover: hover) {
+			&:hover:not([aria-pressed='true']) {
+				border-color: var(--color-border);
+			}
 		}
 	}
 
@@ -122,7 +142,6 @@
 		background: transparent;
 		border: 2px dashed var(--color-border);
 		box-shadow: none;
-		cursor: default;
 
 		& .soon__amount {
 			font-size: 0.9rem;

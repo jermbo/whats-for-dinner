@@ -50,69 +50,75 @@
 {#if recipe.current}
 	{@const current = recipe.current}
 
-	<div class="wide">
-		<RecipePhoto recipe={current} variant="hero" />
-	</div>
+	<!--
+		The photo, the name, and the ingredients are the card of the recipe: the side column, at
+		the left, which stays in view. The work is the main column.
+	-->
+	<div class="split split--reverse split--loose">
+		<div class="split__side split__side--sticky">
+			<RecipePhoto recipe={current} variant="hero" />
 
-	<PageHeader title={current.name}>
-		<a class="button" href={resolve('/recipes/[id]/edit', { id })}>Edit</a>
-	</PageHeader>
+			<PageHeader title={current.name}>
+				<a class="button" href={resolve('/recipes/[id]/edit', { id })}>Edit</a>
+			</PageHeader>
 
-	<p class="muted">
-		{labelOf(MEAL_TYPES, current.mealType)} · {current.servings} servings
-		{#if current.inRotation}· In rotation{/if}
-	</p>
+			<p class="muted">
+				{labelOf(MEAL_TYPES, current.mealType)} · {current.servings} servings
+				{#if current.inRotation}· In rotation{/if}
+			</p>
 
-	<RecipeSource source={current.source} />
+			<RecipeSource source={current.source} />
 
-	{#if !onMenu}
-		<ActionBar>
-			<button class="button button--primary button--wide" type="button" onclick={add}>
-				{addLabel}
-			</button>
-		</ActionBar>
-	{:else}
-		<div>
-			<span class="badge badge--good">On the menu</span>
+			{#if !onMenu}
+				<ActionBar>
+					<button class="button button--primary button--wide" type="button" onclick={add}>
+						{addLabel}
+					</button>
+				</ActionBar>
+			{:else}
+				<div>
+					<span class="badge badge--good">On the menu</span>
+				</div>
+				{#if toBuy > 0}
+					<ActionBar>
+						<a class="button button--wide" href={resolve('/shop')}>Open the shopping list</a>
+					</ActionBar>
+				{/if}
+			{/if}
+
+			<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
+				<div class="cluster cluster--between">
+					<h2 id="recipe-ingredients">Ingredients</h2>
+					<PantryCount {...count} />
+				</div>
+				<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
+			</section>
 		</div>
-		{#if toBuy > 0}
-			<ActionBar>
-				<a class="button button--wide" href={resolve('/shop')}>Open the shopping list</a>
-			</ActionBar>
-		{/if}
-	{/if}
 
-	<div class="grid">
-		<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
-			<div class="cluster cluster--between">
-				<h2 id="recipe-ingredients">Ingredients</h2>
-				<PantryCount {...count} />
-			</div>
-			<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
-		</section>
+		<div class="stack">
+			{#if current.prepSteps.length > 0}
+				<section class="stack stack--tight" aria-labelledby="recipe-prep">
+					<h2 id="recipe-prep">Preparation</h2>
+					<ul>
+						{#each current.prepSteps as step, index (index)}
+							<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
+						{/each}
+					</ul>
+				</section>
+			{/if}
 
-		{#if current.prepSteps.length > 0}
-			<section class="stack stack--tight" aria-labelledby="recipe-prep">
-				<h2 id="recipe-prep">Preparation</h2>
-				<ul>
-					{#each current.prepSteps as step, index (index)}
-						<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
-					{/each}
-				</ul>
+			{#if current.steps}
+				<section class="stack stack--tight" aria-labelledby="recipe-steps">
+					<h2 id="recipe-steps">Steps</h2>
+					<p class="recipe-detail__steps">{current.steps}</p>
+				</section>
+			{/if}
+
+			<section class="stack stack--tight" aria-labelledby="recipe-history">
+				<h2 id="recipe-history">Cook history</h2>
+				<CookHistory sessions={sessions.current} />
 			</section>
-		{/if}
-
-		{#if current.steps}
-			<section class="stack stack--tight" aria-labelledby="recipe-steps">
-				<h2 id="recipe-steps">Steps</h2>
-				<p class="recipe-detail__steps">{current.steps}</p>
-			</section>
-		{/if}
-
-		<section class="stack stack--tight" aria-labelledby="recipe-history">
-			<h2 id="recipe-history">Cook history</h2>
-			<CookHistory sessions={sessions.current} />
-		</section>
+		</div>
 	</div>
 {:else}
 	<PageHeader title="Recipe" />
@@ -121,6 +127,7 @@
 
 <style>
 	.recipe-detail__steps {
+		max-inline-size: var(--measure);
 		white-space: pre-wrap;
 	}
 </style>
