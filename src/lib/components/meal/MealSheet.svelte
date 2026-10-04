@@ -6,13 +6,10 @@
 	import { entryName } from '$lib/domain/menu';
 	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
 	import { sideColumn } from '$lib/layout/side-column';
-	import { gsap } from '$lib/motion/gsap';
+	import { flipOpen, flipShut, turnToFront } from '$lib/motion/card-flip';
 	import MealCardBack from './MealCardBack.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
-
-	/** The corner of a card, for the start of the grow and the end of the shrink. */
-	const CARD_RADIUS = '12px';
 
 	/**
 	 * The back of a meal card on the full screen. "open" turns the card to its edge, and then the
@@ -66,32 +63,6 @@
 	}
 
 	/**
-	 * The transform that puts the full sheet exactly on a box, from the center.
-	 * @param {DOMRect} box
-	 */
-	function onto(box) {
-		const full = /** @type {HTMLDialogElement} */ (dialog).getBoundingClientRect();
-		return {
-			x: box.left + box.width / 2 - (full.left + full.width / 2),
-			y: box.top + box.height / 2 - (full.top + full.height / 2),
-			scaleX: box.width / full.width,
-			scaleY: box.height / full.height
-		};
-	}
-
-	/**
-	 * The box of the card with no turn, also when the card is on its edge now.
-	 * @param {HTMLElement} element
-	 */
-	function boxOf(element) {
-		const turn = gsap.getProperty(element, 'rotationY');
-		gsap.set(element, { rotationY: 0 });
-		const box = element.getBoundingClientRect();
-		gsap.set(element, { rotationY: turn });
-		return box;
-	}
-
-	/**
 	 * @param {string} id The menu item ID of the meal.
 	 * @param {HTMLElement} from The card element.
 	 */
@@ -108,39 +79,8 @@
 			return;
 		}
 
-		if (prefersReducedMotion.current) {
-			dialog.showModal();
-		} else {
-			const box = boxOf(from);
-			await gsap.to(from, {
-				rotationY: 90,
-				transformPerspective: 900,
-				duration: 0.2,
-				ease: 'power2.in'
-			});
-
-			gsap.set(dialog, { clearProps: 'transform,borderRadius' });
-			gsap.set(inner, { opacity: 0, y: 16 });
-			dialog.showModal();
-			const radius = getComputedStyle(dialog).borderRadius;
-
-			await gsap.fromTo(
-				dialog,
-				{ ...onto(box), rotationY: -90, transformPerspective: 1400, borderRadius: CARD_RADIUS },
-				{
-					x: 0,
-					y: 0,
-					scaleX: 1,
-					scaleY: 1,
-					rotationY: 0,
-					borderRadius: radius,
-					duration: 0.5,
-					ease: 'power3.out'
-				}
-			);
-			gsap.set(dialog, { clearProps: 'borderRadius' });
-			gsap.to(inner, { opacity: 1, y: 0, duration: 0.3, ease: 'power2.out' });
-		}
+		if (prefersReducedMotion.current) dialog.showModal();
+		else await flipOpen(from, dialog, inner);
 
 		filled = true;
 		moving = false;
@@ -150,32 +90,13 @@
 		if (moving || !dialog?.open) return;
 		moving = true;
 
-		if (card && inner && !prefersReducedMotion.current) {
-			const box = boxOf(card);
-			await gsap.to(inner, { opacity: 0, duration: 0.15 });
-			await gsap.to(dialog, {
-				...onto(box),
-				rotationY: -90,
-				transformPerspective: 1400,
-				borderRadius: CARD_RADIUS,
-				duration: 0.32,
-				ease: 'power2.in'
-			});
-		}
+		if (card && inner && !prefersReducedMotion.current) await flipShut(card, dialog, inner);
 
 		// The browser gives the focus back to the button that opened the dialog.
 		dialog.close();
 		filled = false;
 
-		if (card) {
-			const turned = card;
-			await gsap.to(turned, {
-				rotationY: 0,
-				duration: prefersReducedMotion.current ? 0 : 0.35,
-				ease: 'back.out(1.7)',
-				onComplete: () => gsap.set(turned, { clearProps: 'transform' })
-			});
-		}
+		if (card) await turnToFront(card, prefersReducedMotion.current);
 		moving = false;
 	}
 
