@@ -8,8 +8,8 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { take } from '$lib/data/cart';
+	import { allProducts } from '$lib/data/products';
 	import { removeManualItem } from '$lib/data/shopping-items';
-	import { db } from '$lib/db/db';
 	import { productsByIngredient } from '$lib/domain/products';
 	import { aisles, shopMeals } from '$lib/domain/shopping';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
@@ -27,7 +27,7 @@
 
 	const kitchen = useKitchen();
 	const shopping = useShopping();
-	const products = live(() => db.products.toArray(), []);
+	const products = live(allProducts, []);
 
 	/** The recipe ID of the meal whose items the list shows. Empty: all items. */
 	let mealId = $state('');

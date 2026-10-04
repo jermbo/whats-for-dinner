@@ -56,3 +56,7 @@ export async function saveProduct(product) {
 	await db.products.put(record);
 	return record;
 }
+
+export function allProducts() {
+	return db.products.toArray();
+}

@@ -5,10 +5,8 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import RatingInput from '$lib/components/ui/RatingInput.svelte';
 	import { setLeftovers, undoCook, updateSession } from '$lib/data/cooking';
-	import { db } from '$lib/db/db';
-	import { live } from '$lib/state/live.svelte';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { indexBy } from '$lib/util/collections';
 	import { formatQuantity, plural } from '$lib/util/format';
 	import CookDeduction from './CookDeduction.svelte';
 
@@ -20,33 +18,28 @@
 	 * The screen after "Cooked": what the pantry lost, plus the optional photo of the finished
 	 * meal, rating, note, leftovers, and undo.
 	 * A session from Cook mode also tells how long the cook took.
-	 * @type {{ id: string }}
+	 * @type {{
+	 *   id: string,
+	 *   session?: import('$lib/types').CookSession,
+	 *   recipe?: import('$lib/types').Recipe
+	 * }}
+	 *   id: the ID of the cook session.
 	 */
-	let { id } = $props();
+	let { id, session, recipe } = $props();
 
 	const uid = $props.id();
 
-	const session = live(() => db.sessions.get(id), undefined);
-	const ingredients = live(() => db.ingredients.toArray(), []);
-	const pantry = live(() => db.pantry.toArray(), undefined);
-	const recipe = live(async () => {
-		const current = await db.sessions.get(id);
-		return current && db.recipes.get(current.recipeId);
-	}, undefined);
-
-	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
-	const pantryByIngredient = $derived(indexBy(pantry.current ?? [], 'ingredientId'));
+	const kitchen = useKitchen();
+	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
 
 	// An old session shows only the amounts: the pantry of today is not the pantry of that day.
 	const opened = Date.now();
-	const fresh = $derived(
-		session.current !== undefined && Date.parse(session.current.cookedAt) > opened - FRESH_MS
-	);
+	const fresh = $derived(session !== undefined && Date.parse(session.cookedAt) > opened - FRESH_MS);
 
 	/** The ingredients of the meal that have only a state. "Cooked" does not change them. */
 	const uncounted = $derived(
-		session.current?.kind === 'recipe'
-			? (recipe.current?.ingredients ?? [])
+		session?.kind === 'recipe'
+			? (recipe?.ingredients ?? [])
 					.map((row) => ingredientsById.get(row.ingredientId))
 					.filter((ingredient) => ingredient?.tracking === 'state')
 					.map((ingredient) => ingredient?.name)
@@ -55,7 +48,7 @@
 
 	/** The minutes from the start of Cook mode to "Cooked". Zero: the session has no start. */
 	const minutes = $derived.by(() => {
-		const current = session.current;
+		const current = session;
 		if (!current?.startedAt || !current.cookedAt) return 0;
 		return Math.round((Date.parse(current.cookedAt) - Date.parse(current.startedAt)) / MINUTE);
 	});
@@ -68,15 +61,15 @@
 	}
 </script>
 
-{#if session.current && !session.current.cookedAt}
+{#if session && !session.cookedAt}
 	<!-- An open session: Cook mode started, and "Cooked" did not occur yet. -->
-	<PageHeader title={session.current.recipeName} />
+	<PageHeader title={session.recipeName} />
 	<p class="muted">This meal is not cooked yet.</p>
 	<div>
 		<a class="button button--primary" href={resolve('/cook/[id]', { id })}>Continue to cook</a>
 	</div>
-{:else if session.current}
-	{@const current = session.current}
+{:else if session}
+	{@const current = session}
 
 	<p class="cooked-stamp"><span class="stamp">Cooked</span></p>
 
@@ -93,7 +86,7 @@
 		{#if current.deductions.length === 0}
 			<p class="muted">The pantry did not change.</p>
 		{:else if fresh}
-			{#if pantry.current}
+			{#if kitchen.pantry.length > 0}
 				<p class="muted">The pantry has less now. Slide a row if you used a different amount.</p>
 				<ul class="gauges">
 					{#each current.deductions as deduction, index (index)}

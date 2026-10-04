@@ -1,7 +1,22 @@
 import { db } from '$lib/db/db';
-import { getMeta } from '$lib/db/meta';
+import { getMeta, setMeta } from '$lib/db/meta';
 import { doubtOf } from '$lib/domain/doubt';
 import { groupBy } from '$lib/util/collections';
+import { now } from '$lib/util/ids';
+
+/** The note of the time of the last pantry check. */
+const CHECK_KEY = 'lastPantryCheckAt';
+
+/** @returns {Promise<string>} The time of the last pantry check, or '' when there was none. */
+export async function lastPantryCheck() {
+	const time = await getMeta(CHECK_KEY);
+	return typeof time === 'string' ? time : '';
+}
+
+/** Records that the owner completed a pantry check now. */
+export function finishPantryCheck() {
+	return setMeta(CHECK_KEY, now());
+}
 
 /**
  * The pantry items that the app is not sure about now.
@@ -14,10 +29,10 @@ export async function findDoubts() {
 		db.recipes.toArray(),
 		db.sessions.toArray(),
 		db.pantryLog.orderBy('at').toArray(),
-		getMeta('lastPantryCheckAt')
+		lastPantryCheck()
 	]);
 
-	const since = typeof lastCheck === 'string' ? lastCheck : '';
+	const since = lastCheck;
 	const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
 	const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]));
 	const changesByIngredient = groupBy(log, (change) => change.ingredientId);

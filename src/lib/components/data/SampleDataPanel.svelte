@@ -1,10 +1,11 @@
 <script>
-	import { countSampleData, loadSampleData, removeSampleData } from '$lib/data/sample';
-	import { live } from '$lib/state/live.svelte';
+	import { loadSampleData, removeSampleData } from '$lib/data/sample';
 	import { status } from '$lib/state/status.svelte';
 
-	const count = live(countSampleData, 0);
-	const loaded = $derived(count.current > 0);
+	/** @type {{ count: number }} The number of sample records on this device. */
+	let { count } = $props();
+
+	const loaded = $derived(count > 0);
 
 	async function add() {
 		await loadSampleData();

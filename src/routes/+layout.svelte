@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import AppNav from '$lib/components/ui/AppNav.svelte';
 	import StatusMessage from '$lib/components/ui/StatusMessage.svelte';
-	import { requestPersistence } from '$lib/db/persistence';
+	import { requestPersistence } from '$lib/data/persistence';
 	import { usePageTransitions } from '$lib/motion/page-transition';
 	import { provideKitchen } from '$lib/state/kitchen.svelte';
 	import { provideShopping } from '$lib/state/shopping.svelte';

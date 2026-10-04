@@ -2,17 +2,16 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import RecipeForm from '$lib/components/recipes/RecipeForm.svelte';
-	import { db } from '$lib/db/db';
 	import { blankRecipe } from '$lib/domain/recipes';
-	import { live } from '$lib/state/live.svelte';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 
-	const ingredients = live(() => db.ingredients.toArray(), []);
+	const kitchen = useKitchen();
 </script>
 
 <!-- A form with no text made no recipe: "Done" then goes back to the list. -->
 <RecipeForm
 	title="New recipe"
 	recipe={blankRecipe()}
-	ingredients={ingredients.current}
+	ingredients={kitchen.ingredients}
 	ondone={(id) => goto(id ? resolve('/recipes/[id]', { id }) : resolve('/recipes'))}
 />

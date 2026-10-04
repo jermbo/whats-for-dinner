@@ -5,17 +5,15 @@
 	import PantryGauge from '$lib/components/pantry/PantryGauge.svelte';
 	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { findDoubts } from '$lib/data/doubt';
-	import { getMeta, setMeta } from '$lib/db/meta';
+	import { findDoubts, finishPantryCheck, lastPantryCheck } from '$lib/data/doubt';
 	import { groupByLocation, pantryRows } from '$lib/domain/pantry-view';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { formatDate, plural } from '$lib/util/format';
-	import { now } from '$lib/util/ids';
 
 	const kitchen = useKitchen();
-	const lastCheck = live(() => getMeta('lastPantryCheckAt'), undefined);
+	const lastCheck = live(lastPantryCheck, '');
 
 	/**
 	 * The doubts at the start of the check: the item ID and the reason.
@@ -39,7 +37,7 @@
 	const sureGroups = $derived(groupByLocation(sure));
 
 	async function finish() {
-		await setMeta('lastPantryCheckAt', now());
+		await finishPantryCheck();
 		status.say('The pantry check is complete.');
 		finished = true;
 	}
@@ -76,7 +74,7 @@
 			</p>
 			<p class="muted">
 				Slide a row to the real amount. Do not touch a row that is correct.
-				{#if typeof lastCheck.current === 'string'}
+				{#if lastCheck.current}
 					Last check: {formatDate(lastCheck.current)}.
 				{/if}
 			</p>

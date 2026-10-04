@@ -24,6 +24,7 @@ flowchart TD
     R --> W["Data: lib/data"]
     C --> D["Domain: lib/domain"]
     S --> D
+    S --> W
     S --> B["Database: lib/db"]
     W --> D
     W --> B

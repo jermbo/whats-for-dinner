@@ -27,7 +27,10 @@ export default defineConfig([
 	layer('src/lib/domain/**', ['db', 'data', 'state', 'components'], ['$app/*', 'dexie', 'svelte']),
 	layer('src/lib/db/**', ['data', 'state', 'components'], ['$app/*']),
 	layer('src/lib/data/**', ['state', 'components'], ['$app/*']),
-	layer('src/lib/state/**', ['components'], [])
+	layer('src/lib/state/**', ['components'], []),
+	// A screen and a component do not touch the database. A component does not start a query.
+	layer('src/routes/**', ['db'], ['dexie']),
+	layer('src/lib/components/**', ['db'], ['dexie', '$lib/state/live.svelte'])
 ]);
 
 /**
@@ -46,7 +49,7 @@ function layer(files, above, other) {
 					patterns: [
 						{
 							group: [...above.map((folder) => `$lib/${folder}/**`), ...other],
-							message: 'This import goes up a layer. See docs/code/layers.md.'
+							message: 'This import breaks the rule of the layers. See docs/code/layers.md.'
 						}
 					]
 				}

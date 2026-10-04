@@ -10,138 +10,33 @@
 	import UseSoonList from '$lib/components/today/UseSoonList.svelte';
 	import WeekBoard from '$lib/components/today/WeekBoard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { cook, openSessions, startCook } from '$lib/data/cooking';
+	import { addAndStartCook, cook, startCook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone } from '$lib/data/menu';
-	import { db } from '$lib/db/db';
-	import { canMake } from '$lib/domain/availability';
-	import { isCooking } from '$lib/domain/cook-session';
-	import { menuEntries, recipesOnMenu } from '$lib/domain/menu';
-	import { oldestUse, useUpIdeas } from '$lib/domain/use-up';
-	import { weekPlan } from '$lib/domain/week';
-	import { useClock } from '$lib/state/clock.svelte';
-	import { useCookHistory } from '$lib/state/cook-history.svelte';
-	import { useKitchen } from '$lib/state/kitchen.svelte';
-	import { live } from '$lib/state/live.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
-	import { useSoon } from '$lib/state/soon.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { greeting, plural, todayInWords } from '$lib/util/format';
+	import { useToday } from '$lib/state/today.svelte';
+	import { todayInWords } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
-	const kitchen = useKitchen();
+	const today = useToday();
 	const shopping = useShopping();
-	const history = useCookHistory();
-	const open = live(openSessions, []);
 
-	// A meal becomes ready when its lead time is over, so the clock must move.
-	const clock = useClock(60_000);
-	const time = $derived(clock.now);
-	const food = useSoon(() => clock.now);
-
-	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, time));
-
-	/** The meals that you can cook now. */
-	const ready = $derived(entries.filter((entry) => entry.state === 'ready'));
-	const todo = $derived(entries.filter((entry) => entry.state === 'todo'));
-
-	/** The food to use first, the oldest stock first. */
-	const soon = $derived(food.items);
-
-	/** The meals that the owner is in the middle of, by menu item ID. Their cards show the steps. */
-	const cooking = $derived(
-		new Map(
-			open.current
-				.filter((session) => isCooking(session, time))
-				.map((session) => [session.menuItem.id, session])
-		)
-	);
-
-	/**
-	 * The hand: the meals that the owner cooks now, then the ready meals, then the meals that
-	 * wait, then the preparation to do. In one group, the meal with the oldest food is first.
-	 */
-	const STATE_ORDER = { ready: 0, waiting: 1, todo: 2 };
-	const hand = $derived(
-		entries.toSorted(
-			(a, b) =>
-				Number(cooking.has(b.item.id)) - Number(cooking.has(a.item.id)) ||
-				STATE_ORDER[a.state] - STATE_ORDER[b.state] ||
-				(oldestUse(b.recipe, soon)?.days ?? -1) - (oldestUse(a.recipe, soon)?.days ?? -1) ||
-				(a.readyAt ?? 0) - (b.readyAt ?? 0)
-		)
-	);
-
-	const onMenu = $derived(recipesOnMenu(kitchen.menu));
-
-	/** The meals that the pantry can make, when no meal on the menu is ready. */
-	const ideas = $derived(
-		ready.length > 0 || cooking.size > 0
-			? []
-			: useUpIdeas(
-					kitchen.recipes.filter(
-						(recipe) =>
-							!onMenu.has(recipe.id) &&
-							recipe.prepSteps.length === 0 &&
-							canMake(recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
-					),
-					soon,
-					kitchen.ingredientsById,
-					kitchen.pantryByIngredient
-				)
-	);
-
-	const week = $derived(weekPlan(history.sessions, kitchen.menu, time));
-
-	/** @param {Date} date */
-	const clockTime = (date) =>
-		date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
-
-	/** The title of the screen: one word, or a short phrase, that tells the state of the day. */
-	const heading = $derived.by(() => {
-		if (cooking.size > 0) return 'On the stove';
-		if (entries.length === 0) return ideas.length > 0 ? 'Nothing is ready' : greeting();
-		return ready.length === 0 && todo.length === 0 ? 'Nothing is ready' : greeting();
-	});
-
-	/** One sentence under the title. It names the reason for the order of the hand. */
-	const subline = $derived.by(() => {
-		if (cooking.size > 0) {
-			const ends = [...cooking.values()]
-				.flatMap((session) => session.timers.map((timer) => Date.parse(timer.endsAt)))
-				.filter((end) => end > time);
-			if (ends.length > 0) return `The timer ends at ${clockTime(new Date(Math.min(...ends)))}.`;
-			const name = hand[0]?.recipe.name ?? 'The meal';
-			return `${name} is in progress.`;
-		}
-		if (entries.length === 0) {
-			return ideas.length > 0
-				? `The pantry can still make ${plural(ideas.length, 'meal')}.`
-				: 'Your hand is empty.';
-		}
-		if (ready.length > 0) {
-			const first = oldestUse(hand[0].recipe, soon);
-			const count = `${plural(ready.length, 'meal')} ${ready.length === 1 ? 'is' : 'are'} ready.`;
-			return first ? `${count} The ${first.ingredient.name.toLowerCase()} goes first.` : count;
-		}
-		if (todo.length > 0) {
-			return todo.length === 1
-				? 'One thing to start first.'
-				: `${plural(todo.length, 'thing')} to start first.`;
-		}
-		return 'Wait for the next meal.';
+	/** The title block of the screen. */
+	const header = $derived({
+		title: 'Today',
+		heading: today.heading,
+		eyebrow: todayInWords(),
+		subline: today.subline
 	});
 
 	/** The food names for the line of the empty hand. */
 	const soonNames = $derived(
-		soon
+		today.soon
 			.filter((item) => item.free > 0)
 			.slice(0, 2)
 			.map((item) => item.ingredient.name)
 	);
-
-	/** The title block of the screen. */
-	const header = $derived({ title: 'Today', heading, eyebrow: todayInWords(), subline });
 
 	/** @param {MenuEntry} entry */
 	async function start(entry) {
@@ -169,23 +64,20 @@
 
 	/** @param {import('$lib/types').Recipe} recipe */
 	async function cookNow(recipe) {
-		const itemId = await addToMenu(recipe.id);
-		const item = await db.menu.get(itemId);
-		if (!item) return;
-		const id = await startCook(item);
-		goto(resolve('/cook/[id]', { id }));
+		const id = await addAndStartCook(recipe.id);
+		if (id) goto(resolve('/cook/[id]', { id }));
 	}
 </script>
 
 <!-- The hand is the main column. The plan of the week and of the food is the side column. -->
 <div class="split split--loose today">
 	<div class="today__main">
-		{#if hand.length > 0}
+		{#if today.hand.length > 0}
 			<MealHand
-				entries={hand}
-				lastSessions={history.lastByRecipe}
-				{soon}
-				{cooking}
+				entries={today.hand}
+				lastSessions={today.lastSessions}
+				soon={today.soon}
+				cooking={today.cooking}
 				onstart={start}
 				oncook={cooked}
 				onprep={prepared}
@@ -203,21 +95,21 @@
 			<PageHeader {...header}>
 				<CartReminder />
 			</PageHeader>
-			{#if ideas.length === 0}
+			{#if today.ideas.length === 0}
 				<EmptyHand soon={soonNames} />
 			{/if}
 		{/if}
 
-		{#if ideas.length > 0}
-			<PantryIdeas {ideas} oncook={cookNow} onadd={add} />
+		{#if today.ideas.length > 0}
+			<PantryIdeas ideas={today.ideas} oncook={cookNow} onadd={add} />
 		{/if}
 	</div>
 
 	<div class="split__side today__side">
 		<div class="split__extra">
 			<div class="today__panels">
-				<WeekBoard {...week} />
-				<UseSoonList items={soon} />
+				<WeekBoard {...today.week} />
+				<UseSoonList items={today.soon} />
 				<ShopGlance names={shopping.needed.map((row) => row.name)} />
 			</div>
 		</div>

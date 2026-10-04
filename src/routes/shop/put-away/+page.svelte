@@ -6,8 +6,9 @@
 	import ReceiptLine from '$lib/components/shop/ReceiptLine.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { setProduct } from '$lib/data/cart';
+	import { allProducts } from '$lib/data/products';
 	import { amend, putAway } from '$lib/data/put-away';
-	import { db } from '$lib/db/db';
+	import { allTrips } from '$lib/data/trips';
 	import { canMake } from '$lib/domain/availability';
 	import { productsByIngredient } from '$lib/domain/products';
 	import { cartEntry, lastPurchases, toLine } from '$lib/domain/put-away';
@@ -22,8 +23,8 @@
 
 	const kitchen = useKitchen();
 	const shopping = useShopping();
-	const products = live(() => db.products.toArray(), []);
-	const trips = live(() => db.trips.orderBy('startedAt').toArray(), []);
+	const products = live(allProducts, []);
+	const trips = live(allTrips, []);
 
 	const purchases = $derived(shopping.purchases);
 

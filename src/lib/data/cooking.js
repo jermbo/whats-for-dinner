@@ -2,6 +2,7 @@ import { db } from '$lib/db/db';
 import { blankSession, isCooking } from '$lib/domain/cook-session';
 import { newId, now } from '$lib/util/ids';
 import { dropFinishedPhoto } from './finished-photos';
+import { addToMenu } from './menu';
 import { changeQuantity } from './pantry';
 
 /**
@@ -26,6 +27,19 @@ const TABLES = [
  */
 export function openSessions() {
 	return db.sessions.where('cookedAt').equals('').toArray();
+}
+
+/** @param {string} id */
+export function sessionById(id) {
+	return db.sessions.get(id);
+}
+
+/**
+ * All cook sessions of a recipe: the cooked ones and the open one.
+ * @param {string} recipeId
+ */
+export function sessionsOfRecipe(recipeId) {
+	return db.sessions.where('recipeId').equals(recipeId).toArray();
 }
 
 /** The cook sessions of the meals that are cooked, oldest first. This is the cook history. */
@@ -211,4 +225,15 @@ export function setLeftovers(session, hasLeftovers) {
 		}
 		await db.sessions.update(session.id, { leftoverMenuId, updatedAt: time });
 	});
+}
+
+/**
+ * "Cook now": puts a recipe on the menu and starts Cook mode for it.
+ * @param {string} recipeId
+ * @returns {Promise<string | undefined>} The ID of the cook session.
+ */
+export async function addAndStartCook(recipeId) {
+	const itemId = await addToMenu(recipeId);
+	const item = await db.menu.get(itemId);
+	return item && startCook(item);
 }

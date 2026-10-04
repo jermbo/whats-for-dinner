@@ -1,14 +1,13 @@
 <script>
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { db } from '$lib/db/db';
 	import { TRACKING, labelOf } from '$lib/domain/options';
-	import { live } from '$lib/state/live.svelte';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { sortByName } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
 
-	const ingredients = live(() => db.ingredients.toArray(), []);
-	const sorted = $derived(sortByName(ingredients.current));
+	const kitchen = useKitchen();
+	const sorted = $derived(sortByName(kitchen.ingredients));
 
 	/** @type {IngredientDialog | undefined} */
 	let dialog = $state();

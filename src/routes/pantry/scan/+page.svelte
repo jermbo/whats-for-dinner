@@ -8,7 +8,6 @@
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import { stock } from '$lib/data/pantry';
 	import { findProduct, lookupProduct } from '$lib/data/products';
-	import { db } from '$lib/db/db';
 	import { blankProduct } from '$lib/domain/products';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { status } from '$lib/state/status.svelte';
@@ -47,7 +46,7 @@
 
 	/** @param {ProductDraft} product */
 	async function add(product) {
-		const ingredient = await db.ingredients.get(product.ingredientId);
+		const ingredient = kitchen.ingredientsById.get(product.ingredientId);
 		if (!ingredient) return;
 		await stock(ingredient, product.quantity, cause === 'bought' ? 'bought' : 'corrected');
 		status.say(`${ingredient.name} is added to the pantry.`);

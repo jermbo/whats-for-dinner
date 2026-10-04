@@ -21,7 +21,7 @@ When a screen calculates, the opposite occurs: the rule of the kitchen is in a f
 
 A screen has three parts, in this sequence:
 
-1. **Gather.** It calls the [state modules](layers.md) that the page needs: `useKitchen()`, `useToday()`.
+1. **Gather.** It calls the [state modules](layers.md) that the page needs: `useKitchen()`, `useToday()`. For one simple read, it calls `live()` with a read function of the data layer: `live(allTrips, [])`.
 2. **Act.** It has one short function for each action of the page. The function calls the data layer, and then tells the result: a message, or a move to a different page.
 3. **Lay out.** It puts the components in the columns of the page, and gives each one its data.
 
@@ -29,7 +29,7 @@ A screen does not calculate. A sort, a filter with a rule, or a sentence that de
 
 ## What a component does
 
-A component gets its data as properties, and it tells the screen what the owner did with a function property, such as `oncook`. It keeps only the state of its own view: which card is on top, which row is open.
+A component never calls `live()`. It gets its data as properties, and it tells the screen what the owner did with a function property, such as `oncook`. It keeps only the state of its own view: which card is on top, which row is open.
 
 A small component with one action of its own can call the data layer directly. The button for the number of packages calls `setPackages()`. A callback through three components for one tap is worse than one import.
 

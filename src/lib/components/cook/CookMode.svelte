@@ -5,7 +5,6 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { cook, visitCard } from '$lib/data/cooking';
 	import { stopTimer } from '$lib/data/timers';
-	import { db } from '$lib/db/db';
 	import { cookCards } from '$lib/domain/cook-cards';
 	import { notesByStep } from '$lib/domain/step-notes';
 	import { cardSides } from '$lib/input/card-sides';
@@ -13,9 +12,8 @@
 	import { turnPage } from '$lib/motion/transitions';
 	import { chime, unlockSound } from '$lib/sound/chime';
 	import { useClock } from '$lib/state/clock.svelte';
-	import { live } from '$lib/state/live.svelte';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { indexBy } from '$lib/util/collections';
 	import CookFinishedCard from './CookFinishedCard.svelte';
 	import CookIngredientsCard from './CookIngredientsCard.svelte';
 	import CookStepCard from './CookStepCard.svelte';
@@ -30,31 +28,25 @@
 	 * It is a modal dialog: it covers the navigation and keeps the focus. The screen stays on.
 	 * The cook session records each card that the owner opens. So the app keeps the place of
 	 * the owner, and the insights get the real time of each step.
-	 * @type {{ id: string }} The ID of the cook session.
+	 * @type {{
+	 *   id: string,
+	 *   session?: import('$lib/types').CookSession,
+	 *   recipe?: import('$lib/types').Recipe,
+	 *   cooks: import('$lib/types').CookSession[]
+	 * }}
+	 *   id: the ID of the cook session. cooks: all cook sessions of the recipe.
 	 */
-	let { id } = $props();
+	let { id, session, recipe, cooks } = $props();
 
 	const uid = $props.id();
 
-	const session = live(() => db.sessions.get(id), undefined);
-	const recipe = live(async () => {
-		const current = await db.sessions.get(id);
-		return current && db.recipes.get(current.recipeId);
-	}, undefined);
-	/** All cook sessions of the recipe. Their notes show on the steps. */
-	const cooks = live(async () => {
-		const current = await db.sessions.get(id);
-		return current ? db.sessions.where('recipeId').equals(current.recipeId).toArray() : [];
-	}, []);
-	const ingredients = live(() => db.ingredients.toArray(), []);
-	const pantry = live(() => db.pantry.toArray(), []);
+	const kitchen = useKitchen();
+	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
 	const clock = useClock();
 
-	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
-	const pantryByIngredient = $derived(indexBy(pantry.current, 'ingredientId'));
-	const notes = $derived(notesByStep(cooks.current));
+	const notes = $derived(notesByStep(cooks));
 
-	const cards = $derived(recipe.current ? cookCards(recipe.current) : []);
+	const cards = $derived(recipe ? cookCards(recipe) : []);
 	/** The number of each step, by its ID. */
 	const numbers = $derived(
 		new Map(cards.flatMap((card) => (card.kind === 'step' ? [[card.key, card.number]] : [])))
@@ -99,8 +91,8 @@
 	 */
 	let placed = $state(false);
 	$effect(() => {
-		if (placed || !session.current || cards.length === 0) return;
-		const last = session.current.visits.at(-1)?.card;
+		if (placed || !session || cards.length === 0) return;
+		const last = session.visits.at(-1)?.card;
 		const place = Math.max(
 			0,
 			cards.findIndex((item) => item.key === last)
@@ -129,7 +121,7 @@
 	const rung = {};
 	$effect(() => {
 		const now = clock.now;
-		for (const timer of session.current?.timers ?? []) {
+		for (const timer of session?.timers ?? []) {
 			const end = Date.parse(timer.endsAt);
 			if (end > now || rung[timer.id]) continue;
 			rung[timer.id] = true;
@@ -148,7 +140,7 @@
 	}
 
 	async function finish() {
-		const current = session.current;
+		const current = session;
 		if (!current || finishing) return;
 		finishing = true;
 		try {
@@ -179,7 +171,7 @@
 </script>
 
 <svelte:head>
-	<title>{recipe.current ? `Cook: ${recipe.current.name}` : 'Cook'} · Larder</title>
+	<title>{recipe ? `Cook: ${recipe.name}` : 'Cook'} · Larder</title>
 </svelte:head>
 
 <dialog
@@ -190,8 +182,8 @@
 	onkeydown={keys}
 	onpointerdown={unlockSound}
 >
-	{#if placed && session.current && recipe.current && card && (!session.current.cookedAt || finishing)}
-		{@const current = session.current}
+	{#if placed && session && recipe && card && (!session.cookedAt || finishing)}
+		{@const current = session}
 		<div class="cook__inner">
 			<header class="cook__head">
 				<button class="cook__leave" type="button" onclick={leave}>
@@ -199,7 +191,7 @@
 					<span class="visually-hidden">Leave Cook mode. The app keeps your place.</span>
 				</button>
 				<div class="cook__title">
-					<h1 class="cook__name" id="{uid}-title">{recipe.current.name}</h1>
+					<h1 class="cook__name" id="{uid}-title">{recipe.name}</h1>
 					<p class="cook__place" aria-live="polite">{label}</p>
 				</div>
 			</header>
@@ -236,14 +228,14 @@
 					>
 						{#if card.kind === 'ingredients'}
 							<CookIngredientsCard
-								recipe={recipe.current}
+								{recipe}
 								session={current}
 								{ingredientsById}
 								{pantryByIngredient}
 							/>
 						{:else if card.kind === 'step'}
 							<CookStepCard
-								recipe={recipe.current}
+								{recipe}
 								step={card.step}
 								number={card.number}
 								session={current}
@@ -295,7 +287,7 @@
 	{:else if waited}
 		<div class="cook__empty stack">
 			<h1 id="{uid}-title">Cook mode</h1>
-			{#if session.current?.cookedAt}
+			{#if session?.cookedAt}
 				<p>This meal is cooked.</p>
 				<a class="button button--primary" href={resolve('/sessions/[id]', { id })}>
 					Open the cook session

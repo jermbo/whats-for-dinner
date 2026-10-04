@@ -2,6 +2,10 @@
 	import { resolve } from '$app/paths';
 	import SampleDataPanel from '$lib/components/data/SampleDataPanel.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
+	import { countSampleData } from '$lib/data/sample';
+	import { live } from '$lib/state/live.svelte';
+
+	const sampleCount = live(countSampleData, 0);
 
 	const links = /** @type {const} */ ([
 		{ path: '/ingredients', label: 'Ingredients', hint: 'Names, units, and categories.' },
@@ -28,4 +32,4 @@
 	{/each}
 </ul>
 
-<SampleDataPanel />
+<SampleDataPanel count={sampleCount.current} />

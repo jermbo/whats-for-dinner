@@ -2,26 +2,29 @@
 	import { resolve } from '$app/paths';
 	import TripCost from '$lib/components/shop/TripCost.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { db } from '$lib/db/db';
+	import { allTrips } from '$lib/data/trips';
 	import { live } from '$lib/state/live.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 	import { groupBy } from '$lib/util/collections';
 	import { formatMoney } from '$lib/util/format';
 
-	const trips = live(() => db.trips.orderBy('startedAt').reverse().toArray(), []);
-	const purchases = live(() => db.purchases.toArray(), []);
+	const shopping = useShopping();
+	const history = live(allTrips, []);
 
-	const byTrip = $derived(groupBy(purchases.current, (purchase) => purchase.tripId));
+	/** The newest trip is first. */
+	const trips = $derived(history.current.toReversed());
+	const byTrip = $derived(groupBy(shopping.purchases, (purchase) => purchase.tripId));
 </script>
 
 <PageHeader title="Shopping trips">
 	<a class="button" href={resolve('/shop')}>Shopping list</a>
 </PageHeader>
 
-{#if trips.current.length === 0}
+{#if trips.length === 0}
 	<p class="muted">There are no trips yet. The first tap on the shopping list starts one.</p>
 {:else}
 	<ul class="list">
-		{#each trips.current as trip (trip.id)}
+		{#each trips as trip (trip.id)}
 			{@const lines = byTrip.get(trip.id) ?? []}
 			<li class="list__item">
 				<details>

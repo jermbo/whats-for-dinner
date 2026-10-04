@@ -42,3 +42,8 @@ export async function settleTrip(tripId) {
 	const time = now();
 	await db.trips.update(tripId, { completedAt: time, updatedAt: time });
 }
+
+/** All trips, oldest first. */
+export function allTrips() {
+	return db.trips.orderBy('startedAt').toArray();
+}

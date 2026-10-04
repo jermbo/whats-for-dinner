@@ -1,5 +1,5 @@
 import { db } from '$lib/db/db';
-import { setMeta } from '$lib/db/meta';
+import { getMeta, setMeta } from '$lib/db/meta';
 import { recipeShape, sessionShape } from '$lib/db/shape';
 import { newId, now } from '$lib/util/ids';
 import { mergeRecipes } from './merge';
@@ -41,6 +41,12 @@ const TABLES = /** @type {const} */ ([
  */
 function envelope(scope, data) {
 	return { format: FORMAT, version: VERSION, scope, exportedAt: now(), data };
+}
+
+/** @returns {Promise<string>} The time of the last full backup, or '' when there was none. */
+export async function lastBackupAt() {
+	const time = await getMeta('lastBackupAt');
+	return typeof time === 'string' ? time : '';
 }
 
 /** @returns {Promise<BackupFile>} */

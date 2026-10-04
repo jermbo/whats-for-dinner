@@ -5,7 +5,7 @@
 	import MealCardBack from '$lib/components/meal/MealCardBack.svelte';
 	import MealSheet from '$lib/components/meal/MealSheet.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { getMeta, setMeta } from '$lib/db/meta';
+	import { hintSeen, markHintSeen } from '$lib/data/hints';
 	import { entryName } from '$lib/domain/menu';
 	import { throwCard } from '$lib/input/throw-card';
 	import { gsap } from '$lib/motion/gsap';
@@ -98,8 +98,8 @@
 	 * @param {HTMLElement} node
 	 */
 	async function hint(node) {
-		if (cards.length < 2 || (await getMeta(HINT_KEY)) || busy) return;
-		await setMeta(HINT_KEY, true);
+		if (cards.length < 2 || (await hintSeen(HINT_KEY)) || busy) return;
+		await markHintSeen(HINT_KEY);
 
 		const timeline = gsap
 			.timeline()
