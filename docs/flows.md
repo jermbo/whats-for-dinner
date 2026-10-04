@@ -51,7 +51,7 @@ The owner makes the pantry in the tool agree with the real pantry. **[Owner]** (
 | 3    | Scans an item that is not in the list.                                                          | Adds the item. A known barcode needs one tap.                                                             | [Owner] for the scan |
 | 4    | Taps "The rest is correct".                                                                     | Saves the date of the check.                                                                              | [Proposed]           |
 
-The tool has a doubt about an item in these conditions (the rules are in `src/lib/data/doubt.js`): **[Proposed]**
+The tool has a doubt about an item in these conditions (the rules are in `src/lib/domain/doubt.js`): **[Proposed]**
 
 - A weight or a volume that a meal used since the last look.
 - A "have, low, or out" item that is low, or that 3 or more meals used since the last look.

@@ -1,7 +1,7 @@
 <script>
 	import { countSampleData, loadSampleData, removeSampleData } from '$lib/data/sample';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 
 	const count = live(countSampleData, 0);
 	const loaded = $derived(count.current > 0);

@@ -5,21 +5,22 @@
 	import Receipt from '$lib/components/shop/Receipt.svelte';
 	import ReceiptLine from '$lib/components/shop/ReceiptLine.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { canMake } from '$lib/data/availability';
 	import { setProduct } from '$lib/data/cart';
-	import { productsByIngredient } from '$lib/data/products';
-	import { amend, cartEntry, lastPurchases, putAway, toLine } from '$lib/data/put-away';
-	import { shoppingNeeds } from '$lib/data/shopping';
-	import { lastPrices, tripCost } from '$lib/data/trips';
+	import { amend, putAway } from '$lib/data/put-away';
 	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { canMake } from '$lib/domain/availability';
+	import { productsByIngredient } from '$lib/domain/products';
+	import { cartEntry, lastPurchases, toLine } from '$lib/domain/put-away';
+	import { shoppingNeeds } from '$lib/domain/shopping';
+	import { lastPrices, tripCost } from '$lib/domain/trips';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { plural } from '$lib/util/format';
 
 	/**
 	 * @typedef {import('$lib/types').Purchase} Purchase
-	 * @typedef {import('$lib/data/put-away').CartEntry} CartEntry
+	 * @typedef {import('$lib/domain/put-away').CartEntry} CartEntry
 	 */
 
 	const kitchen = useKitchen();

@@ -4,8 +4,8 @@
 	import PantryGauge from '$lib/components/pantry/PantryGauge.svelte';
 	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { pantryGroups } from '$lib/data/pantry-view';
-	import { useKitchen } from '$lib/kitchen.svelte';
+	import { pantryGroups } from '$lib/domain/pantry-view';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 
 	const kitchen = useKitchen();
 

@@ -8,23 +8,17 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { take } from '$lib/data/cart';
-	import { productsByIngredient } from '$lib/data/products';
-	import {
-		aisles,
-		inCart,
-		removeManualItem,
-		shopMeals,
-		shoppingList,
-		shoppingNeeds
-	} from '$lib/data/shopping';
+	import { removeManualItem } from '$lib/data/shopping-items';
 	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { productsByIngredient } from '$lib/domain/products';
+	import { aisles, inCart, shopMeals, shoppingList, shoppingNeeds } from '$lib/domain/shopping';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 
 	/**
-	 * @typedef {import('$lib/data/shopping').ListRow} ListRow
+	 * @typedef {import('$lib/domain/shopping').ListRow} ListRow
 	 * @typedef {import('$lib/types').Product} Product
 	 */
 

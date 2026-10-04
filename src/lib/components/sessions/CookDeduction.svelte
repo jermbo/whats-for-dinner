@@ -1,7 +1,7 @@
 <script>
 	import Gauge from '$lib/components/ui/Gauge.svelte';
 	import { setQuantity } from '$lib/data/pantry';
-	import { pantryScale } from '$lib/data/pantry-scale';
+	import { pantryScale } from '$lib/domain/pantry-scale';
 	import { formatQuantity } from '$lib/util/format';
 
 	/** The first row starts after the page is in view. Each next row starts a moment later. */

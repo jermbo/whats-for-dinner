@@ -8,7 +8,7 @@
 	 * The answer when no meal is ready: the meals that the pantry can make now, as cards. The
 	 * best offer is first: the one that uses up the oldest food.
 	 * @type {{
-	 *   ideas: import('$lib/data/use-up').UseUpIdea[],
+	 *   ideas: import('$lib/domain/use-up').UseUpIdea[],
 	 *   oncook: (recipe: import('$lib/types').Recipe) => void,
 	 *   onadd: (recipe: import('$lib/types').Recipe) => void
 	 * }}

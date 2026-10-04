@@ -1,7 +1,7 @@
 <script>
 	import { tick } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { endWithEmptyStep, newStep, splitLines } from '$lib/data/step-list';
+	import { endWithEmptyStep, newStep, splitLines } from '$lib/domain/step-list';
 	import { dragSort, isDropping } from '$lib/input/drag-sort';
 	import { appear, reorder, shrink } from '$lib/motion/transitions';
 

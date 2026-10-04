@@ -3,7 +3,7 @@
 	import TripCost from '$lib/components/shop/TripCost.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { db } from '$lib/db/db';
-	import { live } from '$lib/live.svelte';
+	import { live } from '$lib/state/live.svelte';
 	import { groupBy } from '$lib/util/collections';
 	import { formatMoney } from '$lib/util/format';
 

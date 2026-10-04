@@ -1,7 +1,7 @@
 <script>
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
 	import { stock } from '$lib/data/pantry';
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { sortByName } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
 

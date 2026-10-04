@@ -1,6 +1,6 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { shrinkPhoto } from '$lib/data/photo-capture';
+	import { shrinkPhoto } from '$lib/input/photo-capture';
 
 	/**
 	 * Takes the photo of a product. A tap opens the rear camera of the phone. The photo becomes

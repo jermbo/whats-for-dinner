@@ -1,7 +1,7 @@
 import { db } from '$lib/db/db';
-import { inCart, shoppingList, shoppingNeeds } from '$lib/data/shopping';
-import { useKitchen } from '$lib/kitchen.svelte';
-import { live } from '$lib/live.svelte';
+import { inCart, shoppingList, shoppingNeeds } from '$lib/domain/shopping';
+import { useKitchen } from './kitchen.svelte';
+import { live } from './live.svelte';
 
 /**
  * The items that the owner must still buy: their number and their names. The navigation shows

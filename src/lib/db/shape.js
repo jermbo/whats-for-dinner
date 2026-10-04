@@ -1,7 +1,7 @@
 // A record from an older version of the app gets the fields of this version here. The upgrade
 // of the database and the import of a file both use these functions.
-import { newStep, splitLines } from '$lib/data/step-list';
-import { newId } from './ids';
+import { newStep, splitLines } from '$lib/domain/step-list';
+import { newId } from '$lib/util/ids';
 
 /**
  * @typedef {import('$lib/types').Recipe} Recipe

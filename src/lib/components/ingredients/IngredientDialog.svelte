@@ -1,5 +1,5 @@
 <script>
-	import { blankIngredient } from '$lib/data/ingredients';
+	import { blankIngredient } from '$lib/domain/ingredients';
 	import IngredientForm from './IngredientForm.svelte';
 
 	/** @typedef {import('$lib/types').Ingredient} Ingredient */

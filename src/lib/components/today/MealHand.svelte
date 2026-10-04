@@ -1,19 +1,19 @@
 <script>
 	import { tick, untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import MealCard from '$lib/components/meal/MealCard.svelte';
+	import MealCardBack from '$lib/components/meal/MealCardBack.svelte';
+	import MealSheet from '$lib/components/meal/MealSheet.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { entryName } from '$lib/data/menu';
 	import { getMeta, setMeta } from '$lib/db/meta';
+	import { entryName } from '$lib/domain/menu';
 	import { throwCard } from '$lib/input/throw-card';
 	import { gsap } from '$lib/motion/gsap';
 	import { pose } from '$lib/motion/pile';
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { shuffled } from '$lib/util/collections';
-	import MealCardBack from './MealCardBack.svelte';
-	import MealSheet from './MealSheet.svelte';
-	import MenuCard from './MenuCard.svelte';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	/** The time of a card that flies out of the hand, in seconds. */
 	const THROW_S = 0.35;
@@ -34,9 +34,9 @@
 	 * The first time, the top card shows that it can move: see "hint".
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
+	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
-	 *   soon?: import('$lib/data/use-up').SoonItem[],
+	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   cooking?: Map<string, import('$lib/types').CookSession>,
 	 *   head?: import('svelte').Snippet<[{ number: number, total: number, onnext: () => void }]>,
 	 *   onstart: (entry: MenuEntry) => void,
@@ -330,7 +330,7 @@
 					{@attach register(entry.item.id)}
 					{@attach at === 0 && !busy ? throwCard(handlers) : null}
 				>
-					<MenuCard
+					<MealCard
 						{entry}
 						{kitchen}
 						{soon}

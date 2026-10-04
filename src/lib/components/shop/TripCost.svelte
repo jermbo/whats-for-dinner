@@ -1,5 +1,5 @@
 <script>
-	import { tripCost } from '$lib/data/trips';
+	import { tripCost } from '$lib/domain/trips';
 	import { formatDay, formatMoney, plural } from '$lib/util/format';
 
 	/**

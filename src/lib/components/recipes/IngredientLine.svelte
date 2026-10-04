@@ -1,5 +1,5 @@
 <script>
-	import { findIngredient, parseLine } from '$lib/data/ingredient-line';
+	import { findIngredient, parseLine } from '$lib/domain/ingredient-line';
 
 	/** @typedef {import('$lib/types').Ingredient} Ingredient */
 

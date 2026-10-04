@@ -1,10 +1,10 @@
 <script>
 	import { prefersReducedMotion } from 'svelte/motion';
+	import MealSheet from '$lib/components/meal/MealSheet.svelte';
 	import { pop, reorder } from '$lib/motion/transitions';
-	import MealSheet from './MealSheet.svelte';
 	import MiniMealCard from './MiniMealCard.svelte';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	/**
 	 * The meals that are on the menu now, as one row of small meal cards: a "shelf" of the layout.
@@ -12,7 +12,7 @@
 	 * on the full screen, and "Remove from the menu" is there.
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
+	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   onremove: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown

@@ -1,5 +1,5 @@
 <script>
-	import { splitByTimes } from '$lib/data/step-text';
+	import { splitByTimes } from '$lib/domain/step-text';
 	import StepTimer from './StepTimer.svelte';
 
 	/** @typedef {import('$lib/types').CookTimer} CookTimer */

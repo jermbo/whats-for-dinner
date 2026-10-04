@@ -1,6 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
-	import { WEEK_MEALS } from '$lib/data/week';
+	import { WEEK_MEALS } from '$lib/domain/week';
 
 	/**
 	 * The place of the cards when the hand is empty: a dashed card of the same size, so that the

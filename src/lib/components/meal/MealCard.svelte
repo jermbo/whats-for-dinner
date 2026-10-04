@@ -2,16 +2,16 @@
 	import { resolve } from '$app/paths';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { pantryCount } from '$lib/data/availability';
-	import { cookProgress, stepsToCook } from '$lib/data/cook-cards';
-	import { entryName } from '$lib/data/menu';
-	import { hasPhoto } from '$lib/data/photos';
-	import { oldestUse, stockAge, URGENT_DAYS } from '$lib/data/use-up';
+	import { pantryCount } from '$lib/domain/availability';
+	import { cookProgress, stepsToCook } from '$lib/domain/cook-cards';
+	import { entryName } from '$lib/domain/menu';
+	import { hasPhoto } from '$lib/domain/recipe-photo';
+	import { oldestUse, stockAge, URGENT_DAYS } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
 	import { formatWhen } from '$lib/util/format';
 	import CardTimer from './CardTimer.svelte';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	/** One hour, in milliseconds. */
 	const HOUR = 60 * 60 * 1000;
@@ -33,8 +33,8 @@
 	 * "Cooked" is the one-tap path for a meal that the owner knows from memory.
 	 * @type {{
 	 *   entry: MenuEntry,
-	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
-	 *   soon?: import('$lib/data/use-up').SoonItem[],
+	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
+	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   session?: import('$lib/types').CookSession,
 	 *   facedown?: boolean,
 	 *   onturn?: (card: HTMLElement) => void,

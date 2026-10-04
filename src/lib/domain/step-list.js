@@ -1,4 +1,4 @@
-import { newId } from '$lib/db/ids';
+import { newId } from '$lib/util/ids';
 
 /** @typedef {import('$lib/types').RecipeStep} RecipeStep */
 

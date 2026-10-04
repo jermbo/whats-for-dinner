@@ -7,24 +7,18 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
 	import { cookedSessions } from '$lib/data/cooking';
-	import {
-		addToMenu,
-		entryName,
-		markPrepDone,
-		menuEntries,
-		recipesOnMenu,
-		removeFromMenu
-	} from '$lib/data/menu';
-	import { menuTotals, shoppingNeeds } from '$lib/data/shopping';
-	import { useSoon, useUpIdeas } from '$lib/data/use-up';
+	import { addToMenu, markPrepDone, removeFromMenu } from '$lib/data/menu';
 	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { entryName, menuEntries, recipesOnMenu } from '$lib/domain/menu';
+	import { menuTotals, shoppingNeeds } from '$lib/domain/shopping';
+	import { useSoon, useUpIdeas } from '$lib/domain/use-up';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { groupBy, indexBy } from '$lib/util/collections';
 	import { nowMs } from '$lib/util/format';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
 	const sessions = live(cookedSessions, []);

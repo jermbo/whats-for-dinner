@@ -1,5 +1,5 @@
 <script>
-	import { shortfall } from '$lib/data/availability';
+	import { shortfall } from '$lib/domain/availability';
 	import { formatQuantity } from '$lib/util/format';
 
 	/**

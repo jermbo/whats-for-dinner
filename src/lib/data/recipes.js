@@ -1,50 +1,14 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
 import { indexBy } from '$lib/util/collections';
+import { newId, now } from '$lib/util/ids';
 
 /**
  * @typedef {import('$lib/types').Recipe} Recipe
  * @typedef {import('$lib/types').RecipeStep} RecipeStep
  */
 
-/**
- * The most characters that the form accepts in the name of a recipe. A name is a title on a card
- * and on a screen, so it must stay short. A name that is longer already (an import) is not cut.
- */
-export const RECIPE_NAME_MAX = 50;
-
 /** The name of a recipe that has steps or ingredients, but no name yet. */
 const NO_NAME = 'New recipe';
-
-/** @returns {Recipe} */
-export function blankRecipe() {
-	return {
-		id: '',
-		name: '',
-		mealType: 'dinner',
-		servings: 2,
-		steps: [],
-		source: '',
-		coverPhotoId: null,
-		inRotation: false,
-		ingredients: [],
-		prepSteps: [],
-		createdAt: '',
-		updatedAt: ''
-	};
-}
-
-/**
- * True when a recipe has something to save: a name, a step, or an ingredient.
- * @param {Recipe} recipe
- */
-export function hasContent(recipe) {
-	return Boolean(
-		recipe.name.trim() ||
-		recipe.steps.some((step) => step.text.trim()) ||
-		recipe.ingredients.some((row) => row.ingredientId)
-	);
-}
 
 /**
  * Saves the text of a recipe: all fields but the photos. Rows that the owner left empty are

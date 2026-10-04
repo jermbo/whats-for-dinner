@@ -1,7 +1,7 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { correct } from '$lib/data/cart';
-	import { isCounted } from '$lib/data/put-away';
+	import { isCounted } from '$lib/domain/put-away';
 	import { formatQuantity, plural } from '$lib/util/format';
 
 	/**
@@ -14,7 +14,7 @@
 	 * A line that is put away has a check in the place of the ring. The owner can still correct
 	 * it: the price in the line, and the quantity and the product on the card.
 	 * @type {{
-	 *   entry: import('$lib/data/put-away').CartEntry,
+	 *   entry: import('$lib/domain/put-away').CartEntry,
 	 *   onputaway: () => void,
 	 *   onopen: () => void
 	 * }}

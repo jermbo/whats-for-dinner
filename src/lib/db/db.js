@@ -1,5 +1,5 @@
 import Dexie from 'dexie';
-import { newId } from './ids';
+import { newId } from '$lib/util/ids';
 import { recipeShape, sessionShape } from './shape';
 
 export const db = /** @type {import('$lib/types').Database} */ (new Dexie('meal-planner'));

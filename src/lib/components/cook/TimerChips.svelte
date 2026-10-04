@@ -1,7 +1,7 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { formatClock } from '$lib/data/step-text';
-	import { secondsLeft } from '$lib/data/timers';
+	import { formatClock } from '$lib/domain/step-text';
+	import { secondsLeft } from '$lib/domain/timers';
 	import { pop } from '$lib/motion/transitions';
 
 	/** @typedef {import('$lib/types').CookTimer} CookTimer */

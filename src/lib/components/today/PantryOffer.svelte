@@ -1,8 +1,8 @@
 <script>
 	import { resolve } from '$app/paths';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
-	import { hasPhoto } from '$lib/data/photos';
-	import { stockAge, URGENT_DAYS } from '$lib/data/use-up';
+	import { hasPhoto } from '$lib/domain/recipe-photo';
+	import { stockAge, URGENT_DAYS } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
 
 	/**
@@ -10,7 +10,7 @@
 	 * sticker has a dashed rule. "Cook this" puts the meal on the menu and starts Cook mode.
 	 * "Add to menu" keeps it for another night.
 	 * @type {{
-	 *   idea: import('$lib/data/use-up').UseUpIdea,
+	 *   idea: import('$lib/domain/use-up').UseUpIdea,
 	 *   oncook: (recipe: import('$lib/types').Recipe) => void,
 	 *   onadd: (recipe: import('$lib/types').Recipe) => void
 	 * }}

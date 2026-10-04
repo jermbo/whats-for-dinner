@@ -6,7 +6,7 @@
 	import { gsap } from '$lib/motion/gsap';
 	import IdeaCard from './IdeaCard.svelte';
 
-	/** @typedef {import('$lib/data/use-up').UseUpIdea} UseUpIdea */
+	/** @typedef {import('$lib/domain/use-up').UseUpIdea} UseUpIdea */
 
 	/** The card in its place. */
 	const REST = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };

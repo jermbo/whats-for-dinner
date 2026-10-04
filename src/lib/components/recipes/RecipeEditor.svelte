@@ -4,8 +4,8 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { deleteRecipe } from '$lib/data/recipes';
 	import { db } from '$lib/db/db';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import RecipeForm from './RecipeForm.svelte';
 
 	/** @type {{ id: string }} */

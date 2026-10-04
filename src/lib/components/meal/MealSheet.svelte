@@ -3,13 +3,13 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { resolve } from '$app/paths';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { entryName } from '$lib/data/menu';
-	import { MEAL_TYPES, labelOf } from '$lib/data/options';
+	import { entryName } from '$lib/domain/menu';
+	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
 	import { sideColumn } from '$lib/layout/side-column';
 	import { gsap } from '$lib/motion/gsap';
 	import MealCardBack from './MealCardBack.svelte';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	/** The corner of a card, for the start of the grow and the end of the shrink. */
 	const CARD_RADIUS = '12px';
@@ -24,7 +24,7 @@
 	 * with "onremove".
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
+	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   oncook?: (entry: MenuEntry) => void,
 	 *   onremove?: (entry: MenuEntry) => void,

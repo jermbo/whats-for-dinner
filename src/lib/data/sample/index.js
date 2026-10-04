@@ -1,5 +1,5 @@
+import { settleTrip } from '$lib/data/trips';
 import { db } from '$lib/db/db';
-import { settleTrip } from '../trips';
 import { SAMPLE_PREFIX } from './keys';
 import { sampleCookPhotos, samplePhotos } from './photos';
 import { sampleRecords } from './records';

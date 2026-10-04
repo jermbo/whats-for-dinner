@@ -1,11 +1,11 @@
 <script>
 	import RecipeSource from '$lib/components/recipes/RecipeSource.svelte';
-	import MealPrep from './MealPrep.svelte';
-	import { shortfall } from '$lib/data/availability';
-	import { STOCK_STATES, labelOf } from '$lib/data/options';
-	import { pantryScale } from '$lib/data/pantry-scale';
-	import { splitByTimes } from '$lib/data/step-text';
+	import { shortfall } from '$lib/domain/availability';
+	import { STOCK_STATES, labelOf } from '$lib/domain/options';
+	import { pantryScale } from '$lib/domain/pantry-scale';
+	import { splitByTimes } from '$lib/domain/step-text';
 	import { formatAgo, formatQuantity } from '$lib/util/format';
+	import MealPrep from './MealPrep.svelte';
 
 	/**
 	 * The back of a meal card: first what the meal needs before you can cook it, then the rating
@@ -13,11 +13,11 @@
 	 * It is a panel of facts: a white face, a frame of ink, and rules of 1, 4, and 8 px.
 	 * The level bars fill when it is open.
 	 * @type {{
-	 *   entry: import('$lib/data/menu').MenuEntry,
-	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
+	 *   entry: import('$lib/domain/menu').MenuEntry,
+	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   last?: import('$lib/types').CookSession,
 	 *   open: boolean,
-	 *   onprep: (entry: import('$lib/data/menu').MenuEntry) => unknown
+	 *   onprep: (entry: import('$lib/domain/menu').MenuEntry) => unknown
 	 * }}
 	 */
 	let { entry, kitchen, last, open, onprep } = $props();

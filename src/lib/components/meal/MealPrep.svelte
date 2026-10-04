@@ -3,7 +3,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { formatWhen } from '$lib/util/format';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	const HOUR = 60 * 60 * 1000;
 

@@ -1,11 +1,11 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
+import { blankSession, isCooking } from '$lib/domain/cook-session';
+import { newId, now } from '$lib/util/ids';
 import { dropFinishedPhoto } from './finished-photos';
 import { changeQuantity } from './pantry';
 
 /**
  * @typedef {import('$lib/types').MenuItem} MenuItem
- * @typedef {import('$lib/types').Recipe} Recipe
  * @typedef {import('$lib/types').CookSession} CookSession
  * @typedef {import('$lib/types').Deduction} Deduction
  */
@@ -21,12 +21,6 @@ const TABLES = [
 ];
 
 /**
- * An open session with no action for this long is from a meal that the owner did not finish.
- * The next start begins again, so that the times of the session are the times of one cook.
- */
-const STALE_MS = 6 * 60 * 60 * 1000;
-
-/**
  * The cook sessions that are open: Cook mode started, and "Cooked" did not occur yet.
  * An open session has an empty "cookedAt".
  */
@@ -37,45 +31,6 @@ export function openSessions() {
 /** The cook sessions of the meals that are cooked, oldest first. This is the cook history. */
 export function cookedSessions() {
 	return db.sessions.where('cookedAt').above('').toArray();
-}
-
-/**
- * True when the owner is in the middle of this meal: the last action is not long ago.
- * @param {CookSession} session An open session.
- * @param {number} nowMs
- */
-export function isCooking(session, nowMs) {
-	const last = session.visits.at(-1)?.at ?? session.startedAt ?? session.updatedAt;
-	return Date.parse(last) > nowMs - STALE_MS;
-}
-
-/**
- * @param {MenuItem} item
- * @param {Recipe} recipe
- * @param {string} time
- * @returns {CookSession}
- */
-function blankSession(item, recipe, time) {
-	return {
-		id: newId(),
-		recipeId: recipe.id,
-		recipeName: recipe.name,
-		kind: item.kind,
-		menuItem: item,
-		startedAt: time,
-		cookedAt: '',
-		servings: recipe.servings,
-		rating: null,
-		note: '',
-		deductions: [],
-		leftoverMenuId: null,
-		photoId: null,
-		visits: [],
-		stepNotes: [],
-		timers: [],
-		checked: [],
-		updatedAt: time
-	};
 }
 
 /** @param {string} itemId The ID of a menu item. */

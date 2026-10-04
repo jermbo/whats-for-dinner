@@ -2,7 +2,7 @@
 	import Gauge from '$lib/components/ui/Gauge.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { setQuantity, setState } from '$lib/data/pantry';
-	import { pantryScale, stateAt } from '$lib/data/pantry-scale';
+	import { pantryScale, stateAt } from '$lib/domain/pantry-scale';
 	import { collapse } from '$lib/motion/transitions';
 
 	/** @typedef {import('$lib/types').PantryItem} PantryItem */

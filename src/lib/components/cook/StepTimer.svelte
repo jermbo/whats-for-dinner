@@ -1,7 +1,7 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { formatClock } from '$lib/data/step-text';
-	import { secondsLeft } from '$lib/data/timers';
+	import { formatClock } from '$lib/domain/step-text';
+	import { secondsLeft } from '$lib/domain/timers';
 
 	/**
 	 * One time in the text of a step, as a button in the sentence. A tap starts the timer.

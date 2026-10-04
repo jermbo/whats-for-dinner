@@ -7,7 +7,7 @@
 	 * the item moves to the end of the row.
 	 * With no "ontoggle", the items only show the food: a tap does nothing.
 	 * @type {{
-	 *   items: import('$lib/data/use-up').SoonItem[],
+	 *   items: import('$lib/domain/use-up').SoonItem[],
 	 *   selected?: Set<string>,
 	 *   ontoggle?: (ingredientId: string) => void
 	 * }}

@@ -6,13 +6,13 @@
 	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { findDoubts } from '$lib/data/doubt';
-	import { groupByLocation, pantryRows } from '$lib/data/pantry-view';
-	import { now } from '$lib/db/ids';
 	import { getMeta, setMeta } from '$lib/db/meta';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { groupByLocation, pantryRows } from '$lib/domain/pantry-view';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { formatDate, plural } from '$lib/util/format';
+	import { now } from '$lib/util/ids';
 
 	const kitchen = useKitchen();
 	const lastCheck = live(() => getMeta('lastPantryCheckAt'), undefined);

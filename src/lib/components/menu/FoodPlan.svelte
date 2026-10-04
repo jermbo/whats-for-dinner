@@ -7,7 +7,7 @@
 	 * A tap on an item selects it: the dealer then shows only the recipes that use it.
 	 * With no "ontoggle", the plan only shows the food.
 	 * @type {{
-	 *   items: import('$lib/data/use-up').SoonItem[],
+	 *   items: import('$lib/domain/use-up').SoonItem[],
 	 *   selected?: Set<string>,
 	 *   ontoggle?: (ingredientId: string) => void
 	 * }}

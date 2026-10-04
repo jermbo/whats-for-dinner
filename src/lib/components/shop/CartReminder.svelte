@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import { cartPurchases } from '$lib/data/trips';
-	import { live } from '$lib/live.svelte';
+	import { live } from '$lib/state/live.svelte';
 
 	/**
 	 * While the cart has items, this link reminds the owner to put them away. It is small, so

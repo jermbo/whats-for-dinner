@@ -1,7 +1,7 @@
 <script>
-	import { useClock } from '$lib/clock.svelte';
-	import { formatClock } from '$lib/data/step-text';
-	import { secondsLeft } from '$lib/data/timers';
+	import { formatClock } from '$lib/domain/step-text';
+	import { secondsLeft } from '$lib/domain/timers';
+	import { useClock } from '$lib/state/clock.svelte';
 
 	/**
 	 * The timer that ends first, on the photo of a card. It runs while the owner is on another

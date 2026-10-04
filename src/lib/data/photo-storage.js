@@ -1,5 +1,5 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
+import { newId, now } from '$lib/util/ids';
 
 /**
  * @typedef {import('$lib/types').Photo} Photo

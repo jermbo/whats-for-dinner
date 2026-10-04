@@ -7,12 +7,13 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
 	import { stock } from '$lib/data/pantry';
-	import { blankProduct, findProduct, lookupProduct } from '$lib/data/products';
+	import { findProduct, lookupProduct } from '$lib/data/products';
 	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { status } from '$lib/status.svelte';
+	import { blankProduct } from '$lib/domain/products';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { status } from '$lib/state/status.svelte';
 
-	/** @typedef {import('$lib/data/products').ProductDraft} ProductDraft */
+	/** @typedef {import('$lib/domain/products').ProductDraft} ProductDraft */
 
 	const CAUSES = [
 		{ value: 'bought', label: 'New purchase' },

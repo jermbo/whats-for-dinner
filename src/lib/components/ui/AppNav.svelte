@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { useShopCount } from '$lib/shop-count.svelte';
+	import { useShopCount } from '$lib/state/shop-count.svelte';
 
 	const links = /** @type {const} */ ([
 		{ path: '/', label: 'Today' },

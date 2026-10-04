@@ -8,7 +8,7 @@
 	 * The children are the lines.
 	 * @type {{
 	 *   trip: import('$lib/types').Trip,
-	 *   cost: import('$lib/data/trips').TripCost,
+	 *   cost: import('$lib/domain/trips').TripCost,
 	 *   children: import('svelte').Snippet
 	 * }}
 	 */

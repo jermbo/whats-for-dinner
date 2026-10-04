@@ -1,7 +1,7 @@
 <script>
 	import { tick } from 'svelte';
 	import { correct, setProduct } from '$lib/data/cart';
-	import { isCounted } from '$lib/data/put-away';
+	import { isCounted } from '$lib/domain/put-away';
 	import { sideColumn } from '$lib/layout/side-column';
 	import { round, unitLabel } from '$lib/util/format';
 	import PackagesButton from './PackagesButton.svelte';
@@ -9,7 +9,7 @@
 	import ProductPicker from './ProductPicker.svelte';
 
 	/**
-	 * @typedef {import('$lib/data/put-away').CartEntry} CartEntry
+	 * @typedef {import('$lib/domain/put-away').CartEntry} CartEntry
 	 * @typedef {import('$lib/types').Product} Product
 	 */
 

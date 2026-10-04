@@ -1,5 +1,5 @@
 <script>
-	import { MEAL_TYPES, labelOf } from '$lib/data/options';
+	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
 	import { plural } from '$lib/util/format';
 	import PrepStepFields from './PrepStepFields.svelte';
 

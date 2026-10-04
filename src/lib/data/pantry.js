@@ -1,6 +1,7 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
+import { defaultLocation } from '$lib/domain/pantry';
 import { round } from '$lib/util/format';
+import { newId, now } from '$lib/util/ids';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -9,14 +10,6 @@ import { round } from '$lib/util/format';
  * @typedef {import('$lib/types').StockState} StockState
  * @typedef {import('$lib/types').StorageLocation} StorageLocation
  */
-
-/**
- * @param {Ingredient} ingredient
- * @returns {StorageLocation}
- */
-export function defaultLocation(ingredient) {
-	return ingredient.perishable ? 'fridge' : 'pantry';
-}
 
 /** @param {string} ingredientId */
 function find(ingredientId) {

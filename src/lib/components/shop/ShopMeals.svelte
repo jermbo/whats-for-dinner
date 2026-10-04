@@ -7,7 +7,7 @@
 	 * items are not in the cart, or "Ready" when you have them all. A tap on a meal shows only
 	 * the items of that meal. A second tap shows all items again.
 	 * @type {{
-	 *   meals: import('$lib/data/shopping').ShopMeal[],
+	 *   meals: import('$lib/domain/shopping').ShopMeal[],
 	 *   selected: string,
 	 *   onselect: (recipeId: string) => void
 	 * }}

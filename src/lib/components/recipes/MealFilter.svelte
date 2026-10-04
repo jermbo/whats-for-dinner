@@ -1,6 +1,6 @@
 <script>
 	import SelectChip from '$lib/components/ui/SelectChip.svelte';
-	import { MEAL_FILTERS } from '$lib/data/options';
+	import { MEAL_FILTERS } from '$lib/domain/options';
 
 	/** @type {{ value: string }} */
 	let { value = $bindable('all') } = $props();

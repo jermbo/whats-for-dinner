@@ -1,9 +1,9 @@
 <script>
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { TRACKING, labelOf } from '$lib/data/options';
 	import { db } from '$lib/db/db';
-	import { live } from '$lib/live.svelte';
+	import { TRACKING, labelOf } from '$lib/domain/options';
+	import { live } from '$lib/state/live.svelte';
 	import { sortByName } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
 

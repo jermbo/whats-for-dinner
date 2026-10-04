@@ -1,6 +1,6 @@
 <script>
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
-	import { stepsToCook } from '$lib/data/cook-cards';
+	import { stepsToCook } from '$lib/domain/cook-cards';
 	import { formatDate, plural } from '$lib/util/format';
 
 	/** @typedef {import('$lib/types').CookSession} CookSession */

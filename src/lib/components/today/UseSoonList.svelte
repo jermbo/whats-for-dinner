@@ -1,5 +1,5 @@
 <script>
-	import { stockAge, URGENT_DAYS } from '$lib/data/use-up';
+	import { stockAge, URGENT_DAYS } from '$lib/domain/use-up';
 
 	/** The most items that the list shows. */
 	const MAX = 4;
@@ -7,7 +7,7 @@
 	/**
 	 * The food to use first, as a ruled list: the name, and a badge with the age of the stock.
 	 * The oldest stock is first. Stock that is old has a tomato badge: only for "Use first".
-	 * @type {{ items: import('$lib/data/use-up').SoonItem[] }}
+	 * @type {{ items: import('$lib/domain/use-up').SoonItem[] }}
 	 */
 	let { items } = $props();
 

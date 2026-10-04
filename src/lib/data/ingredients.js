@@ -1,18 +1,5 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
-
-/** @returns {import('$lib/types').Ingredient} */
-export function blankIngredient() {
-	return {
-		id: '',
-		name: '',
-		category: 'Other',
-		unit: 'g',
-		tracking: 'quantity',
-		perishable: false,
-		updatedAt: ''
-	};
-}
+import { newId, now } from '$lib/util/ids';
 
 /**
  * @param {import('$lib/types').Ingredient} ingredient

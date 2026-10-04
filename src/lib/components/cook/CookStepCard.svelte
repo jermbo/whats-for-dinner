@@ -4,10 +4,10 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
 	import { addStepPhoto } from '$lib/data/step-photos';
-	import { ingredientsIn } from '$lib/data/step-text';
 	import { startTimer, stopTimer } from '$lib/data/timers';
+	import { ingredientsIn } from '$lib/domain/step-text';
 	import { unlockSound } from '$lib/sound/chime';
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { formatDay, formatQuantity } from '$lib/util/format';
 	import StepNoteDialog from './StepNoteDialog.svelte';
 	import StepText from './StepText.svelte';

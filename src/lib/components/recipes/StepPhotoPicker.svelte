@@ -1,7 +1,8 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
-	import { STEP_PHOTO_LIMIT, deleteStepPhoto, selectStepPhoto } from '$lib/data/step-photos';
+	import { deleteStepPhoto, selectStepPhoto } from '$lib/data/step-photos';
+	import { STEP_PHOTO_LIMIT } from '$lib/domain/step-photos';
 
 	/**
 	 * The photos of one step, side by side. A tap on a photo makes it the selected photo: the

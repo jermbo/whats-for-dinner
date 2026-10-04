@@ -1,7 +1,8 @@
 <script>
-	import { download, exportAll, exportRecipes } from '$lib/data/backup';
+	import { exportAll, exportRecipes } from '$lib/data/backup';
+	import { download } from '$lib/data/backup-file';
 	import { getMeta } from '$lib/db/meta';
-	import { live } from '$lib/live.svelte';
+	import { live } from '$lib/state/live.svelte';
 	import { formatDateTime } from '$lib/util/format';
 
 	const lastBackup = live(() => getMeta('lastBackupAt'), undefined);

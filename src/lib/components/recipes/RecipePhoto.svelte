@@ -1,6 +1,6 @@
 <script>
-	import { recipePhoto } from '$lib/data/photos';
-	import { photoAddress } from '$lib/photo-address.svelte';
+	import { recipePhoto } from '$lib/domain/recipe-photo';
+	import { photoAddress } from '$lib/state/photo-address.svelte';
 
 	/**
 	 * The photo of a recipe: its cover, which is a photo of the finished meal from the database.

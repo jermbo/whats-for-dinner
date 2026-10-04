@@ -1,7 +1,5 @@
-import { newId } from '$lib/db/ids';
+import { newId } from '$lib/util/ids';
 import { changeSession } from './cooking';
-
-/** @typedef {import('$lib/types').CookTimer} CookTimer */
 
 /**
  * Starts the timer of one time in one step. The session stores the time when the timer must
@@ -29,13 +27,4 @@ export function stopTimer(sessionId, timerId) {
 	return changeSession(sessionId, (session) => ({
 		timers: session.timers.filter((timer) => timer.id !== timerId)
 	}));
-}
-
-/**
- * The seconds that a timer has left. Zero: the timer is done.
- * @param {CookTimer} timer
- * @param {number} nowMs
- */
-export function secondsLeft(timer, nowMs) {
-	return Math.max(0, Math.ceil((Date.parse(timer.endsAt) - nowMs) / 1000));
 }

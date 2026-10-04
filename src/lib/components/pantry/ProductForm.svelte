@@ -4,7 +4,7 @@
 	import { sortByName } from '$lib/util/collections';
 	import { unitLabel } from '$lib/util/format';
 
-	/** @typedef {import('$lib/data/products').ProductDraft} ProductDraft */
+	/** @typedef {import('$lib/domain/products').ProductDraft} ProductDraft */
 
 	/**
 	 * Links a scanned product to an ingredient. The owner does this one time for each product.

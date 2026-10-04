@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
-	import { hasPhoto } from '$lib/data/photos';
+	import { hasPhoto } from '$lib/domain/recipe-photo';
 	import { photoMorph } from '$lib/motion/photo-morph';
 
 	/**
@@ -10,7 +10,7 @@
 	 * an ink fill.
 	 * The children are the actions of the card. They are at the bottom of the card.
 	 * @type {{
-	 *   idea: import('$lib/data/use-up').UseUpIdea,
+	 *   idea: import('$lib/domain/use-up').UseUpIdea,
 	 *   selected: Set<string>,
 	 *   children?: import('svelte').Snippet
 	 * }}

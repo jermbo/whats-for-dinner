@@ -1,15 +1,15 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import FinishedPhotoField from '$lib/components/cook/FinishedPhotoField.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import RatingInput from '$lib/components/ui/RatingInput.svelte';
 	import { setLeftovers, undoCook, updateSession } from '$lib/data/cooking';
 	import { db } from '$lib/db/db';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 	import { formatQuantity, plural } from '$lib/util/format';
-	import FinishedPhotoField from '$lib/components/cook/FinishedPhotoField.svelte';
 	import CookDeduction from './CookDeduction.svelte';
 
 	/** A session that is this new shows the change of the pantry as it occurs, in milliseconds. */

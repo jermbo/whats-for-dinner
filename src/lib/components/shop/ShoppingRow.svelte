@@ -1,6 +1,6 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { isCounted } from '$lib/data/put-away';
+	import { isCounted } from '$lib/domain/put-away';
 	import { collapse } from '$lib/motion/transitions';
 	import { formatQuantity } from '$lib/util/format';
 	import ProductTile from './ProductTile.svelte';
@@ -15,7 +15,7 @@
 	 * the cart. A tap on a photo does the same, and tells the app which product it is.
 	 * An item that only the owner added has a button that removes it from the list.
 	 * @type {{
-	 *   row: import('$lib/data/shopping').ListRow,
+	 *   row: import('$lib/domain/shopping').ListRow,
 	 *   products: Product[],
 	 *   ontake: (product: Product | null) => void,
 	 *   onremove?: () => void

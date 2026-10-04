@@ -2,30 +2,32 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import MealHand from '$lib/components/menu/MealHand.svelte';
-	import PantryIdeas from '$lib/components/menu/PantryIdeas.svelte';
 	import CartReminder from '$lib/components/shop/CartReminder.svelte';
 	import EmptyHand from '$lib/components/today/EmptyHand.svelte';
 	import HandNext from '$lib/components/today/HandNext.svelte';
+	import MealHand from '$lib/components/today/MealHand.svelte';
+	import PantryIdeas from '$lib/components/today/PantryIdeas.svelte';
 	import ShopGlance from '$lib/components/today/ShopGlance.svelte';
 	import UseSoonList from '$lib/components/today/UseSoonList.svelte';
 	import WeekBoard from '$lib/components/today/WeekBoard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { canMake } from '$lib/data/availability';
-	import { cook, cookedSessions, isCooking, openSessions, startCook } from '$lib/data/cooking';
-	import { addToMenu, markPrepDone, menuEntries, recipesOnMenu } from '$lib/data/menu';
-	import { menuTotals } from '$lib/data/shopping';
-	import { oldestUse, useSoon, useUpIdeas } from '$lib/data/use-up';
-	import { weekPlan } from '$lib/data/week';
+	import { cook, cookedSessions, openSessions, startCook } from '$lib/data/cooking';
+	import { addToMenu, markPrepDone } from '$lib/data/menu';
 	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { useShopCount } from '$lib/shop-count.svelte';
-	import { status } from '$lib/status.svelte';
+	import { canMake } from '$lib/domain/availability';
+	import { isCooking } from '$lib/domain/cook-session';
+	import { menuEntries, recipesOnMenu } from '$lib/domain/menu';
+	import { menuTotals } from '$lib/domain/shopping';
+	import { oldestUse, useSoon, useUpIdeas } from '$lib/domain/use-up';
+	import { weekPlan } from '$lib/domain/week';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { useShopCount } from '$lib/state/shop-count.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { groupBy, indexBy } from '$lib/util/collections';
 	import { greeting, nowMs, plural, todayInWords } from '$lib/util/format';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
 	const shop = useShopCount();

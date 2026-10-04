@@ -2,9 +2,9 @@
 // the newer text wins as a whole, and the photos of the two sides stay.
 import { db } from '$lib/db/db';
 import { recipeShape } from '$lib/db/shape';
+import { limitStepPhotos } from '$lib/domain/step-photos';
 import { indexBy } from '$lib/util/collections';
 import { photoFromText } from './photo-storage';
-import { limitStepPhotos } from './step-photos';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient

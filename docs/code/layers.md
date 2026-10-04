@@ -27,15 +27,18 @@ flowchart TD
     S --> B["Database: lib/db"]
     W --> D
     W --> B
+    B --> D
 ```
 
-| Layer     | Folder           | Its job                                                    | It does not                       |
-| --------- | ---------------- | ---------------------------------------------------------- | --------------------------------- |
-| Screen    | `src/routes`     | Gathers the data of one page and connects taps to actions. | Calculate, or touch the database. |
-| Component | `lib/components` | Shows the data that it gets, and tells what the owner did. | Start a query.                    |
-| State     | `lib/state`      | Keeps data live: queries that update, the clock.           | Write to the database.            |
-| Domain    | `lib/domain`     | The rules of the kitchen, as pure functions.               | Know the database or the screen.  |
-| Data      | `lib/data`       | Reads and writes the database, in transactions.            | Know the screen.                  |
+| Layer     | Folder           | Its job                                                        | It does not                       |
+| --------- | ---------------- | -------------------------------------------------------------- | --------------------------------- |
+| Screen    | `src/routes`     | Gathers the data of one page and connects taps to actions.     | Calculate, or touch the database. |
+| Component | `lib/components` | Shows the data that it gets, and tells what the owner did.     | Start a query.                    |
+| State     | `lib/state`      | Keeps data live: queries that update, the clock.               | Write to the database.            |
+| Domain    | `lib/domain`     | The rules of the kitchen, as pure functions.                   | Know the database or the screen.  |
+| Data      | `lib/data`       | Reads and writes the database, a backup file, and the network. | Know the screen.                  |
+
+The database folder has the tables and their versions. It is not a layer of its own rules: the state and the data layer are the only files that use it.
 
 A pure function gives the same answer for the same input, and changes nothing. `shoppingNeeds(menu, recipes, pantry)` is pure: it gets lists and gives a list.
 

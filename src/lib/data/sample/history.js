@@ -1,4 +1,4 @@
-import { splitByTimes } from '../step-text';
+import { splitByTimes } from '$lib/domain/step-text';
 import { finishedPhoto } from './cook-photos';
 import { daysAgo, id, SAMPLE_PREFIX } from './keys';
 import { stepId } from './recipes';

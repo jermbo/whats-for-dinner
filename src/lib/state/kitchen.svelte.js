@@ -1,6 +1,6 @@
 import { db } from '$lib/db/db';
-import { live } from '$lib/live.svelte';
 import { indexBy } from '$lib/util/collections';
+import { live } from './live.svelte';
 
 /** @typedef {ReturnType<typeof useKitchen>} Kitchen */
 

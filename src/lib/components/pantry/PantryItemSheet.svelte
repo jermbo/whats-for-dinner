@@ -1,12 +1,12 @@
 <script>
-	import { LOCATIONS } from '$lib/data/options';
 	import { removeItem, setLocation } from '$lib/data/pantry';
-	import { status } from '$lib/status.svelte';
+	import { LOCATIONS } from '$lib/domain/options';
+	import { status } from '$lib/state/status.svelte';
 	import ExactQuantityForm from './ExactQuantityForm.svelte';
 
 	/**
 	 * @typedef {import('$lib/types').PantryItem} PantryItem
-	 * @typedef {import('$lib/data/pantry-view').PantryRow} PantryRow
+	 * @typedef {import('$lib/domain/pantry-view').PantryRow} PantryRow
 	 */
 
 	/**

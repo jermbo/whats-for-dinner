@@ -11,7 +11,7 @@
 	 * selected food. An item that the menu uses completely has a check, and no tap.
 	 * With no "ontoggle", the item only shows the food, and it has no tap.
 	 * @type {{
-	 *   soon: import('$lib/data/use-up').SoonItem,
+	 *   soon: import('$lib/domain/use-up').SoonItem,
 	 *   pressed: boolean,
 	 *   ontoggle?: () => void
 	 * }}
