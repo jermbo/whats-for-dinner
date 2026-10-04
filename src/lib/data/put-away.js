@@ -66,7 +66,7 @@ export function lastPurchases(purchases) {
  * @param {number} known.need What the menu needs and the pantry does not have.
  * @returns {number | null} Null for an item that the app does not count.
  */
-export function proposeQuantity({ purchase, ingredient, product, last, need }) {
+function proposeQuantity({ purchase, ingredient, product, last, need }) {
 	if (!isCounted(ingredient)) return null;
 	if (product && product.quantity > 0) return round(purchase.packages * product.quantity);
 	if (last?.quantity) return round((last.quantity / last.packages) * purchase.packages);

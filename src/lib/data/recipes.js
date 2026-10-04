@@ -100,22 +100,6 @@ export function saveRecipe(recipe) {
 }
 
 /**
- * Groups for the menu screen. "To try" is automatic: a recipe with no cook session.
- * @param {Recipe[]} recipes
- * @param {Set<string>} cookedIds The IDs of the recipes that have a cook session.
- * @returns {{ title: string, recipes: Recipe[] }[]}
- */
-export function recipeGroups(recipes, cookedIds) {
-	const sorted = [...recipes].sort((a, b) => a.name.localeCompare(b.name));
-	const cooked = sorted.filter((recipe) => cookedIds.has(recipe.id));
-	return [
-		{ title: 'To try', recipes: sorted.filter((recipe) => !cookedIds.has(recipe.id)) },
-		{ title: 'In rotation', recipes: cooked.filter((recipe) => recipe.inRotation) },
-		{ title: 'Other recipes', recipes: cooked.filter((recipe) => !recipe.inRotation) }
-	].filter((group) => group.recipes.length > 0);
-}
-
-/**
  * Deletes a recipe with its step photos. The cook history stays, with its finished photos.
  * A cook session that is open is not history yet, so it goes.
  * @param {string} id

@@ -30,7 +30,7 @@ const MANY_MEALS = 3;
  *   this ingredient. since: the time of the last pantry check, or '' when there was none.
  * @returns {string}
  */
-export function doubtOf({ item, ingredient, changes, uses, since, time }) {
+function doubtOf({ item, ingredient, changes, uses, since, time }) {
 	// The last time that a person gave the amount of this item.
 	const corrected = changes.findLast((change) => change.cause === 'corrected')?.at ?? '';
 	const looked = corrected > since ? corrected : since;

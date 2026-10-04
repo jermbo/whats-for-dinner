@@ -25,7 +25,7 @@ export function shortfall(ingredient, need, item) {
  * @param {Map<string, PantryItem>} pantryByIngredient
  * @returns {Shortage[]}
  */
-export function missingFor(recipe, ingredientsById, pantryByIngredient) {
+function missingFor(recipe, ingredientsById, pantryByIngredient) {
 	/** @type {Shortage[]} */
 	const missing = [];
 	for (const row of recipe.ingredients) {

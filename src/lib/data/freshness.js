@@ -12,7 +12,7 @@ const DAY = 24 * 60 * 60 * 1000;
  * @param {PantryItem} item
  * @returns {string}
  */
-export function stockedAt(changes, item) {
+function stockedAt(changes, item) {
 	return (
 		changes.findLast(
 			(change) => change.cause === 'bought' || (change.cause === 'corrected' && change.delta > 0)

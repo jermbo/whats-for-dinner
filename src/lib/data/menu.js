@@ -71,7 +71,7 @@ export function markPrepDone(id) {
  * @param {number} nowMs
  * @returns {{ state: PrepState, readyAt: number | null }}
  */
-export function prepStatus(item, recipe, nowMs) {
+function prepStatus(item, recipe, nowMs) {
 	if (item.kind === 'leftover' || recipe.prepSteps.length === 0) {
 		return { state: 'ready', readyAt: null };
 	}

@@ -13,7 +13,7 @@ import { round } from '$lib/util/format';
  * The trip that is open. There is one open trip at a time.
  * @returns {Promise<Trip | undefined>}
  */
-export function openTrip() {
+function openTrip() {
 	return db.trips.filter((trip) => !trip.completedAt).first();
 }
 

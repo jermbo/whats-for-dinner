@@ -12,7 +12,7 @@ const DAY = 24 * 60 * 60 * 1000;
  * The start of the week that holds a time: Monday, 00:00, in local time.
  * @param {number} nowMs
  */
-export function weekStart(nowMs) {
+function weekStart(nowMs) {
 	const date = new Date(nowMs);
 	date.setHours(0, 0, 0, 0);
 	return date.getTime() - ((date.getDay() + 6) % 7) * DAY;
