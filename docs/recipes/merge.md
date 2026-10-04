@@ -2,7 +2,7 @@
 title: How an import merges a recipe
 summary: 'For a recipe that the device has, the newer text wins, and the photos of the two sides stay.'
 parent: share-a-recipe.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Data model](data-model.md) / [Share a recipe](share-a-recipe.md) / How an import merges a recipe
@@ -33,14 +33,17 @@ Each recipe has the time of the last change of its text: the name, the ingredien
 
 A new photo does not change this time. So a cook on the phone never makes the phone newer than a correction on the desktop.
 
+If you change the text on the two devices before a transfer, the older change is lost. So send a change to the other device before you change the text there.
+
 ## The photos: the two sides, then the limit
 
 For each step, the import puts the photos of the file and of the device together. It finds the step by [its ID](data-model.md), so a step with new text or a new position keeps its photos. Then it applies [the limit of three](step-photos.md).
 
-Three cases have a rule.
+Four cases have a rule.
 
 - **The selected photo and the cover.** The choice of the device stays. If the device has none, the import takes the choice of the file.
-- **A step that the newer text does not have.** The import deletes its photos with it.
+- **A step that the newer text does not have.** The import deletes its photos with it. This is the same as when you remove the step in Write mode.
+- **A file with no photos.** A [transfer by QR code](transfer-by-qr-code.md) carries only text. The photos of the device stay on their steps.
 - **An ingredient with the same name on the device.** The recipe uses that one. So "Rice" from the desktop is the rice of your pantry.
 
 ## An example

@@ -8,7 +8,12 @@
 		{ path: '/pantry/check', label: 'Pantry check', hint: 'The weekly check of the stock.' },
 		{ path: '/pantry/scan', label: 'Scan', hint: 'Add an item with its barcode.' },
 		{ path: '/shop/trips', label: 'Shopping trips', hint: 'The cost of each trip to the store.' },
-		{ path: '/data', label: 'Data', hint: 'Export, import, and the status of the app.' }
+		{ path: '/data', label: 'Data', hint: 'Export, import, and the status of the app.' },
+		{
+			path: '/data/code-test',
+			label: 'Code test',
+			hint: 'Find the QR code that the cameras can read.'
+		}
 	]);
 </script>
 

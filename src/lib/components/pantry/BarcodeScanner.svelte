@@ -1,15 +1,31 @@
 <script>
 	import { onMount } from 'svelte';
 
+	/** The barcodes of products. */
+	const PRODUCT_FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e'];
+	/** A QR code with much text has small squares, so the camera must give more points. */
+	const SHARP = { width: { ideal: 1920 }, height: { ideal: 1080 } };
+
 	/**
 	 * Reads a barcode from the camera with the Barcode Detection API of the browser.
 	 * When the API or the camera is not available, it shows why. The page has a text
 	 * field for the number as the alternative.
-	 * @type {{ ondetect: (barcode: string) => void }}
+	 * @type {{
+	 *   ondetect: (barcode: string) => void,
+	 *   formats?: string[],
+	 *   sharp?: boolean,
+	 *   label?: string
+	 * }}
+	 *   formats: the types of code to read. The default is the barcodes of products.
+	 *   sharp: ask the camera for a large picture.
 	 */
-	let { ondetect } = $props();
+	let {
+		ondetect,
+		formats = PRODUCT_FORMATS,
+		sharp = false,
+		label = 'Camera view for the barcode'
+	} = $props();
 
-	const FORMATS = ['ean_13', 'ean_8', 'upc_a', 'upc_e'];
 	const supported = 'BarcodeDetector' in globalThis;
 
 	/** @type {HTMLVideoElement | undefined} */
@@ -19,7 +35,7 @@
 	onMount(() => {
 		if (!supported) return;
 
-		const detector = new BarcodeDetector({ formats: FORMATS });
+		const detector = new BarcodeDetector({ formats });
 		/** @type {MediaStream | undefined} */
 		let stream;
 		/** @type {ReturnType<typeof setInterval> | undefined} */
@@ -33,7 +49,7 @@
 		}
 
 		navigator.mediaDevices
-			?.getUserMedia({ video: { facingMode: 'environment' } })
+			?.getUserMedia({ video: { facingMode: 'environment', ...(sharp && SHARP) } })
 			.then(async (media) => {
 				stream = media;
 				if (stopped || !video) return stop();
@@ -56,13 +72,7 @@
 {#if problem}
 	<p class="card card--notice" role="alert">{problem}</p>
 {:else}
-	<video
-		class="scanner"
-		bind:this={video}
-		playsinline
-		muted
-		aria-label="Camera view for the barcode"
-	></video>
+	<video class="scanner" bind:this={video} playsinline muted aria-label={label}></video>
 {/if}
 
 <style>

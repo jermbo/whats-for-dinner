@@ -2,7 +2,7 @@
 title: How the photos stay light
 summary: 'Three rules keep the photos light: each photo is small, a step keeps three, and a cook adds one finished photo.'
 parent: data-model.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Data model](data-model.md) / How the photos stay light
@@ -33,10 +33,11 @@ Most steps have one photo or none, so a real recipe is much smaller.
 
 ## Which photos go in a file
 
-| File                                 | Photos in it                                              | Reason                                                                  |
-| ------------------------------------ | --------------------------------------------------------- | ----------------------------------------------------------------------- |
-| [Recipe file](share-a-recipe.md)     | The step photos and the cover of the recipes in the file. | The file moves a recipe. The history of your cooks stays on the device. |
-| [Full backup](../shopping/backup.md) | All photos.                                               | The backup is the second copy of all data.                              |
+| File                                          | Photos in it                                              | Reason                                                                  |
+| --------------------------------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [Recipe file](share-a-recipe.md)              | The step photos and the cover of the recipes in the file. | The file moves a recipe. The history of your cooks stays on the device. |
+| [Full backup](../shopping/backup.md)          | All photos.                                               | The backup is the second copy of all data.                              |
+| [Transfer by QR code](transfer-by-qr-code.md) | None.                                                     | A photo is too large for a code.                                        |
 
 A file is text, and a photo as text is one third larger than its bytes. So a recipe with 24 step photos and a cover is a file of about 2 MB.
 

@@ -132,6 +132,10 @@ The sequence in the table is the proposed build sequence.
 | 10 | Shop | Sort the list by store category. Combine equal items. | |
 | 11 | Shop | Staples in the "low" or "out" state go on the list automatically. | |
 | 12 | Recipes | Scale a recipe by servings. | |
+| 13 | Data | Transfer by QR code: one device shows the codes, and the camera of the other device reads them. The desktop sends the text of one recipe to the phone. The phone sends its new cook sessions to the desktop. No photos. **[Owner]** | See [transfer by QR code](recipes/transfer-by-qr-code.md). The owner asked for this on 2026-10-04, before the other items of v1. The first slice is a test page that finds the code size that the two cameras can read. A new device uses the full backup, so there is no transfer of all recipes. |
+| 14 | Data | Merge of each part of a recipe: the name, each ingredient row, and each step have their own "last changed" time. If the two devices changed the same part, the tool asks which one to keep. **[Owner]** accepted this as a roadmap item. | Until then, the newer text wins as a whole, and the older of two edits is lost. |
+| 15 | Data | A mark for a deleted recipe: the ID and the time of the delete. A transfer carries the mark, and the newer of the mark and the text wins. | Necessary only when a transfer sends more than one recipe that the owner selected. Until then, a deleted recipe comes back only if the owner sends it again. |
+| 16 | Data | Transfer of the pantry by QR code. **[Owner]** | Needs a merge rule for the pantry, and a record of each deleted item. Without that record, a transfer brings a deleted item back. |
 
 ### 2.3 v1 is complete when
 

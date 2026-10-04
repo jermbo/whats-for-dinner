@@ -2,7 +2,7 @@
 title: Share a recipe
 summary: 'A recipe file carries recipes, their ingredients, and their photos from one device to a different one.'
 parent: data-model.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Data model](data-model.md) / Share a recipe
@@ -57,12 +57,16 @@ A recipe file is JSON: text that a person and a program can read. It has the sam
 | Ingredients | Only those that the recipes use. The other device must know what "i7" is.        |
 | Photos      | The step photos and the cover. See [how the photos stay light](photo-weight.md). |
 
-The file has no cook sessions, no pantry, and no menu. Those belong to the device where you cook.
+The file has no cook sessions, no pantry, and no menu. Those belong to the device where you cook. The cook sessions have [their own transfer](transfer-the-cook-sessions.md).
 
 ## Two ways to make a file
 
 - **One recipe.** The page of a recipe has a "Share" button. On a phone, it opens the share function of the phone, and you send the file to your desktop or save it to a drive. On a desktop, the file is a download.
 - **All recipes.** The Data screen makes one file with each recipe.
+
+## A way with no file
+
+For the text only, you can [transfer by QR code](transfer-by-qr-code.md). One device shows the recipe on its screen, and the camera of the other device reads it. The photos stay where they are.
 
 ## How you import it
 
