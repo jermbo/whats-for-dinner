@@ -34,7 +34,6 @@
 	 * The first time, the top card shows that it can move: see "hint".
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   cooking?: Map<string, import('$lib/types').CookSession>,
@@ -47,7 +46,7 @@
 	 *   cooking: the open cook sessions of the meals that the owner is cooking, by menu item ID.
 	 *   head: the top of the screen. It gets the place of the top card, and the action "Next".
 	 */
-	let { entries, kitchen, lastSessions, soon, cooking, head, onstart, oncook, onprep } = $props();
+	let { entries, lastSessions, soon, cooking, head, onstart, oncook, onprep } = $props();
 
 	/**
 	 * The IDs from the top of the pile down. A meal that is not in it comes on top: a meal that
@@ -332,7 +331,6 @@
 				>
 					<MealCard
 						{entry}
-						{kitchen}
 						{soon}
 						session={cooking?.get(entry.item.id)}
 						facedown={down}
@@ -348,13 +346,7 @@
 		<!-- A wide area: the facts of the top card are always in view. -->
 		{#if top}
 			<aside class="hand__facts" aria-label="Cook facts: {entryName(top)}">
-				<MealCardBack
-					entry={top}
-					{kitchen}
-					last={lastSessions.get(top.recipe.id)}
-					open={true}
-					{onprep}
-				/>
+				<MealCardBack entry={top} last={lastSessions.get(top.recipe.id)} open={true} {onprep} />
 			</aside>
 		{/if}
 	</div>
@@ -398,7 +390,7 @@
 		</button>
 	</div>
 
-	<MealSheet bind:this={sheet} {entries} {kitchen} {lastSessions} {oncook} {onprep} />
+	<MealSheet bind:this={sheet} {entries} {lastSessions} {oncook} {onprep} />
 </section>
 
 <style>

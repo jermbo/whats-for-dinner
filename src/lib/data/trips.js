@@ -30,20 +30,6 @@ export async function openOrStartTrip() {
 }
 
 /**
- * The cart is not a table. It is a question to the purchases: which are not put away?
- * They are all in the open trip.
- * @returns {Promise<Purchase[]>} Oldest first.
- */
-export async function cartPurchases() {
-	const trip = await openTrip();
-	if (!trip) return [];
-	const purchases = await db.purchases.where('tripId').equals(trip.id).toArray();
-	return purchases
-		.filter((purchase) => !purchase.putAwayAt)
-		.sort((a, b) => a.cartAt.localeCompare(b.cartAt));
-}
-
-/**
  * Ends a trip when its cart is empty. A trip with no purchases is removed: it was a tap and
  * its undo. Call it in a transaction, after a change to the purchases of the trip.
  * @param {string} tripId

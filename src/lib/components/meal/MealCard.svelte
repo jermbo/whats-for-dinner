@@ -8,6 +8,7 @@
 	import { hasPhoto } from '$lib/domain/recipe-photo';
 	import { oldestUse, stockAge, URGENT_DAYS } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { formatWhen } from '$lib/util/format';
 	import CardTimer from './CardTimer.svelte';
 
@@ -33,7 +34,6 @@
 	 * "Cooked" is the one-tap path for a meal that the owner knows from memory.
 	 * @type {{
 	 *   entry: MenuEntry,
-	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   session?: import('$lib/types').CookSession,
 	 *   facedown?: boolean,
@@ -43,17 +43,9 @@
 	 *   onprep?: (entry: MenuEntry) => unknown
 	 * }}
 	 */
-	let {
-		entry,
-		kitchen,
-		soon = [],
-		session,
-		facedown = false,
-		onturn,
-		onstart,
-		oncook,
-		onprep
-	} = $props();
+	let { entry, soon = [], session, facedown = false, onturn, onstart, oncook, onprep } = $props();
+
+	const kitchen = useKitchen();
 
 	/** Cook mode shows the steps of a recipe. Leftovers have no steps to do. */
 	const hasSteps = $derived(entry.item.kind === 'recipe' && stepsToCook(entry.recipe).length > 0);

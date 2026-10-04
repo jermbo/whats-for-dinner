@@ -5,8 +5,14 @@
 	import StatusMessage from '$lib/components/ui/StatusMessage.svelte';
 	import { requestPersistence } from '$lib/db/persistence';
 	import { usePageTransitions } from '$lib/motion/page-transition';
+	import { provideKitchen } from '$lib/state/kitchen.svelte';
+	import { provideShopping } from '$lib/state/shopping.svelte';
 
 	let { children } = $props();
+
+	// All screens and components read the same kitchen and the same shopping list.
+	provideKitchen();
+	provideShopping();
 
 	usePageTransitions();
 

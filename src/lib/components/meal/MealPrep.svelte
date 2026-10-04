@@ -1,6 +1,6 @@
 <script>
-	import { onMount } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { useClock } from '$lib/state/clock.svelte';
 	import { formatWhen } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
@@ -15,14 +15,11 @@
 	 */
 	let { entry, onprep } = $props();
 
-	let now = $state(Date.now());
 	let saving = $state(false);
 
 	// The time when the meal is ready, and the bar, move with the clock.
-	onMount(() => {
-		const timer = setInterval(() => (now = Date.now()), 30_000);
-		return () => clearInterval(timer);
-	});
+	const clock = useClock(30_000);
+	const now = $derived(clock.now);
 
 	const steps = $derived(entry.recipe.prepSteps);
 	const lead = $derived(Math.max(0, ...steps.map((step) => step.leadHours)) * HOUR);

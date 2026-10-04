@@ -10,7 +10,7 @@
 	const trips = live(() => db.trips.orderBy('startedAt').reverse().toArray(), []);
 	const purchases = live(() => db.purchases.toArray(), []);
 
-	const byTrip = $derived(new Map(groupBy(purchases.current, (purchase) => purchase.tripId)));
+	const byTrip = $derived(groupBy(purchases.current, (purchase) => purchase.tripId));
 </script>
 
 <PageHeader title="Shopping trips">

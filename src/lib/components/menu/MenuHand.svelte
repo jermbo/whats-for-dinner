@@ -12,13 +12,12 @@
 	 * on the full screen, and "Remove from the menu" is there.
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   onremove: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown
 	 * }}
 	 */
-	let { entries, kitchen, lastSessions, onremove, onprep } = $props();
+	let { entries, lastSessions, onremove, onprep } = $props();
 
 	/** @type {MealSheet | undefined} */
 	let sheet = $state();
@@ -53,7 +52,7 @@
 	</ul>
 {/if}
 
-<MealSheet bind:this={sheet} {entries} {kitchen} {lastSessions} {onremove} {onprep} />
+<MealSheet bind:this={sheet} {entries} {lastSessions} {onremove} {onprep} />
 
 <style>
 	.menu-hand__item {

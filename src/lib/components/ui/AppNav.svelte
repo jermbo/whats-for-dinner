@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { useShopCount } from '$lib/state/shop-count.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 
 	const links = /** @type {const} */ ([
 		{ path: '/', label: 'Today' },
@@ -12,7 +12,9 @@
 		{ path: '/more', label: 'More' }
 	]);
 
-	const shopCount = useShopCount();
+	const shopping = useShopping();
+	/** The number of items that the owner must still buy. */
+	const toBuy = $derived(shopping.needed.length);
 
 	/** @param {(typeof links)[number]['path']} path */
 	function isCurrent(path) {
@@ -33,9 +35,9 @@
 					aria-current={isCurrent(link.path) ? 'page' : undefined}
 				>
 					<span class="app-nav__label">{link.label}</span>
-					{#if link.path === '/shop' && shopCount.current > 0}
+					{#if link.path === '/shop' && toBuy > 0}
 						<span class="app-nav__count">
-							{shopCount.current}
+							{toBuy}
 							<span class="visually-hidden">items to buy</span>
 						</span>
 					{/if}

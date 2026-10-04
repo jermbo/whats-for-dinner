@@ -11,28 +11,21 @@
 	import { canMake } from '$lib/domain/availability';
 	import { productsByIngredient } from '$lib/domain/products';
 	import { cartEntry, lastPurchases, toLine } from '$lib/domain/put-away';
-	import { shoppingNeeds } from '$lib/domain/shopping';
 	import { lastPrices, tripCost } from '$lib/domain/trips';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { plural } from '$lib/util/format';
 
-	/**
-	 * @typedef {import('$lib/types').Purchase} Purchase
-	 * @typedef {import('$lib/domain/put-away').CartEntry} CartEntry
-	 */
+	/** @typedef {import('$lib/domain/put-away').CartEntry} CartEntry */
 
 	const kitchen = useKitchen();
+	const shopping = useShopping();
 	const products = live(() => db.products.toArray(), []);
-	/** Not defined until the database gives the purchases: the screen then shows nothing. */
-	const history = live(
-		() => db.purchases.toArray(),
-		/** @type {Purchase[] | undefined} */ (undefined)
-	);
 	const trips = live(() => db.trips.orderBy('startedAt').toArray(), []);
 
-	const purchases = $derived(history.current ?? []);
+	const purchases = $derived(shopping.purchases);
 
 	/** The receipt is the open trip. With no open trip, it is the trip that ended last. */
 	const trip = $derived(
@@ -46,14 +39,7 @@
 
 	/** What the menu needs and the pantry does not have, by ingredient ID. */
 	const needs = $derived(
-		new Map(
-			shoppingNeeds(
-				kitchen.menu,
-				kitchen.recipesById,
-				kitchen.ingredientsById,
-				kitchen.pantryByIngredient
-			).map((need) => [need.ingredient.id, need.quantity])
-		)
+		new Map(shopping.needs.map((need) => [need.ingredient.id, need.quantity]))
 	);
 
 	/** The lines of the receipt, in the sequence of the taps in the store. */
@@ -139,7 +125,7 @@
 		{/if}
 	</PageHeader>
 
-	{#if !history.current}
+	{#if !shopping.ready}
 		<!-- The database did not answer yet. -->
 	{:else if trip}
 		<Receipt {trip} {cost}>

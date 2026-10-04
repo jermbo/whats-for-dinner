@@ -11,9 +11,10 @@
 	import { removeManualItem } from '$lib/data/shopping-items';
 	import { db } from '$lib/db/db';
 	import { productsByIngredient } from '$lib/domain/products';
-	import { aisles, inCart, shopMeals, shoppingList, shoppingNeeds } from '$lib/domain/shopping';
+	import { aisles, shopMeals } from '$lib/domain/shopping';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 
@@ -25,9 +26,8 @@
 	const uid = $props.id();
 
 	const kitchen = useKitchen();
-	const manualItems = live(() => db.shopping.toArray(), []);
+	const shopping = useShopping();
 	const products = live(() => db.products.toArray(), []);
-	const purchases = live(() => db.purchases.toArray(), []);
 
 	/** The recipe ID of the meal whose items the list shows. Empty: all items. */
 	let mealId = $state('');
@@ -35,28 +35,11 @@
 	let scanner = $state();
 
 	const productsById = $derived(indexBy(products.current, 'id'));
-	const productsOf = $derived(productsByIngredient(products.current, purchases.current));
+	const productsOf = $derived(productsByIngredient(products.current, shopping.purchases));
 
-	/** The cart is the purchases that are not put away. The item of the last tap is first. */
-	const cart = $derived(
-		purchases.current
-			.filter((purchase) => !purchase.putAwayAt)
-			.sort((a, b) => b.cartAt.localeCompare(a.cartAt))
-	);
-
-	const list = $derived(
-		shoppingList(
-			shoppingNeeds(
-				kitchen.menu,
-				kitchen.recipesById,
-				kitchen.ingredientsById,
-				kitchen.pantryByIngredient
-			),
-			manualItems.current,
-			kitchen.ingredientsById
-		)
-	);
-	const needed = $derived(list.filter((row) => !inCart(row, cart)));
+	const cart = $derived(shopping.cart);
+	const list = $derived(shopping.list);
+	const needed = $derived(shopping.needed);
 	const meals = $derived(shopMeals(kitchen.menu, kitchen.recipesById, needed));
 
 	/** The meal that is selected. When it goes off the menu, the list shows all items again. */

@@ -43,7 +43,7 @@ const MAX_DAYS = 14;
  * @param {number} time
  * @returns {SoonItem[]}
  */
-export function useSoon(pantry, ingredientsById, changesByIngredient, totals, time) {
+export function foodToUseFirst(pantry, ingredientsById, changesByIngredient, totals, time) {
 	/** @type {SoonItem[]} */
 	const items = [];
 	for (const item of pantry) {

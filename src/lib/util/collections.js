@@ -13,7 +13,7 @@ export function indexBy(list, key) {
  * @template T
  * @param {T[]} list
  * @param {(item: T) => string} key
- * @returns {[string, T[]][]}
+ * @returns {Map<string, T[]>} The groups, in the sequence of their first item.
  */
 export function groupBy(list, key) {
 	/** @type {Map<string, T[]>} */
@@ -22,7 +22,7 @@ export function groupBy(list, key) {
 		const name = key(item);
 		groups.set(name, [...(groups.get(name) ?? []), item]);
 	}
-	return [...groups];
+	return groups;
 }
 
 /**

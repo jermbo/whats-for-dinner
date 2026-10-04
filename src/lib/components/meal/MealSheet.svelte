@@ -24,14 +24,13 @@
 	 * with "onremove".
 	 * @type {{
 	 *   entries: MenuEntry[],
-	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   oncook?: (entry: MenuEntry) => void,
 	 *   onremove?: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown
 	 * }}
 	 */
-	let { entries, kitchen, lastSessions, oncook, onremove, onprep } = $props();
+	let { entries, lastSessions, oncook, onremove, onprep } = $props();
 
 	const uid = $props.id();
 
@@ -231,7 +230,7 @@
 			</header>
 
 			<div class="meal-sheet__body">
-				<MealCardBack {entry} {kitchen} {last} open={filled} {onprep} />
+				<MealCardBack {entry} {last} open={filled} {onprep} />
 			</div>
 
 			<footer class="meal-sheet__foot">

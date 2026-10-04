@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import CartReminder from '$lib/components/shop/CartReminder.svelte';
@@ -11,40 +10,34 @@
 	import UseSoonList from '$lib/components/today/UseSoonList.svelte';
 	import WeekBoard from '$lib/components/today/WeekBoard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { cook, cookedSessions, openSessions, startCook } from '$lib/data/cooking';
+	import { cook, openSessions, startCook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone } from '$lib/data/menu';
 	import { db } from '$lib/db/db';
 	import { canMake } from '$lib/domain/availability';
 	import { isCooking } from '$lib/domain/cook-session';
 	import { menuEntries, recipesOnMenu } from '$lib/domain/menu';
-	import { menuTotals } from '$lib/domain/shopping';
-	import { oldestUse, useSoon, useUpIdeas } from '$lib/domain/use-up';
+	import { oldestUse, useUpIdeas } from '$lib/domain/use-up';
 	import { weekPlan } from '$lib/domain/week';
+	import { useClock } from '$lib/state/clock.svelte';
+	import { useCookHistory } from '$lib/state/cook-history.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
-	import { useShopCount } from '$lib/state/shop-count.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
+	import { useSoon } from '$lib/state/soon.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { groupBy, indexBy } from '$lib/util/collections';
-	import { greeting, nowMs, plural, todayInWords } from '$lib/util/format';
+	import { greeting, plural, todayInWords } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
-	const shop = useShopCount();
-	const sessions = live(cookedSessions, []);
+	const shopping = useShopping();
+	const history = useCookHistory();
 	const open = live(openSessions, []);
-	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
-
-	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
-	const lastSessions = $derived(indexBy(sessions.current, 'recipeId'));
-
-	let time = $state(nowMs());
 
 	// A meal becomes ready when its lead time is over, so the clock must move.
-	onMount(() => {
-		const timer = setInterval(() => (time = nowMs()), 60_000);
-		return () => clearInterval(timer);
-	});
+	const clock = useClock(60_000);
+	const time = $derived(clock.now);
+	const food = useSoon(() => clock.now);
 
 	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, time));
 
@@ -52,19 +45,8 @@
 	const ready = $derived(entries.filter((entry) => entry.state === 'ready'));
 	const todo = $derived(entries.filter((entry) => entry.state === 'todo'));
 
-	/**
-	 * The food to use first, the oldest stock first.
-	 * Assumption: the age of the stock tells what spoils first. The ingredients have no shelf life.
-	 */
-	const soon = $derived(
-		useSoon(
-			kitchen.pantry,
-			kitchen.ingredientsById,
-			new Map(groupBy(log.current, (change) => change.ingredientId)),
-			menuTotals(kitchen.menu, kitchen.recipesById),
-			time
-		)
-	);
+	/** The food to use first, the oldest stock first. */
+	const soon = $derived(food.items);
 
 	/** The meals that the owner is in the middle of, by menu item ID. Their cards show the steps. */
 	const cooking = $derived(
@@ -109,7 +91,7 @@
 				)
 	);
 
-	const week = $derived(weekPlan(sessions.current, kitchen.menu, time));
+	const week = $derived(weekPlan(history.sessions, kitchen.menu, time));
 
 	/** @param {Date} date */
 	const clockTime = (date) =>
@@ -201,8 +183,7 @@
 		{#if hand.length > 0}
 			<MealHand
 				entries={hand}
-				{kitchen}
-				{lastSessions}
+				lastSessions={history.lastByRecipe}
 				{soon}
 				{cooking}
 				onstart={start}
@@ -237,7 +218,7 @@
 			<div class="today__panels">
 				<WeekBoard {...week} />
 				<UseSoonList items={soon} />
-				<ShopGlance names={shop.names} />
+				<ShopGlance names={shopping.needed.map((row) => row.name)} />
 			</div>
 		</div>
 

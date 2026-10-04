@@ -34,7 +34,9 @@ A component does not use context for other data. The open cook session and the s
 
 ## What is built on the kitchen
 
-A state module that needs the kitchen calls `useKitchen()` too. `useShopping()` gives what the menu needs and the pantry does not have. `useSoon()` gives the food to use first. Each is calculated in one place.
+A state module that needs the kitchen calls `useKitchen()` too. `useSoon()` gives the food to use first. `useCookHistory()` gives the last cook of each recipe. Each is calculated in one place.
+
+The shopping list is built on the kitchen, and the navigation shows its number on each screen. So the layout provides it in the same way: `provideShopping()`, and then `useShopping()`.
 
 ## An example
 

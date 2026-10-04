@@ -6,55 +6,37 @@
 	import MenuHand from '$lib/components/menu/MenuHand.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
-	import { cookedSessions } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone, removeFromMenu } from '$lib/data/menu';
-	import { db } from '$lib/db/db';
 	import { entryName, menuEntries, recipesOnMenu } from '$lib/domain/menu';
-	import { menuTotals, shoppingNeeds } from '$lib/domain/shopping';
-	import { useSoon, useUpIdeas } from '$lib/domain/use-up';
+	import { useUpIdeas } from '$lib/domain/use-up';
+	import { useClock } from '$lib/state/clock.svelte';
+	import { useCookHistory } from '$lib/state/cook-history.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
-	import { live } from '$lib/state/live.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
+	import { useSoon } from '$lib/state/soon.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { groupBy, indexBy } from '$lib/util/collections';
-	import { nowMs } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	const kitchen = useKitchen();
-	const sessions = live(cookedSessions, []);
-	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
-
-	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
-	const lastSessions = $derived(indexBy(sessions.current, 'recipeId'));
+	const shopping = useShopping();
+	const history = useCookHistory();
+	// A meal becomes ready when its lead time is over, so the clock must move.
+	const clock = useClock(60_000);
+	const food = useSoon(() => clock.now);
 
 	/** "Cook now": only the recipes that the pantry can make in full. */
 	let cookNow = $state(false);
 	/** The food that is selected on the shelf. */
 	const selected = new SvelteSet();
-	const time = nowMs();
 
-	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, time));
+	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, clock.now));
 	const onMenu = $derived(recipesOnMenu(kitchen.menu));
 
 	/** The number of items on the shopping list. */
-	const toBuy = $derived(
-		shoppingNeeds(
-			kitchen.menu,
-			kitchen.recipesById,
-			kitchen.ingredientsById,
-			kitchen.pantryByIngredient
-		).length
-	);
+	const toBuy = $derived(shopping.needs.length);
 
-	const soon = $derived(
-		useSoon(
-			kitchen.pantry,
-			kitchen.ingredientsById,
-			new Map(groupBy(log.current, (change) => change.ingredientId)),
-			menuTotals(kitchen.menu, kitchen.recipesById),
-			time
-		)
-	);
+	const soon = $derived(food.items);
 
 	/** The recipes that can go on the menu. The best for the food to use first is at the top. */
 	const ideas = $derived(
@@ -141,7 +123,7 @@
 			{/if}
 		</PageHeader>
 
-		<MenuHand {entries} {kitchen} {lastSessions} onremove={remove} onprep={prepared} />
+		<MenuHand {entries} lastSessions={history.lastByRecipe} onremove={remove} onprep={prepared} />
 	</div>
 
 	<div class="split__side">

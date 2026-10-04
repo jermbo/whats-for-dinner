@@ -4,6 +4,7 @@
 	import { STOCK_STATES, labelOf } from '$lib/domain/options';
 	import { pantryScale } from '$lib/domain/pantry-scale';
 	import { splitByTimes } from '$lib/domain/step-text';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { formatAgo, formatQuantity } from '$lib/util/format';
 	import MealPrep from './MealPrep.svelte';
 
@@ -14,13 +15,14 @@
 	 * The level bars fill when it is open.
 	 * @type {{
 	 *   entry: import('$lib/domain/menu').MenuEntry,
-	 *   kitchen: import('$lib/state/kitchen.svelte').Kitchen,
 	 *   last?: import('$lib/types').CookSession,
 	 *   open: boolean,
 	 *   onprep: (entry: import('$lib/domain/menu').MenuEntry) => unknown
 	 * }}
 	 */
-	let { entry, kitchen, last, open, onprep } = $props();
+	let { entry, last, open, onprep } = $props();
+
+	const kitchen = useKitchen();
 
 	const recipe = $derived(entry.recipe);
 	const leftover = $derived(entry.item.kind === 'leftover');

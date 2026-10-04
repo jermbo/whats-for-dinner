@@ -1,7 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
-	import { cartPurchases } from '$lib/data/trips';
-	import { live } from '$lib/state/live.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 
 	/**
 	 * While the cart has items, this link reminds the owner to put them away. It is small, so
@@ -9,8 +8,8 @@
 	 * reader gets the full sentence, for example "8 items wait to be put away".
 	 * With an empty cart, it shows nothing.
 	 */
-	const cart = live(cartPurchases, []);
-	const count = $derived(cart.current.length);
+	const shopping = useShopping();
+	const count = $derived(shopping.cart.length);
 </script>
 
 {#if count > 0}

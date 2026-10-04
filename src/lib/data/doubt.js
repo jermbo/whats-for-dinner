@@ -20,7 +20,7 @@ export async function findDoubts() {
 	const since = typeof lastCheck === 'string' ? lastCheck : '';
 	const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
 	const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]));
-	const changesByIngredient = new Map(groupBy(log, (change) => change.ingredientId));
+	const changesByIngredient = groupBy(log, (change) => change.ingredientId);
 
 	/** @type {Map<string, string[]>} The times of the meals that had each ingredient. */
 	const usesByIngredient = new Map();
