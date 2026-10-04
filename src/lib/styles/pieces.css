@@ -89,7 +89,7 @@
 
 	/* The urgent badge: tomato fill, white text. Only for "use today". */
 	&.badge--urgent {
-		color: #ffffff;
+		color: var(--card);
 		background: var(--tomato);
 		border-color: var(--tomato);
 	}

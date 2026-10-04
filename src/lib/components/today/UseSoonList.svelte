@@ -67,6 +67,6 @@
 
 	.soon-list__empty {
 		font-size: 0.9375rem;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 </style>

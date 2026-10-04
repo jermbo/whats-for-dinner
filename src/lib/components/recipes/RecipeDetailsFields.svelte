@@ -76,7 +76,7 @@
 
 <style>
 	.recipe-details {
-		background: var(--color-surface);
+		background: var(--card);
 		border-radius: var(--radius);
 		box-shadow: var(--shadow);
 	}

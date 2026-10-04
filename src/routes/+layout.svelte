@@ -50,7 +50,7 @@
 	 */
 	.app__main {
 		container: main / inline-size;
-		max-inline-size: 44rem;
+		max-inline-size: var(--measure);
 		margin-inline: auto;
 		padding: var(--space-6) var(--gutter);
 		/* Room for the navigation that is fixed to the bottom. */

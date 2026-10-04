@@ -71,6 +71,6 @@
 	.week__text {
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 </style>

@@ -190,12 +190,12 @@
 <style>
 	/* The answer of the app is the largest text on the screen. */
 	.put-away__result {
-		font-family: var(--font-heading);
+		font-family: var(--font-display);
 		font-size: 1.35rem;
 		line-height: 1.25;
 
 		& strong {
-			color: var(--color-accent-strong);
+			color: var(--ink);
 		}
 	}
 </style>

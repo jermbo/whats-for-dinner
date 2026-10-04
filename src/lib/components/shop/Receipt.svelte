@@ -54,14 +54,13 @@
 
 	/* The shadow is on this box: the paper has a cut edge, and a cut removes a shadow. */
 	.receipt {
-		--paper: #ffffff;
-		--ink: #1d1c1a;
-		--ink-soft: #4a463f;
+		/* The receipt is white paper, not the warm paper of the page. */
+		--paper: var(--card);
 		--tooth: 0.4rem;
 
 		inline-size: min(100%, 26rem);
 		margin-inline: auto;
-		filter: drop-shadow(0 0.5rem 0.9rem rgb(29 28 26 / 0.2));
+		filter: drop-shadow(0 0.5rem 0.9rem color-mix(in srgb, var(--ink) 20%, transparent));
 	}
 
 	/* The paper: the letters of a cash register, and teeth at the lower edge where it was torn. */
@@ -100,7 +99,7 @@
 		list-style: none;
 
 		& > :global(li + li) {
-			border-block-start: 1px dotted rgb(29 28 26 / 0.3);
+			border-block-start: 1px dotted color-mix(in srgb, var(--ink) 30%, transparent);
 		}
 	}
 

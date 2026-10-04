@@ -125,7 +125,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-1);
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		font-size: 0.8rem;
 		font-weight: 600;
 	}
@@ -148,7 +148,7 @@
 
 	/* Planned: the menu uses all of it. It is quiet, with a dashed rule. */
 	.soon--planned {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: transparent;
 		border-style: dashed;
 

@@ -366,7 +366,7 @@
 
 	.item-card__unit {
 		font-size: 1.35rem;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.item-card__price {

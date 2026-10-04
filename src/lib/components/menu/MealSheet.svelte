@@ -274,7 +274,7 @@
 		margin: 0;
 		padding: 0;
 		overflow: hidden;
-		background: var(--color-surface);
+		background: var(--card);
 		border: 0;
 		border-radius: 0;
 		box-shadow: none;
@@ -285,7 +285,7 @@
 			display 0.3s allow-discrete;
 
 		&::backdrop {
-			background: rgb(29 28 26 / 0.6);
+			background: color-mix(in srgb, var(--ink) 60%, transparent);
 		}
 	}
 
@@ -375,7 +375,7 @@
 		box-shadow: var(--shadow);
 
 		&::backdrop {
-			background: rgb(29 28 26 / 0.3);
+			background: color-mix(in srgb, var(--ink) 30%, transparent);
 		}
 	}
 </style>

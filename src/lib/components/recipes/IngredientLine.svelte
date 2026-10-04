@@ -80,7 +80,7 @@
 		border-radius: var(--radius-control);
 
 		&::placeholder {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 		}
 	}
 

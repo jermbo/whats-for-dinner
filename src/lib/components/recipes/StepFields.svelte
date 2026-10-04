@@ -353,7 +353,7 @@
 		padding: 0;
 		overflow-y: auto;
 		list-style: none;
-		background: var(--color-surface);
+		background: var(--card);
 		border-radius: var(--radius);
 		box-shadow: var(--shadow);
 		scrollbar-width: thin;
@@ -438,8 +438,8 @@
 		position: sticky;
 		inset-block-end: 0;
 		padding-block: var(--space-3);
-		background: var(--color-surface);
-		border-block-start: 1px solid var(--color-border);
+		background: var(--card);
+		border-block-start: 1px solid var(--hairline);
 
 		&:first-child {
 			border-block-start: 0;
@@ -449,7 +449,7 @@
 	/* A plus sign and a line of dashes: a place that is free. */
 	.step-fields__row--next:not(.step-fields__row--current) {
 		& .step-fields__number {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 			background: none;
 			box-shadow: inset 0 0 0 2px var(--hairline);
 		}
@@ -475,7 +475,7 @@
 		align-items: center;
 		min-inline-size: 0;
 		min-block-size: var(--tap);
-		background: var(--color-surface-soft);
+		background: var(--paper-deep);
 		border: 2px solid transparent;
 		border-radius: var(--radius-control);
 
@@ -501,7 +501,7 @@
 		field-sizing: content;
 
 		&::placeholder {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 		}
 
 		&:focus-visible {

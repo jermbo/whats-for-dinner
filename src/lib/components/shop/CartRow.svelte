@@ -63,7 +63,7 @@
 	}
 
 	.cart-row__name {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.cart-row__undo {

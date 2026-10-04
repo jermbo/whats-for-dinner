@@ -118,7 +118,7 @@
 	}
 
 	.ingredient-row__unit {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		font-size: 0.925rem;
 
 		&.ingredient-row__unit--wide {
@@ -133,7 +133,7 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: none;
 		border: 0;
 		border-radius: var(--radius-control);
@@ -146,8 +146,8 @@
 
 		@media (hover: hover) {
 			&:hover {
-				color: var(--color-danger);
-				background: var(--color-surface-soft);
+				color: var(--tomato);
+				background: var(--paper-deep);
 			}
 		}
 	}

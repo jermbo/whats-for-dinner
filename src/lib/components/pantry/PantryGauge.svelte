@@ -60,7 +60,7 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: none;
 		border: 0;
 		border-radius: var(--radius-control);
@@ -71,7 +71,7 @@
 			scale 0.25s var(--ease-spring);
 
 		&:hover {
-			color: var(--color-text);
+			color: var(--ink);
 			background: var(--paper-deep);
 		}
 

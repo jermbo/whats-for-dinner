@@ -139,12 +139,12 @@
 <style>
 	/* The answer of the app is the largest text on the screen. */
 	.check__verdict {
-		font-family: var(--font-heading);
+		font-family: var(--font-display);
 		font-size: 1.5rem;
 		line-height: 1.25;
 
 		& strong {
-			color: var(--color-accent-strong);
+			color: var(--ink);
 		}
 	}
 

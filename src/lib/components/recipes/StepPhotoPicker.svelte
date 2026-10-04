@@ -104,7 +104,7 @@
 	}
 
 	.photo-picker__photo--selected {
-		border-color: var(--color-accent-strong);
+		border-color: var(--ink);
 	}
 
 	.photo-picker__mark {
@@ -134,7 +134,7 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: none;
 		border: 0;
 		border-radius: var(--radius-control);

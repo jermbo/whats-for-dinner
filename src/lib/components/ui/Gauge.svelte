@@ -188,7 +188,7 @@
 	}
 
 	.gauge__note {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		font-size: 0.85rem;
 	}
 
@@ -251,7 +251,7 @@
 		}
 
 		& .gauge__value {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 		}
 	}
 

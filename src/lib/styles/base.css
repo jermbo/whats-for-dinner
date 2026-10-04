@@ -6,7 +6,7 @@
 
 /* The page is flat paper: no gradient, no glow. */
 html {
-	background: var(--color-bg);
+	background: var(--paper);
 }
 
 body {
@@ -15,8 +15,8 @@ body {
 	font-family: var(--font-body);
 	font-weight: 500;
 	line-height: 1.45;
-	color: var(--color-text);
-	background: var(--color-bg);
+	color: var(--ink);
+	background: var(--paper);
 }
 
 /* A name, a title, and a number are Anton, uppercase. Line height .86 for a title. */
@@ -85,14 +85,14 @@ html:has(dialog:modal) {
 dialog {
 	inline-size: min(100% - 2rem, 32rem);
 	padding: var(--space-6);
-	color: var(--color-text);
-	background: var(--color-surface);
+	color: var(--ink);
+	background: var(--card);
 	border: var(--rule-4) solid var(--ink);
 	border-radius: var(--radius);
 	box-shadow: var(--shadow);
 
 	&::backdrop {
-		background: rgb(29 28 26 / 0.55);
+		background: color-mix(in srgb, var(--ink) 55%, transparent);
 	}
 }
 
@@ -106,7 +106,7 @@ dialog {
 }
 
 .muted {
-	color: var(--color-muted);
+	color: var(--ink-soft);
 	font-size: 0.925rem;
 }
 

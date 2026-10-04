@@ -107,13 +107,13 @@
 		}
 
 		&:active::after {
-			background: rgb(29 28 26 / 0.07);
+			background: color-mix(in srgb, var(--ink) 7%, transparent);
 		}
 
 		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
 		@media (hover: hover) {
 			&:hover::after {
-				background: rgb(29 28 26 / 0.04);
+				background: color-mix(in srgb, var(--ink) 4%, transparent);
 			}
 		}
 

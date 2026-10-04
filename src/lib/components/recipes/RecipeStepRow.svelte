@@ -88,7 +88,7 @@
 
 	.step-row__date {
 		font-weight: 800;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.step-row__photo {

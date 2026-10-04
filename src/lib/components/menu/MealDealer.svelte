@@ -226,7 +226,7 @@
 
 		/* The card is far to the side of this button: a release does its action. */
 		&.dealer__action--lean {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 			scale: 1.04;
 		}

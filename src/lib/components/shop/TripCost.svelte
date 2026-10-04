@@ -29,7 +29,7 @@
 
 <style>
 	.trip-cost__day {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.trip-cost__total {

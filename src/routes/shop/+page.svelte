@@ -193,10 +193,10 @@
 	}
 
 	.shop__progress {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 
 		& strong {
-			color: var(--color-text);
+			color: var(--ink);
 			font-variant-numeric: tabular-nums;
 		}
 	}

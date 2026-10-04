@@ -38,7 +38,7 @@
 		font-size: 1.5rem;
 		line-height: 1;
 		font-variant-numeric: tabular-nums;
-		color: #ffffff;
+		color: var(--card);
 		background: var(--ink);
 		border-radius: var(--radius-sticker);
 	}

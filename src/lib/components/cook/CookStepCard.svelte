@@ -217,7 +217,7 @@
 		font-weight: 800;
 		letter-spacing: 0.06em;
 		text-transform: uppercase;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.step-card__actions {

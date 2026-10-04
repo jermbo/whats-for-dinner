@@ -41,7 +41,7 @@
 
 		/* A thick ring tells which product is selected, and the other products are dim. */
 		&[aria-pressed='true'] {
-			box-shadow: 0 0 0 3px var(--color-strong);
+			box-shadow: 0 0 0 3px var(--ink);
 		}
 
 		&[aria-pressed='false'] {

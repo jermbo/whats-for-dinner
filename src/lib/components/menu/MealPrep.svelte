@@ -106,7 +106,7 @@
 
 		& .meal-prep__task,
 		& .meal-prep__lead {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 		}
 	}
 
