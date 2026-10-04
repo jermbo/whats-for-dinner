@@ -33,8 +33,12 @@
 		}
 	}
 
+	/* A button that cannot be used has no fill and a dashed rule, so that it is not a button. */
 	&:disabled {
-		opacity: 0.45;
+		color: var(--ink-soft);
+		background: none;
+		border-style: dashed;
+		opacity: 0.5;
 		cursor: not-allowed;
 	}
 
@@ -48,6 +52,11 @@
 			&:hover:not(:disabled) {
 				background: var(--ink-soft);
 			}
+		}
+
+		&:disabled {
+			color: var(--ink-soft);
+			background: none;
 		}
 	}
 

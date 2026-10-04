@@ -27,17 +27,16 @@
 	}
 </script>
 
-<PageHeader title="Edit recipe" />
-
 {#if recipe.current}
 	<RecipeForm
 		bind:this={form}
+		title="Edit recipe"
 		recipe={recipe.current}
 		ingredients={ingredients.current}
 		ondone={() => goto(resolve('/recipes/[id]', { id }))}
+		onremove={remove}
 	/>
-
-	<button class="button button--danger" type="button" onclick={remove}>Delete recipe</button>
 {:else}
+	<PageHeader title="Edit recipe" />
 	<p class="muted">This recipe is not on this device.</p>
 {/if}

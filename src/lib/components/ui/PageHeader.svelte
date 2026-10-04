@@ -19,11 +19,11 @@
 	<title>{title} · Larder</title>
 </svelte:head>
 
-<header class="page-header">
+<header class="page-header wide">
 	<div class={['page-header__text', aside && 'page-header__text--aside']}>
 		{#if eyebrow || aside}
 			<div class="page-header__top">
-				<p class="page-header__eyebrow">{eyebrow}</p>
+				<p class="page-header__eyebrow" aria-live="polite">{eyebrow}</p>
 				{@render aside?.()}
 			</div>
 		{/if}
@@ -93,8 +93,10 @@
 		line-height: 1.3;
 	}
 
+	/* The actions are at the right edge, away from the title. */
 	.page-header__actions {
 		display: flex;
+		margin-inline-start: auto;
 		flex-wrap: wrap;
 		gap: var(--space-2);
 	}

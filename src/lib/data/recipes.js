@@ -7,6 +7,12 @@ import { indexBy } from '$lib/util/collections';
  * @typedef {import('$lib/types').RecipeStep} RecipeStep
  */
 
+/**
+ * The most characters that the form accepts in the name of a recipe. A name is a title on a card
+ * and on a screen, so it must stay short. A name that is longer already (an import) is not cut.
+ */
+export const RECIPE_NAME_MAX = 50;
+
 /** The name of a recipe that has steps or ingredients, but no name yet. */
 const NO_NAME = 'New recipe';
 

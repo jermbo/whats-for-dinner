@@ -276,7 +276,9 @@
 				block-size: calc(100dvh - 2 * var(--space-8));
 			}
 
+			/* The shared split aligns its blocks to the top: the main column must fill the height. */
 			.today__main {
+				align-self: stretch;
 				min-block-size: 0;
 			}
 

@@ -541,8 +541,8 @@
 	@container main (min-width: 50rem) {
 		@media (min-height: 36rem) {
 			.hand {
-				flex: 1 0 min(100%, 32rem);
-				min-block-size: 0;
+				flex: 1 1 0;
+				min-block-size: 32rem;
 			}
 
 			/* The stage has a size that its content does not change: the pile reads its height. */

@@ -2,7 +2,7 @@
 title: Write mode
 summary: 'Write mode asks for text only: steps as a list that you can paste, and ingredients as a name and a number.'
 parent: README.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / Write mode
@@ -17,11 +17,15 @@ A recipe needs a name, its steps, and its ingredients. The meal type, the servin
 
 There is no photo button and no timer field. The photos come from [Cook mode](cook-mode.md). The timers come from [the text of a step](step-text.md).
 
+The name has a limit of 50 characters, because it is a title on a card. A count at the right end of the field shows how much you use, such as 38/50, and a thin line under the field grows with it. At the limit, the count and the line turn tomato, and the field takes no more text.
+
 ## Steps are a list
 
 Each step is one row. The list ends with an empty row with a plus sign: you type the next step there. Enter in a step also puts the cursor in the next step. A long list scrolls in its own panel, so the rest of the form stays on the screen.
 
 You can also paste. The app makes one step from each line. It removes a number at the start of a line, such as "1." or "2)". So a method from a web page or from a note becomes a list in one action.
+
+Each step has its own remove button at the right of its text. One tap removes the step, and "Undo" brings it back for a few seconds. A step with photos asks first, because the app deletes its photos. The step that has the cursor also shows the buttons that move it up and down.
 
 ## An ingredient is a name and a number
 
@@ -36,7 +40,9 @@ For a new name, the app asks for the unit one time and makes the ingredient.
 
 ## There is no Save button
 
-The app saves each change at once. If you put the phone down in the middle of a recipe, nothing is lost.
+The app saves each change at once. If you put the phone down in the middle of a recipe, nothing is lost. The line above the title tells you if the last change is saved.
+
+"Done" and "Delete" are in the title block, where there is room for them, and not at the end of a long form.
 
 ## An example
 
