@@ -39,3 +39,30 @@ export function newStep(text = '') {
 export function endWithEmptyStep(steps) {
 	if (steps.length === 0 || steps[steps.length - 1].text.trim()) steps.push(newStep());
 }
+
+/**
+ * Divides the text of a step at the cursor, for Enter: the text before the cursor stays, and
+ * the text after it becomes the next step. The text that is selected goes.
+ * @param {string} text
+ * @param {number} start The start of the selection.
+ * @param {number} end The end of the selection.
+ */
+export function splitAtCursor(text, start, end) {
+	return { before: text.slice(0, start).trimEnd(), after: text.slice(end).trimStart() };
+}
+
+/**
+ * Puts the lines of a paste into the text of a step, at the cursor. The first line goes at
+ * the cursor. The text after the cursor goes after the last line.
+ * @param {string} text
+ * @param {number} start The start of the selection.
+ * @param {number} end The end of the selection.
+ * @param {string[]} lines One line or more.
+ * @returns {string[]} The text of the step, and the text of each new step after it.
+ */
+export function pasteAtCursor(text, start, end, lines) {
+	const result = [...lines];
+	result[0] = text.slice(0, start) + result[0];
+	result[result.length - 1] += text.slice(end);
+	return result;
+}
