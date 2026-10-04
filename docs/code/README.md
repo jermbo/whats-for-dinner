@@ -37,7 +37,7 @@ The code has five [layers](layers.md). A layer uses only the layers below it.
 
 ## An example
 
-"Cooked" in this structure: the Today screen calls `cook()` from the data layer. That function asks the domain what to subtract, and writes the pantry and the cook session in one transaction. The state module sees the change and gives the new menu to the screen. The component of the hand gets a shorter list, and moves the cards.
+"Cooked" in this structure: the Today screen calls `cook()` from the data layer. That function subtracts the food from the pantry and writes the cook session, in one transaction. The state module sees the change and gives the new menu to the screen. The component of the hand gets a shorter list, and moves the cards.
 
 ## Further reading
 

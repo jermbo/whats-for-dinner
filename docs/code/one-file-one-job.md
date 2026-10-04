@@ -42,7 +42,7 @@ The component that stays is short. It reads as a list of what happens: it gets t
 
 The hand has three jobs. It keeps the order of the pile. It moves the cards: deal, throw, split, and drop. It shows the buttons "Back", "Next", and "Shuffle".
 
-So the order of the pile is a state module, with `next()`, `previous()`, and `shuffle()`. The four motions are functions in `motion/hand.js`: each gets elements and gives a timeline. The buttons are a child component. `MealHand` connects them: a throw calls the motion, and then `next()`.
+So the order of the pile is three pure functions in `domain/pile.js`: the top card goes to the bottom, the bottom card comes to the top, and the shuffle. The motions are functions in `motion/hand.js`: each gets the element of a card and moves it. The buttons are a child component, `HandActions`. `MealHand` connects them: a throw calls the motion, and then asks the domain for the new order.
 
 Now a new motion changes one file, and a new rule for the shuffle changes a different file.
 

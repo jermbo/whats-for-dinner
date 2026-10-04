@@ -35,7 +35,7 @@ A small component with one action of its own can call the data layer directly. T
 
 ## An example: Today
 
-The Today screen calls `useToday()`. It gets the hand, the offers of the pantry, and the plan of the week. It has four actions: start, cooked, preparation done, and add to the menu. It puts `MealHand` in the main column and three panels in the side column.
+The Today screen calls `useToday()`. It gets the hand, the offers of the pantry, and the plan of the week. It has five actions: start, cooked, preparation done, add to the menu, and cook now. It puts `MealHand` in the main column and three panels in the side column.
 
 The order of the hand is a rule: the meal that you cook now is first, then the ready meals. That rule is `handOrder()` in the domain. The screen does not know it.
 
