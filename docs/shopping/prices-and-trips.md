@@ -2,7 +2,7 @@
 title: Prices and trips
 summary: 'Each purchase can have a price. The purchases of one visit to the store give the cost of that trip.'
 parent: README.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Shopping](README.md) / Prices and trips
@@ -51,7 +51,7 @@ So you know that the true cost is higher, and by how many items.
 
 ## What you can learn
 
-- What each trip cost, and how that changes from week to week.
+- What each trip cost, and your [spending by week](spending-by-week.md).
 - If the rice was cheaper the last time.
 - How much of an ingredient you buy each time. "Put away" uses this to propose a quantity.
 
