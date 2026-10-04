@@ -1,8 +1,8 @@
 <script>
 	/**
-	 * A select that looks like a pill, for one filter with a few values. It uses the height of
-	 * one button. The label is for screen readers: the selected value is the text in view.
-	 * "active" gives the dark fill: use it when the filter hides something.
+	 * A select that looks like a chip, for one filter with a few values. The label is for screen
+	 * readers: the selected value is the text in view.
+	 * "active" gives the ink fill: use it when the filter hides something.
 	 * @type {{
 	 *   label: string,
 	 *   options: { value: string, label: string }[],
@@ -25,18 +25,18 @@
 </span>
 
 <style>
+	/* A chip is 32 high. The select is taller, so that a finger hits it: 44 high. */
 	.select-chip {
 		position: relative;
 		display: inline-grid;
-		color: var(--color-muted);
 
 		/* The arrow of the select. */
 		&::after {
 			position: absolute;
 			inset-block-start: 50%;
-			inset-inline-end: var(--space-4);
-			inline-size: 0.5rem;
-			block-size: 0.5rem;
+			inset-inline-end: var(--space-3);
+			inline-size: 0.4rem;
+			block-size: 0.4rem;
 			content: '';
 			border: solid currentColor;
 			border-width: 0 2px 2px 0;
@@ -46,24 +46,23 @@
 		}
 
 		&.select-chip--active {
-			color: var(--color-on-accent);
+			color: var(--paper);
 		}
 	}
 
 	.select-chip__control {
-		min-block-size: var(--tap);
-		padding: var(--space-2) 2.5rem var(--space-2) var(--space-4);
-		font-weight: 500;
-		background: var(--color-surface);
-		border: 0;
-		border-radius: var(--radius-pill);
-		box-shadow: var(--shadow);
+		min-block-size: var(--chip-hit);
+		padding: 0 2rem 0 var(--space-3);
+		font-size: 0.8125rem;
+		font-weight: 700;
+		background: var(--card);
+		border: var(--rule-1) solid var(--ink);
+		border-radius: var(--radius-sticker);
 		appearance: none;
 		cursor: pointer;
 	}
 
 	.select-chip--active .select-chip__control {
-		font-weight: 600;
-		background: var(--color-accent-strong);
+		background: var(--ink);
 	}
 </style>

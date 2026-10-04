@@ -12,7 +12,7 @@
 	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
 
 	/** The corner of a card, for the start of the grow and the end of the shrink. */
-	const CARD_RADIUS = '24px';
+	const CARD_RADIUS = '12px';
 
 	/**
 	 * The back of a meal card on the full screen. "open" turns the card to its edge, and then the
@@ -275,6 +275,7 @@
 		padding: 0;
 		overflow: hidden;
 		background: var(--color-surface);
+		border: 0;
 		border-radius: 0;
 		box-shadow: none;
 		opacity: 1;
@@ -284,7 +285,7 @@
 			display 0.3s allow-discrete;
 
 		&::backdrop {
-			background: rgb(4 40 44 / 0.55);
+			background: rgb(29 28 26 / 0.6);
 		}
 	}
 
@@ -300,12 +301,15 @@
 		justify-content: space-between;
 		gap: var(--space-3);
 		padding: max(var(--space-5), env(safe-area-inset-top)) var(--space-5) var(--space-4);
-		border-block-end: 1px solid var(--color-border);
+		border-block-end: var(--rule-4) solid var(--ink);
 	}
 
 	.meal-sheet__meta {
-		color: var(--color-muted);
-		font-size: 0.9rem;
+		margin-block-end: var(--space-1);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
 	.meal-sheet__close {
@@ -315,12 +319,12 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-text);
-		background: var(--color-surface-soft);
+		color: var(--paper);
+		background: var(--ink);
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-control);
 		cursor: pointer;
-		transition: scale 0.25s var(--ease-spring);
+		transition: scale 0.2s var(--ease-out);
 
 		&:active {
 			scale: 0.9;
@@ -338,7 +342,7 @@
 		flex-wrap: wrap;
 		gap: var(--space-3);
 		padding: var(--space-4) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
-		border-block-start: 1px solid var(--color-border);
+		border-block-start: var(--rule-1) solid var(--ink);
 	}
 
 	.meal-sheet__action {
@@ -350,6 +354,7 @@
 			inline-size: min(40rem, 100% - 4rem);
 			block-size: min(52rem, 100dvh - 4rem);
 			margin: auto;
+			border: var(--rule-4) solid var(--ink);
 			border-radius: var(--radius);
 			box-shadow: var(--shadow);
 		}
@@ -365,11 +370,12 @@
 		inline-size: max(var(--side-size), 24rem);
 		block-size: calc(100dvh - 2 * var(--space-4));
 		margin: var(--space-4) 0;
+		border: var(--rule-4) solid var(--ink);
 		border-radius: var(--radius);
 		box-shadow: var(--shadow);
 
 		&::backdrop {
-			background: rgb(4 40 44 / 0.3);
+			background: rgb(29 28 26 / 0.3);
 		}
 	}
 </style>

@@ -48,19 +48,18 @@
 		gap: 0.3em;
 		padding: 0.1em 0.55em 0.1em 0.4em;
 		font: inherit;
-		font-weight: 600;
+		font-weight: 800;
 		line-height: 1.25;
-		color: var(--color-accent-strong);
 		white-space: nowrap;
 		vertical-align: baseline;
-		background: var(--color-accent-soft);
-		border: 1.5px solid currentColor;
-		border-radius: var(--radius-pill);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-sticker);
 		cursor: pointer;
 		transition:
 			background-color 0.2s,
 			color 0.2s,
-			scale 0.25s var(--ease-spring);
+			scale 0.2s var(--ease-out);
 
 		&:active {
 			scale: 0.95;
@@ -73,15 +72,12 @@
 	}
 
 	.step-timer--running {
-		color: var(--color-on-accent);
-		background: var(--color-accent-strong);
-		border-color: var(--color-accent-strong);
+		color: var(--paper);
+		background: var(--ink);
 	}
 
 	.step-timer--done {
-		color: #3d2600;
-		background: var(--color-low);
-		border-color: var(--color-low-strong);
+		background: var(--amber);
 	}
 
 	/* The digits have one width, so the button does not change its size each second. */

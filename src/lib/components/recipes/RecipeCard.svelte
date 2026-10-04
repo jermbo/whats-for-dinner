@@ -36,6 +36,10 @@
 </li>
 
 <style>
+	.card__title {
+		font-size: 1.25rem;
+	}
+
 	/* The pantry count lies at the bottom of the photo, clear of the meal label at the top. */
 	.recipe-card__count {
 		position: absolute;

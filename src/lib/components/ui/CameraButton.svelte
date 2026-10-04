@@ -62,7 +62,7 @@
 		cursor: pointer;
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 		}
 

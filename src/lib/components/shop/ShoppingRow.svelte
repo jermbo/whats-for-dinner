@@ -103,17 +103,17 @@
 			position: absolute;
 			inset: 0 calc(-1 * var(--space-3));
 			content: '';
-			border-radius: 0.75rem;
+			border-radius: var(--radius-control);
 		}
 
 		&:active::after {
-			background: rgb(0 0 0 / 0.05);
+			background: rgb(29 28 26 / 0.07);
 		}
 
 		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
 		@media (hover: hover) {
 			&:hover::after {
-				background: rgb(0 0 0 / 0.03);
+				background: rgb(29 28 26 / 0.04);
 			}
 		}
 
@@ -121,7 +121,7 @@
 			outline: none;
 
 			&::after {
-				outline: 3px solid var(--color-accent-strong);
+				outline: 3px solid var(--ink);
 			}
 		}
 	}

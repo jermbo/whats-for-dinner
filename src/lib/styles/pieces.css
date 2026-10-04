@@ -1,0 +1,170 @@
+/*
+ * The small pieces of the design: the label, the sticker, the badge, the count, and the stamp.
+ * Each piece is one thing on paper. See docs/design/README.md.
+ */
+
+/* A label: 12 high, weight 800, uppercase. */
+.label {
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	line-height: 1.25;
+	text-transform: uppercase;
+}
+
+/* A rule: a line under a block. Heavy for a title, thin for a row. */
+.rule {
+	margin: 0;
+	border: 0;
+	border-block-start: var(--rule-4) solid var(--ink);
+
+	&.rule--thin {
+		border-block-start-width: var(--rule-1);
+	}
+
+	&.rule--heavy {
+		border-block-start-width: var(--rule-8);
+	}
+}
+
+/*
+ * A sticker is a state flag. It sits on an edge. It has a small radius: 2.
+ * The ink sticker is a state. The white sticker has a rule. The olive sticker is a fill.
+ */
+.sticker {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-2);
+	padding: var(--space-1) var(--space-2);
+	font-size: 0.75rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	line-height: 1.25;
+	text-transform: uppercase;
+	color: var(--paper);
+	background: var(--ink);
+	border: 2px solid var(--ink);
+	border-radius: var(--radius-sticker);
+
+	&.sticker--paper {
+		color: var(--ink);
+		background: var(--card);
+	}
+
+	&.sticker--olive {
+		color: var(--ink);
+		background: var(--olive);
+	}
+
+	/* An offer from the pantry is not a plan: a dashed rule. */
+	&.sticker--dashed {
+		color: var(--ink);
+		background: var(--card);
+		border-style: dashed;
+	}
+
+	/* A dot in the sticker is the amber of a thing that needs time. */
+	& .sticker__dot {
+		inline-size: 0.5rem;
+		block-size: 0.5rem;
+		background: var(--amber);
+		border-radius: 50%;
+	}
+}
+
+/* A badge is a small flag on a row: "Use today", "Low", "3 days". */
+.badge {
+	display: inline-block;
+	padding: 0.1875rem var(--space-2);
+	font-size: 0.6875rem;
+	font-weight: 800;
+	letter-spacing: 0.06em;
+	line-height: 1.25;
+	text-transform: uppercase;
+	white-space: nowrap;
+	color: var(--ink);
+	background: var(--card);
+	border: var(--rule-1) solid var(--ink);
+	border-radius: var(--radius-sticker);
+
+	/* The urgent badge: tomato fill, white text. Only for "use today". */
+	&.badge--urgent {
+		color: #ffffff;
+		background: var(--tomato);
+		border-color: var(--tomato);
+	}
+
+	&.badge--low {
+		background: var(--amber);
+		border-color: var(--amber);
+	}
+
+	/* The old name for a good state: olive. */
+	&.badge--good {
+		background: var(--olive);
+		border-color: var(--olive);
+	}
+}
+
+/* A count, as "7/9": the number in Anton, and the total in a lighter ink. */
+.count {
+	font-family: var(--font-display);
+	font-size: 2rem;
+	line-height: 0.9;
+	white-space: nowrap;
+
+	& .count__total {
+		color: var(--ink-soft);
+		opacity: 0.6;
+	}
+}
+
+/* The rubber stamp: once for each flow, at the end. Tomato, turned by -9 degrees. */
+.stamp {
+	display: inline-block;
+	padding: var(--space-1) var(--space-3);
+	font-family: var(--font-display);
+	font-size: 1.75rem;
+	line-height: 0.95;
+	text-align: center;
+	text-transform: uppercase;
+	color: var(--tomato-text);
+	border: var(--rule-4) solid currentColor;
+	border-radius: var(--radius-sticker);
+	rotate: -9deg;
+	/* The ink of a stamp is not even. */
+	opacity: 0.92;
+}
+
+/* A text on the receipt: mono, with dotted leaders. */
+.receipt-text {
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	text-transform: uppercase;
+}
+
+/* An empty place: a dashed line and a name in grey Anton. */
+.empty-slot {
+	display: flex;
+	flex-direction: column;
+	justify-content: end;
+	gap: var(--space-3);
+	padding: var(--space-4);
+	border: 2px dashed var(--ink);
+	border-radius: var(--radius);
+
+	& .empty-slot__name {
+		font-family: var(--font-display);
+		font-size: clamp(2.5rem, 13cqi, 3.5rem);
+		line-height: 0.9;
+		text-transform: uppercase;
+		color: var(--hairline);
+	}
+}
+
+/* The title of one part of a screen: Anton, with a heavy rule under it. */
+.section-title {
+	padding-block-end: var(--space-1);
+	font-size: 1.5rem;
+	border-block-end: var(--rule-4) solid var(--ink);
+}

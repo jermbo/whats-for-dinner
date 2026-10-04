@@ -101,7 +101,7 @@
 	object-fit: cover;
 }
 
-/* The teal marker of the navigation moves from the old item to the new item. */
+/* The ink marker of the navigation moves from the old item to the new item. */
 ::view-transition-group(nav-active) {
 	animation-duration: 0.4s;
 	animation-timing-function: var(--ease-spring);

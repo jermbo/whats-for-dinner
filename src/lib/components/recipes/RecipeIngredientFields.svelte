@@ -97,7 +97,7 @@
 		padding-block: var(--space-1);
 
 		& + .ingredient-row {
-			border-block-start: 1px solid var(--color-border);
+			border-block-start: var(--rule-1) solid var(--hairline);
 		}
 	}
 
@@ -112,9 +112,9 @@
 		padding: var(--space-1) var(--space-3);
 		text-align: end;
 		font-variant-numeric: tabular-nums;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-pill);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
 	}
 
 	.ingredient-row__unit {
@@ -136,7 +136,7 @@
 		color: var(--color-muted);
 		background: none;
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-control);
 		cursor: pointer;
 
 		& :global(.icon) {

@@ -110,8 +110,6 @@
 	style:--blocks={scale.blocks}
 	use:levelDrag={drag}
 >
-	<span class="gauge__fill"></span>
-
 	<span class="gauge__text">
 		<label class="gauge__label" for="{uid}-level">{label}</label>
 		{#if note}
@@ -129,6 +127,8 @@
 	<!-- The range input gives the value to screen readers, so this text is only for the eye. -->
 	<span class="gauge__value" aria-hidden="true">{text}</span>
 
+	<span class="gauge__track" aria-hidden="true"><span class="gauge__fill"></span></span>
+
 	<input
 		class="visually-hidden"
 		id="{uid}-level"
@@ -145,63 +145,45 @@
 </div>
 
 <style>
+	/*
+	 * A row on paper: the label and the value on one line, and a track of 14 high under them.
+	 * The track is paper-deep and the fill is ink. A level that is low is amber. An empty level
+	 * has a ticked track, as "none" in the design.
+	 */
 	.gauge {
-		--gauge-fill: color-mix(in srgb, var(--color-accent) 28%, var(--color-surface));
-		--gauge-edge: var(--color-accent);
+		--gauge-fill: var(--ink);
 
 		position: relative;
-		isolation: isolate;
-		display: flex;
-		align-items: center;
-		gap: var(--space-3);
-		min-block-size: 3.5rem;
-		padding: var(--space-2) var(--space-5);
-		overflow: hidden;
-		background: var(--color-surface);
-		border: 1.5px solid transparent;
-		border-radius: var(--radius);
-		box-shadow: var(--shadow);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: baseline;
+		gap: var(--space-1) var(--space-3);
+		padding: var(--space-3) 0;
+		border-block-end: var(--rule-1) solid var(--hairline);
 		cursor: ew-resize;
 		/* A vertical move scrolls the page. A horizontal move comes to the row. */
 		touch-action: pan-y;
 		user-select: none;
 		-webkit-user-select: none;
 		-webkit-tap-highlight-color: transparent;
-		transition:
-			scale 0.3s var(--ease-spring),
-			box-shadow 0.3s,
-			background-color 0.3s,
-			border-color 0.3s;
+		transition: background-color 0.2s;
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 		}
 	}
 
-	.gauge__fill {
-		position: absolute;
-		z-index: -1;
-		inset-block: 0;
-		inset-inline-start: 0;
-		inline-size: calc(var(--level) * 100%);
-		background: var(--gauge-fill);
-		border-inline-end: 3px solid var(--gauge-edge);
-		transition:
-			inline-size 0.45s var(--ease-spring),
-			background-color 0.3s,
-			border-color 0.3s;
-	}
-
 	.gauge__text {
 		display: flex;
-		flex: 1;
-		flex-direction: column;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0 var(--space-3);
 		min-inline-size: 0;
 	}
 
 	.gauge__label {
-		font-weight: 600;
+		font-weight: 700;
 		cursor: inherit;
 	}
 
@@ -211,46 +193,61 @@
 	}
 
 	.gauge__done {
+		position: absolute;
+		inset-block-start: var(--space-3);
+		inset-inline-end: 4.5rem;
 		display: grid;
-		color: var(--color-accent-strong);
 	}
 
 	.gauge__value {
 		min-inline-size: 3.5rem;
-		font-weight: 600;
+		font-weight: 800;
 		font-variant-numeric: tabular-nums;
 		text-align: end;
 		transform-origin: right center;
-		transition: scale 0.3s var(--ease-spring);
+		transition: scale 0.2s var(--ease-out);
 	}
 
-	/* A count shows as blocks: lines divide the row into one block for each unit. */
-	.gauge--blocks::after {
+	/* The track. */
+	.gauge__track {
+		position: relative;
+		grid-column: 1 / -1;
+		block-size: var(--gauge-height);
+		background: var(--paper-deep);
+		overflow: hidden;
+	}
+
+	.gauge__fill {
 		position: absolute;
-		z-index: -1;
+		inset-block: 0;
+		inset-inline-start: 0;
+		inline-size: calc(var(--level) * 100%);
+		background: var(--gauge-fill);
+		transition:
+			inline-size 0.35s var(--ease-out),
+			background-color 0.3s;
+	}
+
+	/* A count shows as blocks: lines divide the track into one block for each unit. */
+	.gauge--blocks .gauge__track::after {
+		position: absolute;
 		inset: 0;
 		content: '';
 		background: repeating-linear-gradient(
 			to right,
 			transparent 0 calc(100% / var(--blocks) - 2px),
-			var(--color-border) calc(100% / var(--blocks) - 2px) calc(100% / var(--blocks))
+			var(--paper) calc(100% / var(--blocks) - 2px) calc(100% / var(--blocks))
 		);
 	}
 
 	.gauge--low {
-		--gauge-fill: var(--color-low);
-		--gauge-edge: var(--color-low-strong);
+		--gauge-fill: var(--amber);
 	}
 
-	/* Empty: an outline only, so that the row reads as "not there". */
+	/* Empty: a track with ticks and no fill, so that the row reads as "not there". */
 	.gauge--empty {
-		background: transparent;
-		border-color: var(--color-border);
-		border-style: dashed;
-		box-shadow: none;
-
-		& .gauge__fill {
-			border-color: transparent;
+		& .gauge__track {
+			background: repeating-linear-gradient(to right, var(--hairline) 0 2px, transparent 2px 5px);
 		}
 
 		& .gauge__value {
@@ -258,10 +255,9 @@
 		}
 	}
 
-	/* Under the finger: the row comes up, and the fill follows the finger with no delay. */
+	/* Under the finger: the value grows, and the fill follows the finger with no delay. */
 	.gauge--sliding {
-		scale: 1.02;
-		box-shadow: 0 0.75rem 2rem rgb(20 70 75 / 0.16);
+		background: var(--card);
 
 		& .gauge__value {
 			scale: 1.2;
@@ -275,6 +271,6 @@
 
 	/* The move from "from": the script sets each frame, so the fill must not add a delay. */
 	.gauge--pouring .gauge__fill {
-		transition-property: background-color, border-color;
+		transition-property: background-color;
 	}
 </style>

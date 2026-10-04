@@ -89,18 +89,17 @@ export function isUrl(text) {
 	return /^https?:\/\//i.test(text.trim());
 }
 
-/** A greeting for the time of day. */
+/** The word for the time of day. It is the title of the Today screen, for example "Evening". */
 export function greeting() {
 	const hour = new Date().getHours();
-	if (hour < 12) return 'Good morning';
-	return hour < 18 ? 'Good afternoon' : 'Good evening';
+	if (hour < 12) return 'Morning';
+	return hour < 18 ? 'Afternoon' : 'Evening';
 }
 
-/** The date of today in words, for example "Friday, October 2". */
+/** The date of today, short, for example "Sunday 4 Oct". */
 export function todayInWords() {
-	return new Date().toLocaleDateString(undefined, {
-		weekday: 'long',
-		month: 'long',
-		day: 'numeric'
-	});
+	const now = new Date();
+	const weekday = now.toLocaleDateString(undefined, { weekday: 'long' });
+	const month = now.toLocaleDateString(undefined, { month: 'short' });
+	return `${weekday} ${now.getDate()} ${month}`;
 }

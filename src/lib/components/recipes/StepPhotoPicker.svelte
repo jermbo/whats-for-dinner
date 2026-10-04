@@ -94,9 +94,9 @@
 		overflow: hidden;
 		background: none;
 		border: 3px solid transparent;
-		border-radius: 1rem;
+		border-radius: var(--radius-control);
 		cursor: pointer;
-		transition: scale 0.25s var(--ease-spring);
+		transition: scale 0.2s var(--ease-out);
 
 		&:active {
 			scale: 0.96;
@@ -117,9 +117,10 @@
 		gap: var(--space-1);
 		padding: var(--space-1);
 		font-size: 0.75rem;
-		font-weight: 600;
-		color: var(--color-on-accent);
-		background: var(--color-accent-strong);
+		font-weight: 800;
+		text-transform: uppercase;
+		color: var(--paper);
+		background: var(--ink);
 
 		& :global(.icon) {
 			inline-size: 0.9rem;
@@ -136,7 +137,7 @@
 		color: var(--color-muted);
 		background: none;
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-control);
 		cursor: pointer;
 
 		& :global(.icon) {

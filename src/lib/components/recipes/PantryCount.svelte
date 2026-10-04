@@ -2,7 +2,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 
 	/**
-	 * How many ingredients of a recipe the pantry has, as "7/9". A full count is teal.
+	 * How many ingredients of a recipe the pantry has, as "7/9". A full count is olive.
 	 * A reference recipe has no ingredients, so it shows no count.
 	 * "onPhoto" gives the dark label that lies on a photo.
 	 * @type {{ have: number, need: number, onPhoto?: boolean }}
@@ -40,14 +40,16 @@
 		}
 	}
 
-	/* On a photo: the dark label of the card. A full count is teal. */
+	/* On a photo: the ink label of the card. A full count is olive. */
 	.pantry-count.pantry-count--photo {
-		color: #ffffff;
-		background: rgb(0 0 0 / 0.6);
-		backdrop-filter: blur(6px);
+		color: var(--paper);
+		background: var(--ink);
+		border-color: var(--ink);
 
 		&:global(.badge--good) {
-			background: var(--color-accent-strong);
+			color: var(--ink);
+			background: var(--olive);
+			border-color: var(--olive);
 		}
 	}
 </style>

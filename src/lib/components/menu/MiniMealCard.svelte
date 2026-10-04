@@ -9,7 +9,7 @@
 	 * One meal of the menu as a small card: the photo, and the name on one line.
 	 * A tap turns the card: "onturn" gets the card element, and the back of the card opens on
 	 * the full screen. A meal that is not ready has a clock on the photo: amber when it needs
-	 * preparation, teal while it waits.
+	 * preparation, ink while it waits.
 	 * @type {{ entry: MenuEntry, onturn: (card: HTMLElement) => void }}
 	 */
 	let { entry, onturn } = $props();
@@ -63,7 +63,7 @@
 
 		& :global(.recipe-photo) {
 			inline-size: 100%;
-			box-shadow: var(--shadow);
+			box-shadow: var(--shadow-small);
 		}
 	}
 
@@ -85,14 +85,14 @@
 			position: absolute;
 			inset: 0;
 			content: '';
-			border-radius: 1rem;
+			border-radius: var(--radius-control);
 		}
 
 		&:focus-visible {
 			outline: none;
 
 			&::after {
-				outline: 3px solid var(--color-accent-strong);
+				outline: 3px solid var(--ink);
 				outline-offset: 2px;
 			}
 		}
@@ -107,7 +107,7 @@
 		place-items: center;
 		inline-size: 1.5rem;
 		block-size: 1.5rem;
-		border-radius: 50%;
+		border-radius: var(--radius-sticker);
 
 		& :global(.icon) {
 			inline-size: 1rem;
@@ -115,13 +115,13 @@
 		}
 
 		&.mini-card__flag--todo {
-			color: #3d2600;
-			background: var(--color-low);
+			color: var(--ink);
+			background: var(--amber);
 		}
 
 		&.mini-card__flag--waiting {
-			color: var(--color-on-accent);
-			background: var(--color-accent-strong);
+			color: var(--paper);
+			background: var(--ink);
 		}
 	}
 </style>

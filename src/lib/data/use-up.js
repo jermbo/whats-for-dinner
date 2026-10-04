@@ -96,3 +96,33 @@ export function useUpIdeas(recipes, soon, ingredientsById, pantryByIngredient) {
 		})
 		.sort((a, b) => b.score - a.score || a.recipe.name.localeCompare(b.recipe.name));
 }
+
+/** An item that is in stock this many days is the first to use. */
+export const URGENT_DAYS = 7;
+
+/**
+ * The food to use first that a recipe uses, the oldest stock first. A meal that uses it can
+ * save it. Undefined: the recipe uses no food that is on the list.
+ * @param {Recipe} recipe
+ * @param {SoonItem[]} soon
+ * @returns {SoonItem | undefined}
+ */
+export function oldestUse(recipe, soon) {
+	const ids = new Set(recipe.ingredients.map((row) => row.ingredientId));
+	return soon
+		.filter((item) => ids.has(item.ingredient.id))
+		.reduce(
+			/** @param {SoonItem | undefined} best @param {SoonItem} item */
+			(best, item) => (!best || item.days > best.days ? item : best),
+			undefined
+		);
+}
+
+/**
+ * The age of a stock in words, for example "2 days in stock".
+ * @param {number} days
+ */
+export function stockAge(days) {
+	if (days === 0) return 'New today';
+	return `${days} ${days === 1 ? 'day' : 'days'} in stock`;
+}

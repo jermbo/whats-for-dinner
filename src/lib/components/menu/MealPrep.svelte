@@ -75,18 +75,16 @@
 	.meal-prep {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
-		padding: var(--space-4);
-		background: color-mix(in srgb, var(--color-low) 35%, var(--color-surface));
-		border-radius: calc(var(--radius) / 2);
+		gap: var(--space-2);
 	}
 
 	.meal-prep__steps {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
+		gap: var(--space-1);
 		margin: 0;
-		padding-inline-start: var(--space-5);
+		padding-inline-start: var(--space-4);
+		font-size: 0.875rem;
 	}
 
 	/* After "Preparation done", a line draws through each step, as a pen does. */
@@ -98,12 +96,10 @@
 	}
 
 	.meal-prep__lead {
-		font-weight: 600;
+		font-weight: 800;
 	}
 
 	.meal-prep--done {
-		background: var(--color-accent-soft);
-
 		& .meal-prep__task {
 			background-size: 100% 2px;
 		}
@@ -118,26 +114,27 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-2);
-		font-weight: 600;
+		font-size: 0.875rem;
+		font-weight: 700;
 
 		& :global(.icon) {
 			flex: none;
+			inline-size: 1.125rem;
+			block-size: 1.125rem;
 		}
 	}
 
 	/* How much of the wait is over. */
 	.meal-prep__bar {
-		block-size: 0.4rem;
-		background: var(--color-surface);
-		border-radius: var(--radius-pill);
+		block-size: 0.5rem;
+		background: var(--paper-deep);
 
 		&::before {
 			display: block;
 			inline-size: calc(var(--progress) * 100%);
 			block-size: 100%;
 			content: '';
-			background: var(--color-accent-strong);
-			border-radius: inherit;
+			background: var(--ink);
 			transition: inline-size 1s var(--ease-out);
 		}
 	}

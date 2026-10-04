@@ -144,25 +144,26 @@
 		cursor: pointer;
 	}
 
-	/* A dark label on the photo, as on the photo of a recipe card. */
+	/* An ink sticker on the photo. */
 	.step-card__count {
 		position: absolute;
 		inset-block-end: var(--space-3);
 		inset-inline-end: var(--space-3);
-		padding: var(--space-1) var(--space-3);
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: #ffffff;
-		background: rgb(0 0 0 / 0.6);
-		border-radius: var(--radius-pill);
+		padding: var(--space-1) var(--space-2);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-sticker);
 	}
 
 	/* Large text: the owner reads it from the counter, with the phone at arm's length. */
 	.step-card__text {
-		font-family: var(--font-heading);
-		font-size: clamp(1.4rem, 6.2cqi, 2.1rem);
-		font-weight: 500;
-		line-height: 1.4;
+		font-size: clamp(1.6rem, 7cqi, 2.75rem);
+		font-weight: 600;
+		line-height: 1.15;
 		text-wrap: pretty;
 	}
 
@@ -180,8 +181,10 @@
 		gap: var(--space-2);
 		padding: var(--space-2) var(--space-4);
 		font-size: 1.05rem;
-		background: var(--color-accent-soft);
-		border-radius: var(--radius-pill);
+		font-weight: 600;
+		background: var(--card);
+		border: var(--rule-1) solid var(--ink);
+		border-radius: var(--radius-sticker);
 	}
 
 	.step-card__notes {
@@ -201,16 +204,19 @@
 		font: inherit;
 		font-size: 1.05rem;
 		text-align: start;
-		background: var(--color-notice);
+		background: var(--paper-deep);
 		border: 0;
-		border-radius: calc(var(--radius) / 2);
+		border-inline-start: var(--rule-4) solid var(--ink);
+		border-radius: 0;
 		cursor: pointer;
 	}
 
 	.step-card__date {
 		display: block;
-		font-size: 0.8rem;
-		font-weight: 600;
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 		color: var(--color-muted);
 	}
 

@@ -1,40 +1,31 @@
+/* A card is white and has a soft shadow. A card is the only panel that the design has. */
 .card {
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-4);
 	padding: var(--space-5);
-	background: var(--color-surface);
+	background: var(--card);
 	border-radius: var(--radius);
 	box-shadow: var(--shadow);
 
 	& .card__title {
-		font-size: 1.2rem;
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		font-weight: 400;
+		line-height: 0.98;
+		text-transform: uppercase;
 	}
 
+	/* A note on the paper: a dashed line, as an offer that is not a plan. */
 	&.card--notice {
-		background: var(--color-notice);
+		background: none;
+		border: 2px dashed var(--ink);
+		box-shadow: none;
 	}
 
 	/* A list in a card does not need a second panel. */
 	& .list {
 		padding-inline: 0;
-		background: none;
-		box-shadow: none;
-	}
-}
-
-.badge {
-	display: inline-block;
-	padding: var(--space-1) var(--space-3);
-	font-size: 0.8rem;
-	font-weight: 600;
-	color: var(--color-muted);
-	background: var(--color-surface-soft);
-	border-radius: var(--radius-pill);
-
-	&.badge--good {
-		color: var(--color-accent-strong);
-		background: var(--color-accent-soft);
 	}
 }
 
@@ -60,25 +51,25 @@
 		padding: var(--space-4) var(--space-5) var(--space-5);
 	}
 
-	/* A dark label on the photo, as "20% off" in the design. */
+	/* A sticker on the photo: ink, with a small radius. */
 	& .card__tag {
 		position: absolute;
 		inset-block-start: var(--space-3);
 		inset-inline-start: var(--space-3);
-		padding: var(--space-1) var(--space-3);
-		font-size: 0.8rem;
-		font-weight: 600;
-		color: #ffffff;
-		background: rgb(0 0 0 / 0.6);
-		border-radius: var(--radius-pill);
-		backdrop-filter: blur(6px);
+		padding: var(--space-1) var(--space-2);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-sticker);
 	}
 
 	/* Only for a mouse: on a touch screen, a hover stays after the tap. */
 	@media (hover: hover) {
 		&:hover {
 			translate: 0 -0.2rem;
-			box-shadow: 0 1rem 2rem rgb(20 70 75 / 0.14);
 		}
 	}
 }
@@ -100,9 +91,10 @@
 
 		&:focus-visible {
 			outline: none;
+			box-shadow: none;
 
 			&::after {
-				outline: 3px solid var(--color-accent-strong);
+				outline: 3px solid var(--ink);
 				outline-offset: 2px;
 			}
 		}

@@ -2,8 +2,8 @@
 	import Icon from './Icon.svelte';
 
 	/**
-	 * A check box that looks like a pill, for one filter that is on or off.
-	 * The pill that is on has a dark fill, bold text, and a check: color is not the only sign.
+	 * A check box that looks like a chip, for one filter that is on or off.
+	 * The chip that is on has an ink fill, bold text, and a check: color is not the only sign.
 	 * @type {{ label: string, checked?: boolean }}
 	 */
 	let { label, checked = $bindable(false) } = $props();
@@ -16,57 +16,58 @@
 </label>
 
 <style>
+	/* The chip is 32 high. The hit area is 44 high: the label is taller than the fill. */
 	.toggle-chip {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
 		gap: var(--space-2);
-		min-block-size: var(--tap);
-		padding: var(--space-2) var(--space-5) var(--space-2) var(--space-3);
-		font-weight: 500;
-		color: var(--color-muted);
-		background: var(--color-surface);
-		border-radius: var(--radius-pill);
-		box-shadow: var(--shadow);
+		min-block-size: var(--chip-hit);
+		padding: 0 var(--space-3);
+		font-size: 0.8125rem;
+		font-weight: 700;
+		background: var(--card);
+		border: var(--rule-1) solid var(--ink);
+		border-radius: var(--radius-sticker);
 		cursor: pointer;
 		transition:
-			background-color 0.25s,
-			color 0.25s,
-			scale 0.25s var(--ease-spring);
+			background-color 0.2s,
+			color 0.2s,
+			scale 0.2s var(--ease-out);
 
 		&:active {
-			scale: 0.95;
+			scale: 0.96;
 		}
 
 		&:has(:checked) {
-			font-weight: 600;
-			color: var(--color-on-accent);
-			background: var(--color-accent-strong);
+			font-weight: 800;
+			color: var(--paper);
+			background: var(--ink);
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 		}
 	}
 
-	/* An empty ring. The check comes into it when the filter is on. */
+	/* An empty square. The check comes into it when the filter is on. */
 	.toggle-chip__mark {
 		display: grid;
 		place-items: center;
-		inline-size: 1.5rem;
-		block-size: 1.5rem;
+		inline-size: 1.125rem;
+		block-size: 1.125rem;
 		border: 1.5px solid currentColor;
-		border-radius: 50%;
+		border-radius: 2px;
 
 		& :global(.icon) {
-			inline-size: 1rem;
-			block-size: 1rem;
+			inline-size: 0.875rem;
+			block-size: 0.875rem;
 			opacity: 0;
 			scale: 0.4;
 			transition:
 				opacity 0.15s,
-				scale 0.3s var(--ease-spring);
+				scale 0.25s var(--ease-out);
 		}
 	}
 

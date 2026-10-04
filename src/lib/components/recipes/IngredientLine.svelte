@@ -75,9 +75,9 @@
 	.ingredient-line__field {
 		min-block-size: var(--tap);
 		padding: var(--space-2) var(--space-5);
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-pill);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
 
 		&::placeholder {
 			color: var(--color-muted);

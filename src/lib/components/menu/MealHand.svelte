@@ -9,6 +9,7 @@
 	import { pose } from '$lib/motion/pile';
 	import { status } from '$lib/status.svelte';
 	import { shuffled } from '$lib/util/collections';
+	import MealCardBack from './MealCardBack.svelte';
 	import MealSheet from './MealSheet.svelte';
 	import MenuCard from './MenuCard.svelte';
 
@@ -28,20 +29,25 @@
 	 * Pull it down, and the pile shuffles: the cards turn face down, split to the left and the
 	 * right, and drop back on the pile in a new order, with a ready meal on top.
 	 * Buttons do the same for the keyboard.
-	 * Turn a card, and its back opens on the full screen.
+	 * Turn a card, and its back opens on the full screen. In a wide area, the back of the top card
+	 * is always next to the pile, as a panel of facts.
 	 * The first time, the top card shows that it can move: see "hint".
 	 * @type {{
 	 *   entries: MenuEntry[],
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
-	 *   cooking?: Set<string>,
+	 *   soon?: import('$lib/data/use-up').SoonItem[],
+	 *   cooking?: Map<string, import('$lib/types').CookSession>,
+	 *   head?: import('svelte').Snippet<[{ number: number, total: number, onnext: () => void }]>,
 	 *   onstart: (entry: MenuEntry) => void,
 	 *   oncook: (entry: MenuEntry) => void,
 	 *   onprep: (entry: MenuEntry) => unknown
 	 * }}
-	 *   cooking: the IDs of the menu items that are open in Cook mode.
+	 *   soon: the food to use first, for the line "In the pantry" of each card.
+	 *   cooking: the open cook sessions of the meals that the owner is cooking, by menu item ID.
+	 *   head: the top of the screen. It gets the place of the top card, and the action "Next".
 	 */
-	let { entries, kitchen, lastSessions, cooking, onstart, oncook, onprep } = $props();
+	let { entries, kitchen, lastSessions, soon, cooking, head, onstart, oncook, onprep } = $props();
 
 	/**
 	 * The IDs from the top of the pile down. A meal that is not in it comes on top: a meal that
@@ -227,6 +233,16 @@
 		announce();
 	}
 
+	/** The bottom card comes back on top. */
+	async function previous() {
+		if (busy || cards.length < 2) return;
+		const last = cards.at(-1);
+		if (!last) return;
+		order = ids([last, ...cards.slice(0, -1)]);
+		await tick();
+		announce();
+	}
+
 	/** The cards split to the left and to the right. */
 	function split() {
 		const timeline = gsap.timeline();
@@ -297,60 +313,88 @@
 	};
 </script>
 
-<section class="hand" aria-labelledby="hand-title">
-	<div class="hand__head">
-		<h2 id="hand-title">Your meals</h2>
-		<p class="hand__count muted">{number} of {entries.length}</p>
-	</div>
+<section class="hand" aria-label="Your meals">
+	{@render head?.({
+		number,
+		total: entries.length,
+		onnext: () => next(top && nodes[top.item.id], { x: -1, y: -0.15 })
+	})}
 
-	<div class="hand__pile">
-		{#each cards as entry, at (entry.item.id)}
-			<div
-				class={['hand__card', at === 0 && 'hand__card--top']}
-				style:z-index={cards.length - at}
-				inert={at !== 0}
-				{@attach register(entry.item.id)}
-				{@attach at === 0 && !busy ? throwCard(handlers) : null}
-			>
-				<MenuCard
-					{entry}
+	<div class="hand__stage">
+		<div class="hand__pile">
+			{#each cards as entry, at (entry.item.id)}
+				<div
+					class={['hand__card', at === 0 && 'hand__card--top']}
+					style:z-index={cards.length - at}
+					inert={at !== 0}
+					{@attach register(entry.item.id)}
+					{@attach at === 0 && !busy ? throwCard(handlers) : null}
+				>
+					<MenuCard
+						{entry}
+						{kitchen}
+						{soon}
+						session={cooking?.get(entry.item.id)}
+						facedown={down}
+						onturn={(card) => sheet?.open(entry.item.id, card)}
+						{onstart}
+						{oncook}
+						{onprep}
+					/>
+				</div>
+			{/each}
+		</div>
+
+		<!-- A wide area: the facts of the top card are always in view. -->
+		{#if top}
+			<aside class="hand__facts" aria-label="Cook facts: {entryName(top)}">
+				<MealCardBack
+					entry={top}
 					{kitchen}
-					facedown={down}
-					cooking={cooking?.has(entry.item.id)}
-					onturn={(card) => sheet?.open(entry.item.id, card)}
-					{onstart}
-					{oncook}
+					last={lastSessions.get(top.recipe.id)}
+					open={true}
+					{onprep}
 				/>
-			</div>
-		{/each}
+			</aside>
+		{/if}
 	</div>
 
 	<p class="visually-hidden" aria-live="polite">{spoken}</p>
 
-	<p class={['hand__hint', pull >= 1 && 'hand__hint--ready']} aria-hidden="true">
-		{pull >= 1
-			? 'Release to shuffle'
-			: 'Throw the card for the next meal. Pull it down to shuffle.'}
+	<!-- Shown only while the card is pulled down. -->
+	<p class={['hand__pull label', pull > 0 && 'hand__pull--shown']} aria-hidden="true">
+		{pull >= 1 ? 'Release to shuffle' : 'Pull down to shuffle'}
 	</p>
 
 	<div class="hand__actions">
 		<button
-			class="button hand__action"
+			class="button hand__action hand__back"
 			type="button"
-			onclick={shuffle}
+			onclick={previous}
 			disabled={entries.length < 2}
 		>
-			<Icon name="shuffle" />
-			Shuffle
+			<Icon name="back" />
+			Back
 		</button>
+		<p class="count hand__count">
+			{number}<span class="count__total">/{entries.length}</span>
+		</p>
 		<button
-			class="button button--primary hand__action"
+			class="button hand__action hand__next"
 			type="button"
 			onclick={() => next(top && nodes[top.item.id], { x: -1, y: -0.15 })}
 			disabled={entries.length < 2}
 		>
-			Next meal
+			Next
 			<Icon name="next" />
+		</button>
+		<button
+			class="button button--link hand__action hand__shuffle"
+			type="button"
+			onclick={shuffle}
+			disabled={entries.length < 2}
+		>
+			Shuffle
 		</button>
 	</div>
 
@@ -362,35 +406,33 @@
 		/* The pile goes to the edges of the main area, so that a thrown card can fly out of it. */
 		--bleed: var(--gutter);
 
+		container: hand / inline-size;
 		display: flex;
 		flex-direction: column;
-		align-items: center;
 		gap: var(--space-4);
 		margin-inline: calc(-1 * var(--bleed));
 		padding-inline: var(--bleed);
 		overflow-x: clip;
 	}
 
-	.hand__head {
+	/* The pile, and the facts panel next to it in a wide area. */
+	.hand__stage {
 		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		inline-size: 100%;
+		align-items: flex-start;
+		justify-content: center;
+		gap: var(--space-6);
 	}
 
-	.hand__count {
-		font-variant-numeric: tabular-nums;
-	}
-
-	/* All cards lie in one cell. The pile is as tall as the tallest card, plus its edges. */
 	/*
+	 * All cards lie in one cell. The pile is as tall as the tallest card, plus its edges.
 	 * Each card has a z-index for its place in the pile. "isolation" keeps those numbers in the
 	 * pile: without it, a card is above the navigation and the message of the last action.
 	 */
 	.hand__pile {
 		display: grid;
-		inline-size: min(100%, 22rem);
-		padding-block-end: var(--space-8);
+		flex: none;
+		inline-size: min(100%, 20rem);
+		padding-block: var(--space-4) var(--space-8);
 		isolation: isolate;
 	}
 
@@ -411,28 +453,127 @@
 		}
 	}
 
-	.hand__hint {
-		margin-block-start: calc(-1 * var(--space-4));
-		color: var(--color-muted);
-		font-size: 0.85rem;
-		text-align: center;
-		transition:
-			color 0.2s,
-			scale 0.3s var(--ease-spring);
+	/*
+	 * The facts panel: white, with a frame of ink inside, as the back of a card. It has one
+	 * size for each meal. A meal with many steps scrolls in the panel, and the screen does not
+	 * move when the next meal comes.
+	 */
+	.hand__facts {
+		container: facts / inline-size;
+		display: none;
+		flex: 1 1 0;
+		min-inline-size: 0;
+		max-inline-size: 46rem;
+		block-size: 34rem;
+		margin-block-start: var(--space-4);
+		padding: var(--space-2);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		background: var(--card);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		scrollbar-width: thin;
+	}
 
-		&.hand__hint--ready {
-			color: var(--color-accent-strong);
-			font-weight: 600;
-			scale: 1.1;
+	.hand__pull {
+		align-self: center;
+		margin-block-start: calc(-1 * var(--space-6));
+		opacity: 0;
+		transition: opacity 0.15s;
+
+		&.hand__pull--shown {
+			opacity: 1;
 		}
 	}
 
+	/* A phone: the count and "Next" are in the title of the screen. Only "Shuffle" stays here. */
 	.hand__actions {
 		display: flex;
-		gap: var(--space-3);
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-4);
+	}
+
+	.hand__back,
+	.hand__next,
+	.hand__count {
+		display: none;
 	}
 
 	.hand__action {
 		gap: var(--space-2);
+	}
+
+	@container hand (min-width: 36rem) {
+		.hand__stage {
+			justify-content: flex-start;
+		}
+
+		.hand__pile {
+			inline-size: 17rem;
+		}
+
+		.hand__facts {
+			display: block;
+		}
+
+		.hand__back,
+		.hand__next,
+		.hand__count {
+			display: inline-flex;
+		}
+
+		.hand__actions {
+			justify-content: flex-start;
+		}
+
+		.hand__pull {
+			display: none;
+		}
+	}
+
+	/*
+	 * A wide main area that is tall enough: the hand fills the height of the screen, and nothing
+	 * scrolls. The pile gets the height that the title and the buttons leave, and its width
+	 * follows its height. The photo of each card takes the height that is left. The facts panel
+	 * has the same height as the pile. The same condition is in the Today page.
+	 */
+	@container main (min-width: 50rem) {
+		@media (min-height: 36rem) {
+			.hand {
+				flex: 1 0 min(100%, 32rem);
+				min-block-size: 0;
+			}
+
+			/* The stage has a size that its content does not change: the pile reads its height. */
+			.hand__stage {
+				container-type: size;
+				flex: 1 1 0;
+				align-items: stretch;
+				min-block-size: 0;
+			}
+
+			.hand__pile {
+				align-self: stretch;
+				inline-size: min(36rem, 64cqh);
+			}
+
+			.hand__facts {
+				block-size: auto;
+				margin-block-end: var(--space-8);
+			}
+
+			.hand__pile :global(.pack__media) {
+				flex: 1 1 0;
+				min-block-size: 6rem;
+			}
+
+			.hand__pile :global(.pack__media .recipe-photo--card) {
+				position: absolute;
+				inset: 0;
+				block-size: 100%;
+				aspect-ratio: auto;
+			}
+		}
 	}
 </style>

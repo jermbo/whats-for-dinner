@@ -95,6 +95,6 @@
 		inline-size: 4.5rem;
 		aspect-ratio: 1;
 		overflow: hidden;
-		border-radius: 1rem;
+		border-radius: var(--radius-control);
 	}
 </style>

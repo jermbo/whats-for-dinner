@@ -1,11 +1,14 @@
-/* One label with one control. The control is a white pill with a thin line, as in the design. */
+/* One label with one control. The control is a white field with an ink rule. */
 .field {
 	display: flex;
 	flex-direction: column;
 	gap: var(--space-2);
 
 	& .field__label {
-		font-weight: 500;
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
 	& .field__hint {
@@ -15,21 +18,21 @@
 
 	& .field__control {
 		inline-size: 100%;
-		min-block-size: var(--tap);
-		padding: var(--space-2) var(--space-5);
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
-		border-radius: var(--radius-pill);
+		min-block-size: var(--button-height);
+		padding: var(--space-2) var(--space-4);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
 
 		&::placeholder {
 			color: var(--color-muted);
+			opacity: 0.8;
 		}
 	}
 
 	& textarea.field__control {
 		min-block-size: 8rem;
-		padding-block: var(--space-4);
-		border-radius: var(--radius);
+		padding-block: var(--space-3);
 		resize: vertical;
 	}
 
@@ -55,8 +58,9 @@
 	& .fieldset__legend {
 		padding: 0;
 		margin-block-end: var(--space-3);
-		font-family: var(--font-heading);
-		font-size: 1.1rem;
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 400;
+		text-transform: uppercase;
 	}
 }

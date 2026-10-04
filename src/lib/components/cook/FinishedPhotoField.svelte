@@ -50,15 +50,15 @@
 			inline-size: 100%;
 			min-block-size: 13rem;
 			padding: var(--space-5);
-			font-family: var(--font-heading);
-			font-size: 1.25rem;
-			font-weight: 600;
+			font-family: var(--font-display);
+			font-size: 1.5rem;
+			font-weight: 400;
 			text-align: center;
-			color: var(--color-accent-strong);
-			background: var(--color-accent-soft);
-			border: 2px dashed var(--color-accent-strong);
+			text-transform: uppercase;
+			background: var(--paper-deep);
+			border: 2px dashed var(--ink);
 			border-radius: var(--radius);
-			transition: scale 0.25s var(--ease-spring);
+			transition: scale 0.2s var(--ease-out);
 
 			&:active {
 				scale: 0.98;

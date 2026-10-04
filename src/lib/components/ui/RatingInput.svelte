@@ -44,7 +44,10 @@
 	.rating__legend {
 		padding: 0;
 		margin-block-end: var(--space-2);
-		font-weight: 500;
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
 	.rating__stars {
@@ -57,7 +60,7 @@
 		place-items: center;
 		inline-size: var(--tap);
 		block-size: var(--tap);
-		border-radius: 50%;
+		border-radius: var(--radius-sticker);
 		cursor: pointer;
 		transition: scale 0.3s var(--ease-spring);
 
@@ -70,7 +73,7 @@
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 		}
 	}
@@ -79,15 +82,15 @@
 		inline-size: 2.25rem;
 		fill: transparent;
 		stroke: var(--color-text);
-		stroke-width: 1.25;
-		stroke-linejoin: round;
+		stroke-width: 1.75;
+		stroke-linejoin: miter;
 		transition: fill 0.2s;
 	}
 
 	/* A star has a fill when it is the selected star, or when a star after it is selected. */
 	.rating__star:has(:checked) .rating__icon,
 	.rating__star:has(~ .rating__star :checked) .rating__icon {
-		fill: #ffb300;
+		fill: var(--ink);
 	}
 
 	.rating__star:has(:checked) .rating__icon {

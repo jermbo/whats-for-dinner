@@ -204,9 +204,9 @@
 	/* An aisle is a label of the list, not a part of the page: its title is small. */
 	.shop__aisle {
 		font-family: var(--font-body);
-		font-size: 0.925rem;
-		font-weight: 600;
-		letter-spacing: 0;
-		color: var(--color-muted);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		line-height: 1.25;
 	}
 </style>

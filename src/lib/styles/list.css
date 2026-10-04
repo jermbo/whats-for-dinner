@@ -1,25 +1,23 @@
-/* A white panel of rows with a soft line between them. */
+/*
+ * A list sits on the paper. It is a ruled list: a heavy rule at the top and a line under each
+ * row. There are no boxes.
+ */
 .list {
 	margin: 0;
-	padding: var(--space-1) var(--space-5);
+	padding: 0;
 	list-style: none;
-	background: var(--color-surface);
-	border-radius: var(--radius);
-	box-shadow: var(--shadow);
+	border-block-start: var(--rule-4) solid var(--ink);
 
 	& .list__item {
 		padding-block: var(--space-4);
-
-		& + .list__item {
-			border-block-start: 1px solid var(--color-border);
-		}
+		border-block-end: var(--rule-1) solid var(--hairline);
 	}
 
 	& .list__link {
 		display: flex;
 		align-items: center;
 		min-block-size: var(--tap);
-		font-weight: 600;
+		font-weight: 700;
 	}
 }
 

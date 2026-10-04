@@ -1,6 +1,6 @@
 <script>
 	/**
-	 * A group of radio buttons that looks like one row of buttons.
+	 * A group of radio buttons that looks like one row of chips.
 	 * @type {{
 	 *   legend: string,
 	 *   options: { value: string, label: string }[],
@@ -50,48 +50,49 @@
 	.segmented__legend {
 		padding: 0;
 		margin-block-end: var(--space-2);
-		font-weight: 600;
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
-	/* One white pill that holds the options. */
+	/* One box with an ink rule holds the options. */
 	.segmented__options {
 		display: flex;
-		gap: var(--space-1);
-		padding: var(--space-2);
-		background: var(--color-surface);
-		border-radius: var(--radius-pill);
-		box-shadow: var(--shadow);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
+		overflow: hidden;
 	}
 
 	.segmented__option {
 		display: grid;
 		flex: 1;
 		place-items: center;
-		min-block-size: calc(var(--tap) - var(--space-2));
+		min-block-size: calc(var(--tap) - 4px);
 		min-inline-size: var(--tap);
 		padding-inline: var(--space-3);
-		color: var(--color-muted);
-		border-radius: var(--radius-pill);
+		font-weight: 700;
 		cursor: pointer;
 		transition:
-			background-color 0.25s,
-			color 0.25s,
-			scale 0.25s var(--ease-spring);
+			background-color 0.2s,
+			color 0.2s;
 
-		&:active {
-			scale: 0.95;
+		& + & {
+			border-inline-start: var(--rule-1) solid var(--ink);
 		}
 
-		/* The selected option has a fill and bold text. Color is not the only sign. */
+		/* The selected option has an ink fill and bold text. Color is not the only sign. */
 		&:has(:checked) {
-			font-weight: 600;
-			color: var(--color-text);
-			background: var(--color-accent-soft);
+			font-weight: 800;
+			color: var(--paper);
+			background: var(--ink);
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
-			outline-offset: 2px;
+			outline: 3px solid var(--ink);
+			outline-offset: -5px;
+			box-shadow: none;
 		}
 	}
 </style>

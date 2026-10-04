@@ -4,6 +4,7 @@
 	box-sizing: border-box;
 }
 
+/* The page is flat paper: no gradient, no glow. */
 html {
 	background: var(--color-bg);
 }
@@ -12,32 +13,35 @@ body {
 	min-block-size: 100dvh;
 	margin: 0;
 	font-family: var(--font-body);
-	line-height: 1.5;
+	font-weight: 500;
+	line-height: 1.45;
 	color: var(--color-text);
-	background: linear-gradient(180deg, var(--color-bg-glow), var(--color-bg) 28rem) no-repeat;
+	background: var(--color-bg);
 }
 
+/* A name, a title, and a number are Anton, uppercase. Line height .86 for a title. */
 h1,
 h2,
 h3 {
 	margin: 0;
-	font-family: var(--font-heading);
-	font-weight: 600;
-	line-height: 1.15;
-	letter-spacing: -0.01em;
+	font-family: var(--font-display);
+	font-weight: 400;
+	line-height: 0.9;
+	text-transform: uppercase;
 	text-wrap: balance;
 }
 
 h1 {
-	font-size: 1.75rem;
+	font-size: clamp(3.25rem, 21cqi, 6rem);
+	line-height: 0.86;
 }
 
 h2 {
-	font-size: 1.35rem;
+	font-size: 1.75rem;
 }
 
 h3 {
-	font-size: 1.1rem;
+	font-size: 1.25rem;
 }
 
 p {
@@ -46,13 +50,16 @@ p {
 }
 
 a {
-	color: var(--color-accent-strong);
+	color: inherit;
+	text-decoration-thickness: 2px;
 	text-underline-offset: 0.2em;
 }
 
 :focus-visible {
-	outline: 3px solid var(--color-accent-strong);
+	outline: 3px solid var(--ink);
 	outline-offset: 2px;
+	/* A second ring in white keeps the focus visible on an ink or olive surface. */
+	box-shadow: 0 0 0 5px var(--card);
 }
 
 input,
@@ -65,7 +72,7 @@ button {
 
 input[type='checkbox'],
 input[type='radio'] {
-	accent-color: var(--color-accent-strong);
+	accent-color: var(--ink);
 	inline-size: 1.35rem;
 	block-size: 1.35rem;
 }
@@ -80,12 +87,12 @@ dialog {
 	padding: var(--space-6);
 	color: var(--color-text);
 	background: var(--color-surface);
-	border: 0;
+	border: var(--rule-4) solid var(--ink);
 	border-radius: var(--radius);
 	box-shadow: var(--shadow);
 
 	&::backdrop {
-		background: rgb(4 40 44 / 0.45);
+		background: rgb(29 28 26 / 0.55);
 	}
 }
 

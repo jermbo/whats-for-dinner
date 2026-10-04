@@ -18,6 +18,7 @@ The pages describe the system that we want to have. The code moves to that goal,
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
 | [Shopping](shopping/README.md) | How food goes from the shopping list into the pantry, and how the app remembers products, photos, and prices.      |
 | [Recipes](recipes/README.md)   | How you write a recipe, cook from it one step at a time, and how the photos and notes of each cook make it better. |
+| [Design](design/README.md)     | The look of the app: a paper kitchen label, the colours, the type, and the parts of a screen.                      |
 
 ## How to read it
 

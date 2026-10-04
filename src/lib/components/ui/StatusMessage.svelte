@@ -14,16 +14,16 @@
 		max-inline-size: 38rem;
 		margin-inline: auto;
 		padding: var(--space-3) var(--space-5);
-		font-weight: 600;
-		color: var(--color-on-strong);
-		background: var(--color-strong);
-		border-radius: var(--radius-pill);
+		font-weight: 700;
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-control);
 		box-shadow: var(--shadow);
 		text-align: center;
 		pointer-events: none;
 		transition:
 			opacity 0.2s,
-			translate 0.45s var(--ease-spring);
+			translate 0.35s var(--ease-out);
 
 		&:empty {
 			opacity: 0;

@@ -337,8 +337,8 @@
 		display: flex;
 		align-items: baseline;
 		gap: var(--space-1);
-		font-family: var(--font-heading);
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-weight: 400;
 	}
 
 	/* The field is as wide as its number, where the browser can do that. */
@@ -353,7 +353,7 @@
 		field-sizing: content;
 		background: none;
 		border: 0;
-		border-block-end: 2px dashed var(--color-border);
+		border-block-end: 2px dashed var(--ink);
 		border-radius: 0;
 		appearance: textfield;
 

@@ -3,7 +3,6 @@
 	import { resolve } from '$app/paths';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import RatingInput from '$lib/components/ui/RatingInput.svelte';
-	import SuccessMark from '$lib/components/ui/SuccessMark.svelte';
 	import { setLeftovers, undoCook, updateSession } from '$lib/data/cooking';
 	import { db } from '$lib/db/db';
 	import { live } from '$lib/live.svelte';
@@ -79,7 +78,7 @@
 {:else if session.current}
 	{@const current = session.current}
 
-	<SuccessMark />
+	<p class="cooked-stamp"><span class="stamp">Cooked</span></p>
 
 	<PageHeader
 		title="Cooked: {current.recipeName}"
@@ -166,3 +165,10 @@
 	<PageHeader title="Cooked" />
 	<p class="muted">This cook session is not on this device.</p>
 {/if}
+
+<style>
+	/* The stamp: once, at the end of the flow. */
+	.cooked-stamp {
+		padding-block: var(--space-2);
+	}
+</style>

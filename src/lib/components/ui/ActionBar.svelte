@@ -26,7 +26,7 @@
 
 		/* The action lies on the content of the screen, so it has a shadow. */
 		& :global(.button) {
-			box-shadow: 0 0.5rem 1.5rem rgb(20 70 75 / 0.25);
+			box-shadow: var(--shadow);
 		}
 	}
 

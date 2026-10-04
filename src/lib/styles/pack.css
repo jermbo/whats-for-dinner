@@ -1,0 +1,133 @@
+/*
+ * The front of a pack, as the label of a food pack: the photo, an olive band with the name,
+ * and a white foot with the pantry line and the actions. A meal on the "Today" screen, an
+ * offer from the pantry, and a recipe all use it.
+ * With no photo, the band is the top of the card, and the name is the picture ("pack--plain").
+ * Use it together with ".card".
+ */
+.card.pack {
+	gap: 0;
+	padding: 0;
+	overflow: hidden;
+	list-style: none;
+}
+
+.pack__media {
+	position: relative;
+	display: block;
+
+	& .recipe-photo--card {
+		aspect-ratio: 16 / 11;
+	}
+}
+
+/* The olive pack label: the name is in Anton. */
+.pack__band {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-5) var(--space-4) var(--space-4);
+	background: var(--olive);
+}
+
+/* No photo: the band is the top of the card, and it is tall, so that the card keeps its size. */
+.pack--plain .pack__band {
+	flex: 1;
+	justify-content: flex-end;
+	min-block-size: 15rem;
+	padding-block-start: 4rem;
+}
+
+/* The sticker lies on the top edge of the band, at the left. */
+.pack__flag {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-start: var(--space-4);
+	translate: 0 -50%;
+}
+
+.pack--plain .pack__flag {
+	inset-block-start: var(--space-4);
+	translate: none;
+}
+
+.pack__name {
+	font-size: 2rem;
+	line-height: 0.98;
+	overflow-wrap: anywhere;
+
+	& a {
+		color: inherit;
+		text-decoration: none;
+	}
+}
+
+.pack--plain .pack__name {
+	font-size: clamp(2.5rem, 14cqi, 3.5rem);
+	line-height: 0.9;
+}
+
+.pack__lede {
+	font-size: 1rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+/* The foot is white. */
+.pack__foot {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding: var(--space-3);
+	background: var(--card);
+}
+
+/* A line with a heavy rule above it: a label and a sentence at the left, a count at the right. */
+.pack__line,
+.pack__steps {
+	padding-block-start: var(--space-2);
+	border-block-start: var(--rule-4) solid var(--ink);
+}
+
+.pack__line {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: var(--space-3);
+	min-block-size: 3.25rem;
+
+	& > p:first-child {
+		display: flex;
+		flex-direction: column;
+		min-inline-size: 0;
+	}
+}
+
+.pack__sub {
+	font-size: 0.875rem;
+	font-weight: 600;
+	line-height: 1.3;
+}
+
+.pack__sub--urgent {
+	color: var(--tomato-text);
+}
+
+.pack__steps-line {
+	display: flex;
+	justify-content: space-between;
+	padding-block-end: var(--space-1);
+}
+
+.pack__actions {
+	display: flex;
+	gap: var(--space-2);
+	margin-block-start: auto;
+}
+
+/* The main action of the card is the wide one. */
+.pack__main {
+	flex: 1;
+}

@@ -82,8 +82,8 @@
 		block-size: 1.5rem;
 		fill: none;
 		stroke: currentColor;
-		stroke-width: 1.75;
-		stroke-linecap: round;
-		stroke-linejoin: round;
+		stroke-width: 2.25;
+		stroke-linecap: square;
+		stroke-linejoin: miter;
 	}
 </style>

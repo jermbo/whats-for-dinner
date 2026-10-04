@@ -139,9 +139,10 @@
 	/* The name is the title of the page that the owner writes. */
 	.recipe-form__name {
 		min-block-size: 3.5rem;
-		font-family: var(--font-heading);
-		font-size: 1.35rem;
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-size: 1.75rem;
+		font-weight: 400;
+		text-transform: uppercase;
 	}
 
 	.recipe-form__actions {

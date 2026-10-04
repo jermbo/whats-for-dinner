@@ -179,7 +179,7 @@
 </script>
 
 <svelte:head>
-	<title>{recipe.current ? `Cook: ${recipe.current.name}` : 'Cook'} · Meal Planner</title>
+	<title>{recipe.current ? `Cook: ${recipe.current.name}` : 'Cook'} · Larder</title>
 </svelte:head>
 
 <dialog
@@ -206,7 +206,13 @@
 
 			<div class="cook__progress" aria-hidden="true">
 				{#each cards as item, at (item.key)}
-					<span class={['cook__mark', at <= index && 'cook__mark--done']}></span>
+					<span
+						class={[
+							'cook__mark',
+							at < index && 'cook__mark--done',
+							at === index && 'cook__mark--current'
+						]}
+					></span>
 				{/each}
 			</div>
 
@@ -316,11 +322,12 @@
 		padding: 0;
 		overflow: hidden;
 		background: var(--color-surface);
+		border: 0;
 		border-radius: 0;
 		box-shadow: none;
 
 		&::backdrop {
-			background: rgb(4 40 44 / 0.55);
+			background: rgb(29 28 26 / 0.6);
 		}
 	}
 
@@ -346,12 +353,12 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-text);
-		background: var(--color-surface-soft);
+		color: var(--paper);
+		background: var(--ink);
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-control);
 		cursor: pointer;
-		transition: scale 0.25s var(--ease-spring);
+		transition: scale 0.2s var(--ease-out);
 
 		&:active {
 			scale: 0.9;
@@ -364,18 +371,20 @@
 
 	.cook__name {
 		overflow: hidden;
-		font-size: 1.1rem;
+		font-size: 1.5rem;
+		line-height: 1;
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
 	.cook__place {
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-accent-strong);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
 	}
 
-	/* One mark for each card. The marks of the cards up to this one are teal. */
+	/* One mark for each card. The marks of the cards before this one are ink. This one is olive. */
 	.cook__progress {
 		display: flex;
 		gap: var(--space-1);
@@ -384,14 +393,18 @@
 
 	.cook__mark {
 		flex: 1;
-		block-size: 0.3rem;
-		background: var(--color-border);
-		border-radius: var(--radius-pill);
+		block-size: 0.5rem;
+		background: var(--paper-deep);
 		transition: background-color 0.3s;
 	}
 
 	.cook__mark--done {
-		background: var(--color-accent);
+		background: var(--ink);
+	}
+
+	.cook__mark--current {
+		background: var(--olive);
+		box-shadow: inset 0 0 0 2px var(--ink);
 	}
 
 	/* The old card and the new card are in one cell while one goes out and one comes in. */
@@ -418,7 +431,7 @@
 		grid-template-columns: auto minmax(0, 1fr);
 		gap: var(--space-3);
 		padding: var(--space-3) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
-		border-block-start: 1px solid var(--color-border);
+		border-block-start: var(--rule-4) solid var(--ink);
 	}
 
 	.cook__step {
@@ -440,15 +453,15 @@
 		inset-inline: var(--space-4);
 		inset-block-end: 6.5rem;
 		padding: var(--space-3) var(--space-5);
-		font-weight: 600;
+		font-weight: 700;
 		text-align: center;
-		color: var(--color-on-strong);
-		background: var(--color-strong);
-		border-radius: var(--radius-pill);
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-control);
 		pointer-events: none;
 		transition:
 			opacity 0.2s,
-			translate 0.45s var(--ease-spring);
+			translate 0.35s var(--ease-out);
 
 		&:empty {
 			opacity: 0;
@@ -465,6 +478,7 @@
 			inline-size: min(44rem, 100% - 4rem);
 			block-size: min(54rem, 100dvh - 4rem);
 			margin: auto;
+			border: var(--rule-4) solid var(--ink);
 			border-radius: var(--radius);
 			box-shadow: var(--shadow);
 		}

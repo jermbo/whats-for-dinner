@@ -81,10 +81,10 @@
 	.cook-ingredients__list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
 		margin: 0;
 		padding: 0;
 		list-style: none;
+		border-block-start: var(--rule-4) solid var(--ink);
 	}
 
 	/* The full row is the target: a knuckle is sufficient. */
@@ -95,32 +95,31 @@
 		min-block-size: 3.5rem;
 		padding: var(--space-2) var(--space-4);
 		font-size: 1.15rem;
-		background: var(--color-surface-soft);
-		border-radius: 1rem;
+		border-block-end: var(--rule-1) solid var(--hairline);
 		cursor: pointer;
 		transition:
 			background-color 0.2s,
 			color 0.2s;
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
-			outline-offset: 2px;
+			outline: 3px solid var(--ink);
+			outline-offset: -3px;
 		}
 	}
 
 	.cook-ingredients__name {
 		flex: 1;
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	.cook-ingredients__amount {
-		font-weight: 600;
+		font-weight: 800;
 		font-variant-numeric: tabular-nums;
 	}
 
+	/* A row that is checked is olive: the done state. */
 	.cook-ingredients__row--checked {
-		color: var(--color-muted);
-		background: var(--color-accent-soft);
+		background: var(--olive);
 
 		& .cook-ingredients__name {
 			text-decoration: line-through;

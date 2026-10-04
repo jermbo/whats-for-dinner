@@ -5,7 +5,6 @@
 	import PantryGauge from '$lib/components/pantry/PantryGauge.svelte';
 	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import SuccessMark from '$lib/components/ui/SuccessMark.svelte';
 	import { findDoubts } from '$lib/data/doubt';
 	import { groupByLocation, pantryRows } from '$lib/data/pantry-view';
 	import { now } from '$lib/db/ids';
@@ -54,7 +53,7 @@
 
 {#if finished}
 	<section class="stack" aria-labelledby="check-done">
-		<SuccessMark />
+		<p><span class="stamp">Checked</span></p>
 		<h2 id="check-done">The pantry is correct</h2>
 		<p>{changed.size === 0 ? 'No item changed.' : `${plural(changed.size, 'item')} changed.`}</p>
 		<div class="cluster">
@@ -85,7 +84,7 @@
 
 		{#if doubtful.length > 0}
 			<section class="stack stack--tight" aria-labelledby="check-doubts">
-				<h2 id="check-doubts">Look at these</h2>
+				<h2 class="section-title" id="check-doubts">Look at these</h2>
 				<ul class="gauges">
 					{#each doubtful as row (row.item.id)}
 						<PantryGauge
@@ -110,7 +109,7 @@
 				<div class="check__sure grid">
 					{#each sureGroups as group (group.location)}
 						<section class="stack stack--tight" aria-labelledby="check-{group.location}">
-							<h3 id="check-{group.location}">{group.label}</h3>
+							<h3 class="section-title" id="check-{group.location}">{group.label}</h3>
 							<ul class="gauges">
 								{#each group.rows as row (row.item.id)}
 									<PantryGauge

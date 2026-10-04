@@ -28,8 +28,8 @@
 		padding: 0;
 		background: none;
 		border: 0;
-		border-radius: 0.75rem;
-		box-shadow: 0 0 0 1px var(--color-border);
+		border-radius: var(--radius-control);
+		box-shadow: 0 0 0 1px var(--ink);
 		cursor: pointer;
 		transition:
 			box-shadow 0.15s,

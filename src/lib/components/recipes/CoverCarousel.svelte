@@ -109,14 +109,15 @@
 		display: inline-flex;
 		align-items: center;
 		gap: var(--space-1);
-		padding: var(--space-1) var(--space-3);
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: #ffffff;
-		background: rgb(0 0 0 / 0.6);
+		padding: var(--space-1) var(--space-2);
+		font-size: 0.75rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--paper);
+		background: var(--ink);
 		border: 0;
-		border-radius: var(--radius-pill);
-		backdrop-filter: blur(6px);
+		border-radius: var(--radius-sticker);
 
 		& :global(.icon) {
 			inline-size: 1rem;
@@ -125,17 +126,18 @@
 	}
 
 	.cover-carousel__label--cover {
-		background: var(--color-accent-strong);
+		color: var(--ink);
+		background: var(--olive);
 	}
 
 	.cover-carousel__label--set {
 		min-block-size: var(--tap);
 		padding-inline: var(--space-4);
 		font: inherit;
-		font-size: 0.9rem;
-		font-weight: 600;
-		color: var(--color-text);
-		background: var(--color-surface);
+		font-size: 0.8125rem;
+		color: var(--ink);
+		background: var(--card);
+		border: 2px solid var(--ink);
 		cursor: pointer;
 	}
 </style>

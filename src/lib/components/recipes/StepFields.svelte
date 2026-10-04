@@ -292,25 +292,25 @@
 		}
 	}
 
-	/* The number of the step in a circle, as on the back of a meal card. */
+	/* The number of the step in Anton, as on the back of a meal card. */
 	.step-fields__number {
 		display: grid;
 		place-items: center;
 		inline-size: 2rem;
 		block-size: 2rem;
 		margin-block-start: 0.5rem;
-		font-weight: 600;
-		color: var(--color-accent-strong);
-		background: var(--color-accent-soft);
-		border-radius: 50%;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		background: var(--olive);
+		border-radius: var(--radius-sticker);
 		transition:
 			color 0.2s,
 			background-color 0.2s;
 	}
 
 	.step-fields__row--current .step-fields__number {
-		color: var(--color-on-accent);
-		background: var(--color-accent-strong);
+		color: var(--paper);
+		background: var(--ink);
 	}
 
 	/*
@@ -334,12 +334,12 @@
 		& .step-fields__number {
 			color: var(--color-muted);
 			background: none;
-			box-shadow: inset 0 0 0 1.5px var(--color-border);
+			box-shadow: inset 0 0 0 2px var(--hairline);
 		}
 
 		& .step-fields__text {
 			background: none;
-			border-color: var(--color-border);
+			border-color: var(--ink);
 			border-style: dashed;
 		}
 	}
@@ -358,8 +358,8 @@
 		line-height: 1.4;
 		/* The field lies on the white panel: a soft fill, and a line only for the empty row. */
 		background: var(--color-surface-soft);
-		border: 1.5px solid transparent;
-		border-radius: 1rem;
+		border: 2px solid transparent;
+		border-radius: var(--radius-control);
 		resize: none;
 		field-sizing: content;
 

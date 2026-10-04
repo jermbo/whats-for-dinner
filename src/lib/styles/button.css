@@ -1,32 +1,36 @@
-/* The default button is the quiet one: a white pill with a thin line, as "Skip" in the design. */
+/*
+ * The default button is the quiet one: a white button with an ink rule, as "Cooked" in the
+ * design. The main button is ink. A button is 50 high.
+ */
 .button {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	min-block-size: var(--tap);
+	min-block-size: var(--button-height);
 	min-inline-size: var(--tap);
 	padding: var(--space-2) var(--space-5);
-	font-weight: 500;
+	font-weight: 700;
+	line-height: 1.15;
+	text-align: center;
 	text-decoration: none;
-	color: var(--color-muted);
-	background: var(--color-surface);
-	border: 1px solid var(--color-border);
-	border-radius: var(--radius-pill);
+	color: var(--ink);
+	background: var(--card);
+	border: 2px solid var(--ink);
+	border-radius: var(--radius-control);
 	cursor: pointer;
 	transition:
 		background-color 0.15s,
-		border-color 0.15s,
 		color 0.15s,
-		box-shadow 0.2s,
-		scale 0.25s var(--ease-spring);
+		scale 0.2s var(--ease-out);
 
 	&:active:not(:disabled) {
-		scale: 0.95;
+		scale: 0.97;
 	}
 
-	&:hover {
-		color: var(--color-text);
-		border-color: var(--color-muted);
+	@media (hover: hover) {
+		&:hover:not(:disabled) {
+			background: var(--paper-deep);
+		}
 	}
 
 	&:disabled {
@@ -34,47 +38,46 @@
 		cursor: not-allowed;
 	}
 
-	/* The main action of a screen: teal, as "Checkout" in the design. */
-	&.button--primary {
-		font-weight: 600;
-		color: var(--color-on-accent);
-		background: var(--color-accent);
-		border-color: var(--color-accent);
-
-		&:hover {
-			background: color-mix(in srgb, var(--color-accent), black 8%);
-			box-shadow: 0 0.4rem 1rem rgb(0 187 202 / 0.35);
-		}
-	}
-
-	/* The action of one card or one row: black, as "Order Now" in the design. */
+	/* The main action of a screen, and the action of one card: ink. */
+	&.button--primary,
 	&.button--strong {
-		font-weight: 600;
-		color: var(--color-on-strong);
-		background: var(--color-strong);
-		border-color: var(--color-strong);
+		color: var(--paper);
+		background: var(--ink);
 
-		&:hover {
-			background: color-mix(in srgb, var(--color-strong), white 20%);
+		@media (hover: hover) {
+			&:hover:not(:disabled) {
+				background: var(--ink-soft);
+			}
 		}
 	}
 
 	&.button--danger {
-		color: var(--color-danger);
-		border-color: var(--color-danger);
+		color: var(--tomato-text);
+		border-color: var(--tomato-text);
 	}
 
 	&.button--wide {
 		inline-size: 100%;
-		min-block-size: 3.5rem;
 		font-size: 1.05rem;
 	}
 
-	/* A circle for one symbol, such as plus or minus. */
+	/* A square for one symbol, such as plus or minus. */
 	&.button--round {
 		inline-size: var(--tap);
+		min-block-size: var(--tap);
 		padding: 0;
 		font-size: 1.35rem;
 		line-height: 1;
+	}
+
+	/* A text link that looks like a quiet action, as "Not this" in the design. */
+	&.button--link {
+		min-block-size: var(--tap);
+		padding-inline: var(--space-2);
+		background: none;
+		border-color: transparent;
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.25em;
 	}
 }

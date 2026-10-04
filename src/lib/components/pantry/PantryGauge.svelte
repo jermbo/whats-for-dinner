@@ -63,7 +63,7 @@
 		color: var(--color-muted);
 		background: none;
 		border: 0;
-		border-radius: 50%;
+		border-radius: var(--radius-control);
 		cursor: pointer;
 		transition:
 			background-color 0.15s,
@@ -72,7 +72,7 @@
 
 		&:hover {
 			color: var(--color-text);
-			background: var(--color-surface);
+			background: var(--paper-deep);
 		}
 
 		&:active {

@@ -24,7 +24,7 @@
 		inline-size: 100%;
 		block-size: 100%;
 		overflow: hidden;
-		background: var(--color-accent-soft);
+		background: var(--paper-deep);
 		border-radius: inherit;
 	}
 

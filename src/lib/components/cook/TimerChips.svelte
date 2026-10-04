@@ -68,12 +68,12 @@
 		gap: var(--space-2);
 		min-block-size: 2.5rem;
 		padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
-		font-weight: 600;
+		font-weight: 800;
 		white-space: nowrap;
-		color: var(--color-on-accent);
-		background: var(--color-accent-strong);
+		color: var(--paper);
+		background: var(--ink);
 		border: 0;
-		border-radius: var(--radius-pill);
+		border-radius: var(--radius-sticker);
 		cursor: pointer;
 
 		& :global(.icon) {
@@ -84,14 +84,14 @@
 
 	@keyframes ring {
 		50% {
-			box-shadow: 0 0 0 0.4rem rgb(255 212 128 / 0.5);
+			box-shadow: 0 0 0 0.4rem color-mix(in oklch, var(--amber) 50%, transparent);
 		}
 	}
 
 	/* A timer that is done: amber, with a ring that breathes until the owner taps it. */
 	.timer-chip--done {
-		color: #3d2600;
-		background: var(--color-low);
+		color: var(--ink);
+		background: var(--amber);
 		animation: ring 1.2s ease-in-out infinite;
 	}
 

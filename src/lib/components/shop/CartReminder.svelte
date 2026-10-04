@@ -24,36 +24,40 @@
 {/if}
 
 <style>
+	/* A white sticker with an ink rule, and the number in ink. */
 	.cart-reminder {
 		display: flex;
 		align-items: center;
 		gap: var(--space-2);
 		min-block-size: var(--tap);
-		padding: var(--space-2) var(--space-3) var(--space-2) var(--space-4);
-		font-weight: 600;
+		padding: var(--space-2) var(--space-2) var(--space-2) var(--space-3);
+		font-size: 0.8125rem;
+		font-weight: 800;
+		letter-spacing: 0.04em;
 		text-decoration: none;
+		text-transform: uppercase;
 		white-space: nowrap;
-		color: var(--color-text);
-		background: var(--color-notice);
-		border-radius: var(--radius-pill);
-		transition: scale 0.25s var(--ease-spring);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
+		transition: scale 0.2s var(--ease-out);
 
 		&:active {
-			scale: 0.95;
+			scale: 0.96;
 		}
 	}
 
-	/* The number of items, as a dark disc. */
+	/* The number of items, as an ink block. */
 	.cart-reminder__count {
 		display: grid;
 		place-items: center;
 		min-inline-size: 1.6rem;
 		block-size: 1.6rem;
 		padding-inline: var(--space-1);
-		font-size: 0.85rem;
+		font-size: 0.8125rem;
 		font-variant-numeric: tabular-nums;
-		color: var(--color-on-strong);
-		background: var(--color-strong);
-		border-radius: var(--radius-pill);
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-sticker);
 	}
 </style>

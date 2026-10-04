@@ -33,8 +33,10 @@
 		inset-block-start: var(--space-2);
 		inset-inline-start: var(--space-2);
 		padding: var(--space-2) var(--space-4);
-		background: var(--color-surface);
-		border-radius: var(--radius-pill);
+		font-weight: 700;
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
 		transform: translateY(-200%);
 
 		&:focus {
@@ -52,7 +54,7 @@
 		margin-inline: auto;
 		padding: var(--space-6) var(--gutter);
 		/* Room for the navigation that is fixed to the bottom. */
-		padding-block-end: calc(var(--nav-space) + 5rem);
+		padding-block-end: calc(var(--nav-space) + var(--space-8));
 
 		&:focus {
 			outline: none;
@@ -76,8 +78,6 @@
 			display: grid;
 			grid-template-columns: auto minmax(0, 1fr);
 			align-items: start;
-			max-inline-size: 90rem;
-			margin-inline: auto;
 		}
 
 		.app__main {

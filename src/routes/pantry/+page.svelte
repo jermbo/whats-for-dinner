@@ -39,7 +39,7 @@
 <div class="grid">
 	{#each groups as group (group.location)}
 		<section class="stack stack--tight" aria-labelledby="pantry-{group.location}">
-			<h2 id="pantry-{group.location}">{group.label}</h2>
+			<h2 class="section-title" id="pantry-{group.location}">{group.label}</h2>
 			<ul class="gauges">
 				{#each group.rows as row (row.item.id)}
 					<PantryGauge

@@ -9,7 +9,9 @@
 
 	/**
 	 * The back of a meal card: first what the meal needs before you can cook it, then the rating
-	 * and the note from the last time, each ingredient with the stock of the pantry, and the steps. The level bars fill when it is open.
+	 * and the note from the last time, each ingredient with the stock of the pantry, and the steps.
+	 * It is a panel of facts: a white face, a frame of ink, and rules of 1, 4, and 8 px.
+	 * The level bars fill when it is open.
 	 * @type {{
 	 *   entry: import('$lib/data/menu').MenuEntry,
 	 *   kitchen: import('$lib/kitchen.svelte').Kitchen,
@@ -55,94 +57,152 @@
 </script>
 
 <div class={['meal-back', open && 'meal-back--open']}>
-	{#if !leftover && recipe.prepSteps.length > 0}
-		<section class="meal-back__section">
-			<h3 class="meal-back__title">
-				{entry.state === 'todo'
-					? 'Before you cook'
-					: entry.state === 'waiting'
-						? 'In preparation'
-						: 'Preparation'}
-			</h3>
-			<MealPrep {entry} {onprep} />
-		</section>
-	{/if}
+	<h3 class="meal-back__heading">Cook facts</h3>
 
-	<section class="meal-back__section">
-		{#if last}
-			<p class="meal-back__last">
-				<span>Last time: {formatAgo(last.cookedAt)}</span>
-				{#if last.rating}
-					<span class="meal-back__stars" role="img" aria-label="Rating {last.rating} of 5">
-						{'★'.repeat(last.rating)}{'☆'.repeat(5 - last.rating)}
-					</span>
+	<!-- A wide panel puts the pantry at the left and the steps at the right. -->
+	<div class="meal-back__col">
+		{#if !leftover && recipe.prepSteps.length > 0}
+			<section class="meal-back__section">
+				<h3 class="meal-back__title">
+					{entry.state === 'todo'
+						? 'Before you cook'
+						: entry.state === 'waiting'
+							? 'In preparation'
+							: 'Preparation'}
+				</h3>
+				<MealPrep {entry} {onprep} />
+			</section>
+		{/if}
+
+		<section class="meal-back__section">
+			{#if last}
+				<p class="meal-back__last">
+					<span>Last time: {formatAgo(last.cookedAt)}</span>
+					{#if last.rating}
+						<span class="meal-back__stars" role="img" aria-label="Rating {last.rating} of 5">
+							{'★'.repeat(last.rating)}{'☆'.repeat(5 - last.rating)}
+						</span>
+					{/if}
+				</p>
+				{#if last.note}
+					<blockquote class="meal-back__note">{last.note}</blockquote>
 				{/if}
-			</p>
-			{#if last.note}
-				<blockquote class="meal-back__note">{last.note}</blockquote>
+			{:else}
+				<p class="muted">Not cooked yet. This is a new recipe.</p>
 			{/if}
-		{:else}
-			<p class="muted">Not cooked yet. This is a new recipe.</p>
-		{/if}
-	</section>
-
-	<section class="meal-back__section">
-		<h3 class="meal-back__title">From the pantry</h3>
-
-		{#if leftover}
-			<p class="muted">Leftovers use no ingredients.</p>
-		{:else if rows.length === 0}
-			<p class="muted">This recipe has no ingredient list.</p>
-		{:else}
-			<ul class="meal-back__rows">
-				{#each rows as row, index (index)}
-					<li
-						class={['meal-back__row', row.short && 'meal-back__row--short']}
-						style:--level={row.level}
-						style:--n={index}
-					>
-						<span>{row.name}</span>
-						<span class="meal-back__amount">{row.amount}</span>
-						<span class="meal-back__bar" aria-hidden="true"></span>
-					</li>
-				{/each}
-			</ul>
-		{/if}
-	</section>
-
-	{#if steps.length > 0}
-		<section class="meal-back__section">
-			<h3 class="meal-back__title">Steps</h3>
-			<ol class="meal-back__steps">
-				{#each steps as parts, index (index)}
-					<li>
-						{#each parts as part, partIndex (partIndex)}
-							{#if part.seconds}<strong>{part.text}</strong>{:else}{part.text}{/if}
-						{/each}
-					</li>
-				{/each}
-			</ol>
 		</section>
-	{/if}
 
-	{#if recipe.source}
 		<section class="meal-back__section">
-			<RecipeSource source={recipe.source} />
+			<h3 class="meal-back__title">From the pantry</h3>
+
+			{#if leftover}
+				<p class="muted">Leftovers use no ingredients.</p>
+			{:else if rows.length === 0}
+				<p class="muted">This recipe has no ingredient list.</p>
+			{:else}
+				<ul class="meal-back__rows">
+					{#each rows as row, index (index)}
+						<li
+							class={['meal-back__row', row.short && 'meal-back__row--short']}
+							style:--level={row.level}
+							style:--n={index}
+						>
+							<span>{row.name}</span>
+							<span class="meal-back__amount">{row.amount}</span>
+							<span class="meal-back__bar" aria-hidden="true"></span>
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</section>
-	{/if}
+	</div>
+
+	<div class="meal-back__col">
+		{#if steps.length > 0}
+			<section class="meal-back__section">
+				<h3 class="meal-back__title">Steps</h3>
+				<ol class="meal-back__steps">
+					{#each steps as parts, index (index)}
+						<li>
+							<span>
+								{#each parts as part, partIndex (partIndex)}
+									{#if part.seconds}<strong>{part.text}</strong>{:else}{part.text}{/if}
+								{/each}
+							</span>
+						</li>
+					{/each}
+				</ol>
+			</section>
+		{/if}
+
+		{#if recipe.source}
+			<section class="meal-back__section">
+				<RecipeSource source={recipe.source} />
+			</section>
+		{/if}
+	</div>
 </div>
 
 <style>
 	.meal-back {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-6);
+		gap: var(--space-4);
+		padding: var(--space-4);
+		background: var(--card);
+		border: 2px solid var(--ink);
+	}
+
+	/* The two columns of a wide panel. In a narrow panel, they are one column. */
+	.meal-back__col {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+		min-inline-size: 0;
+
+		/* A column with nothing in it takes no space. */
+		&:empty {
+			display: none;
+		}
+	}
+
+	@container facts (min-width: 34rem) {
+		.meal-back {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			align-items: start;
+			column-gap: var(--space-6);
+		}
+
+		.meal-back__heading {
+			grid-column: 1 / -1;
+		}
+
+		/* The steps are at the top of their own column. */
+		.meal-back__col > .meal-back__section:first-child {
+			padding-block-start: 0;
+			border-block-start: 0;
+		}
+	}
+
+	.meal-back__heading {
+		padding-block-end: var(--space-2);
+		font-size: 1.75rem;
+		border-block-end: var(--rule-8) solid var(--ink);
 	}
 
 	.meal-back__section {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: var(--space-2);
+		padding-block-start: var(--space-3);
+		border-block-start: var(--rule-1) solid var(--ink);
+
+		/* The first section follows the heavy rule of the heading. */
+		.meal-back__col:first-of-type > &:first-child {
+			padding-block-start: 0;
+			border-block-start: 0;
+		}
 	}
 
 	.meal-back__last {
@@ -150,20 +210,18 @@
 		flex-wrap: wrap;
 		justify-content: space-between;
 		gap: var(--space-2);
-		font-weight: 600;
+		font-size: 0.875rem;
+		font-weight: 700;
 	}
 
 	.meal-back__stars {
-		color: var(--color-low-strong);
 		letter-spacing: 0.1em;
 	}
 
 	.meal-back__note {
 		margin: 0;
-		padding: var(--space-3) var(--space-4);
+		font-size: 0.875rem;
 		font-style: italic;
-		background: var(--color-notice);
-		border-radius: calc(var(--radius) / 2);
 
 		&::before {
 			content: '“';
@@ -175,17 +233,17 @@
 	}
 
 	.meal-back__title {
-		font-size: 0.85rem;
-		font-weight: 600;
-		color: var(--color-muted);
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		font-family: var(--font-body);
+		font-size: 0.6875rem;
+		font-weight: 800;
+		letter-spacing: 0.06em;
+		line-height: 1.25;
 	}
 
 	.meal-back__rows {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: var(--space-2);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -194,28 +252,28 @@
 	.meal-back__row {
 		display: grid;
 		grid-template-columns: 1fr auto;
-		gap: 0.2rem var(--space-2);
+		gap: 0.15rem var(--space-2);
+		font-size: 0.8125rem;
+		font-weight: 500;
 	}
 
 	.meal-back__amount {
-		font-weight: 600;
+		font-weight: 800;
 		font-variant-numeric: tabular-nums;
 	}
 
 	/* The stock in the pantry. It fills, one row after the other, when the back is open. */
 	.meal-back__bar {
 		grid-column: 1 / -1;
-		block-size: 0.35rem;
-		background: var(--color-surface-soft);
-		border-radius: var(--radius-pill);
+		block-size: 0.5rem;
+		background: var(--paper-deep);
 
 		&::before {
 			display: block;
 			inline-size: calc(var(--level) * 100%);
 			block-size: 100%;
 			content: '';
-			background: var(--color-accent);
-			border-radius: inherit;
+			background: var(--ink);
 			transform-origin: left;
 			scale: 0 1;
 			transition: scale 0.6s var(--ease-out) calc(0.1s + var(--n) * 50ms);
@@ -226,21 +284,22 @@
 		scale: 1 1;
 	}
 
+	/* A level that is not enough: amber on the bar, and tomato on the words. */
 	.meal-back__row--short {
 		& .meal-back__amount {
-			color: var(--color-danger);
+			color: var(--tomato-text);
 		}
 
 		& .meal-back__bar::before {
-			background: var(--color-low-strong);
+			background: var(--amber);
 		}
 	}
 
-	/* Each step has its number in a teal circle. */
+	/* Each step has its number in Anton. */
 	.meal-back__steps {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-4);
+		gap: var(--space-2);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -248,21 +307,17 @@
 
 		& li {
 			display: grid;
-			grid-template-columns: 2rem 1fr;
-			gap: var(--space-3);
+			grid-template-columns: 1.25rem 1fr;
+			gap: var(--space-2);
 			align-items: baseline;
+			font-size: 0.875rem;
 			counter-increment: step;
 
 			&::before {
-				display: grid;
-				place-items: center;
-				inline-size: 2rem;
-				block-size: 2rem;
 				content: counter(step);
-				font-weight: 600;
-				color: var(--color-accent-strong);
-				background: var(--color-accent-soft);
-				border-radius: 50%;
+				font-family: var(--font-display);
+				font-size: 1.125rem;
+				line-height: 1;
 			}
 		}
 	}

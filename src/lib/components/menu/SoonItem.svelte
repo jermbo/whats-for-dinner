@@ -63,6 +63,7 @@
 {/if}
 
 <style>
+	/* A tag of food on the paper: white, with an ink rule. */
 	.soon {
 		display: grid;
 		gap: 0.15rem;
@@ -70,19 +71,22 @@
 		min-block-size: 100%;
 		padding: var(--space-3) var(--space-4);
 		text-align: start;
-		background: var(--color-surface);
-		border: 2px solid transparent;
-		border-radius: 1rem;
-		box-shadow: var(--shadow);
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-control);
 		transition:
 			background-color 0.2s,
-			border-color 0.2s,
-			scale 0.25s var(--ease-spring);
+			color 0.2s,
+			scale 0.2s var(--ease-out);
 
-		/* Selected: a teal line and a teal tint. The line is the sign, not only the color. */
+		/* Selected: an ink fill. The fill is the sign, and the check of the list is too. */
 		&[aria-pressed='true'] {
-			background: var(--color-accent-soft);
-			border-color: var(--color-accent-strong);
+			color: var(--paper);
+			background: var(--ink);
+
+			& .soon__age {
+				color: inherit;
+			}
 		}
 	}
 
@@ -91,19 +95,19 @@
 		cursor: pointer;
 
 		&:active {
-			scale: 0.95;
+			scale: 0.96;
 		}
 
 		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
 		@media (hover: hover) {
 			&:hover:not([aria-pressed='true']) {
-				border-color: var(--color-border);
+				background: var(--paper-deep);
 			}
 		}
 	}
 
 	.soon__name {
-		font-weight: 600;
+		font-weight: 800;
 		white-space: nowrap;
 	}
 
@@ -111,8 +115,9 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-1);
-		font-size: 1.1rem;
-		font-weight: 700;
+		font-family: var(--font-display);
+		font-size: 1.375rem;
+		line-height: 1;
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -122,6 +127,7 @@
 		gap: var(--space-1);
 		color: var(--color-muted);
 		font-size: 0.8rem;
+		font-weight: 600;
 	}
 
 	.soon__amount :global(.icon),
@@ -130,22 +136,27 @@
 		block-size: 1rem;
 	}
 
-	/* Old stock: the age is in a dark amber, and bold. */
+	/* Old stock: the age is in tomato, and bold. */
 	.soon--old .soon__age {
-		color: color-mix(in srgb, var(--color-low-strong), black 35%);
-		font-weight: 600;
+		color: var(--tomato-text);
+		font-weight: 800;
 	}
 
-	/* Planned: the menu uses all of it. It is quiet, with a check. */
+	.soon--old[aria-pressed='true'] .soon__age {
+		color: inherit;
+	}
+
+	/* Planned: the menu uses all of it. It is quiet, with a dashed rule. */
 	.soon--planned {
 		color: var(--color-muted);
 		background: transparent;
-		border: 2px dashed var(--color-border);
-		box-shadow: none;
+		border-style: dashed;
 
 		& .soon__amount {
+			font-family: var(--font-body);
 			font-size: 0.9rem;
-			color: var(--color-accent-strong);
+			font-weight: 700;
+			color: var(--ink);
 		}
 	}
 </style>

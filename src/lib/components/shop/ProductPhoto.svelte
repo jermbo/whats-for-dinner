@@ -68,7 +68,7 @@
 		inline-size: 100%;
 		aspect-ratio: 1;
 		overflow: hidden;
-		background: var(--color-accent-soft);
+		background: var(--paper-deep);
 		border-radius: inherit;
 	}
 
@@ -82,9 +82,8 @@
 	.product-photo__text {
 		padding: var(--space-1);
 		font-size: 0.7rem;
-		font-weight: 600;
+		font-weight: 800;
 		line-height: 1.1;
 		text-align: center;
-		color: var(--color-accent-strong);
 	}
 </style>

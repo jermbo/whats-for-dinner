@@ -2,42 +2,61 @@
 	/* The design is light only. It does not follow the dark setting of the device. */
 	color-scheme: light;
 
-	/* The fonts fall back to the system font until the font files are installed. */
-	--font-body: 'Figtree Variable', system-ui, sans-serif;
-	--font-heading: 'Outfit Variable', var(--font-body);
+	/*
+	 * Three fonts. Anton is for names, titles, and numbers: always uppercase. Schibsted Grotesk
+	 * is for text. IBM Plex Mono is for the receipt. The files come from the @fontsource packages.
+	 */
+	--font-display: 'Anton', 'Impact', 'Arial Narrow Bold', sans-serif;
+	--font-body: 'Schibsted Grotesk Variable', system-ui, sans-serif;
+	--font-mono: 'IBM Plex Mono', ui-monospace, monospace;
+	/* The old name of the display font. Components that use it get Anton. */
+	--font-heading: var(--font-display);
 
-	/* The page has a soft tint. The cards and controls on it are white. */
-	--color-bg: #eaf5f2;
-	--color-bg-glow: #cfecee;
-	--color-surface: #ffffff;
-	--color-surface-soft: #f6f6f6;
+	/*
+	 * The materials. The paper is the page: flat, warm, never white. A card, the receipt, and a
+	 * field are white. Ink is for text, rules, the main button, and the active item. Olive is the
+	 * name band, the current step, and the done state. Amber and tomato are rare.
+	 */
+	--paper: #eceae2;
+	--paper-deep: #d8d5c8;
+	--card: #ffffff;
+	--ink: #1d1c1a;
+	--ink-soft: #4a463f;
+	--olive: oklch(0.78 0.15 110);
+	--amber: oklch(0.75 0.15 75);
+	--tomato: oklch(0.55 0.17 30);
+	/* The tomato for text on the paper: it needs more contrast than the fill. */
+	--tomato-text: oklch(0.48 0.17 30);
+	/* The lines on paper that are not rules: a ruled list, a dotted leader. */
+	--hairline: #a9a598;
 
-	--color-text: #000000;
-	--color-muted: #575759;
+	--color-bg: var(--paper);
+	--color-surface: var(--card);
+	--color-surface-soft: var(--paper-deep);
 
-	--color-border: #d3dfde;
+	--color-text: var(--ink);
+	--color-muted: var(--ink-soft);
+	--color-border: var(--hairline);
 
-	/* The palette of the design: teal for the main action, black for the actions in a card. */
-	--color-accent: #00bbca;
-	--color-on-accent: #ffffff;
-	--color-accent-soft: #e3f3fb;
-	--color-strong: #000000;
-	--color-on-strong: #ffffff;
-	/* A darker teal for links and focus outlines, which need more contrast. */
-	--color-accent-strong: #007a85;
+	/* The old names of the palette. The main action, the active item, and the focus are ink. */
+	--color-accent: var(--ink);
+	--color-on-accent: var(--paper);
+	--color-accent-soft: var(--olive);
+	--color-strong: var(--ink);
+	--color-on-strong: var(--paper);
+	--color-accent-strong: var(--ink);
 
-	/* Amber for a level that is low. The text on it stays black. */
-	--color-low: #ffd480;
-	--color-low-strong: #c98300;
+	/* Amber for a level that is low. The text on it stays ink. */
+	--color-low: var(--amber);
+	--color-low-strong: var(--ink);
 
-	--color-danger: #b3261e;
+	--color-danger: var(--tomato);
+	--color-danger-text: var(--tomato-text);
+	--color-notice: var(--paper-deep);
 
-	/* Yellow, as a sticky note: the tags of the food to use up. */
-	--color-note: #fff1a6;
-	--color-note-ink: #3d3200;
-	--color-notice: #fff3d9;
-
-	--shadow: 0 0.5rem 1.5rem rgb(20 70 75 / 0.07);
+	/* A card has a soft, dark shadow: it is a card on a table. */
+	--shadow: 0 0.6rem 1.4rem rgb(29 28 26 / 0.16);
+	--shadow-small: 0 0.2rem 0.6rem rgb(29 28 26 / 0.14);
 
 	--space-1: 0.25rem;
 	--space-2: 0.5rem;
@@ -47,13 +66,29 @@
 	--space-6: 1.5rem;
 	--space-8: 2rem;
 
-	--radius: 1.5rem;
-	--radius-pill: 999px;
+	/* The rules of the design: 1, 4, and 8 px. */
+	--rule-1: 1px;
+	--rule-4: 4px;
+	--rule-8: 8px;
+
+	/* A card. A button and a field. A sticker: a flag that sits on an edge. */
+	--radius: 0.75rem;
+	--radius-control: 0.5rem;
+	--radius-sticker: 2px;
+	/* The old name of a pill. The design has no pills: a chip is a square sticker. */
+	--radius-pill: var(--radius-control);
 
 	/* The smallest size of a control that a finger must hit. */
 	--tap: 3rem;
+	/* The height of the main button. */
+	--button-height: 3.125rem;
+	/* A chip is 32 high. Its hit area is 44 high. */
+	--chip-height: 2rem;
+	--chip-hit: 2.75rem;
+	/* A gauge is 14 high. */
+	--gauge-height: 0.875rem;
 
-	--nav-height: 3.25rem;
+	--nav-height: 3.5rem;
 
 	/*
 	 * The three values below tell a block where it is on the screen. The root layout changes the
@@ -67,5 +102,7 @@
 	--gutter: var(--space-5);
 
 	/* The height that the navigation uses at the bottom of the screen. */
-	--nav-space: calc(var(--nav-height) + env(safe-area-inset-bottom) + 2rem);
+	--nav-space: calc(
+		var(--nav-height) + var(--rule-4) + env(safe-area-inset-bottom) + var(--space-4)
+	);
 }

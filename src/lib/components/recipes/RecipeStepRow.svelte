@@ -60,16 +60,16 @@
 		align-items: start;
 	}
 
-	/* The number of the step in a teal circle, as on the back of a meal card. */
+	/* The number of the step in Anton, as on the back of a meal card. */
 	.step-row__number {
 		display: grid;
 		place-items: center;
 		inline-size: 2rem;
 		block-size: 2rem;
-		font-weight: 600;
-		color: var(--color-accent-strong);
-		background: var(--color-accent-soft);
-		border-radius: 50%;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		background: var(--olive);
+		border-radius: var(--radius-sticker);
 	}
 
 	.step-row__body {
@@ -82,12 +82,12 @@
 	.step-row__note {
 		padding: var(--space-2) var(--space-3);
 		font-size: 0.925rem;
-		background: var(--color-notice);
-		border-radius: calc(var(--radius) / 2);
+		background: var(--paper-deep);
+		border-inline-start: var(--rule-4) solid var(--ink);
 	}
 
 	.step-row__date {
-		font-weight: 600;
+		font-weight: 800;
 		color: var(--color-muted);
 	}
 
@@ -98,9 +98,9 @@
 		overflow: hidden;
 		background: none;
 		border: 0;
-		border-radius: 1rem;
+		border-radius: var(--radius-control);
 		cursor: pointer;
-		transition: scale 0.25s var(--ease-spring);
+		transition: scale 0.2s var(--ease-out);
 
 		&:active {
 			scale: 0.95;

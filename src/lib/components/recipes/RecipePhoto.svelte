@@ -4,23 +4,19 @@
 
 	/**
 	 * The photo of a recipe: its cover, which is a photo of the finished meal from the database.
-	 * A recipe with no cover shows a placeholder photo.
-	 * It shows a soft shimmer until the photo loads, then the photo comes in. If the placeholder
-	 * cannot load (no connection), the soft color stays.
+	 * A recipe with no photo shows an olive block: the name next to it is the picture.
+	 * It shows a soft shimmer until the photo loads, then the photo comes in. If the photo
+	 * cannot load (no connection), the olive stays.
 	 * The photo is decoration: the name of the recipe is always next to it.
 	 * @type {{ recipe: import('$lib/types').Recipe, variant?: 'thumb' | 'card' | 'hero' }}
 	 */
 	let { recipe, variant = 'card' } = $props();
 
-	const SIZES = { thumb: [160, 160], card: [640, 420], hero: [1200, 560] };
-
 	let loaded = $state(false);
 	let failed = $state(false);
 
 	const cover = photoAddress(() => recipe.coverPhotoId);
-	const src = $derived(
-		recipe.coverPhotoId ? cover.current : recipePhoto(recipe, SIZES[variant][0], SIZES[variant][1])
-	);
+	const src = $derived(recipe.coverPhotoId ? cover.current : recipePhoto(recipe));
 </script>
 
 <div
@@ -28,7 +24,8 @@
 		'recipe-photo',
 		`recipe-photo--${variant}`,
 		loaded && 'recipe-photo--loaded',
-		failed && 'recipe-photo--failed'
+		failed && 'recipe-photo--failed',
+		!src && !recipe.coverPhotoId && 'recipe-photo--empty'
 	]}
 	data-recipe-photo
 >
@@ -51,15 +48,16 @@
 		background: linear-gradient(
 				100deg,
 				transparent 30%,
-				rgb(255 255 255 / 0.6) 50%,
+				rgb(255 255 255 / 0.45) 50%,
 				transparent 70%
 			)
-			var(--color-accent-soft);
+			var(--olive);
 		background-size: 200% 100%;
 		animation: shimmer 1.4s linear infinite;
 
 		&.recipe-photo--loaded,
-		&.recipe-photo--failed {
+		&.recipe-photo--failed,
+		&.recipe-photo--empty {
 			background-image: none;
 			animation: none;
 		}
@@ -73,13 +71,12 @@
 		flex: none;
 		inline-size: 3.75rem;
 		aspect-ratio: 1;
-		border-radius: 1rem;
+		border-radius: var(--radius-control);
 	}
 
 	.recipe-photo--hero {
 		aspect-ratio: 16 / 9;
 		border-radius: var(--radius);
-		box-shadow: var(--shadow);
 		/* The photo of the tapped card grows into this one. See motion/photo-morph.js. */
 		view-transition-name: recipe-photo;
 

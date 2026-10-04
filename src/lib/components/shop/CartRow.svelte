@@ -52,7 +52,7 @@
 	.cart-row__photo {
 		flex: none;
 		inline-size: 2.25rem;
-		border-radius: 0.5rem;
+		border-radius: var(--radius-sticker);
 	}
 
 	.cart-row__text {

@@ -54,23 +54,24 @@
 
 	/* The shadow is on this box: the paper has a cut edge, and a cut removes a shadow. */
 	.receipt {
-		--paper: #fffdf7;
-		--ink: #24282b;
-		--ink-soft: #6a6f73;
+		--paper: #ffffff;
+		--ink: #1d1c1a;
+		--ink-soft: #4a463f;
 		--tooth: 0.4rem;
 
 		inline-size: min(100%, 26rem);
 		margin-inline: auto;
-		filter: drop-shadow(0 0.5rem 0.9rem rgb(20 70 75 / 0.14));
+		filter: drop-shadow(0 0.5rem 0.9rem rgb(29 28 26 / 0.2));
 	}
 
 	/* The paper: the letters of a cash register, and teeth at the lower edge where it was torn. */
 	.receipt__paper {
 		position: relative;
 		padding: var(--space-5) var(--space-4) calc(var(--space-5) + var(--tooth));
-		font-family: ui-monospace, 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+		font-family: var(--font-mono);
 		font-size: 0.9rem;
 		font-variant-numeric: tabular-nums;
+		text-transform: uppercase;
 		color: var(--ink);
 		background: var(--paper);
 		mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% /
@@ -99,7 +100,7 @@
 		list-style: none;
 
 		& > :global(li + li) {
-			border-block-start: 1px dotted rgb(0 0 0 / 0.14);
+			border-block-start: 1px dotted rgb(29 28 26 / 0.3);
 		}
 	}
 
@@ -121,14 +122,15 @@
 		inset-block-end: calc(var(--space-6) + var(--tooth));
 		inset-inline-start: 50%;
 		padding: var(--space-1) var(--space-3);
-		font-size: 1.15rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
+		font-family: var(--font-display);
+		font-size: 1.75rem;
+		font-weight: 400;
+		line-height: 0.95;
 		text-transform: uppercase;
 		white-space: nowrap;
-		color: var(--color-accent-strong);
-		border: 3px solid currentColor;
-		border-radius: 0.5rem;
+		color: var(--tomato-text);
+		border: var(--rule-4) solid currentColor;
+		border-radius: var(--radius-sticker);
 		opacity: 0.85;
 		pointer-events: none;
 		translate: -50% 0;

@@ -143,7 +143,7 @@
 			block-size: 1.6rem;
 			content: '';
 			border: 2px solid var(--ink);
-			border-radius: 50%;
+			border-radius: var(--radius-sticker);
 			transition: scale 0.25s var(--ease-spring);
 		}
 
@@ -165,17 +165,17 @@
 
 		/* Amber, as a level that is low: the line needs an answer. */
 		&.receipt-line__mark--asks::before {
-			background: var(--color-low);
-			border-color: var(--color-low-strong);
+			background: var(--amber);
+			border-color: var(--ink);
 		}
 
 		&.receipt-line__mark--done {
-			color: var(--color-on-accent);
+			color: var(--paper);
 			cursor: default;
 
 			&::before {
-				background: var(--color-accent-strong);
-				border-color: var(--color-accent-strong);
+				background: var(--ink);
+				border-color: var(--ink);
 				animation: check 0.35s var(--ease-spring);
 			}
 
@@ -227,7 +227,7 @@
 
 		&.receipt-line__detail--asks {
 			font-weight: 700;
-			color: var(--color-low-strong);
+			color: var(--tomato-text);
 		}
 	}
 

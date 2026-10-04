@@ -73,10 +73,9 @@
 		gap: var(--space-2);
 		min-block-size: 7rem;
 		overflow: hidden;
-		font-weight: 600;
-		color: var(--color-accent-strong);
-		background: var(--color-accent-soft);
-		border: 1.5px dashed var(--color-accent-strong);
+		font-weight: 700;
+		background: var(--paper-deep);
+		border: 2px dashed var(--ink);
 		border-radius: var(--radius);
 		cursor: pointer;
 
@@ -85,7 +84,7 @@
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--color-accent-strong);
+			outline: 3px solid var(--ink);
 			outline-offset: 2px;
 		}
 	}
@@ -97,15 +96,15 @@
 		object-fit: contain;
 	}
 
-	/* A dark label on the photo, as on the photo of a recipe card. */
+	/* An ink sticker on the photo. */
 	.photo-field__again {
 		position: absolute;
 		inset-block-end: var(--space-2);
 		inset-inline-end: var(--space-2);
 		padding: var(--space-1) var(--space-3);
 		font-size: 0.8rem;
-		color: #ffffff;
-		background: rgb(0 0 0 / 0.6);
-		border-radius: var(--radius-pill);
+		color: var(--paper);
+		background: var(--ink);
+		border-radius: var(--radius-sticker);
 	}
 </style>

@@ -94,9 +94,10 @@
 	}
 
 	.recipe-details__title {
-		font-family: var(--font-heading);
-		font-size: 1.1rem;
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-size: 1.25rem;
+		font-weight: 400;
+		text-transform: uppercase;
 	}
 
 	.recipe-details__body {
