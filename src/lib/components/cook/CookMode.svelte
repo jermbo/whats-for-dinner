@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import Icon from '$lib/components/ui/Icon.svelte';
 	import { cook, visitCard } from '$lib/data/cooking';
 	import { stopTimer } from '$lib/data/timers';
 	import { cookCards } from '$lib/domain/cook-cards';
@@ -10,17 +9,18 @@
 	import { cardSides } from '$lib/input/card-sides';
 	import { keepScreenOn } from '$lib/input/wake-lock';
 	import { turnPage } from '$lib/motion/transitions';
-	import { chime, unlockSound } from '$lib/sound/chime';
+	import { unlockSound } from '$lib/sound/chime';
 	import { useClock } from '$lib/state/clock.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { status } from '$lib/state/status.svelte';
+	import { useTimerBell } from '$lib/state/timer-bell.svelte';
 	import CookFinishedCard from './CookFinishedCard.svelte';
+	import CookFoot from './CookFoot.svelte';
+	import CookHead from './CookHead.svelte';
 	import CookIngredientsCard from './CookIngredientsCard.svelte';
+	import CookProgress from './CookProgress.svelte';
 	import CookStepCard from './CookStepCard.svelte';
 	import TimerChips from './TimerChips.svelte';
-
-	/** A timer that ended this long ago, or less, makes its sound. An older one is only "Done". */
-	const RING_WINDOW_MS = 3000;
 
 	/**
 	 * Cook mode: a recipe as a row of cards, one card on the screen at a time. The owner cooks
@@ -113,23 +113,10 @@
 	/** @param {string} key */
 	const open = (key) => show(cards.findIndex((item) => item.key === key));
 
-	/**
-	 * The IDs of the timers that made their sound. It is a plain object, because the screen
-	 * does not show it.
-	 * @type {Record<string, true>}
-	 */
-	const rung = {};
-	$effect(() => {
-		const now = clock.now;
-		for (const timer of session?.timers ?? []) {
-			const end = Date.parse(timer.endsAt);
-			if (end > now || rung[timer.id]) continue;
-			rung[timer.id] = true;
-			if (now - end > RING_WINDOW_MS) continue;
-			chime();
-			navigator.vibrate?.([200, 100, 200]);
-		}
-	});
+	useTimerBell(
+		() => session?.timers ?? [],
+		() => clock.now
+	);
 
 	/** The owner leaves Cook mode. The cook session stays open, so the meal shows "Continue". */
 	function leave() {
@@ -185,28 +172,9 @@
 	{#if placed && session && recipe && card && (!session.cookedAt || finishing)}
 		{@const current = session}
 		<div class="cook__inner">
-			<header class="cook__head">
-				<button class="cook__leave" type="button" onclick={leave}>
-					<Icon name="close" />
-					<span class="visually-hidden">Leave Cook mode. The app keeps your place.</span>
-				</button>
-				<div class="cook__title">
-					<h1 class="cook__name" id="{uid}-title">{recipe.name}</h1>
-					<p class="cook__place" aria-live="polite">{label}</p>
-				</div>
-			</header>
+			<CookHead name={recipe.name} place={label} titleId="{uid}-title" onleave={leave} />
 
-			<div class="cook__progress" aria-hidden="true">
-				{#each cards as item, at (item.key)}
-					<span
-						class={[
-							'cook__mark',
-							at < index && 'cook__mark--done',
-							at === index && 'cook__mark--current'
-						]}
-					></span>
-				{/each}
-			</div>
+			<CookProgress keys={cards.map((item) => item.key)} {index} />
 
 			<TimerChips
 				timers={current.timers}
@@ -252,37 +220,14 @@
 
 			<p class="cook__status" role="status">{status.message}</p>
 
-			<footer class="cook__foot">
-				<button
-					class="button cook__step"
-					type="button"
-					disabled={index === 0}
-					onclick={() => show(index - 1)}
-				>
-					<Icon name="back" />
-					Back
-				</button>
-				{#if card.kind === 'finished'}
-					<button
-						class="button button--strong cook__step cook__step--main"
-						type="button"
-						disabled={finishing}
-						onclick={finish}
-					>
-						<Icon name="check" />
-						Cooked
-					</button>
-				{:else}
-					<button
-						class="button button--primary cook__step cook__step--main"
-						type="button"
-						onclick={() => show(index + 1)}
-					>
-						Next
-						<Icon name="next" />
-					</button>
-				{/if}
-			</footer>
+			<CookFoot
+				first={index === 0}
+				last={card.kind === 'finished'}
+				{finishing}
+				onback={() => show(index - 1)}
+				onnext={() => show(index + 1)}
+				onfinish={finish}
+			/>
 		</div>
 	{:else if waited}
 		<div class="cook__empty stack">
@@ -331,74 +276,6 @@
 		block-size: 100%;
 	}
 
-	.cook__head {
-		display: flex;
-		align-items: center;
-		gap: var(--space-3);
-		padding: max(var(--space-3), env(safe-area-inset-top)) var(--space-5) var(--space-3);
-	}
-
-	.cook__leave {
-		display: grid;
-		flex: none;
-		place-items: center;
-		inline-size: var(--tap);
-		block-size: var(--tap);
-		padding: 0;
-		color: var(--paper);
-		background: var(--ink);
-		border: 0;
-		border-radius: var(--radius-control);
-		cursor: pointer;
-		transition: scale 0.2s var(--ease-out);
-
-		&:active {
-			scale: 0.9;
-		}
-	}
-
-	.cook__title {
-		min-inline-size: 0;
-	}
-
-	.cook__name {
-		overflow: hidden;
-		font-size: 1.5rem;
-		line-height: 1;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.cook__place {
-		font-size: 0.75rem;
-		font-weight: 800;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-	}
-
-	/* One mark for each card. The marks of the cards before this one are ink. This one is olive. */
-	.cook__progress {
-		display: flex;
-		gap: var(--space-1);
-		padding-inline: var(--space-5);
-	}
-
-	.cook__mark {
-		flex: 1;
-		block-size: 0.5rem;
-		background: var(--paper-deep);
-		transition: background-color 0.3s;
-	}
-
-	.cook__mark--done {
-		background: var(--ink);
-	}
-
-	.cook__mark--current {
-		background: var(--olive);
-		box-shadow: inset 0 0 0 2px var(--ink);
-	}
-
 	/* The old card and the new card are in one cell while one goes out and one comes in. */
 	.cook__body {
 		display: grid;
@@ -415,25 +292,6 @@
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		touch-action: pan-y;
-	}
-
-	/* The two buttons are large and in reach of the thumb. "Next" is the wide one. */
-	.cook__foot {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		gap: var(--space-3);
-		padding: var(--space-3) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
-		border-block-start: var(--rule-4) solid var(--ink);
-	}
-
-	.cook__step {
-		gap: var(--space-2);
-		min-block-size: 3.75rem;
-		font-size: 1.1rem;
-	}
-
-	.cook__step--main {
-		font-size: 1.2rem;
 	}
 
 	/*
