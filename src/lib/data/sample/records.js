@@ -1,6 +1,7 @@
 import { CHECK_DAYS, LEFTOVER_MENU_ID, sampleHistory } from './history';
 import { sampleIngredients } from './ingredients';
 import { daysAgo, hoursAgo, id } from './keys';
+import { sampleOpenCook } from './open-cook';
 import { samplePantry } from './pantry';
 import { sampleRecipes } from './recipes';
 import { sampleProducts, sampleShopping, sampleTrips } from './shopping';
@@ -9,7 +10,7 @@ import { sampleProducts, sampleShopping, sampleTrips } from './shopping';
 
 /**
  * A meal on the menu. The states are different on purpose: ready, needs preparation,
- * in preparation, and leftovers.
+ * in preparation, and leftovers. One ready meal is open in Cook mode: see "open-cook.js".
  * @param {string} recipeKey
  * @param {number} hours The hours since the owner added the meal.
  * @param {Partial<MenuItem>} [options]
@@ -58,7 +59,8 @@ export function sampleRecords() {
 		pantry: stock.pantry,
 		pantryLog: [...stock.log, ...history.log],
 		menu,
-		sessions: history.sessions,
+		// The cook history, and one meal that the owner is in the middle of.
+		sessions: [...history.sessions, ...sampleOpenCook(recipes, menu)],
 		products: sampleProducts(),
 		trips: shopped.trips,
 		purchases: shopped.purchases,

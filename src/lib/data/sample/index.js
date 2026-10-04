@@ -1,7 +1,7 @@
 import { db } from '$lib/db/db';
 import { settleTrip } from '../trips';
 import { SAMPLE_PREFIX } from './keys';
-import { samplePhotos } from './photos';
+import { sampleCookPhotos, samplePhotos } from './photos';
 import { sampleRecords } from './records';
 
 /** @param {string | null | undefined} value */
@@ -43,6 +43,8 @@ async function clearRecipePhotos() {
 		...recipes.flatMap((recipe) => recipe.coverPhotoId ?? []),
 		...sessions.flatMap((session) => session.photoId ?? [])
 	]);
+	// The photos that the app drew for the sample data. A record that had one can be gone.
+	await db.photos.where('id').startsWith(SAMPLE_PREFIX).delete();
 }
 
 /**
@@ -67,8 +69,12 @@ async function clear() {
  */
 export async function loadSampleData() {
 	const records = sampleRecords();
+	/** The name of each sample recipe, by its key. The photos of a recipe show the name. */
+	const names = new Map(
+		records.recipes.map((recipe) => [recipe.id.slice(SAMPLE_PREFIX.length), recipe.name])
+	);
 	// The browser draws the photos. This is not a database step, so it is before the transaction.
-	const photos = await samplePhotos();
+	const photos = [...(await samplePhotos()), ...(await sampleCookPhotos(names))];
 
 	return db.transaction('rw', db.tables, async () => {
 		await clear();

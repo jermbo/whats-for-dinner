@@ -19,7 +19,7 @@ There is no photo button and no timer field. The photos come from [Cook mode](co
 
 ## Steps are a list
 
-Each step is one row. You type a step and press Enter, and the cursor is in the next step. There is no "Add" button.
+Each step is one row. The list ends with an empty row with a plus sign: you type the next step there. Enter in a step also puts the cursor in the next step. A long list scrolls in its own panel, so the rest of the form stays on the screen.
 
 You can also paste. The app makes one step from each line. It removes a number at the start of a line, such as "1." or "2)". So a method from a web page or from a note becomes a list in one action.
 

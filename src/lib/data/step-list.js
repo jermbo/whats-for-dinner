@@ -29,3 +29,13 @@ export function splitLines(text) {
 export function newStep(text = '') {
 	return { id: newId(), text, photoIds: [], selectedPhotoId: null };
 }
+
+/**
+ * Makes sure that the steps of a form end with an empty step: the row where the owner types
+ * the next step. Without it, a recipe that has steps shows no place for a new step.
+ * The save removes a step that stays empty.
+ * @param {RecipeStep[]} steps
+ */
+export function endWithEmptyStep(steps) {
+	if (steps.length === 0 || steps[steps.length - 1].text.trim()) steps.push(newStep());
+}

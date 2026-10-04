@@ -1,9 +1,12 @@
+import { splitByTimes } from '../step-text';
+import { finishedPhoto } from './cook-photos';
 import { daysAgo, id, SAMPLE_PREFIX } from './keys';
 import { stepId } from './recipes';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').Recipe} Recipe
+ * @typedef {import('$lib/types').CardVisit} CardVisit
  * @typedef {import('$lib/types').CookSession} CookSession
  * @typedef {import('$lib/types').PantryChange} PantryChange
  */
@@ -17,6 +20,8 @@ export const CHECK_DAYS = 5;
  * @type {[string, number, number, string][]}
  */
 const MEALS = [
+	['spaghetti', 24, 3, 'The sauce was thin.'],
+	['spaghetti', 17, 4, ''],
 	['chicken-bowl', 13, 5, 'Very good. Use more garlic the next time.'],
 	['overnight-oats', 12, 4, ''],
 	['spaghetti', 10, 4, 'Fast and easy.'],
@@ -29,18 +34,58 @@ const MEALS = [
 ];
 
 /**
+ * The meals that the owner marked with one tap on "Cooked", with no Cook mode: session names.
+ * Such a session has only the end time. All other sessions are from Cook mode, so they have
+ * a start time and the time of each card.
+ */
+const ONE_TAP = new Set(['overnight-oats-12', 'quesadillas-4', 'scrambled-eggs-3']);
+
+/**
  * The notes that the owner wrote on a step while cooking: session name, step number, and text.
- * A session with a note is a session from Cook mode, so it also has a start time.
+ * One step of the chicken bowl has two notes, from two cooks.
  * @type {Record<string, [number, string][]>}
  */
 const STEP_NOTES = {
+	'spaghetti-24': [[2, 'Simmer for 20 minutes. The sauce is thick then.']],
 	'chicken-bowl-13': [[3, 'Two garlic cloves are not sufficient. Use four.']],
 	'fried-rice-6': [[1, 'Boil the rice the day before.']],
+	'chicken-bowl-2': [[3, 'Four garlic cloves are correct.']],
 	'lentil-soup-1': [[4, 'Add lemon juice at the end.']]
 };
 
-/** A cook from Cook mode started this many minutes before "Cooked". */
-const COOK_MINUTES = 35;
+const MINUTE = 60 * 1000;
+/** The time that the owner uses for a card: to read it and to do it. A timer adds to it. */
+const CARD_MS = 2 * MINUTE;
+
+/**
+ * The cards that the owner opened in one cook, with the time of each: the ingredients, each
+ * step, and the finished card. A step with a time in its text takes that time longer, as in
+ * a real cook. The last card ends at "Cooked".
+ * @param {Recipe} recipe
+ * @param {string} cookedAt
+ * @returns {{ startedAt: string, visits: CardVisit[] }}
+ */
+function cookVisits(recipe, cookedAt) {
+	const cards = [
+		{ card: 'ingredients', ms: CARD_MS },
+		...recipe.steps.map((step) => ({
+			card: step.id,
+			ms:
+				CARD_MS +
+				splitByTimes(step.text).reduce((total, part) => total + (part.seconds ?? 0), 0) * 1000
+		})),
+		{ card: 'finished', ms: CARD_MS }
+	];
+
+	let time = Date.parse(cookedAt) - cards.reduce((total, card) => total + card.ms, 0);
+	const startedAt = new Date(time).toISOString();
+	const visits = cards.map(({ card, ms }) => {
+		const visit = { card, at: new Date(time).toISOString() };
+		time += ms;
+		return visit;
+	});
+	return { startedAt, visits };
+}
 
 /** The meal on the menu that is the leftovers of the last lentil soup. */
 export const LEFTOVER_MENU_ID = id('menu-leftover-lentil-soup');
@@ -108,25 +153,33 @@ export function sampleHistory(recipes, ingredients) {
 			);
 		}
 
-		const notes = STEP_NOTES[`${key}-${days}`] ?? [];
+		const name = `${key}-${days}`;
+		const cookedAt = daysAgo(days);
+		const { startedAt, visits } = ONE_TAP.has(name)
+			? { startedAt: null, visits: [] }
+			: cookVisits(recipe, cookedAt);
+		/** The time when the owner opened a step: a note on the step has this time. */
+		const visitedAt = (/** @type {string} */ card) =>
+			visits.find((visit) => visit.card === card)?.at ?? cookedAt;
 
 		sessions.push({
 			id: sessionId,
 			recipeId: recipe.id,
 			recipeName: recipe.name,
 			kind: 'recipe',
-			startedAt: notes.length > 0 ? daysAgo(days + COOK_MINUTES / (24 * 60)) : null,
+			startedAt,
 			servings: recipe.servings,
-			photoId: null,
-			visits: [],
-			stepNotes: notes.map(([number, text]) => ({
-				id: id(`note-${key}-${days}-${number}`),
+			photoId: finishedPhoto(key, days),
+			visits,
+			stepNotes: (STEP_NOTES[name] ?? []).map(([number, text]) => ({
+				id: id(`note-${name}-${number}`),
 				stepId: stepId(key, number),
 				text,
-				at: daysAgo(days)
+				at: visitedAt(stepId(key, number))
 			})),
 			timers: [],
-			checked: [],
+			// In Cook mode, the owner checks each ingredient on the first card.
+			checked: startedAt ? recipe.ingredients.map((row) => row.ingredientId) : [],
 			menuItem: {
 				id: id(`menu-old-${key}-${days}`),
 				kind: 'recipe',
@@ -135,7 +188,7 @@ export function sampleHistory(recipes, ingredients) {
 				prepDoneAt: null,
 				updatedAt: daysAgo(days + 2)
 			},
-			cookedAt: daysAgo(days),
+			cookedAt,
 			rating,
 			note,
 			deductions,

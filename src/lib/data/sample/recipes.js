@@ -1,3 +1,4 @@
+import { coverPhoto, stepPhotos } from './cook-photos';
 import { daysAgo, id } from './keys';
 
 /** @typedef {import('$lib/types').Recipe} Recipe */
@@ -23,15 +24,14 @@ function recipe(key, name, mealType, rows, { steps = [], ...options } = {}) {
 		name,
 		mealType,
 		servings: 2,
-		// Each step has a fixed ID, so that a reset keeps the notes of the sample history on it.
+		// Each step has a fixed ID, so that the notes and the photos of the sample history find it.
 		steps: steps.map((text, index) => ({
 			id: stepId(key, index + 1),
 			text,
-			photoIds: [],
-			selectedPhotoId: null
+			...stepPhotos(key, index + 1)
 		})),
 		source: '',
-		coverPhotoId: null,
+		coverPhotoId: coverPhoto(key),
 		inRotation: false,
 		ingredients: rows.map(([ingredientKey, quantity]) => ({
 			ingredientId: id(ingredientKey),

@@ -1,14 +1,17 @@
 <script>
 	import { tick } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { newStep, splitLines } from '$lib/data/step-list';
+	import { endWithEmptyStep, newStep, splitLines } from '$lib/data/step-list';
 
 	/** @typedef {Event & { currentTarget: HTMLTextAreaElement }} FieldEvent */
 
 	/**
-	 * The steps of the recipe form, as a list that you type like a note. Enter makes the next
-	 * step. A paste of more than one line makes one step from each line. Backspace in an empty
-	 * step removes it.
+	 * The steps of the recipe form, as a list that you type like a note. The list ends with an
+	 * empty row with a plus sign: the place for the next step. Enter also makes the next step.
+	 * A paste of more than one line makes one step from each line. Backspace in an empty step
+	 * removes it.
+	 * The list is a panel with a largest height. A long list scrolls in the panel, so that the
+	 * rest of the form stays on the screen. The empty row stays at the lower edge of the panel.
 	 * The buttons below the list move or remove the step that has the cursor.
 	 * @type {{ steps: import('$lib/types').RecipeStep[] }}
 	 */
@@ -18,6 +21,22 @@
 
 	/** @type {HTMLElement | undefined} */
 	let list = $state();
+
+	/** Shows the end of the list: the last step, and the empty row below it. */
+	function showEnd() {
+		list?.scrollTo({ top: list.scrollHeight });
+	}
+
+	// When the owner types in the last row, a new empty row comes below it. The list then
+	// scrolls to its end, so that the row with the cursor stays in view above the new row.
+	$effect(() => {
+		const before = steps.length;
+		endWithEmptyStep(steps);
+		if (steps.length > before) tick().then(showEnd);
+	});
+
+	/** The place of the empty row at the end of the list. It is not a step yet. */
+	const end = $derived(steps.length - 1);
 
 	/** The ID of the step that has the cursor, or that had it last. */
 	let currentId = $state('');
@@ -96,8 +115,10 @@
 			event.preventDefault();
 			// Enter in an empty step does not make a second empty step.
 			if (!text.trim()) return;
+			const after = text.slice(field.selectionEnd).trimStart();
 			steps[index].text = text.slice(0, field.selectionStart).trimEnd();
-			insertAfter(index, [text.slice(field.selectionEnd).trimStart()]);
+			// At the end of a step, an empty step below is the next step: Enter goes to it.
+			if (after || steps[index + 1]?.text !== '') insertAfter(index, [after]);
 			focus(index + 1, 0);
 		} else if (event.key === 'Backspace' && text === '' && steps.length > 1) {
 			event.preventDefault();
@@ -162,19 +183,36 @@
 
 	<ol class="step-fields__list" bind:this={list}>
 		{#each steps as step, index (step.id)}
-			<li class={['step-fields__row', step.id === currentId && 'step-fields__row--current']}>
+			<!-- The empty row at the end has a plus sign in the place of a number. -->
+			{@const next = index === end && step.text === ''}
+			<li
+				class={[
+					'step-fields__row',
+					step.id === currentId && 'step-fields__row--current',
+					next && 'step-fields__row--next'
+				]}
+			>
 				<label class="step-fields__number" for={fieldId(step.id)}>
-					<span class="visually-hidden">Step</span>
-					{index + 1}
+					{#if next}
+						<Icon name="plus" />
+						<span class="visually-hidden">Next step</span>
+					{:else}
+						<span class="visually-hidden">Step</span>
+						{index + 1}
+					{/if}
 				</label>
 				<textarea
 					class="step-fields__text"
 					id={fieldId(step.id)}
 					rows="1"
 					enterkeyhint="enter"
-					placeholder={index === steps.length - 1 ? 'Type a step. Enter makes the next step.' : ''}
+					placeholder={next ? 'Type a step. Enter makes the next step.' : ''}
 					value={step.text}
-					onfocus={() => (currentId = step.id)}
+					onfocus={() => {
+						currentId = step.id;
+						// The row for the next step shows below the last step, where its text goes.
+						if (next) showEnd();
+					}}
 					onkeydown={(event) => keydown(event, index)}
 					onpaste={(event) => paste(event, index)}
 					oninput={(event) => input(event.currentTarget, index)}
@@ -194,7 +232,7 @@
 		<button
 			class="button button--round"
 			type="button"
-			disabled={current <= 0}
+			disabled={current <= 0 || current >= end}
 			onclick={() => move(current, -1)}
 		>
 			<Icon name="up" />
@@ -203,33 +241,55 @@
 		<button
 			class="button button--round"
 			type="button"
-			disabled={current < 0 || current >= steps.length - 1}
+			disabled={current < 0 || current >= end - 1}
 			onclick={() => move(current, 1)}
 		>
 			<Icon name="down" />
 			<span class="visually-hidden">Move step {current + 1} down</span>
 		</button>
-		<button class="button" type="button" disabled={current < 0} onclick={() => remove(current)}>
-			{current < 0 ? 'Remove step' : `Remove step ${current + 1}`}
+		<button
+			class="button"
+			type="button"
+			disabled={current < 0 || current >= end}
+			onclick={() => remove(current)}
+		>
+			{current < 0 || current >= end ? 'Remove step' : `Remove step ${current + 1}`}
 		</button>
 	</div>
 </fieldset>
 
 <style>
+	/*
+	 * A white panel with a largest height. A long list scrolls in the panel, and the name, the
+	 * buttons, and the ingredients stay on the screen.
+	 */
 	.step-fields__list {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-2);
+		max-block-size: clamp(14rem, 45dvh, 36rem);
 		margin: 0;
 		padding: 0;
+		overflow-y: auto;
 		list-style: none;
+		background: var(--color-surface);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		scrollbar-width: thin;
+		/* A row that gets the cursor stops above the row for the next step, and not behind it. */
+		scroll-padding-block-end: 4.5rem;
 	}
 
 	.step-fields__row {
 		display: grid;
+		flex: none;
 		grid-template-columns: 2rem minmax(0, 1fr) auto;
 		align-items: start;
 		gap: var(--space-2);
+		padding: 0.4rem var(--space-3);
+
+		&:first-child {
+			padding-block-start: var(--space-3);
+		}
 	}
 
 	/* The number of the step in a circle, as on the back of a meal card. */
@@ -253,6 +313,42 @@
 		background: var(--color-accent-strong);
 	}
 
+	/*
+	 * The row for the next step stays at the lower edge of the panel while the list scrolls,
+	 * so the place for a new step is always in view.
+	 */
+	.step-fields__row--next {
+		position: sticky;
+		inset-block-end: 0;
+		padding-block: var(--space-3);
+		background: var(--color-surface);
+		border-block-start: 1px solid var(--color-border);
+
+		&:first-child {
+			border-block-start: 0;
+		}
+	}
+
+	/* A plus sign and a line of dashes: a place that is free. */
+	.step-fields__row--next:not(.step-fields__row--current) {
+		& .step-fields__number {
+			color: var(--color-muted);
+			background: none;
+			box-shadow: inset 0 0 0 1.5px var(--color-border);
+		}
+
+		& .step-fields__text {
+			background: none;
+			border-color: var(--color-border);
+			border-style: dashed;
+		}
+	}
+
+	.step-fields__number :global(.icon) {
+		inline-size: 1.15rem;
+		block-size: 1.15rem;
+	}
+
 	/* The field is as tall as its text, so a long step is in view in full. */
 	.step-fields__text {
 		inline-size: 100%;
@@ -260,8 +356,9 @@
 		padding: var(--space-3) var(--space-4);
 		overflow: hidden;
 		line-height: 1.4;
-		background: var(--color-surface);
-		border: 1px solid var(--color-border);
+		/* The field lies on the white panel: a soft fill, and a line only for the empty row. */
+		background: var(--color-surface-soft);
+		border: 1.5px solid transparent;
 		border-radius: 1rem;
 		resize: none;
 		field-sizing: content;

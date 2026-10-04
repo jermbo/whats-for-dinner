@@ -3,7 +3,7 @@
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
 	import { blankIngredient } from '$lib/data/ingredients';
 	import { hasContent, saveRecipe } from '$lib/data/recipes';
-	import { newStep } from '$lib/data/step-list';
+	import { endWithEmptyStep } from '$lib/data/step-list';
 	import { sortByName } from '$lib/util/collections';
 	import RecipeDetailsFields from './RecipeDetailsFields.svelte';
 	import RecipeIngredientFields from './RecipeIngredientFields.svelte';
@@ -29,8 +29,9 @@
 
 	function initial() {
 		const copy = structuredClone(recipe);
-		// The list of steps always has one row to type in.
-		if (copy.steps.length === 0) copy.steps.push(newStep());
+		// The list of steps ends with an empty row for the next step. The row is there before
+		// the form looks for changes, so that it is not a change of the recipe.
+		endWithEmptyStep(copy.steps);
 		return copy;
 	}
 	let form = $state(initial());
