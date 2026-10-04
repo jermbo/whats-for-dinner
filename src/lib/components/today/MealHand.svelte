@@ -4,21 +4,25 @@
 	import MealCard from '$lib/components/meal/MealCard.svelte';
 	import MealCardBack from '$lib/components/meal/MealCardBack.svelte';
 	import MealSheet from '$lib/components/meal/MealSheet.svelte';
-	import Icon from '$lib/components/ui/Icon.svelte';
 	import { hintSeen, markHintSeen } from '$lib/data/hints';
 	import { entryName } from '$lib/domain/menu';
+	import { bottomToTop, inPileOrder, pileIds, shuffledPile, topToBottom } from '$lib/domain/pile';
 	import { throwCard } from '$lib/input/throw-card';
-	import { gsap } from '$lib/motion/gsap';
-	import { pose } from '$lib/motion/pile';
+	import {
+		dealCard,
+		DROP_GAP_S,
+		hintCard,
+		placeCard,
+		settleCard,
+		splitPile,
+		springBack,
+		throwOut
+	} from '$lib/motion/hand';
 	import { status } from '$lib/state/status.svelte';
-	import { shuffled } from '$lib/util/collections';
+	import HandActions from './HandActions.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
-	/** The time of a card that flies out of the hand, in seconds. */
-	const THROW_S = 0.35;
-	/** The time between two cards that drop back on the pile after a shuffle, in seconds. */
-	const DROP_GAP_S = 0.06;
 	/** The note that this device showed the hint of the hand. */
 	const HINT_KEY = 'handHintSeen';
 
@@ -49,8 +53,7 @@
 	let { entries, lastSessions, soon, cooking, head, onstart, oncook, onprep } = $props();
 
 	/**
-	 * The IDs from the top of the pile down. A meal that is not in it comes on top: a meal that
-	 * becomes ready comes into the hand where you can see it.
+	 * The IDs from the top of the pile down.
 	 * @type {string[]}
 	 */
 	let order = $state.raw([]);
@@ -75,74 +78,44 @@
 	const dealt = new WeakSet();
 	const dealing = new WeakSet();
 
-	/** @param {MenuEntry} entry */
-	function place(entry) {
-		const index = order.indexOf(entry.item.id);
-		return index;
-	}
-
-	const cards = $derived(entries.toSorted((a, b) => place(a) - place(b)));
+	const cards = $derived(inPileOrder(entries, order));
 	const top = $derived(cards[0]);
 	const number = $derived(top ? entries.indexOf(top) + 1 : 0);
-
-	/** @param {MenuEntry[]} list */
-	const ids = (list) => list.map((entry) => entry.item.id);
 
 	/** @param {number} ms */
 	const wait = (ms) => new Promise((done) => setTimeout(done, ms));
 
 	/**
-	 * One time only on a device: the top card goes to the side and comes back, and its turn
-	 * button turns. This shows that you can throw the card and turn it.
+	 * One time only on a device: the top card shows that it can move.
 	 * A finger on the card stops the hint.
 	 * @param {HTMLElement} node
 	 */
 	async function hint(node) {
 		if (cards.length < 2 || (await hintSeen(HINT_KEY)) || busy) return;
 		await markHintSeen(HINT_KEY);
-
-		const timeline = gsap
-			.timeline()
-			.to(node, { x: -64, rotation: -5, duration: 0.4, ease: 'power2.out' })
-			.to(node, { ...pose(0), duration: 0.8, ease: 'elastic.out(1, 0.55)' });
-		const turn = node.querySelector('.meal-card__turn');
-		if (turn) {
-			timeline.to(
-				turn,
-				{ rotation: 360, duration: 0.7, ease: 'back.out(1.6)', clearProps: 'transform' },
-				'-=0.4'
-			);
-		}
+		hintCard(node);
 	}
 
 	/**
-	 * Deals a new card into the hand: it comes up from below. The bottom card comes first.
+	 * Deals a new card into the hand. The top card shows the hint after it.
 	 * @param {HTMLElement} node
 	 * @param {number} at
 	 */
 	function deal(node, at) {
 		dealt.add(node);
 		if (prefersReducedMotion.current) {
-			gsap.set(node, pose(at));
+			placeCard(node, at);
 			return;
 		}
 		dealing.add(node);
-		gsap.fromTo(
-			node,
-			{ y: 220, rotation: at % 2 ? 10 : -10, opacity: 0 },
-			{
-				...pose(at),
-				duration: 0.7,
-				delay: 0.15 + (cards.length - 1 - at) * 0.08,
-				ease: 'back.out(1.2)',
-				// A shuffle or a finger can stop the deal. Then the card is free to move too.
-				onComplete: () => {
-					dealing.delete(node);
-					if (at === 0) hint(node);
-				},
-				onInterrupt: () => dealing.delete(node)
-			}
-		);
+		dealCard(node, at, cards.length, {
+			// A shuffle or a finger can stop the deal. Then the card is free to move too.
+			onComplete: () => {
+				dealing.delete(node);
+				if (at === 0) hint(node);
+			},
+			onInterrupt: () => dealing.delete(node)
+		});
 	}
 
 	/**
@@ -173,19 +146,9 @@
 		cards.forEach((entry, at) => {
 			const node = nodes[entry.item.id];
 			if (!node) return;
-			if (!dealt.has(node)) {
-				deal(node, at);
-			} else if (prefersReducedMotion.current) {
-				gsap.set(node, pose(at));
-			} else if (!dealing.has(node)) {
-				gsap.to(node, {
-					...pose(at),
-					duration: 0.5,
-					delay: drop ? (count - 1 - at) * DROP_GAP_S : 0,
-					ease: 'back.out(1.4)',
-					overwrite: 'auto'
-				});
-			}
+			if (!dealt.has(node)) deal(node, at);
+			else if (prefersReducedMotion.current) placeCard(node, at);
+			else if (!dealing.has(node)) settleCard(node, at, drop ? (count - 1 - at) * DROP_GAP_S : 0);
 		});
 	}
 
@@ -211,60 +174,25 @@
 		busy = true;
 		pull = 0;
 
-		if (!prefersReducedMotion.current) {
-			const distance = Math.max(innerWidth, innerHeight);
-			await gsap.to(node, {
-				x: `+=${direction.x * distance}`,
-				y: `+=${direction.y * distance}`,
-				rotation: `+=${direction.x * 30}`,
-				duration: THROW_S,
-				ease: 'power1.in',
-				overwrite: 'auto'
-			});
-		}
+		if (!prefersReducedMotion.current) await throwOut(node, direction);
 
 		// The effect moves the card back from where it went, to its new place under the pile.
 		// With one card, the place is the same, and the card comes back to the top.
-		const [first, ...rest] = cards;
-		order = ids([...rest, first]);
+		order = pileIds(topToBottom(cards));
 		busy = false;
 		await tick();
 		announce();
 	}
 
+	/** The button "Next": the top card flies to the left. */
+	const throwTop = () => next(top && nodes[top.item.id], { x: -1, y: -0.15 });
+
 	/** The bottom card comes back on top. */
 	async function previous() {
 		if (busy || cards.length < 2) return;
-		const last = cards.at(-1);
-		if (!last) return;
-		order = ids([last, ...cards.slice(0, -1)]);
+		order = pileIds(bottomToTop(cards));
 		await tick();
 		announce();
-	}
-
-	/** The cards split to the left and to the right. */
-	function split() {
-		const timeline = gsap.timeline();
-		cards.forEach((entry, at) => {
-			const node = nodes[entry.item.id];
-			if (!node) return;
-			const side = at % 2 === 0 ? -1 : 1;
-			timeline.to(
-				node,
-				{
-					x: side * node.offsetWidth * 0.55,
-					y: -12 - at * 3,
-					rotation: side * (8 + at),
-					scale: 0.9,
-					opacity: 1,
-					duration: 0.32,
-					ease: 'power2.out',
-					overwrite: 'auto'
-				},
-				at * 0.03
-			);
-		});
-		return timeline;
 	}
 
 	/** A new order with a different meal on top. */
@@ -274,22 +202,17 @@
 		pull = 0;
 		navigator.vibrate?.([8, 40, 8]);
 
-		// The meal on top must be one that you can cook now, if there is one.
-		const [first, ...rest] = cards;
-		const ready = rest.filter((entry) => entry.state === 'ready');
-		const pool = ready.length > 0 ? ready : rest;
-		const pick = pool[Math.floor(Math.random() * pool.length)];
-		const next = [pick, ...shuffled([first, ...rest.filter((entry) => entry !== pick)])];
+		const pile = shuffledPile(cards);
 
 		if (prefersReducedMotion.current) {
-			order = ids(next);
+			order = pileIds(pile);
 		} else {
 			down = true;
 			await wait(300);
-			await split();
+			await splitPile(cards.map((entry) => nodes[entry.item.id]));
 			// The cards are face down, so the eye does not see the change of order.
 			// All cards drop back, also a card that has the same place as before.
-			order = ids(next);
+			order = pileIds(pile);
 			await tick();
 			settle(true);
 			await wait((cards.length * DROP_GAP_S + 0.5) * 1000);
@@ -297,7 +220,7 @@
 		}
 
 		busy = false;
-		status.say(`How about ${entryName(pick)}?`);
+		status.say(`How about ${entryName(pile[0])}?`);
 	}
 
 	/** @type {import('$lib/input/throw-card').ThrowHandlers} */
@@ -307,7 +230,7 @@
 		onshuffle: shuffle,
 		onstay(node) {
 			pull = 0;
-			gsap.to(node, { ...pose(0), duration: 0.7, ease: 'elastic.out(1, 0.55)', overwrite: 'auto' });
+			springBack(node);
 		}
 	};
 </script>
@@ -316,7 +239,7 @@
 	{@render head?.({
 		number,
 		total: entries.length,
-		onnext: () => next(top && nodes[top.item.id], { x: -1, y: -0.15 })
+		onnext: throwTop
 	})}
 
 	<div class="hand__stage">
@@ -358,37 +281,13 @@
 		{pull >= 1 ? 'Release to shuffle' : 'Pull down to shuffle'}
 	</p>
 
-	<div class="hand__actions">
-		<button
-			class="button hand__action hand__back"
-			type="button"
-			onclick={previous}
-			disabled={entries.length < 2}
-		>
-			<Icon name="back" />
-			Back
-		</button>
-		<p class="count hand__count">
-			{number}<span class="count__total">/{entries.length}</span>
-		</p>
-		<button
-			class="button hand__action hand__next"
-			type="button"
-			onclick={() => next(top && nodes[top.item.id], { x: -1, y: -0.15 })}
-			disabled={entries.length < 2}
-		>
-			Next
-			<Icon name="next" />
-		</button>
-		<button
-			class="button button--link hand__action hand__shuffle"
-			type="button"
-			onclick={shuffle}
-			disabled={entries.length < 2}
-		>
-			Shuffle
-		</button>
-	</div>
+	<HandActions
+		{number}
+		total={entries.length}
+		onback={previous}
+		onnext={throwTop}
+		onshuffle={shuffle}
+	/>
 
 	<MealSheet bind:this={sheet} {entries} {lastSessions} {oncook} {onprep} />
 </section>
@@ -478,24 +377,6 @@
 		}
 	}
 
-	/* A phone: the count and "Next" are in the title of the screen. Only "Shuffle" stays here. */
-	.hand__actions {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-4);
-	}
-
-	.hand__back,
-	.hand__next,
-	.hand__count {
-		display: none;
-	}
-
-	.hand__action {
-		gap: var(--space-2);
-	}
-
 	@container hand (min-width: 36rem) {
 		.hand__stage {
 			justify-content: flex-start;
@@ -507,16 +388,6 @@
 
 		.hand__facts {
 			display: block;
-		}
-
-		.hand__back,
-		.hand__next,
-		.hand__count {
-			display: inline-flex;
-		}
-
-		.hand__actions {
-			justify-content: flex-start;
 		}
 
 		.hand__pull {
