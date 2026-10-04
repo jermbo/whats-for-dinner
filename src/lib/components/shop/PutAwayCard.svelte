@@ -3,18 +3,16 @@
 	import { correct, setProduct } from '$lib/data/cart';
 	import { isCounted } from '$lib/domain/put-away';
 	import { sideColumn } from '$lib/layout/side-column';
-	import { round, unitLabel } from '$lib/util/format';
+	import { round } from '$lib/util/format';
 	import PackagesButton from './PackagesButton.svelte';
 	import ProductPhoto from './ProductPhoto.svelte';
 	import ProductPicker from './ProductPicker.svelte';
+	import QuantityStepper from './QuantityStepper.svelte';
 
 	/**
 	 * @typedef {import('$lib/domain/put-away').CartEntry} CartEntry
 	 * @typedef {import('$lib/types').Product} Product
 	 */
-
-	/** One tap on minus or plus changes a weight or a volume by this number. A count: by one. */
-	const STEP = 50;
 
 	/**
 	 * The card of one item of the receipt: the photo of the product, the question "Which one?",
@@ -215,46 +213,12 @@
 				{/if}
 
 				{#if counted && unit}
-					{@const step = unit === 'count' ? 1 : STEP}
-					<div class="item-card__quantity">
-						<button
-							class="button button--round"
-							type="button"
-							onclick={() => setQuantity(item, quantity - step)}
-						>
-							<span aria-hidden="true">−</span>
-							<span class="visually-hidden">Less</span>
-						</button>
-
-						<label class="item-card__number">
-							<span class="visually-hidden">
-								Quantity of {purchase.name} in {unitLabel(unit)}
-							</span>
-							<input
-								class="item-card__input"
-								name="quantity"
-								type="number"
-								inputmode="decimal"
-								min="0"
-								step="any"
-								required
-								value={quantity || ''}
-								onchange={(event) => setQuantity(item, event.currentTarget.valueAsNumber)}
-							/>
-							{#if unit !== 'count'}
-								<span class="item-card__unit" aria-hidden="true">{unitLabel(unit)}</span>
-							{/if}
-						</label>
-
-						<button
-							class="button button--round"
-							type="button"
-							onclick={() => setQuantity(item, quantity + step)}
-						>
-							<span aria-hidden="true">+</span>
-							<span class="visually-hidden">More</span>
-						</button>
-					</div>
+					<QuantityStepper
+						name={purchase.name}
+						{unit}
+						{quantity}
+						onchange={(value) => setQuantity(item, value)}
+					/>
 				{/if}
 
 				<div class="item-card__price">
@@ -323,50 +287,6 @@
 		& :global(.product-photo) {
 			aspect-ratio: 16 / 10;
 		}
-	}
-
-	/* The quantity is the largest text of the card: it is what the owner confirms. */
-	.item-card__quantity {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: var(--space-3);
-	}
-
-	.item-card__number {
-		display: flex;
-		align-items: baseline;
-		gap: var(--space-1);
-		font-family: var(--font-display);
-		font-weight: 400;
-	}
-
-	/* The field is as wide as its number, where the browser can do that. */
-	.item-card__input {
-		inline-size: 5ch;
-		min-inline-size: 2ch;
-		max-inline-size: 7ch;
-		padding: 0;
-		font-size: 2.5rem;
-		line-height: 1.2;
-		text-align: center;
-		field-sizing: content;
-		background: none;
-		border: 0;
-		border-block-end: 2px dashed var(--ink);
-		border-radius: 0;
-		appearance: textfield;
-
-		&::-webkit-inner-spin-button,
-		&::-webkit-outer-spin-button {
-			margin: 0;
-			appearance: none;
-		}
-	}
-
-	.item-card__unit {
-		font-size: 1.35rem;
-		color: var(--ink-soft);
 	}
 
 	.item-card__price {
