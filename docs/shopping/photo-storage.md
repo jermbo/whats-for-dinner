@@ -13,7 +13,7 @@ The app has no server. All data is in a database that the browser keeps on the p
 
 ## The database on the phone
 
-Each browser has a database for each site, with the name IndexedDB. It stores records, and a record can contain a block of bytes. So a photo needs no file system and no upload: the [small blob](photo-capture.md) goes into a record. That record is the photo itself: there is no file in a different place.
+Each browser has a database for each site, with the name IndexedDB. It stores records, and a record can contain a block of bytes. So a photo needs no file system and no upload: the [small blob](photo-capture.md) goes into a record. That record is the photo itself. The app makes no file: the browser keeps the bytes of the record in [its own data folder](find-a-photo-on-the-disk.md).
 
 The photos have their own table in the [data model](data-model.md). A product has only the ID of its photo.
 
@@ -23,8 +23,6 @@ The photos have their own table in the [data model](data-model.md). A product ha
 | Photos   | The ID and the bytes of the picture.                 |
 
 The reason is speed. A screen that lists 50 products reads the product table and gets no photo bytes. It reads a photo only when the photo comes into view.
-
-The tools of the browser do not show the picture of a photo row. They show the blob as a size and a type: about 60 000 bytes, "image/jpeg". Those bytes are the picture.
 
 ## How a screen shows a photo
 
