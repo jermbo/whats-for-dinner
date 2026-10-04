@@ -14,6 +14,7 @@
 	import { aisles, shopMeals } from '$lib/domain/shopping';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
+	import { usePreferences } from '$lib/state/preferences.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { indexBy } from '$lib/util/collections';
@@ -27,6 +28,7 @@
 
 	const kitchen = useKitchen();
 	const shopping = useShopping();
+	const preferences = usePreferences();
 	const products = live(allProducts, []);
 
 	/** The recipe ID of the meal whose items the list shows. Empty: all items. */
@@ -52,7 +54,7 @@
 	const shownCart = $derived(
 		meal ? cart.filter((purchase) => mealIngredients.has(purchase.ingredientId ?? '')) : cart
 	);
-	const groups = $derived(aisles(shownNeeded));
+	const groups = $derived(aisles(shownNeeded, preferences.values.categoryOrder));
 
 	const total = $derived(cart.length + needed.length);
 
@@ -89,6 +91,7 @@
 	<div class="stack">
 		<div class="stack stack--tight">
 			<PageHeader title="Shopping list">
+				<a class="button" href={resolve('/shop/trips')}>Trips</a>
 				<button class="button button--round" type="button" onclick={() => scanner?.open()}>
 					<Icon name="scan" />
 					<span class="visually-hidden">Scan a barcode</span>

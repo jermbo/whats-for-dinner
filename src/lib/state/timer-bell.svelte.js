@@ -1,4 +1,6 @@
+import { vibrate } from '$lib/input/vibrate';
 import { chime } from '$lib/sound/chime';
+import { usePreferences } from './preferences.svelte';
 
 /** A timer that ended this long ago, or less, makes its sound. An older one is only "Done". */
 const RING_WINDOW_MS = 3000;
@@ -16,6 +18,7 @@ export function useTimerBell(timers, now) {
 	 * @type {Record<string, true>}
 	 */
 	const rung = {};
+	const preferences = usePreferences();
 
 	$effect(() => {
 		const time = now();
@@ -24,8 +27,8 @@ export function useTimerBell(timers, now) {
 			if (end > time || rung[timer.id]) continue;
 			rung[timer.id] = true;
 			if (time - end > RING_WINDOW_MS) continue;
-			chime();
-			navigator.vibrate?.([200, 100, 200]);
+			if (preferences.values.timerSound) chime();
+			vibrate([200, 100, 200]);
 		}
 	});
 }

@@ -9,7 +9,7 @@
 		{ path: '/shop', label: 'Shop' },
 		{ path: '/pantry', label: 'Pantry' },
 		{ path: '/recipes', label: 'Recipes' },
-		{ path: '/more', label: 'More' }
+		{ path: '/settings', label: 'Settings' }
 	]);
 
 	const shopping = useShopping();
@@ -65,9 +65,10 @@
 		display: none;
 	}
 
+	/* An item is as wide as its word, plus an equal part of the room that is left. */
 	.app-nav__list {
 		display: grid;
-		grid-template-columns: repeat(6, minmax(0, 1fr));
+		grid-template-columns: repeat(6, auto);
 		margin: 0;
 		padding: 0;
 		list-style: none;

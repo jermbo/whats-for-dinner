@@ -4,6 +4,7 @@
 	import QrCode from '$lib/components/transfer/QrCode.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import SegmentedControl from '$lib/components/ui/SegmentedControl.svelte';
+	import { vibrate } from '$lib/input/vibrate';
 	import { QR_SIZES, sideOf } from '$lib/qr/sizes';
 	import { readTestText, testText } from '$lib/qr/test-text';
 
@@ -35,13 +36,13 @@
 		const result = readTestText(text);
 		if (!result) return;
 		// The owner looks at the other device, so the phone tells the hand.
-		if (!(result.name in results)) navigator.vibrate?.(80);
+		if (!(result.name in results)) vibrate(80);
 		results[result.name] = result.correct;
 	}
 </script>
 
 <PageHeader title="Code test">
-	<a class="button" href={resolve('/data')}>Data</a>
+	<a class="button" href={resolve('/settings/data')}>Data</a>
 </PageHeader>
 
 <SegmentedControl legend="This device" options={JOBS} bind:value={job} hideLegend />

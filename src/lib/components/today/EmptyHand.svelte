@@ -1,13 +1,14 @@
 <script>
 	import { resolve } from '$app/paths';
-	import { WEEK_MEALS } from '$lib/domain/week';
+	import { plural } from '$lib/util/format';
 
 	/**
 	 * The place of the cards when the hand is empty: a dashed card of the same size, so that the
 	 * screen does not jump when the first meal comes. A line tells which food to use first.
-	 * @type {{ soon?: string[] }}
+	 * @type {{ meals: number, soon?: string[] }}
+	 *   meals: the meals that the owner cooks in one week.
 	 */
-	let { soon = [] } = $props();
+	let { meals, soon = [] } = $props();
 
 	const line = $derived(
 		soon.length > 0 ? `${soon.slice(0, 2).join(' and ')} need using first.` : 'Choose what to cook.'
@@ -16,7 +17,7 @@
 
 <div class="empty-hand">
 	<div class="empty-slot empty-hand__slot">
-		<h2 class="empty-slot__name">Deal {WEEK_MEALS} meals for the week.</h2>
+		<h2 class="empty-slot__name">Deal {plural(meals, 'meal')} for the week.</h2>
 		<p class="empty-hand__line">{line}</p>
 		<a class="button button--strong button--wide" href={resolve('/menu')}>Build the menu</a>
 	</div>

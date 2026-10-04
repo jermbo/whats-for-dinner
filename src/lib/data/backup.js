@@ -4,6 +4,7 @@ import { recipeShape, sessionShape } from '$lib/db/shape';
 import { newId, now } from '$lib/util/ids';
 import { mergeRecipes } from './merge';
 import { photoFromText, photoToText } from './photo-storage';
+import { planningPreferences, replacePlanningPreferences } from './preferences';
 
 /**
  * The JSON format. It is the contract between devices now, and with a server later.
@@ -18,7 +19,8 @@ const FORMAT = 'meal-planner';
 // Version 2: a product has an ID and a photo, and the file has photos, trips, and purchases.
 // Version 3: the steps of a recipe are a list, a recipe file has photos, and a cook session
 // has the facts of Cook mode.
-const VERSION = 3;
+// Version 4: a full backup has the planning preferences.
+const VERSION = 4;
 
 const TABLES = /** @type {const} */ ([
 	'ingredients',
@@ -56,6 +58,8 @@ export async function exportAll() {
 	for (const name of TABLES) data[name] = await db.table(name).toArray();
 	// A photo is a block of bytes. JSON can contain only text.
 	data.photos = await Promise.all(data.photos.map(photoToText));
+	// The preferences of this device stay on the device.
+	data.preferences = await planningPreferences();
 	await setMeta('lastBackupAt', now());
 	return envelope('all', data);
 }
@@ -118,6 +122,8 @@ async function replaceAll(backup) {
 			await db.table(name).clear();
 			await db.table(name).bulkPut(data[name] ?? []);
 		}
+		// A file from before version 4 has no preferences: those of this device stay.
+		if (data.preferences) await replacePlanningPreferences(data.preferences);
 	});
 	return 'The full backup replaced all data on this device.';
 }

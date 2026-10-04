@@ -1,6 +1,7 @@
 import { flushSync } from 'svelte';
-import { prefersReducedMotion } from 'svelte/motion';
 import { Draggable, gsap } from '$lib/motion/gsap';
+import { lessMotion } from '$lib/motion/less-motion.svelte';
+import { vibrate } from './vibrate';
 
 /** The time of each move of a row, in seconds. */
 const MOVE_S = 0.22;
@@ -23,7 +24,7 @@ const MOVE_S = 0.22;
  * The time of a move. A person who asks for reduced motion sees only the result.
  * @param {number} seconds
  */
-const time = (seconds) => (prefersReducedMotion.current ? 0 : seconds);
+const time = (seconds) => (lessMotion.current ? 0 : seconds);
 
 /** True while a drop changes the order of the list. See "isDropping". */
 let dropping = false;
@@ -133,7 +134,7 @@ export function dragSort({ count, onsort, handle = '[data-handle]' }) {
 				if (place === target) return;
 				target = place;
 				open();
-				navigator.vibrate?.(5);
+				vibrate(5);
 			},
 			onDragEnd() {
 				if (from < 0) return;

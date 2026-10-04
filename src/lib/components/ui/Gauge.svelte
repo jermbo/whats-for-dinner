@@ -1,8 +1,10 @@
 <script>
 	import { onMount, untrack } from 'svelte';
 	import { cubicInOut } from 'svelte/easing';
-	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { levelDrag } from '$lib/input/level-drag';
+	import { vibrate } from '$lib/input/vibrate';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { pop } from '$lib/motion/transitions';
 	import Icon from './Icon.svelte';
 
@@ -37,7 +39,7 @@
 	let sliding = $state(false);
 
 	const pour = new Tween(untrack(() => from ?? scale.value));
-	let pouring = $state(untrack(() => from !== undefined && !prefersReducedMotion.current));
+	let pouring = $state(untrack(() => from !== undefined && !lessMotion.current));
 
 	const shown = $derived(draft ?? (pouring ? pour.current : scale.value));
 	const level = $derived(scale.toFraction(shown));
@@ -64,7 +66,7 @@
 		if (value === shown) return;
 		draft = value;
 		// A small tick for each stop, on the devices that can do it.
-		navigator.vibrate?.(5);
+		vibrate(5);
 	}
 
 	/** @param {number} value */

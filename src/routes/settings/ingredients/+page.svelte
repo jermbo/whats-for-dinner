@@ -1,4 +1,5 @@
 <script>
+	import { resolve } from '$app/paths';
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { TRACKING, labelOf } from '$lib/domain/options';
@@ -14,6 +15,7 @@
 </script>
 
 <PageHeader title="Ingredients">
+	<a class="button" href={resolve('/settings')}>Settings</a>
 	<button class="button button--primary" type="button" onclick={() => dialog?.open()}>
 		New ingredient
 	</button>

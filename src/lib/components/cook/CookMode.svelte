@@ -12,6 +12,7 @@
 	import { unlockSound } from '$lib/sound/chime';
 	import { useClock } from '$lib/state/clock.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { usePreferences } from '$lib/state/preferences.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { useTimerBell } from '$lib/state/timer-bell.svelte';
 	import CookFinishedCard from './CookFinishedCard.svelte';
@@ -41,6 +42,7 @@
 	const uid = $props.id();
 
 	const kitchen = useKitchen();
+	const preferences = usePreferences();
 	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
 	const clock = useClock();
 
@@ -73,7 +75,8 @@
 		if (dialog && !dialog.open) dialog.showModal();
 	});
 
-	onMount(() => keepScreenOn());
+	// The effect gives back the function that lets the screen turn off again.
+	$effect(() => (preferences.values.screenOn ? keepScreenOn() : undefined));
 
 	/**
 	 * The database needs a moment to give the cook session. The message "not on this device"

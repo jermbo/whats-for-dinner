@@ -17,7 +17,7 @@ Five screens are for a day in the kitchen: Today, Menu, Shop, Pantry, and Recipe
 
 An app often puts such tasks in a list with the name "More". That name tells you nothing. You must open the list to learn what is in it, and each new page that has no home goes there.
 
-## The answer: one screen with three parts
+## The answer: one place with three parts
 
 | Part        | What you do there                                                                 |
 | ----------- | --------------------------------------------------------------------------------- |
@@ -28,6 +28,8 @@ An app often puts such tasks in a list with the name "More". That name tells you
 - A [preference](preferences.md) is a rule that has a value, and the value is yours.
 - The forms of a recipe and of the pantry can make a new [ingredient](../shopping/ingredient-and-product.md). Only this part can change one that exists.
 - The phone has the only copy of your kitchen, so the [backup](../shopping/backup.md) must be easy to find.
+
+The Settings screen shows the preferences, because they are short. Ingredients and Data are each a page of their own, and the two buttons at the top of the screen open them.
 
 The three parts have one thing in common: they set the app up, and then you go back to the kitchen.
 

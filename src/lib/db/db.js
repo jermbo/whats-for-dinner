@@ -68,3 +68,8 @@ db.version(5)
 				Object.assign(session, sessionShape(session));
 			});
 	});
+
+// The preferences that the owner changed. See docs/settings/how-a-preference-works.md.
+db.version(6).stores({
+	preferences: 'key'
+});

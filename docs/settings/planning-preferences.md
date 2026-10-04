@@ -40,7 +40,7 @@ In the pantry check, the app asks you only about the food that it is not sure ab
 
 ## The app proposes only what you plan
 
-If you plan only the dinner, a breakfast recipe is a card that you must refuse each time. With "Dinner" as the only meal type, Menu does not propose it. The recipe stays in Recipes.
+If you plan only the dinner, a breakfast recipe is a card that you must refuse each time. With "Dinner" as the only meal type, Menu does not propose it. The recipe stays in Recipes. One meal type always stays on, because Menu must have something to propose.
 
 ## An example
 

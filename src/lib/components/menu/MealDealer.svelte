@@ -1,9 +1,9 @@
 <script>
 	import { untrack } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { swipeCard } from '$lib/input/swipe-card';
 	import { gsap } from '$lib/motion/gsap';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import IdeaCard from './IdeaCard.svelte';
 
 	/** @typedef {import('$lib/domain/use-up').UseUpIdea} UseUpIdea */
@@ -57,7 +57,7 @@
 	/** The card comes in from below. */
 	function deal() {
 		if (!card) return;
-		if (prefersReducedMotion.current) {
+		if (lessMotion.current) {
 			gsap.set(card, REST);
 			return;
 		}
@@ -80,7 +80,7 @@
 	 * @param {gsap.TweenVars} to
 	 */
 	async function leave(to) {
-		if (!card || prefersReducedMotion.current) return;
+		if (!card || lessMotion.current) return;
 		await gsap.to(card, { ...to, opacity: 0, ease: 'power1.in', overwrite: true });
 	}
 

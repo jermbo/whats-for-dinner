@@ -3,6 +3,7 @@ import { getMeta, setMeta } from '$lib/db/meta';
 import { doubtOf } from '$lib/domain/doubt';
 import { groupBy } from '$lib/util/collections';
 import { now } from '$lib/util/ids';
+import { readPreferences } from './preferences';
 
 /** The note of the time of the last pantry check. */
 const CHECK_KEY = 'lastPantryCheckAt';
@@ -23,13 +24,14 @@ export function finishPantryCheck() {
  * @returns {Promise<Map<string, string>>} The item ID and the reason.
  */
 export async function findDoubts() {
-	const [pantry, ingredients, recipes, sessions, log, lastCheck] = await Promise.all([
+	const [pantry, ingredients, recipes, sessions, log, lastCheck, preferences] = await Promise.all([
 		db.pantry.toArray(),
 		db.ingredients.toArray(),
 		db.recipes.toArray(),
 		db.sessions.toArray(),
 		db.pantryLog.orderBy('at').toArray(),
-		lastPantryCheck()
+		lastPantryCheck(),
+		readPreferences()
 	]);
 
 	const since = lastCheck;
@@ -62,6 +64,7 @@ export async function findDoubts() {
 			changes: changesByIngredient.get(ingredient.id) ?? [],
 			uses: usesByIngredient.get(ingredient.id) ?? [],
 			since,
+			staleDays: preferences.doubtDays,
 			time
 		});
 		if (reason) doubts.set(item.id, reason);

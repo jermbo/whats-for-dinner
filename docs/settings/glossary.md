@@ -13,7 +13,7 @@ The screens, the code, and these pages use the same words. Each word has one mea
 
 | Word                                           | Meaning                                                                  | Example               |
 | ---------------------------------------------- | ------------------------------------------------------------------------ | --------------------- |
-| Settings                                       | The screen with three parts: preferences, ingredients, and data.         |                       |
+| Settings                                       | The place with three parts: preferences, ingredients, and data.          |                       |
 | [Preference](preferences.md)                   | A rule of the app that has a value, and you can change the value.        | Meals in a week       |
 | [Planning preference](planning-preferences.md) | A preference that changes what the app proposes. It is in a backup.      | Days before a doubt   |
 | [Device preference](device-preferences.md)     | A preference that changes how one phone behaves. It stays on that phone. | Timer sound           |

@@ -1,6 +1,5 @@
 <script>
 	import { tick, untrack } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import MealCard from '$lib/components/meal/MealCard.svelte';
 	import MealCardBack from '$lib/components/meal/MealCardBack.svelte';
 	import MealSheet from '$lib/components/meal/MealSheet.svelte';
@@ -8,6 +7,7 @@
 	import { entryName } from '$lib/domain/menu';
 	import { bottomToTop, inPileOrder, pileIds, shuffledPile, topToBottom } from '$lib/domain/pile';
 	import { throwCard } from '$lib/input/throw-card';
+	import { vibrate } from '$lib/input/vibrate';
 	import {
 		dealCard,
 		DROP_GAP_S,
@@ -18,13 +18,14 @@
 		springBack,
 		throwOut
 	} from '$lib/motion/hand';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import HandActions from './HandActions.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
-	/** The note that this device showed the hint of the hand. */
-	const HINT_KEY = 'handHintSeen';
+	/** The name of the hint of the hand. This device shows it one time. */
+	const HINT = 'hand';
 
 	/**
 	 * The meals on the menu as a pile of cards in your hand. Only the top card is in view.
@@ -91,8 +92,8 @@
 	 * @param {HTMLElement} node
 	 */
 	async function hint(node) {
-		if (cards.length < 2 || (await hintSeen(HINT_KEY)) || busy) return;
-		await markHintSeen(HINT_KEY);
+		if (cards.length < 2 || (await hintSeen(HINT)) || busy) return;
+		await markHintSeen(HINT);
 		hintCard(node);
 	}
 
@@ -103,7 +104,7 @@
 	 */
 	function deal(node, at) {
 		dealt.add(node);
-		if (prefersReducedMotion.current) {
+		if (lessMotion.current) {
 			placeCard(node, at);
 			return;
 		}
@@ -147,7 +148,7 @@
 			const node = nodes[entry.item.id];
 			if (!node) return;
 			if (!dealt.has(node)) deal(node, at);
-			else if (prefersReducedMotion.current) placeCard(node, at);
+			else if (lessMotion.current) placeCard(node, at);
 			else if (!dealing.has(node)) settleCard(node, at, drop ? (count - 1 - at) * DROP_GAP_S : 0);
 		});
 	}
@@ -174,7 +175,7 @@
 		busy = true;
 		pull = 0;
 
-		if (!prefersReducedMotion.current) await throwOut(node, direction);
+		if (!lessMotion.current) await throwOut(node, direction);
 
 		// The effect moves the card back from where it went, to its new place under the pile.
 		// With one card, the place is the same, and the card comes back to the top.
@@ -200,11 +201,11 @@
 		if (busy || cards.length < 2) return;
 		busy = true;
 		pull = 0;
-		navigator.vibrate?.([8, 40, 8]);
+		vibrate([8, 40, 8]);
 
 		const pile = shuffledPile(cards);
 
-		if (prefersReducedMotion.current) {
+		if (lessMotion.current) {
 			order = pileIds(pile);
 		} else {
 			down = true;

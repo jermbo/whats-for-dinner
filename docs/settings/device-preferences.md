@@ -13,13 +13,13 @@ A device preference changes how one phone behaves. It does not change a plan or 
 
 ## The five preferences
 
-| Preference                   | Default           | What it changes                                                            |
-| ---------------------------- | ----------------- | -------------------------------------------------------------------------- |
-| Timer sound                  | On                | The three tones at the end of a timer.                                     |
-| Vibration                    | On                | The short vibration at the end of a timer, and when a card or a row lands. |
-| Screen stays on in Cook mode | On                | The phone does not turn its screen off while you cook.                     |
-| Less motion                  | Same as the phone | Cards and pages change with no movement.                                   |
-| Show the hints again         | No value          | Each hint shows one more time.                                             |
+| Preference                   | Default  | What it changes                                                            |
+| ---------------------------- | -------- | -------------------------------------------------------------------------- |
+| Timer sound                  | On       | The three tones at the end of a timer.                                     |
+| Vibration                    | On       | The short vibration at the end of a timer, and when a card or a row lands. |
+| Screen stays on in Cook mode | On       | The phone does not turn its screen off while you cook.                     |
+| Less motion                  | Off      | Cards and pages change with no movement.                                   |
+| Show the hints again         | No value | Each hint shows one more time.                                             |
 
 ## Sound and vibration are two switches
 
@@ -33,7 +33,7 @@ In [Cook mode](../recipes/cook-mode.md) your hands are wet, so the app keeps the
 
 ## Less motion, for this app only
 
-The phone has its own setting for less motion, and the app obeys it. The default "Same as the phone" does only that. The value "On" gives you less motion in this app, while your other apps stay the same.
+The phone has its own setting for less motion, and the app always obeys it. So "Off" means "the same as the phone", and not "full motion". "On" gives you less motion in this app, while your other apps stay the same.
 
 With less motion, a card does not fly or turn. The screen shows the result immediately. No information is lost, because motion only shows a connection that the screen also tells.
 

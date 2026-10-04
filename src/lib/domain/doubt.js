@@ -7,8 +7,6 @@ import { daysInStock } from './freshness';
  * @typedef {import('$lib/types').PantryChange} PantryChange
  */
 
-/** A perishable item with no new stock for this many days gets a doubt. */
-const STALE_DAYS = 7;
 /** A 'state' item that this many meals used gets a doubt. Cooking does not change its state. */
 const MANY_MEALS = 3;
 
@@ -21,13 +19,15 @@ const MANY_MEALS = 3;
  *   changes: PantryChange[],
  *   uses: string[],
  *   since: string,
+ *   staleDays: number,
  *   time: number
  * }} facts
  *   changes: the log of this ingredient, oldest first. uses: the times of the meals that had
  *   this ingredient. since: the time of the last pantry check, or '' when there was none.
+ *   staleDays: a perishable item with no new stock for this many days gets a doubt.
  * @returns {string}
  */
-export function doubtOf({ item, ingredient, changes, uses, since, time }) {
+export function doubtOf({ item, ingredient, changes, uses, since, staleDays, time }) {
 	// The last time that a person gave the amount of this item.
 	const corrected = changes.findLast((change) => change.cause === 'corrected')?.at ?? '';
 	const looked = corrected > since ? corrected : since;
@@ -50,7 +50,7 @@ export function doubtOf({ item, ingredient, changes, uses, since, time }) {
 	const inStock = ingredient.tracking === 'state' ? item.state !== 'out' : item.quantity > 0;
 	if (ingredient.perishable && item.location !== 'freezer' && inStock) {
 		const days = daysInStock(changes, item, time);
-		if (days >= STALE_DAYS) return `Perishable. No new stock for ${days} days.`;
+		if (days >= staleDays) return `Perishable. No new stock for ${days} days.`;
 	}
 
 	return '';

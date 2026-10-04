@@ -1,6 +1,6 @@
 import { backOut, cubicOut } from 'svelte/easing';
-import { prefersReducedMotion } from 'svelte/motion';
 import { fly, scale, slide } from 'svelte/transition';
+import { lessMotion } from './less-motion.svelte';
 
 /**
  * The transitions for elements that come into the page, go out of it, or change place.
@@ -8,7 +8,7 @@ import { fly, scale, slide } from 'svelte/transition';
  */
 
 /** @param {number} duration */
-const ms = (duration) => (prefersReducedMotion.current ? 0 : duration);
+const ms = (duration) => (lessMotion.current ? 0 : duration);
 
 /**
  * A row that opens when it comes in and closes when it goes out.

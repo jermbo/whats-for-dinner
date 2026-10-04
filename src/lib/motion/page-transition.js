@@ -1,4 +1,5 @@
 import { onNavigate } from '$app/navigation';
+import { lessMotion } from './less-motion.svelte';
 
 /**
  * Makes each change of page a view transition: the old page goes out, the new page comes in,
@@ -9,7 +10,7 @@ import { onNavigate } from '$app/navigation';
 export function usePageTransitions() {
 	onNavigate((navigation) => {
 		if (!document.startViewTransition) return;
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		if (lessMotion.current) return;
 
 		return new Promise((resolve) => {
 			document.startViewTransition(async () => {

@@ -12,6 +12,7 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { addAndStartCook, cook, startCook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone } from '$lib/data/menu';
+	import { usePreferences } from '$lib/state/preferences.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { useToday } from '$lib/state/today.svelte';
@@ -21,6 +22,7 @@
 
 	const today = useToday();
 	const shopping = useShopping();
+	const preferences = usePreferences();
 
 	/** The title block of the screen. */
 	const header = $derived({
@@ -96,7 +98,7 @@
 				<CartReminder />
 			</PageHeader>
 			{#if today.ideas.length === 0}
-				<EmptyHand soon={soonNames} />
+				<EmptyHand meals={preferences.values.mealsInWeek} soon={soonNames} />
 			{/if}
 		{/if}
 

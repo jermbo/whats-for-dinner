@@ -1,12 +1,12 @@
 <script>
 	import { tick } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { resolve } from '$app/paths';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { entryName } from '$lib/domain/menu';
 	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
 	import { sideColumn } from '$lib/layout/side-column';
 	import { flipOpen, flipShut, turnToFront } from '$lib/motion/card-flip';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import MealCardBack from './MealCardBack.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
@@ -79,7 +79,7 @@
 			return;
 		}
 
-		if (prefersReducedMotion.current) dialog.showModal();
+		if (lessMotion.current) dialog.showModal();
 		else await flipOpen(from, dialog, inner);
 
 		filled = true;
@@ -90,13 +90,13 @@
 		if (moving || !dialog?.open) return;
 		moving = true;
 
-		if (card && inner && !prefersReducedMotion.current) await flipShut(card, dialog, inner);
+		if (card && inner && !lessMotion.current) await flipShut(card, dialog, inner);
 
 		// The browser gives the focus back to the button that opened the dialog.
 		dialog.close();
 		filled = false;
 
-		if (card) await turnToFront(card, prefersReducedMotion.current);
+		if (card) await turnToFront(card, lessMotion.current);
 		moving = false;
 	}
 

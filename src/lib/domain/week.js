@@ -3,32 +3,32 @@
  * @typedef {import('$lib/types').MenuItem} MenuItem
  */
 
-/** The meals that one week holds. The slots of the week are this many. */
-export const WEEK_MEALS = 5;
-
-const DAY = 24 * 60 * 60 * 1000;
-
 /**
- * The start of the week that holds a time: Monday, 00:00, in local time.
- * @param {number} nowMs
+ * The start of the week that holds a time: 00:00 of the first day of the week, in local time.
+ * @param {number} timeMs
+ * @param {number} firstDay The first day of the week, as "Date.getDay()" gives it: 0 is Sunday.
  */
-function weekStart(nowMs) {
-	const date = new Date(nowMs);
+export function weekStart(timeMs, firstDay) {
+	const date = new Date(timeMs);
 	date.setHours(0, 0, 0, 0);
-	return date.getTime() - ((date.getDay() + 6) % 7) * DAY;
+	// The date moves by days, not by hours: a day with a change of the clock has 23 or 25 hours.
+	date.setDate(date.getDate() - ((date.getDay() - firstDay + 7) % 7));
+	return date.getTime();
 }
 
 /**
  * The slots of this week: the meals that are cooked, the meals in the hand, and the slots that
- * are still open. The slots are in this sequence, and their number is "WEEK_MEALS" or more.
+ * are still open. The slots are in this sequence, and their number is "meals" or more.
  * @param {CookSession[]} cooked The cooked sessions.
  * @param {MenuItem[]} menu The meals in the hand.
  * @param {number} nowMs
+ * @param {number} meals The meals that the owner cooks in one week.
+ * @param {number} firstDay The first day of the week: see "weekStart".
  */
-export function weekPlan(cooked, menu, nowMs) {
-	const since = weekStart(nowMs);
+export function weekPlan(cooked, menu, nowMs, meals, firstDay) {
+	const since = weekStart(nowMs, firstDay);
 	const done = cooked.filter((session) => Date.parse(session.cookedAt) >= since).length;
 	const hand = menu.length;
-	const total = Math.max(WEEK_MEALS, done + hand);
+	const total = Math.max(meals, done + hand);
 	return { done, hand, open: total - done - hand, total };
 }

@@ -1,6 +1,6 @@
 <script>
-	import { prefersReducedMotion } from 'svelte/motion';
 	import MealSheet from '$lib/components/meal/MealSheet.svelte';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { pop, reorder } from '$lib/motion/transitions';
 	import MiniMealCard from './MiniMealCard.svelte';
 
@@ -33,7 +33,7 @@
 		if (before > 0 && count === before + 1) {
 			row?.scrollTo({
 				left: row.scrollWidth,
-				behavior: prefersReducedMotion.current ? 'auto' : 'smooth'
+				behavior: lessMotion.current ? 'auto' : 'smooth'
 			});
 		}
 		before = count;

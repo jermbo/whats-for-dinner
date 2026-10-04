@@ -38,6 +38,8 @@ A state module that needs the kitchen calls `useKitchen()` too. `useSoon()` give
 
 The shopping list is built on the kitchen, and the navigation shows its number on each screen. So the layout provides it in the same way: `provideShopping()`, and then `useShopping()`.
 
+The [preferences](../settings/how-a-preference-works.md) are also the same on each screen. They have `providePreferences()` and `usePreferences()`.
+
 ## An example
 
 The Today screen shows three meals. The navigation shows "Shop 4". The card of the tacos shows "7/9 in the pantry". All three need the pantry. You put the limes away: one query gives the new pantry, and the three places update from it.

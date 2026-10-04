@@ -6,13 +6,16 @@
  */
 export const RECIPE_NAME_MAX = 50;
 
-/** @returns {Recipe} */
-export function blankRecipe() {
+/**
+ * @param {number} servings The servings that a new recipe starts with.
+ * @returns {Recipe}
+ */
+export function blankRecipe(servings) {
 	return {
 		id: '',
 		name: '',
 		mealType: 'dinner',
-		servings: 2,
+		servings,
 		steps: [],
 		source: '',
 		coverPhotoId: null,

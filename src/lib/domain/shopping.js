@@ -1,6 +1,5 @@
 import { round } from '$lib/util/format';
 import { shortfall } from './availability';
-import { CATEGORIES } from './options';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -131,9 +130,10 @@ export function inCart(row, cart) {
 /**
  * The rows in groups, in the sequence of a store. The rows of a group are sorted by name.
  * @param {ListRow[]} rows
+ * @param {string[]} order The categories, in the sequence of the store of the owner.
  * @returns {Aisle[]}
  */
-export function aisles(rows) {
+export function aisles(rows, order) {
 	/** @type {Map<string, ListRow[]>} */
 	const groups = new Map();
 	for (const row of rows) {
@@ -143,7 +143,7 @@ export function aisles(rows) {
 
 	/** A category that the app does not know is last. */
 	const place = (/** @type {string} */ name) =>
-		CATEGORIES.includes(name) ? CATEGORIES.indexOf(name) : CATEGORIES.length;
+		order.includes(name) ? order.indexOf(name) : order.length;
 
 	return [...groups]
 		.map(([name, group]) => ({

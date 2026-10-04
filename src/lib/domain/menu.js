@@ -17,6 +17,17 @@ export function recipesOnMenu(menu) {
 }
 
 /**
+ * The recipes that Menu can propose: a recipe that is not on the menu, of a meal type that the
+ * owner plans. A recipe of a different type stays in Recipes.
+ * @param {Recipe[]} recipes
+ * @param {Set<string>} onMenu The IDs of the recipes that are on the menu.
+ * @param {import('$lib/types').MealType[]} mealTypes The meal types that the owner plans.
+ */
+export function recipesToPropose(recipes, onMenu, mealTypes) {
+	return recipes.filter((recipe) => !onMenu.has(recipe.id) && mealTypes.includes(recipe.mealType));
+}
+
+/**
  * A meal is ready when it has no preparation, or when the lead time is over.
  * @param {MenuItem} item
  * @param {Recipe} recipe

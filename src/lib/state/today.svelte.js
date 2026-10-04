@@ -6,6 +6,7 @@ import { useClock } from './clock.svelte';
 import { useCookHistory } from './cook-history.svelte';
 import { useKitchen } from './kitchen.svelte';
 import { live } from './live.svelte';
+import { usePreferences } from './preferences.svelte';
 import { useSoon } from './soon.svelte';
 
 /**
@@ -16,6 +17,7 @@ import { useSoon } from './soon.svelte';
 export function useToday() {
 	const kitchen = useKitchen();
 	const history = useCookHistory();
+	const preferences = usePreferences();
 	const open = live(openSessions, []);
 	// A meal becomes ready when its lead time is over, so the clock must move.
 	const clock = useClock(60_000);
@@ -38,7 +40,15 @@ export function useToday() {
 				)
 	);
 
-	const week = $derived(weekPlan(history.sessions, kitchen.menu, clock.now));
+	const week = $derived(
+		weekPlan(
+			history.sessions,
+			kitchen.menu,
+			clock.now,
+			preferences.values.mealsInWeek,
+			preferences.values.weekStartsOn
+		)
+	);
 	const facts = $derived({ hand, cooking, ideas, soon: food.items, time: clock.now });
 	const heading = $derived(todayHeading(facts));
 	const subline = $derived(todaySubline(facts));

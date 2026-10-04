@@ -110,6 +110,7 @@ dialog {
 	font-size: 0.925rem;
 }
 
+/* Less motion: the device asks for it. */
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
@@ -117,6 +118,21 @@ dialog {
 	::view-transition-group(*),
 	::view-transition-old(*),
 	::view-transition-new(*) {
+		scroll-behavior: auto !important;
+		transition: none !important;
+		animation: none !important;
+	}
+}
+
+/* Less motion: the owner asks for it in this app. See motion/less-motion.svelte.js. */
+:root[data-less-motion] {
+	&,
+	& *,
+	& *::before,
+	& *::after,
+	&::view-transition-group(*),
+	&::view-transition-old(*),
+	&::view-transition-new(*) {
 		scroll-behavior: auto !important;
 		transition: none !important;
 		animation: none !important;

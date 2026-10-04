@@ -254,6 +254,12 @@ export interface Meta {
 	value: unknown;
 }
 
+/** A preference that the owner changed. A preference with its default has no record. */
+export interface Preference {
+	key: string;
+	value: unknown;
+}
+
 export type Database = Dexie & {
 	ingredients: EntityTable<Ingredient, 'id'>;
 	recipes: EntityTable<Recipe, 'id'>;
@@ -267,4 +273,5 @@ export type Database = Dexie & {
 	pantryLog: EntityTable<PantryChange, 'id'>;
 	shopping: EntityTable<ShoppingItem, 'id'>;
 	meta: EntityTable<Meta, 'key'>;
+	preferences: EntityTable<Preference, 'key'>;
 };

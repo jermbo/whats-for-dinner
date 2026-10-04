@@ -7,11 +7,12 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
 	import { addToMenu, markPrepDone, removeFromMenu } from '$lib/data/menu';
-	import { entryName, menuEntries, recipesOnMenu } from '$lib/domain/menu';
+	import { entryName, menuEntries, recipesOnMenu, recipesToPropose } from '$lib/domain/menu';
 	import { useUpIdeas } from '$lib/domain/use-up';
 	import { useClock } from '$lib/state/clock.svelte';
 	import { useCookHistory } from '$lib/state/cook-history.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { usePreferences } from '$lib/state/preferences.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { useSoon } from '$lib/state/soon.svelte';
 	import { status } from '$lib/state/status.svelte';
@@ -21,6 +22,7 @@
 	const kitchen = useKitchen();
 	const shopping = useShopping();
 	const history = useCookHistory();
+	const preferences = usePreferences();
 	// A meal becomes ready when its lead time is over, so the clock must move.
 	const clock = useClock(60_000);
 	const food = useSoon(() => clock.now);
@@ -41,7 +43,7 @@
 	/** The recipes that can go on the menu. The best for the food to use first is at the top. */
 	const ideas = $derived(
 		useUpIdeas(
-			kitchen.recipes.filter((recipe) => !onMenu.has(recipe.id)),
+			recipesToPropose(kitchen.recipes, onMenu, preferences.values.mealTypes),
 			soon,
 			kitchen.ingredientsById,
 			kitchen.pantryByIngredient
