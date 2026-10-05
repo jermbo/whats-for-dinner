@@ -32,6 +32,8 @@
 	 */
 	let { recipe, sessions, item, onadd, oncook, onshare } = $props();
 
+	const uid = $props.id();
+
 	const kitchen = useKitchen();
 	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
 	const id = $derived(recipe.id);
@@ -108,9 +110,9 @@
 			{/if}
 		{/if}
 
-		<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
+		<section class="stack stack--tight" aria-labelledby="{uid}-ingredients">
 			<div class="cluster cluster--between">
-				<h2 id="recipe-ingredients">Ingredients</h2>
+				<h2 id="{uid}-ingredients">Ingredients</h2>
 				<PantryCount {...count} />
 			</div>
 			<RecipeIngredientList {recipe} {ingredientsById} {pantryByIngredient} />
@@ -119,8 +121,8 @@
 
 	<div class="stack">
 		{#if recipe.prepSteps.length > 0}
-			<section class="stack stack--tight" aria-labelledby="recipe-prep">
-				<h2 id="recipe-prep">Preparation</h2>
+			<section class="stack stack--tight" aria-labelledby="{uid}-prep">
+				<h2 id="{uid}-prep">Preparation</h2>
 				<ul>
 					{#each recipe.prepSteps as step, index (index)}
 						<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
@@ -130,8 +132,8 @@
 		{/if}
 
 		{#if steps.length > 0}
-			<section class="stack stack--tight" aria-labelledby="recipe-steps">
-				<h2 id="recipe-steps">Steps</h2>
+			<section class="stack stack--tight" aria-labelledby="{uid}-steps">
+				<h2 id="{uid}-steps">Steps</h2>
 				<ol class="recipe-detail__steps">
 					{#each steps as step, index (step.id)}
 						<RecipeStepRow
@@ -145,8 +147,8 @@
 			</section>
 		{/if}
 
-		<section class="stack stack--tight" aria-labelledby="recipe-history">
-			<h2 id="recipe-history">Cook history</h2>
+		<section class="stack stack--tight" aria-labelledby="{uid}-history">
+			<h2 id="{uid}-history">Cook history</h2>
 			<CookHistory sessions={cooked} {recipe} />
 		</section>
 	</div>

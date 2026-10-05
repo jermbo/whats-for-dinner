@@ -5,10 +5,12 @@
 
 	/** @type {{ lastBackup: string }} The time of the last full backup, or '' for none. */
 	let { lastBackup } = $props();
+
+	const uid = $props.id();
 </script>
 
-<section class="stack" aria-labelledby="export-title">
-	<h2 id="export-title">Export</h2>
+<section class="stack" aria-labelledby="{uid}-title">
+	<h2 id="{uid}-title">Export</h2>
 
 	<p>
 		This device has the only copy of the data.

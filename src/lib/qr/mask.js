@@ -9,7 +9,7 @@ import { writeFormat } from './grid';
 /** For each mask: is the square at column x and row y inverted? */
 const MASKS = [
 	(/** @type {number} */ x, /** @type {number} */ y) => (x + y) % 2 === 0,
-	(/** @type {number} */ x, /** @type {number} */ y) => y % 2 === 0,
+	(/** @type {number} */ _x, /** @type {number} */ y) => y % 2 === 0,
 	(/** @type {number} */ x) => x % 3 === 0,
 	(/** @type {number} */ x, /** @type {number} */ y) => (x + y) % 3 === 0,
 	(/** @type {number} */ x, /** @type {number} */ y) =>

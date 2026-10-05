@@ -37,7 +37,7 @@ function stepFor(max) {
  * @param {number} max The quantity of a full package.
  * @param {number} step
  */
-export function lowLine(ingredient, max, step) {
+function lowLine(ingredient, max, step) {
 	if (ingredient.lowAt !== undefined) return ingredient.lowAt;
 	return Math.max(step, round(Math.round((max * LOW_SHARE) / step) * step));
 }

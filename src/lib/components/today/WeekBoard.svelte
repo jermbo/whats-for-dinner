@@ -6,6 +6,8 @@
 	 */
 	let { done, hand, open, total } = $props();
 
+	const uid = $props.id();
+
 	const slots = $derived(
 		Array.from({ length: total }, (_, index) =>
 			index < done ? 'done' : index < done + hand ? 'hand' : 'open'
@@ -13,9 +15,9 @@
 	);
 </script>
 
-<section class="week" aria-labelledby="week-title">
+<section class="week" aria-labelledby="{uid}-title">
 	<div class="week__head">
-		<h2 id="week-title">This week</h2>
+		<h2 id="{uid}-title">This week</h2>
 		<p class="count" aria-hidden="true">{done}<span class="count__total">/{total}</span></p>
 	</div>
 

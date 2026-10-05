@@ -27,7 +27,7 @@ import { CATEGORIES, MEAL_TYPES } from './options';
  */
 
 /** The default of each preference: the value that the app uses until the owner changes it. */
-export const DEFAULTS = /** @type {Preferences} */ ({
+const DEFAULTS = /** @type {Preferences} */ ({
 	mealsInWeek: 5,
 	weekStartsOn: 1,
 	doubtDays: 7,

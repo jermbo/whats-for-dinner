@@ -33,6 +33,8 @@
 	 */
 	let { title, deck, selected, facts, empty, onadd, children } = $props();
 
+	const uid = $props.id();
+
 	/** The recipes that got "Not this" in this round. */
 	const skipped = new SvelteSet();
 	/** The recipe that goes on the menu now. The dealer does not show it again. */
@@ -143,9 +145,9 @@
 	};
 </script>
 
-<section class="dealer" aria-labelledby="dealer-title">
+<section class="dealer" aria-labelledby="{uid}-title">
 	<div class="cluster cluster--between">
-		<h2 id="dealer-title">{title}</h2>
+		<h2 id="{uid}-title">{title}</h2>
 		{#if current}
 			<p class="dealer__place muted">{place} of {deck.length}</p>
 		{/if}

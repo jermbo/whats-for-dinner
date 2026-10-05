@@ -14,13 +14,15 @@
 	 */
 	let { items, selected, ontoggle } = $props();
 
+	const uid = $props.id();
+
 	const planned = $derived(items.filter((item) => item.free === 0).length);
 	const done = $derived(planned === items.length);
 </script>
 
-<section class="stack stack--tight" aria-labelledby="food-plan-title">
+<section class="stack stack--tight" aria-labelledby="{uid}-title">
 	<div class="cluster cluster--between">
-		<h2 id="food-plan-title">Use first</h2>
+		<h2 id="{uid}-title">Use first</h2>
 		{#if items.length > 0}
 			<span class={['badge', done && 'badge--good']}>
 				{done ? 'All planned' : `${planned} of ${items.length} planned`}

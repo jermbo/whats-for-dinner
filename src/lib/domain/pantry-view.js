@@ -76,7 +76,7 @@ export function pantryRows(pantry, ingredientsById, time, search = '') {
  * The number of rows that are low, and the number that are out.
  * @param {PantryRow[]} rows
  */
-export function pantryCounts(rows) {
+function pantryCounts(rows) {
 	return {
 		low: rows.filter((row) => row.level === 'low').length,
 		out: rows.filter((row) => row.level === 'out').length

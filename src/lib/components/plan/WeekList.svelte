@@ -36,6 +36,8 @@
 	let { rows, loose, notes, today, entries, lastSessions, onsort, onremove, onprep, ondeal } =
 		$props();
 
+	const uid = $props.id();
+
 	/** @type {MealSheet | undefined} */
 	let sheet = $state();
 
@@ -99,8 +101,8 @@
 </ul>
 
 {#if loose.length > 0}
-	<section class="stack stack--tight" aria-labelledby="week-loose">
-		<h2 class="label" id="week-loose">With no night</h2>
+	<section class="stack stack--tight" aria-labelledby="{uid}-loose">
+		<h2 class="label" id="{uid}-loose">With no night</h2>
 		<ul class="week week--loose">
 			{#each loose as entry (entry.item.id)}
 				<li class="week-row">

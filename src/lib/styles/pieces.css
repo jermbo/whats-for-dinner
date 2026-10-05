@@ -12,21 +12,6 @@
 	text-transform: uppercase;
 }
 
-/* A rule: a line under a block. Heavy for a title, thin for a row. */
-.rule {
-	margin: 0;
-	border: 0;
-	border-block-start: var(--rule-4) solid var(--ink);
-
-	&.rule--thin {
-		border-block-start-width: var(--rule-1);
-	}
-
-	&.rule--heavy {
-		border-block-start-width: var(--rule-8);
-	}
-}
-
 /*
  * A sticker is a state flag. It sits on an edge. It has a small radius: 2.
  * The ink sticker is a state. The white sticker has a rule. The olive sticker is a fill.
@@ -92,11 +77,6 @@
 		color: var(--card);
 		background: var(--tomato);
 		border-color: var(--tomato);
-	}
-
-	&.badge--low {
-		background: var(--amber);
-		border-color: var(--amber);
 	}
 
 	/* The old name for a good state: olive. */

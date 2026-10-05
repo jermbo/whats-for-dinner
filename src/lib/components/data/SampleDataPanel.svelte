@@ -5,6 +5,8 @@
 	/** @type {{ count: number }} The number of sample records on this device. */
 	let { count } = $props();
 
+	const uid = $props.id();
+
 	const loaded = $derived(count > 0);
 
 	async function add() {
@@ -18,8 +20,8 @@
 	}
 </script>
 
-<section class="card" aria-labelledby="sample-title">
-	<h2 class="card__title" id="sample-title">Sample data</h2>
+<section class="card" aria-labelledby="{uid}-title">
+	<h2 class="card__title" id="{uid}-title">Sample data</h2>
 
 	<p>
 		Ingredients, recipes with step photos and covers, pantry items, a menu, cook history with photos

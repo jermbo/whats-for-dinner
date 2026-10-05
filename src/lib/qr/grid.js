@@ -22,7 +22,7 @@ export const bit = (value, i) => ((value >>> i) & 1) === 1;
  * @param {number} y The row.
  * @param {boolean} dark
  */
-export function setFixed(grid, x, y, dark) {
+function setFixed(grid, x, y, dark) {
 	if (x < 0 || y < 0 || x >= grid.side || y >= grid.side) return;
 	grid.dark[y * grid.side + x] = dark ? 1 : 0;
 	grid.fixed[y * grid.side + x] = 1;

@@ -22,6 +22,21 @@ export default defineConfig([
 		languageOptions: { parserOptions: {} }
 	},
 
+	// Rules that the code follows today. They are on, so that a new file follows them too.
+	{
+		rules: {
+			eqeqeq: 'error',
+			'no-var': 'error',
+			// Only an error that the owner cannot see on the screen goes to the console.
+			'no-console': ['error', { allow: ['error'] }]
+		}
+	},
+	{
+		// A button with no type sends the form that it is in.
+		files: ['**/*.svelte'],
+		rules: { 'svelte/button-has-type': 'error' }
+	},
+
 	// The layers: a file imports only from its own layer or from a layer below it.
 	// See docs/code/layers.md.
 	layer('src/lib/domain/**', ['db', 'data', 'state', 'components'], ['$app/*', 'dexie', 'svelte']),

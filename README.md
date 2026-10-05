@@ -33,13 +33,14 @@ npm run dev
 
 The app opens at `http://localhost:5123`. The "More" screen can load sample data.
 
-| Command          | What it does                         |
-| ---------------- | ------------------------------------ |
-| `npm run dev`    | Starts the development server        |
-| `npm run build`  | Makes the static files in `build/`   |
-| `npm run check`  | Checks the types                     |
-| `npm run lint`   | Checks the format and the lint rules |
-| `npm run format` | Formats all files                    |
+| Command          | What it does                                   |
+| ---------------- | ---------------------------------------------- |
+| `npm run dev`    | Starts the development server                  |
+| `npm run build`  | Makes the static files in `build/`             |
+| `npm run check`  | Checks the types                               |
+| `npm run lint`   | Checks the format and the lint rules           |
+| `npm run format` | Formats all files                              |
+| `npm run verify` | Runs `check`, `lint`, and `build`, in sequence |
 
 ## Documentation
 

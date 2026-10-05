@@ -13,8 +13,6 @@
 	import { appear, reorder, shrink } from '$lib/motion/transitions';
 	import { useUndo } from '$lib/state/undo.svelte';
 
-	/** @typedef {Event & { currentTarget: HTMLTextAreaElement }} FieldEvent */
-
 	/**
 	 * The steps of the recipe form, as a list that you type like a note. The list ends with an
 	 * empty row with a plus sign: the place for the next step. Enter also makes the next step.

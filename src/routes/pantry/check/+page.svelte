@@ -41,6 +41,8 @@
 		status.say('The pantry check is complete.');
 		finished = true;
 	}
+
+	const uid = $props.id();
 </script>
 
 <PageHeader title="Pantry check">
@@ -50,9 +52,9 @@
 </PageHeader>
 
 {#if finished}
-	<section class="stack" aria-labelledby="check-done">
+	<section class="stack" aria-labelledby="{uid}-done">
 		<p><span class="stamp">Checked</span></p>
-		<h2 id="check-done">The pantry is correct</h2>
+		<h2 id="{uid}-done">The pantry is correct</h2>
 		<p>{changed.size === 0 ? 'No item changed.' : `${plural(changed.size, 'item')} changed.`}</p>
 		<div class="cluster">
 			<a class="button button--primary" href={resolve('/menu')}>Plan the menu</a>
@@ -81,8 +83,8 @@
 		</div>
 
 		{#if doubtful.length > 0}
-			<section class="stack stack--tight" aria-labelledby="check-doubts">
-				<h2 class="section-title" id="check-doubts">Look at these</h2>
+			<section class="stack stack--tight" aria-labelledby="{uid}-doubts">
+				<h2 class="section-title" id="{uid}-doubts">Look at these</h2>
 				<ul class="gauges">
 					{#each doubtful as row (row.item.id)}
 						<PantryGauge

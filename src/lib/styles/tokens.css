@@ -86,8 +86,7 @@
 	--tap: 3rem;
 	/* The height of the main button. */
 	--button-height: 3.125rem;
-	/* A chip is 32 high. Its hit area is 44 high. */
-	--chip-height: 2rem;
+	/* The hit area of a chip is 44 high. */
 	--chip-hit: 2.75rem;
 	/* A gauge is 14 high. */
 	--gauge-height: 0.875rem;

@@ -11,11 +11,13 @@
 	 */
 	let { items } = $props();
 
+	const uid = $props.id();
+
 	const shown = $derived(items.filter((item) => item.free > 0).slice(0, MAX));
 </script>
 
-<section class="soon-list" aria-labelledby="soon-title">
-	<h2 id="soon-title">Use soon</h2>
+<section class="soon-list" aria-labelledby="{uid}-title">
+	<h2 id="{uid}-title">Use soon</h2>
 
 	{#if shown.length > 0}
 		<ul class="soon-list__rows">

@@ -10,6 +10,8 @@
 	 */
 	let { names } = $props();
 
+	const uid = $props.id();
+
 	const sentence = $derived.by(() => {
 		const first = names.slice(0, NAMES - 1);
 		const rest = names.length - first.length;
@@ -18,9 +20,9 @@
 	});
 </script>
 
-<section class="glance" aria-labelledby="glance-title">
+<section class="glance" aria-labelledby="{uid}-title">
 	<div class="glance__head">
-		<h2 id="glance-title">Shop</h2>
+		<h2 id="{uid}-title">Shop</h2>
 		<p class="count">{names.length}</p>
 	</div>
 

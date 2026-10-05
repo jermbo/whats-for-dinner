@@ -96,7 +96,7 @@ export function setQuantity(ingredientId, quantity, cause) {
  * @param {Cause} cause
  * @param {StorageLocation} [location]
  */
-export function setState(ingredientId, state, cause, location = 'pantry') {
+function setState(ingredientId, state, cause, location = 'pantry') {
 	return db.transaction('rw', db.pantry, db.pantryLog, async () => {
 		const item = (await find(ingredientId)) ?? (await create(ingredientId, location));
 		await db.pantry.update(item.id, { state, updatedAt: now() });
