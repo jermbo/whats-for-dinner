@@ -50,6 +50,8 @@ The app is a prototype, so its data has no value yet. A step that changes the da
 
 Pantry steps 1, 2, and 6 are built: the low line, the counts, "Low first", "Used up" that keeps the item, and the add card. A change of the view moves each row to its new place, and the ink fill of the view control slides. After an add, the screen moves to the new row and its gauge fills. The type check and the lint pass. The owner did not approve them on the phone yet.
 
+Cook mode step 1 is built: the "Done?" card, with the list of what leaves the pantry, "Change amounts", and "Cooked" on the card. The rows come in one after the other, and an amount pops when it changes. The type check and the lint pass. The owner did not approve it on the phone yet.
+
 No other step is started.
 
 ## How to know that the work is done

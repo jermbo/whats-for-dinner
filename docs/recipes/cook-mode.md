@@ -19,7 +19,7 @@ Cook mode is a row of cards. One card fills the screen.
 stateDiagram-v2
     state "Ingredients card" as ing
     state "Step card" as stp
-    state "Finished card" as fin
+    state "The card Done?" as fin
     [*] --> ing: You start to cook a meal
     ing --> stp: Next
     stp --> stp: Next or back
@@ -31,7 +31,7 @@ stateDiagram-v2
 
 **A step card** shows one step: its text, its [photo](step-photos.md), the ingredients that [the app found in the text](step-text.md), and a button for each [timer](timers.md). It also shows each [note](step-notes.md) that you wrote on this step before.
 
-**The finished card** asks for a [photo of the meal](finished-photo.md) and has the "Cooked" button. "Cooked" subtracts the ingredients from the pantry.
+**The last card** is olive and asks "Done?". It lists what "Cooked" takes from the pantry, for example "Rice −300 g", so you see the result before you tap. If the meal used more or less, "Change amounts" makes each amount a field. A row shows "Takes all" when the pantry has less than the amount. "Cooked" is a large button on this card. The screen after it asks for a [photo of the meal](finished-photo.md).
 
 ## How you move
 
@@ -47,11 +47,11 @@ When Cook mode starts, the app makes a [cook session](cook-session.md) and recor
 
 ## You do not have to use it
 
-For a meal that you know from memory, "Cooked" on the Today screen does the work of the finished card in one tap.
+For a meal that you know from memory, "Cooked" on the Today screen does the work of the last card in one tap, with the amounts of the recipe.
 
 ## An example
 
-You cook the chicken curry. The ingredients card shows four rows. Step 2 shows "Rice, 300 g" and a "12:00" button. On the finished card you take a photo and tap "Cooked".
+You cook the chicken curry. The ingredients card shows four rows. Step 2 shows "Rice, 300 g" and a "12:00" button. The last card shows "Rice −300 g". You used less, so you tap "Change amounts", type 250, and tap "Cooked".
 
 ## Further reading
 

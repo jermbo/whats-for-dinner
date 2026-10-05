@@ -43,7 +43,7 @@ No step changes the database.
 - The swipe and the arrow keys, which do the same as a tap on a half of the card.
 - "Not in pantry" on a row of the ingredients card.
 - The ingredients that a step uses, below its text.
-- The photo of the finished meal. It moves to the "Done?" card or to the screen after it: a decision of step 1.
+- The photo of the finished meal. It is on the screen after "Cooked", so that the "Done?" card has room for the list on a phone.
 
 ## Further reading
 

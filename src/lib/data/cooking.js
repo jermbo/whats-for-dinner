@@ -1,5 +1,6 @@
 import { db } from '$lib/db/db';
 import { blankSession, isCooking } from '$lib/domain/cook-session';
+import { cookAmounts } from '$lib/domain/cook-takes';
 import { newId, now } from '$lib/util/ids';
 import { dropFinishedPhoto } from './finished-photos';
 import { addToMenu } from './menu';
@@ -7,6 +8,7 @@ import { changeQuantity } from './pantry';
 
 /**
  * @typedef {import('$lib/types').MenuItem} MenuItem
+ * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').CookSession} CookSession
  * @typedef {import('$lib/types').Deduction} Deduction
  */
@@ -86,9 +88,11 @@ export function startCook(item) {
  * and closes the cook session of the meal. A meal with no open session gets a session that
  * has only the end time.
  * @param {MenuItem} item
+ * @param {Map<string, number>} [changes] The amounts that the owner changed on the last card
+ *   of Cook mode, by ingredient ID.
  * @returns {Promise<string>} The ID of the cook session.
  */
-export function cook(item) {
+export function cook(item, changes) {
 	return db.transaction('rw', TABLES, async () => {
 		const recipe = await db.recipes.get(item.recipeId);
 		if (!recipe) throw new Error('The recipe of this meal does not exist.');
@@ -104,15 +108,20 @@ export function cook(item) {
 		/** @type {Deduction[]} */
 		const deductions = [];
 
-		// Leftovers use no ingredients. A 'state' ingredient does not change.
-		const rows = item.kind === 'recipe' ? recipe.ingredients : [];
-		for (const row of rows) {
-			const ingredient = await db.ingredients.get(row.ingredientId);
-			if (ingredient?.tracking !== 'quantity') continue;
-			const applied = await changeQuantity(row.ingredientId, -row.quantity, 'cooked', {
+		/** @type {Map<string, Ingredient>} */
+		const ingredientsById = new Map();
+		const ids = recipe.ingredients.map((row) => row.ingredientId);
+		for (const ingredient of await db.ingredients.bulkGet(ids)) {
+			if (ingredient) ingredientsById.set(ingredient.id, ingredient);
+		}
+
+		for (const { ingredient, amount } of cookAmounts(item.kind, recipe, ingredientsById, changes)) {
+			// The owner set this amount to zero: the meal did not use the ingredient.
+			if (amount <= 0) continue;
+			const applied = await changeQuantity(ingredient.id, -amount, 'cooked', {
 				sessionId: session.id
 			});
-			if (applied !== 0) deductions.push({ ingredientId: row.ingredientId, amount: -applied });
+			if (applied !== 0) deductions.push({ ingredientId: ingredient.id, amount: -applied });
 		}
 
 		await db.menu.delete(item.id);

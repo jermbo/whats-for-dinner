@@ -145,9 +145,10 @@
 		/*
 		 * A tall screen: the page has the height of the screen, and nothing scrolls. The hand fills
 		 * the main column. Offers from the pantry go below the hand, and the page scrolls to them. The side column
-		 * goes to the top, the bottom, and the right edge of the screen.
+		 * goes to the top, the bottom, and the right edge of the screen. The same condition is in
+		 * MealHand: it tells why the screen must be this tall.
 		 */
-		@media (min-height: 36rem) {
+		@media (min-height: 52rem) {
 			.today {
 				grid-template-rows: minmax(0, 1fr);
 				block-size: calc(100dvh - 2 * var(--space-8));

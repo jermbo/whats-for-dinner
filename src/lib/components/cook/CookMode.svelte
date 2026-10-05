@@ -1,5 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { cook, visitCard } from '$lib/data/cooking';
@@ -60,6 +61,12 @@
 	let direction = $state(1);
 	/** True after "Cooked", until the next page opens. */
 	let finishing = $state(false);
+	/**
+	 * The amounts that the owner changed on the last card, by ingredient ID. They are here and
+	 * not in the card, so that they stay when the owner goes back one card.
+	 * @type {SvelteMap<string, number>}
+	 */
+	const changes = new SvelteMap();
 	const card = $derived(cards[Math.min(index, cards.length - 1)]);
 
 	const label = $derived.by(() => {
@@ -134,7 +141,7 @@
 		if (!current || finishing) return;
 		finishing = true;
 		try {
-			const sessionId = await cook(current.menuItem);
+			const sessionId = await cook(current.menuItem, changes);
 			goto(resolve('/sessions/[id]', { id: sessionId }));
 		} catch (error) {
 			finishing = false;
@@ -215,7 +222,16 @@
 								now={clock.now}
 							/>
 						{:else}
-							<CookFinishedCard session={current} />
+							<CookFinishedCard
+								{recipe}
+								session={current}
+								{ingredientsById}
+								{pantryByIngredient}
+								{changes}
+								{finishing}
+								onamount={(ingredientId, amount) => changes.set(ingredientId, amount)}
+								onfinish={finish}
+							/>
 						{/if}
 					</div>
 				{/key}
@@ -226,10 +242,8 @@
 			<CookFoot
 				first={index === 0}
 				last={card.kind === 'finished'}
-				{finishing}
 				onback={() => show(index - 1)}
 				onnext={() => show(index + 1)}
-				onfinish={finish}
 			/>
 		</div>
 	{:else if waited}
@@ -287,8 +301,13 @@
 		overflow: hidden;
 	}
 
-	/* The card scrolls up and down. A move to the side is a swipe: see input/card-sides.js. */
+	/*
+	 * The card scrolls up and down. A move to the side is a swipe: see input/card-sides.js.
+	 * It is a column, so that the last card can fill the height that is there.
+	 */
 	.cook__card {
+		display: flex;
+		flex-direction: column;
 		grid-area: 1 / 1;
 		min-block-size: 0;
 		padding: var(--space-5);

@@ -3,19 +3,11 @@
 
 	/**
 	 * The two buttons of Cook mode. They are large and in reach of the thumb. The wide one is
-	 * "Next", or "Cooked" on the last card.
-	 * @type {{
-	 *   first: boolean,
-	 *   last: boolean,
-	 *   finishing: boolean,
-	 *   onback: () => void,
-	 *   onnext: () => void,
-	 *   onfinish: () => void
-	 * }}
-	 *   first, last: the card on the screen is the first or the last one. finishing: true
-	 *   after "Cooked", until the next page opens.
+	 * "Next". The last card has its own "Cooked" button, so it gets only "Back".
+	 * @type {{ first: boolean, last: boolean, onback: () => void, onnext: () => void }}
+	 *   first, last: the card on the screen is the first or the last one.
 	 */
-	let { first, last, finishing, onback, onnext, onfinish } = $props();
+	let { first, last, onback, onnext } = $props();
 </script>
 
 <footer class="cook-foot">
@@ -23,17 +15,7 @@
 		<Icon name="back" />
 		Back
 	</button>
-	{#if last}
-		<button
-			class="button button--strong cook-foot__step cook-foot__step--main"
-			type="button"
-			disabled={finishing}
-			onclick={onfinish}
-		>
-			<Icon name="check" />
-			Cooked
-		</button>
-	{:else}
+	{#if !last}
 		<button
 			class="button button--primary cook-foot__step cook-foot__step--main"
 			type="button"

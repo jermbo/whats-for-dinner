@@ -401,20 +401,26 @@
 	 * scrolls. The pile gets the height that the title and the buttons leave, and its width
 	 * follows its height. The photo of each card takes the height that is left. The facts panel
 	 * has the same height as the pile. The same condition is in the Today page.
+	 * "Tall enough" is the title, the smallest stage, and the buttons: a screen that is less tall
+	 * keeps the pile of a fixed width, and the page scrolls.
 	 */
 	@container main (min-width: 50rem) {
-		@media (min-height: 36rem) {
+		@media (min-height: 52rem) {
 			.hand {
 				flex: 1 1 0;
-				min-block-size: 32rem;
 			}
 
-			/* The stage has a size that its content does not change: the pile reads its height. */
+			/*
+			 * The stage has a size that its content does not change: the pile reads its height.
+			 * So the stage cannot ask its cards how tall they are, and it has a smallest height: the
+			 * tallest card with the edges of the pile. Offers from the pantry below the hand take
+			 * the height that is left, and without this limit the pile gets too narrow for a card.
+			 */
 			.hand__stage {
 				container-type: size;
 				flex: 1 1 0;
 				align-items: stretch;
-				min-block-size: 0;
+				min-block-size: 32rem;
 			}
 
 			.hand__pile {
