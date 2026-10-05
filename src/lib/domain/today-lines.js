@@ -1,8 +1,9 @@
 // The lines at the top of the Today screen: a thing that the owner must do or decide tonight.
 // A line is the reminder: the phone sends no message.
-import { leadHours, needsNightBefore, prepNight, prepTask } from './menu-plan';
+import { needsNightBefore, prepNight, prepTask } from './menu-plan';
 import { nightName, nightOf } from './nights';
 import { inStock } from './pantry';
+import { leadHours } from './recipes';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient

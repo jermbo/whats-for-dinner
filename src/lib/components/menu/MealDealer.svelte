@@ -3,14 +3,11 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { swipeCard } from '$lib/input/swipe-card';
-	import { gsap } from '$lib/motion/gsap';
+	import { dealIdea, keepIdea, placeIdea, settleIdea, skipIdea } from '$lib/motion/dealer';
 	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import IdeaCard from './IdeaCard.svelte';
 
 	/** @typedef {import('$lib/domain/use-up').UseUpIdea} UseUpIdea */
-
-	/** The card in its place. */
-	const REST = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
 
 	/**
 	 * The dealer: one recipe that can go on the menu, as a card, the best first.
@@ -59,18 +56,11 @@
 		if (adding && !deck.some((idea) => idea.recipe.id === adding)) adding = '';
 	});
 
-	/** The card comes in from below. */
+	/** A person who asks for reduced motion sees only the new card. */
 	function deal() {
 		if (!card) return;
-		if (lessMotion.current) {
-			gsap.set(card, REST);
-			return;
-		}
-		gsap.fromTo(
-			card,
-			{ x: 0, y: 40, rotation: 0, scale: 0.94, opacity: 0 },
-			{ ...REST, duration: 0.45, ease: 'back.out(1.4)', overwrite: true }
-		);
+		if (lessMotion.current) placeIdea(card);
+		else dealIdea(card);
 	}
 
 	// A card comes in: the first one, the one after a card that went out, and the one after a
@@ -80,21 +70,12 @@
 		if (!busy) untrack(deal);
 	});
 
-	/**
-	 * The card goes out. A person who asks for reduced motion sees only the change.
-	 * @param {gsap.TweenVars} to
-	 */
-	async function leave(to) {
-		if (!card || lessMotion.current) return;
-		await gsap.to(card, { ...to, opacity: 0, ease: 'power1.in', overwrite: true });
-	}
-
-	/** "Not this": the card goes out to the left. */
+	/** "Not this": the card goes out, and the next idea comes. */
 	async function skip() {
 		if (busy || !current) return;
 		busy = true;
 		const { id } = current.recipe;
-		await leave({ x: -innerWidth, rotation: -18, duration: 0.25 });
+		if (card && !lessMotion.current) await skipIdea(card);
 
 		skipped.add(id);
 		note = '';
@@ -108,20 +89,14 @@
 	}
 
 	/**
-	 * "Add to the menu": the card goes up to the menu. After a swipe, it goes up from the right.
-	 * @param {boolean} [swiped]
+	 * "Keep": the card goes out, and the recipe goes on the menu.
+	 * @param {boolean} [swiped] The owner swiped the card. The button was not used.
 	 */
 	async function add(swiped = false) {
 		if (busy || !current) return;
 		busy = true;
 		const { recipe } = current;
-		await leave({
-			x: swiped ? innerWidth * 0.5 : 0,
-			y: -280,
-			rotation: swiped ? 12 : 0,
-			scale: 0.4,
-			duration: 0.35
-		});
+		if (card && !lessMotion.current) await keepIdea(card, swiped);
 
 		adding = recipe.id;
 		try {
@@ -139,9 +114,7 @@
 	const handlers = {
 		onswipe: (_node, side) => (side === 1 ? add(true) : skip()),
 		onlean: (side) => (lean = side),
-		onstay(node) {
-			gsap.to(node, { ...REST, duration: 0.6, ease: 'elastic.out(1, 0.6)', overwrite: true });
-		}
+		onstay: settleIdea
 	};
 </script>
 

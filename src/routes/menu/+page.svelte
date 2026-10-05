@@ -11,39 +11,24 @@
 	import WeekList from '$lib/components/plan/WeekList.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
 	import { addToMenu, markPrepDone, removeFromMenu } from '$lib/data/menu';
-	import { readPlan, saveNights, setNights, setTheMenu } from '$lib/data/menu-plan';
+	import { saveNights, setNights, setTheMenu } from '$lib/data/menu-plan';
 	import { haveIt } from '$lib/data/pantry';
-	import { coverage } from '$lib/domain/availability';
-	import { dealDeck, dealFacts } from '$lib/domain/deal';
-	import { entryName, menuEntries, recipesOnMenu, recipesToPropose } from '$lib/domain/menu';
+	import { dealFacts } from '$lib/domain/deal';
+	import { entryName } from '$lib/domain/menu';
 	import {
-		defaultNights,
 		fillNights,
 		hasNights,
 		moveMeal,
 		nightsFor,
 		offSentence,
-		openCount,
 		openNights,
-		planIsOver,
-		planStep,
-		weekNights,
-		weekNotes,
-		weekRows,
 		weekSentence,
-		weekSequence,
-		withNights
+		weekSequence
 	} from '$lib/domain/menu-plan';
-	import { nightOf, nightStart } from '$lib/domain/nights';
-	import { useUpIdeas } from '$lib/domain/use-up';
+	import { nightStart } from '$lib/domain/nights';
 	import { pop, rise } from '$lib/motion/transitions';
-	import { useClock } from '$lib/state/clock.svelte';
-	import { useCookHistory } from '$lib/state/cook-history.svelte';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
-	import { live } from '$lib/state/live.svelte';
-	import { usePreferences } from '$lib/state/preferences.svelte';
-	import { useShopping } from '$lib/state/shopping.svelte';
-	import { useSoon } from '$lib/state/soon.svelte';
+	import { useMenuPlan } from '$lib/state/menu-plan.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { formatDay, plural } from '$lib/util/format';
 
@@ -54,17 +39,6 @@
 	 */
 
 	const kitchen = useKitchen();
-	const shopping = useShopping();
-	const history = useCookHistory();
-	const preferences = usePreferences();
-	// A meal becomes ready when its lead time is over, so the clock must move.
-	const clock = useClock(60_000);
-	const food = useSoon(() => clock.now);
-	/** Not defined until the database gives the plan. Null: there is no plan yet. */
-	const plan = live(
-		readPlan,
-		/** @type {import('$lib/types').MenuPlan | null | undefined} */ (undefined)
-	);
 
 	/** The step on the screen. Null until the database gives the plan. */
 	let step = $state(/** @type {PlanStep | null} */ (null));
@@ -80,56 +54,14 @@
 	 */
 	let moved = $state.raw(null);
 
-	const soon = $derived(food.items);
-	const today = $derived(nightOf(clock.now));
-	const week = $derived(weekNights(clock.now));
-	const current = $derived(
-		plan.current && !planIsOver(plan.current, clock.now) ? plan.current : null
-	);
-	const planNights = $derived(current?.nights ?? []);
-
-	const entries = $derived(
-		withNights(menuEntries(kitchen.menu, kitchen.recipesById, clock.now), moved)
-	);
-	const meals = $derived(entries.filter((entry) => entry.item.kind === 'recipe'));
-	/** The nights from tonight: each one is a place for a meal. */
-	const places = $derived(openNights(planNights, clock.now));
-	const open = $derived(openCount(places, meals));
-	/** The meals that the dealer must give for the nights that the owner selects now. */
-	const toDeal = $derived(Math.max(0, openNights(nights, clock.now).length - meals.length));
-
-	/** The recipes that can go on the menu. The best for the food to use first is at the top. */
-	const ideas = $derived(
-		useUpIdeas(
-			recipesToPropose(kitchen.recipes, recipesOnMenu(kitchen.menu), preferences.values.mealTypes),
-			soon,
-			kitchen.ingredientsById,
-			kitchen.pantryByIngredient
-		)
-	);
-	const deck = $derived(dealDeck(ideas, filters, history.lastByRecipe, selected));
-
-	const sorted = $derived(weekRows(planNights, entries));
-	const notes = $derived(weekNotes(entries, soon, history.lastByRecipe));
-
-	const toBuy = $derived(shopping.needed);
-	const pantryHas = $derived(
-		coverage(
-			meals.map((entry) => entry.recipe),
-			kitchen.ingredientsById,
-			kitchen.pantryByIngredient
-		)
-	);
+	const menu = useMenuPlan({ nights: () => nights, moved: () => moved, filters, selected });
 
 	// The screen opens with the step of the plan: the nights for a new week, the dealer for a
 	// plan that is not complete, and the week for a menu that is set.
 	$effect(() => {
-		if (step !== null || plan.current === undefined) return;
-		const first = planStep(plan.current, clock.now);
-		if (first === 'nights') {
-			nights = defaultNights(plan.current, preferences.values.mealsInWeek, clock.now);
-		}
-		step = first;
+		if (step !== null || !menu.ready) return;
+		if (menu.firstStep === 'nights') nights = [...menu.usualNights];
+		step = menu.firstStep;
 	});
 
 	// The database has the nights of the drag: the week shows the database again.
@@ -139,7 +71,7 @@
 
 	// Food that the menu uses up completely can no longer be selected.
 	$effect(() => {
-		for (const item of soon) {
+		for (const item of menu.soon) {
 			if (item.free === 0) selected.delete(item.ingredient.id);
 		}
 	});
@@ -152,19 +84,19 @@
 
 	/** The first step again, with the nights of the plan. */
 	function changeNights() {
-		nights = current
-			? [...current.nights]
-			: defaultNights(plan.current, preferences.values.mealsInWeek, clock.now);
+		nights = [...(menu.plan?.nights ?? menu.usualNights)];
 		step = 'nights';
 	}
 
+	/** The meals in their sequence: the meal with the food that spoils first is first. */
+	const sequence = () => weekSequence(menu.entries, menu.soon);
+
 	/**
-	 * Until the menu is set, the app puts the meals in their sequence: the meal with the food
-	 * that spoils first gets the first night.
+	 * Until the menu is set, the app puts the meals in their sequence.
 	 * @param {string[]} free The nights from tonight.
 	 */
 	async function arrange(free) {
-		if (!current?.setAt) await setNights(nightsFor(weekSequence(entries, soon), free));
+		if (!menu.plan?.setAt) await setNights(nightsFor(sequence(), free));
 		step = 'week';
 	}
 
@@ -173,11 +105,11 @@
 	 * for each night, the week is next.
 	 */
 	async function deal() {
-		const isSet = current?.setAt ?? null;
-		const free = openNights(nights, clock.now);
+		const isSet = menu.plan?.setAt ?? null;
+		const free = openNights(nights, menu.now);
 		await saveNights(nights, isSet);
-		await setNights(isSet ? fillNights(meals, free) : nightsFor(weekSequence(entries, soon), free));
-		step = free.length > meals.length ? 'deal' : 'week';
+		await setNights(isSet ? fillNights(menu.meals, free) : nightsFor(sequence(), free));
+		step = free.length > menu.meals.length ? 'deal' : 'week';
 	}
 
 	/**
@@ -195,7 +127,7 @@
 	 * @param {number} to
 	 */
 	function sort(from, to) {
-		moved = moveMeal(sorted.rows, from, to);
+		moved = moveMeal(menu.rows, from, to);
 		setNights(moved);
 	}
 
@@ -241,14 +173,14 @@
 		<PlanHead
 			title="Which nights?"
 			step="nights"
-			sub="Week of {formatDay(nightStart(week[0]))}."
-			back={current ? 'Week' : undefined}
+			sub="Week of {formatDay(nightStart(menu.week[0]))}."
+			back={menu.plan ? 'Week' : undefined}
 			onback={() => (step = 'week')}
 		/>
 
 		<div class="stack stack--tight">
-			<NightPicker {week} bind:value={nights} />
-			<p class="muted">{offSentence(week, nights)} Tap a night to switch it.</p>
+			<NightPicker week={menu.week} bind:value={nights} />
+			<p class="muted">{offSentence(menu.week, nights)} Tap a night to switch it.</p>
 		</div>
 
 		<div class="plan__fact">
@@ -258,7 +190,7 @@
 			{/key}
 		</div>
 
-		<FoodPlan items={soon} {selected} ontoggle={toggle} />
+		<FoodPlan items={menu.soon} {selected} ontoggle={toggle} />
 
 		<button
 			class="button button--strong button--wide"
@@ -266,7 +198,7 @@
 			disabled={nights.length === 0}
 			onclick={deal}
 		>
-			{toDeal > 0 ? `Deal ${plural(toDeal, 'meal')}` : 'See your week'}
+			{menu.toDeal > 0 ? `Deal ${plural(menu.toDeal, 'meal')}` : 'See your week'}
 		</button>
 	</div>
 {:else if step === 'deal'}
@@ -276,16 +208,16 @@
 	-->
 	<div class="split" in:rise>
 		<div class="stack stack--tight">
-			<PlanHead title="Keep {places.length}" step="deal" back="Nights" onback={changeNights}>
+			<PlanHead title="Keep {menu.places.length}" step="deal" back="Nights" onback={changeNights}>
 				{#snippet aside()}
-					{@render count(places.length - open, places.length)}
+					{@render count(menu.places.length - menu.open, menu.places.length)}
 				{/snippet}
 			</PlanHead>
 
 			<MenuHand
-				{entries}
-				{open}
-				lastSessions={history.lastByRecipe}
+				entries={menu.entries}
+				open={menu.open}
+				lastSessions={menu.lastSessions}
 				onremove={remove}
 				onprep={prepared}
 			/>
@@ -298,12 +230,12 @@
 		</div>
 
 		<div class="split__side">
-			{#if open > 0}
+			{#if menu.open > 0}
 				<MealDealer
 					title="Next best meal"
-					{deck}
+					deck={menu.deck}
 					{selected}
-					facts={(recipe) => dealFacts(recipe, history.lastByRecipe.get(recipe.id))}
+					facts={(recipe) => dealFacts(recipe, menu.lastSessions.get(recipe.id))}
 					empty="No recipe passes the filters."
 					onadd={keep}
 				/>
@@ -315,10 +247,10 @@
 			{/if}
 
 			<button
-				class={['button', 'button--wide', open === 0 && 'button--strong']}
+				class={['button', 'button--wide', menu.open === 0 && 'button--strong']}
 				type="button"
-				disabled={meals.length === 0}
-				onclick={() => arrange(places)}
+				disabled={menu.meals.length === 0}
+				onclick={() => arrange(menu.places)}
 			>
 				See your week
 			</button>
@@ -330,18 +262,18 @@
 		<PlanHead
 			title="Your week"
 			step="week"
-			sub="{weekSentence(sorted.rows, soon)} Drag to swap nights."
+			sub="{weekSentence(menu.rows, menu.soon)} Drag to swap nights."
 			back="Deal"
 			onback={() => (step = 'deal')}
 		/>
 
 		<WeekList
-			rows={sorted.rows}
-			loose={sorted.loose}
-			{notes}
-			{today}
-			{entries}
-			lastSessions={history.lastByRecipe}
+			rows={menu.rows}
+			loose={menu.loose}
+			notes={menu.notes}
+			today={menu.today}
+			entries={menu.entries}
+			lastSessions={menu.lastSessions}
 			onsort={sort}
 			onremove={remove}
 			onprep={prepared}
@@ -349,7 +281,7 @@
 		/>
 
 		<p class="plan__off">
-			<span class="muted">{offSentence(week, planNights)}</span>
+			<span class="muted">{offSentence(menu.week, menu.nights)}</span>
 			<button class="button button--link" type="button" onclick={changeNights}>
 				Change the nights
 			</button>
@@ -363,22 +295,22 @@
 	<!-- Step 4: the gap between the meals and the pantry. "Set the menu" is the end of the flow. -->
 	<div class="stack plan" in:rise>
 		<PlanHead
-			title={toBuy.length > 0 ? `${toBuy.length} to buy` : 'Nothing to buy'}
+			title={menu.toBuy.length > 0 ? `${menu.toBuy.length} to buy` : 'Nothing to buy'}
 			step="buy"
 			back="Week"
 			onback={() => (step = 'week')}
 		>
 			{#snippet aside()}
-				{#if pantryHas.need > 0}
-					<p class="plan__has">Pantry has {pantryHas.have} of {pantryHas.need}</p>
+				{#if menu.pantryHas.need > 0}
+					<p class="plan__has">Pantry has {menu.pantryHas.have} of {menu.pantryHas.need}</p>
 				{/if}
 			{/snippet}
 		</PlanHead>
 
-		<BuyList rows={toBuy} onhave={have} />
+		<BuyList rows={menu.toBuy} onhave={have} />
 
 		<button class="button button--strong button--wide" type="button" onclick={setMenu}>
-			{current?.setAt ? 'Go to Today' : 'Set the menu'}
+			{menu.plan?.setAt ? 'Go to Today' : 'Set the menu'}
 		</button>
 	</div>
 {/if}

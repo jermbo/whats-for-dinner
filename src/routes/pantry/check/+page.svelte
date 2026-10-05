@@ -12,6 +12,8 @@
 	import { status } from '$lib/state/status.svelte';
 	import { formatDate, plural } from '$lib/util/format';
 
+	const uid = $props.id();
+
 	const kitchen = useKitchen();
 	const lastCheck = live(lastPantryCheck, '');
 
@@ -41,8 +43,6 @@
 		status.say('The pantry check is complete.');
 		finished = true;
 	}
-
-	const uid = $props.id();
 </script>
 
 <PageHeader title="Pantry check">

@@ -1,7 +1,7 @@
 // The plan of the week: the nights that the owner cooks, and the night of each meal.
 // A night is a proposal and not a lock: the owner can cook each meal on any day.
 import { nightAfter, nightOf, nightShort, weekdayOf } from './nights';
-import { cookMinutes } from './recipes';
+import { cookMinutes, leadHours } from './recipes';
 import { firstUse } from './use-up';
 
 /**
@@ -110,14 +110,6 @@ export function openNights(nights, time) {
 export function freeNight(plan, menu, time) {
 	const taken = new Set(menu.map((item) => item.night));
 	return openNights(plan?.nights ?? [], time).find((night) => !taken.has(night)) ?? null;
-}
-
-/**
- * The lead time of the preparation of a recipe, in hours. Zero: no preparation.
- * @param {Recipe} recipe
- */
-export function leadHours(recipe) {
-	return Math.max(0, ...recipe.prepSteps.map((step) => step.leadHours));
 }
 
 /**

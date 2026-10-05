@@ -1,11 +1,11 @@
+import { readyAfter } from './recipes';
+
 /**
  * @typedef {import('$lib/types').MenuItem} MenuItem
  * @typedef {import('$lib/types').Recipe} Recipe
  * @typedef {'ready' | 'todo' | 'waiting'} PrepState
  * @typedef {{ item: MenuItem, recipe: Recipe, state: PrepState, readyAt: number | null }} MenuEntry
  */
-
-const HOUR = 60 * 60 * 1000;
 
 /**
  * The recipes that are on the menu as a meal to cook. Leftovers do not count.
@@ -40,8 +40,7 @@ function prepStatus(item, recipe, nowMs) {
 	}
 	if (!item.prepDoneAt) return { state: 'todo', readyAt: null };
 
-	const lead = Math.max(...recipe.prepSteps.map((step) => step.leadHours));
-	const readyAt = Date.parse(item.prepDoneAt) + lead * HOUR;
+	const readyAt = readyAfter(recipe, Date.parse(item.prepDoneAt));
 	return { state: readyAt <= nowMs ? 'ready' : 'waiting', readyAt };
 }
 

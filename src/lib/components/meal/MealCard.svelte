@@ -7,6 +7,7 @@
 	import { entryName } from '$lib/domain/menu';
 	import { nightName } from '$lib/domain/nights';
 	import { hasPhoto } from '$lib/domain/recipe-photo';
+	import { leadHours, readyAfter } from '$lib/domain/recipes';
 	import { isUrgent } from '$lib/domain/use-by';
 	import { firstUse, soonText } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
@@ -15,9 +16,6 @@
 	import CardTimer from './CardTimer.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
-
-	/** One hour, in milliseconds. */
-	const HOUR = 60 * 60 * 1000;
 
 	/**
 	 * One meal on the "Today" screen, as a card. The front has the photo, the olive pack label
@@ -69,7 +67,7 @@
 	const photo = $derived(hasPhoto(entry.recipe));
 
 	const name = $derived(entryName(entry));
-	const lead = $derived(Math.max(0, ...entry.recipe.prepSteps.map((step) => step.leadHours)));
+	const lead = $derived(leadHours(entry.recipe));
 	const count = $derived(
 		pantryCount(entry.recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
 	);
@@ -80,7 +78,7 @@
 	const lede = $derived.by(() => {
 		if (entry.state !== 'todo') return '';
 		const task = entry.recipe.prepSteps[0]?.text.trim().replace(/\.$/, '') ?? 'Prepare';
-		return `${task}. Ready ${formatWhen(Date.now() + lead * HOUR)} if you start now.`;
+		return `${task}. Ready ${formatWhen(readyAfter(entry.recipe, Date.now()))} if you start now.`;
 	});
 
 	/** @type {HTMLElement | undefined} */

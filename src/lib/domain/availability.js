@@ -1,5 +1,6 @@
 /**
  * @typedef {import('$lib/types').Recipe} Recipe
+ * @typedef {import('$lib/types').MenuItem} MenuItem
  * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').PantryItem} PantryItem
  * @typedef {{ ingredient: Ingredient, need: number, have: number }} Shortage
@@ -82,4 +83,25 @@ export function coverage(recipes, ingredientsById, pantryByIngredient) {
 		need += count.need;
 	}
 	return { have, need };
+}
+
+/**
+ * The meals on the menu that have ingredients, and how many of them the pantry can make in
+ * full. A meal with no ingredients, such as leftovers, does not count.
+ * @param {MenuItem[]} menu
+ * @param {Map<string, Recipe>} recipesById
+ * @param {Map<string, Ingredient>} ingredientsById
+ * @param {Map<string, PantryItem>} pantryByIngredient
+ * @returns {{ meals: number, complete: number }}
+ */
+export function mealsInFull(menu, recipesById, ingredientsById, pantryByIngredient) {
+	let meals = 0;
+	let complete = 0;
+	for (const item of menu) {
+		const recipe = item.kind === 'recipe' ? recipesById.get(item.recipeId) : undefined;
+		if (!recipe || recipe.ingredients.length === 0) continue;
+		meals += 1;
+		if (canMake(recipe, ingredientsById, pantryByIngredient)) complete += 1;
+	}
+	return { meals, complete };
 }

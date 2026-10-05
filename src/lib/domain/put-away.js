@@ -1,4 +1,6 @@
 import { round } from '$lib/util/format';
+import { productsByIngredient } from './products';
+import { lastPrices, tripCost } from './trips';
 import { proposeWithin } from './use-by';
 
 /**
@@ -6,6 +8,7 @@ import { proposeWithin } from './use-by';
  * @typedef {import('$lib/types').Product} Product
  * @typedef {import('$lib/types').Purchase} Purchase
  * @typedef {import('$lib/types').PantryItem} PantryItem
+ * @typedef {import('$lib/types').Trip} Trip
  * @typedef {import('$lib/types').UseWithin} UseWithin
  *
  * @typedef {{
@@ -114,6 +117,81 @@ export function cartEntry({ purchase, ingredient, products, item, last, need, pr
 		(!quantity || (!product && products.length > 1));
 
 	return { ...entry, product, quantity, price, asks };
+}
+
+/**
+ * The trip that the receipt shows: the open trip. With no open trip, it is the trip that ended
+ * last.
+ * @param {Trip[]} trips
+ */
+export function receiptTrip(trips) {
+	return trips.find((trip) => !trip.completedAt) ?? trips.findLast((trip) => trip.completedAt);
+}
+
+/**
+ * The lines of the receipt of one trip, in the sequence of the taps in the store.
+ * @param {object} known
+ * @param {Trip | undefined} known.trip
+ * @param {Purchase[]} known.purchases All purchases, of this trip and of the trips before it.
+ * @param {Product[]} known.products All products.
+ * @param {Map<string, Ingredient>} known.ingredientsById
+ * @param {Map<string, PantryItem>} known.pantryByIngredient
+ * @param {import('./shopping').Need[]} known.needs What the menu needs and the pantry does not have.
+ * @returns {CartEntry[]}
+ */
+export function receiptLines({
+	trip,
+	purchases,
+	products,
+	ingredientsById,
+	pantryByIngredient,
+	needs
+}) {
+	if (!trip) return [];
+
+	const productsOf = productsByIngredient(products, purchases);
+	const last = lastPurchases(purchases);
+	const prices = lastPrices(purchases);
+	const needOf = new Map(needs.map((need) => [need.ingredient.id, need.quantity]));
+
+	return purchases
+		.filter((purchase) => purchase.tripId === trip.id)
+		.sort((a, b) => a.cartAt.localeCompare(b.cartAt))
+		.map((purchase) => {
+			const id = purchase.ingredientId ?? '';
+			return cartEntry({
+				purchase,
+				ingredient: ingredientsById.get(id) ?? null,
+				products: productsOf.get(id) ?? [],
+				item: pantryByIngredient.get(id),
+				last: last.get(id),
+				need: needOf.get(id) ?? 0,
+				prices
+			});
+		});
+}
+
+/**
+ * The next line of the receipt that is in the cart, after a given line. After the last line,
+ * the search goes on at the first line.
+ * @param {CartEntry[]} entries The lines of the receipt.
+ * @param {CartEntry} current
+ * @returns {CartEntry | undefined}
+ */
+export function nextInCart(entries, current) {
+	const at = entries.findIndex((entry) => entry.purchase.id === current.purchase.id);
+	return [...entries.slice(at + 1), ...entries.slice(0, at)].find(
+		(entry) => !entry.purchase.putAwayAt
+	);
+}
+
+/**
+ * The cost of the receipt. It has the prices that the lines show: a price that the app
+ * proposes counts too.
+ * @param {CartEntry[]} entries The lines of the receipt.
+ */
+export function receiptCost(entries) {
+	return tripCost(entries.map((entry) => ({ ...entry.purchase, price: entry.price })));
 }
 
 /**

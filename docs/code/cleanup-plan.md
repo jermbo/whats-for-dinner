@@ -2,7 +2,7 @@
 title: Cleanup plan
 summary: 'The sequence of the work that brings the code to the rules of this topic: seven steps, each one small and safe to stop after.'
 parent: README.md
-updated: 2026-10-04
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / [Code](README.md) / Cleanup plan
@@ -41,12 +41,11 @@ Step 7 is last because it is the only step that changes the look. The owner must
 
 The app has no tests, by agreement. After step 3, `lib/domain` has only pure functions. Node has a test tool of its own, so tests for those functions need no package. This is the cheapest place to start. It is not a step of this plan until the owner says so.
 
-## The state on 4 October 2026
+## The state on 5 October 2026
 
-Steps 1 to 5 are complete. Step 6 is complete for `MealHand`, `MealSheet`, and `CookMode`. These parts are open:
+Steps 1 to 5 are complete. Step 6 is complete for `MealHand`, `MealSheet`, `CookMode`, and `PutAwayCard`. These parts are open:
 
 - `StepFields` has 400 lines of styles. To divide them into a row component needs a check in the browser.
-- `PutAwayCard` is still two cards in one: the flag `amending` is in its functions.
 - Step 7, the scale for text, waits for the owner.
 
 No step had a check in a browser. The type check, the lint, and the build pass after each step.

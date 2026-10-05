@@ -1,5 +1,7 @@
 /** @typedef {import('$lib/types').Recipe} Recipe */
 
+const HOUR = 60 * 60 * 1000;
+
 /**
  * The most characters that the form accepts in the name of a recipe. A name is a title on a card
  * and on a screen, so it must stay short. A name that is longer already (an import) is not cut.
@@ -65,4 +67,22 @@ export function cookMinutes(recipe, last) {
  */
 export function isQuick(minutes) {
 	return minutes !== null && minutes <= QUICK_MINUTES;
+}
+
+/**
+ * The lead time of the preparation of a recipe, in hours. Zero: no preparation.
+ * @param {Recipe} recipe
+ */
+export function leadHours(recipe) {
+	return Math.max(0, ...recipe.prepSteps.map((step) => step.leadHours));
+}
+
+/**
+ * The time when a meal is ready: the lead time of its recipe after the preparation.
+ * @param {Recipe} recipe
+ * @param {number} doneMs The time when the preparation is done, in milliseconds.
+ * @returns {number} In milliseconds.
+ */
+export function readyAfter(recipe, doneMs) {
+	return doneMs + leadHours(recipe) * HOUR;
 }

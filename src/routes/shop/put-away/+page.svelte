@@ -10,10 +10,14 @@
 	import { allProducts } from '$lib/data/products';
 	import { amend, putAway } from '$lib/data/put-away';
 	import { allTrips } from '$lib/data/trips';
-	import { canMake } from '$lib/domain/availability';
-	import { productsByIngredient } from '$lib/domain/products';
-	import { cartEntry, lastPurchases, pantryFills, toLine } from '$lib/domain/put-away';
-	import { lastPrices, tripCost } from '$lib/domain/trips';
+	import { mealsInFull } from '$lib/domain/availability';
+	import {
+		pantryFills,
+		receiptCost,
+		receiptLines,
+		receiptTrip,
+		toLine
+	} from '$lib/domain/put-away';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
 	import { rise } from '$lib/motion/transitions';
@@ -28,39 +32,17 @@
 	const products = live(allProducts, []);
 	const trips = live(allTrips, []);
 
-	const purchases = $derived(shopping.purchases);
+	const trip = $derived(receiptTrip(trips.current));
 
-	/** The receipt is the open trip. With no open trip, it is the trip that ended last. */
-	const trip = $derived(
-		trips.current.find((entry) => !entry.completedAt) ??
-			trips.current.findLast((entry) => entry.completedAt)
-	);
-
-	const productsOf = $derived(productsByIngredient(products.current, purchases));
-	const last = $derived(lastPurchases(purchases));
-	const prices = $derived(lastPrices(purchases));
-
-	/** What the menu needs and the pantry does not have, by ingredient ID. */
-	const needs = $derived(
-		new Map(shopping.needs.map((need) => [need.ingredient.id, need.quantity]))
-	);
-
-	/** The lines of the receipt, in the sequence of the taps in the store. */
 	const entries = $derived(
-		purchases
-			.filter((purchase) => purchase.tripId === trip?.id)
-			.sort((a, b) => a.cartAt.localeCompare(b.cartAt))
-			.map((purchase) =>
-				cartEntry({
-					purchase,
-					ingredient: kitchen.ingredientsById.get(purchase.ingredientId ?? '') ?? null,
-					products: productsOf.get(purchase.ingredientId ?? '') ?? [],
-					item: kitchen.pantryByIngredient.get(purchase.ingredientId ?? ''),
-					last: last.get(purchase.ingredientId ?? ''),
-					need: needs.get(purchase.ingredientId ?? '') ?? 0,
-					prices
-				})
-			)
+		receiptLines({
+			trip,
+			purchases: shopping.purchases,
+			products: products.current,
+			ingredientsById: kitchen.ingredientsById,
+			pantryByIngredient: kitchen.pantryByIngredient,
+			needs: shopping.needs
+		})
 	);
 
 	/** The items that are in the cart. */
@@ -69,20 +51,16 @@
 	/** The food of the trip that is in the pantry now. */
 	const fills = $derived(pantryFills(entries, kitchen.pantryByIngredient));
 
-	/** The total of the receipt has the prices that the lines show. */
-	const cost = $derived(
-		tripCost(entries.map((entry) => ({ ...entry.purchase, price: entry.price })))
-	);
+	const cost = $derived(receiptCost(entries));
 
 	/** The meals on the menu that have ingredients, and those that the pantry can make in full. */
-	const meals = $derived(
-		kitchen.menu.flatMap((item) => {
-			const recipe = item.kind === 'recipe' ? kitchen.recipesById.get(item.recipeId) : undefined;
-			return recipe && recipe.ingredients.length > 0 ? [recipe] : [];
-		})
-	);
-	const complete = $derived(
-		meals.filter((recipe) => canMake(recipe, kitchen.ingredientsById, kitchen.pantryByIngredient))
+	const made = $derived(
+		mealsInFull(
+			kitchen.menu,
+			kitchen.recipesById,
+			kitchen.ingredientsById,
+			kitchen.pantryByIngredient
+		)
 	);
 
 	/** @type {PutAwayCard | undefined} */
@@ -161,10 +139,10 @@
 				<div class="stack stack--tight" in:rise>
 					<p class="put-away__count">+{fills.length} in the pantry.</p>
 
-					{#if meals.length > 0}
+					{#if made.meals > 0}
 						<p class="put-away__result">
 							The pantry has all the food for
-							<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
+							<strong>{made.complete} of {plural(made.meals, 'meal')}</strong> on the menu.
 						</p>
 					{/if}
 

@@ -6,7 +6,7 @@
 	import { pantryScale } from '$lib/domain/pantry-scale';
 	import { isCounted } from '$lib/domain/put-away';
 	import { useByBadge } from '$lib/domain/use-by';
-	import { sideColumn } from '$lib/layout/side-column';
+	import { closeLostPanel, openSheetOrPanel } from '$lib/layout/sheet-or-panel';
 	import { status } from '$lib/state/status.svelte';
 	import { formatDay, formatQuantity, formatShortDay } from '$lib/util/format';
 	import PantryItemEdit from './PantryItemEdit.svelte';
@@ -67,14 +67,7 @@
 	export function open() {
 		if (!dialog) return;
 		opened += 1;
-		if (dialog.open) return;
-		if (sideColumn(dialog)) dialog.show();
-		else dialog.showModal();
-	}
-
-	/** In a narrow window, the page has no side column: a panel has no place, and it closes. */
-	function fit() {
-		if (dialog?.open && !dialog.matches(':modal') && !sideColumn(dialog)) dialog.close();
+		if (!dialog.open) openSheetOrPanel(dialog);
 	}
 
 	// An item that is removed from the pantry has no detail.
@@ -89,7 +82,7 @@
 	}
 </script>
 
-<svelte:window onresize={fit} />
+<svelte:window onresize={() => dialog && closeLostPanel(dialog)} />
 
 <dialog class="pantry-detail" bind:this={dialog} aria-labelledby="{uid}-title">
 	{#if row && scale}

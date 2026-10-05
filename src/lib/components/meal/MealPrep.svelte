@@ -1,11 +1,10 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { readyAfter } from '$lib/domain/recipes';
 	import { useClock } from '$lib/state/clock.svelte';
 	import { formatWhen } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
-
-	const HOUR = 60 * 60 * 1000;
 
 	/**
 	 * What a meal needs before you can cook it, on the back of its card.
@@ -22,7 +21,6 @@
 	const now = $derived(clock.now);
 
 	const steps = $derived(entry.recipe.prepSteps);
-	const lead = $derived(Math.max(0, ...steps.map((step) => step.leadHours)) * HOUR);
 	const progress = $derived.by(() => {
 		if (!entry.item.prepDoneAt || !entry.readyAt) return 1;
 		const start = Date.parse(entry.item.prepDoneAt);
@@ -49,7 +47,7 @@
 	{#if entry.state === 'todo'}
 		<p class="meal-prep__when">
 			<Icon name="clock" />
-			<span>Do it now, and the meal is ready {formatWhen(now + lead)}.</span>
+			<span>Do it now, and the meal is ready {formatWhen(readyAfter(entry.recipe, now))}.</span>
 		</p>
 		<button class="button button--primary" type="button" onclick={prepare} disabled={saving}>
 			Preparation done
