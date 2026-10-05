@@ -31,7 +31,7 @@
 		doubts = await findDoubts();
 	});
 
-	const rows = $derived(pantryRows(kitchen.pantry, kitchen.ingredientsById));
+	const rows = $derived(pantryRows(kitchen.pantry, kitchen.ingredientsById, Date.now()));
 	const doubtful = $derived(rows.filter((row) => doubts?.has(row.item.id)));
 	const sure = $derived(rows.filter((row) => !doubts?.has(row.item.id)));
 	const sureGroups = $derived(groupByLocation(sure));

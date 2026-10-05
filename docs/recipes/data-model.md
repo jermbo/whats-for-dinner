@@ -2,7 +2,7 @@
 title: Data model
 summary: 'Three tables hold recipes: recipes, photos, and cook sessions. A step is not a table, but it has an ID.'
 parent: README.md
-updated: 2026-10-03
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / Data model
@@ -26,11 +26,11 @@ Read a line as a sentence: one recipe contains zero or more steps.
 
 ## Three tables
 
-| Table         | One row is                                                                     | Important fields                                                                                         |
-| ------------- | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| Recipes       | One meal that you can cook.                                                    | The name, the ingredients with their quantities, the steps, the cover, the time of the last text change. |
-| Photos        | One picture.                                                                   | The bytes, and the time when you took it.                                                                |
-| Cook sessions | One time that you cooked one recipe. See [what it remembers](cook-session.md). | The recipe, the start and the end, the finished photo, the step notes.                                   |
+| Table         | One row is                                                                     | Important fields                                                                                                      |
+| ------------- | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------- |
+| Recipes       | One meal that you can cook.                                                    | The name, the ingredients with their quantities, the steps, the minutes, the cover, the time of the last text change. |
+| Photos        | One picture.                                                                   | The bytes, and the time when you took it.                                                                             |
+| Cook sessions | One time that you cooked one recipe. See [what it remembers](cook-session.md). | The recipe, the start and the end, the finished photo, the step notes.                                                |
 
 The photos table is the same table that holds the [photos of products](../shopping/data-model.md). A photo does not know what it shows. The row that uses the photo has its ID.
 

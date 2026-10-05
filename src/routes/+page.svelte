@@ -7,18 +7,23 @@
 	import MealHand from '$lib/components/today/MealHand.svelte';
 	import PantryIdeas from '$lib/components/today/PantryIdeas.svelte';
 	import ShopGlance from '$lib/components/today/ShopGlance.svelte';
+	import TodayLines from '$lib/components/today/TodayLines.svelte';
 	import UseSoonList from '$lib/components/today/UseSoonList.svelte';
 	import WeekBoard from '$lib/components/today/WeekBoard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { addAndStartCook, cook, startCook } from '$lib/data/cooking';
 	import { addToMenu, markPrepDone } from '$lib/data/menu';
+	import { orderIn, prepareForTomorrow, startPreparation } from '$lib/data/menu-plan';
 	import { usePreferences } from '$lib/state/preferences.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { useToday } from '$lib/state/today.svelte';
 	import { todayInWords } from '$lib/util/format';
 
-	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
+	/**
+	 * @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry
+	 * @typedef {import('$lib/domain/today-lines').TodayLine} TodayLine
+	 */
 
 	const today = useToday();
 	const shopping = useShopping();
@@ -58,6 +63,23 @@
 		status.say(`Preparation is done for ${entry.recipe.name}.`);
 	}
 
+	/** @param {TodayLine} line */
+	async function started({ entry, frozen }) {
+		await startPreparation(entry.item, frozen);
+		status.say(`Preparation is done for ${entry.recipe.name}.`);
+	}
+
+	/** @param {TodayLine} line */
+	async function forTomorrow({ entry, frozen }) {
+		await prepareForTomorrow(entry.item, frozen);
+		status.say(`${entry.recipe.name} is the meal of tomorrow.`);
+	}
+
+	async function ordered() {
+		await orderIn();
+		status.say('Each meal moved one night.');
+	}
+
 	/** @param {import('$lib/types').Recipe} recipe */
 	async function add(recipe) {
 		await addToMenu(recipe.id);
@@ -71,6 +93,10 @@
 	}
 </script>
 
+{#snippet lines()}
+	<TodayLines lines={today.lines} ondone={started} ontomorrow={forTomorrow} onorder={ordered} />
+{/snippet}
+
 <!-- The hand is the main column. The plan of the week and of the food is the side column. -->
 <div class="split split--loose today">
 	<div class="today__main">
@@ -80,6 +106,7 @@
 				lastSessions={today.lastSessions}
 				soon={today.soon}
 				cooking={today.cooking}
+				toBuy={today.toBuy}
 				onstart={start}
 				oncook={cooked}
 				onprep={prepared}
@@ -91,12 +118,14 @@
 					<PageHeader {...header} aside={count}>
 						<CartReminder />
 					</PageHeader>
+					{@render lines()}
 				{/snippet}
 			</MealHand>
 		{:else}
 			<PageHeader {...header}>
 				<CartReminder />
 			</PageHeader>
+			{@render lines()}
 			{#if today.ideas.length === 0}
 				<EmptyHand meals={preferences.values.mealsInWeek} soon={soonNames} />
 			{/if}

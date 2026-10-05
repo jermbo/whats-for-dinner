@@ -1,21 +1,23 @@
 <script>
+	import { pop } from '$lib/motion/transitions';
+
 	/**
-	 * The answer to "what must I buy?" at the right of the title: the items that are low, and
-	 * the items that are out.
-	 * @type {{ low: number, out: number }}
+	 * The answer of the pantry at the right of the title: some counts, each with its word. For
+	 * example "2 low, 1 out", or "1 today". A count pops when it changes.
+	 * @type {{ parts: { count: number, label: string }[] }}
 	 */
-	let { low, out } = $props();
+	let { parts } = $props();
 </script>
 
 <p class="pantry-counts">
-	<span class={['pantry-counts__part', low === 0 && 'pantry-counts__part--none']}>
-		<span class="count">{low}</span>
-		<span class="label">low</span>
-	</span>
-	<span class={['pantry-counts__part', out === 0 && 'pantry-counts__part--none']}>
-		<span class="count">{out}</span>
-		<span class="label">out</span>
-	</span>
+	{#each parts as part (part.label)}
+		<span class={['pantry-counts__part', part.count === 0 && 'pantry-counts__part--none']} in:pop>
+			{#key part.count}
+				<span class="count pantry-counts__count" in:pop>{part.count}</span>
+			{/key}
+			<span class="label">{part.label}</span>
+		</span>
+	{/each}
 </p>
 
 <style>
@@ -29,6 +31,12 @@
 		display: flex;
 		align-items: baseline;
 		gap: var(--space-1);
+	}
+
+	/* A transform needs a box. */
+	.pantry-counts__count {
+		display: inline-block;
+		transform-origin: bottom center;
 	}
 
 	/* A zero is there, so that the title does not jump, but it does not ask for attention. */

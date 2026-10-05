@@ -65,3 +65,21 @@ export function canMake(recipe, ingredientsById, pantryByIngredient) {
 		missingFor(recipe, ingredientsById, pantryByIngredient).length === 0
 	);
 }
+
+/**
+ * How many ingredients of some recipes the pantry has, of how many the recipes need.
+ * @param {Recipe[]} recipes
+ * @param {Map<string, Ingredient>} ingredientsById
+ * @param {Map<string, PantryItem>} pantryByIngredient
+ * @returns {{ have: number, need: number }}
+ */
+export function coverage(recipes, ingredientsById, pantryByIngredient) {
+	let have = 0;
+	let need = 0;
+	for (const recipe of recipes) {
+		const count = pantryCount(recipe, ingredientsById, pantryByIngredient);
+		have += count.have;
+		need += count.need;
+	}
+	return { have, need };
+}

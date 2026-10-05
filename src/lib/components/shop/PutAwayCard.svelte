@@ -1,7 +1,9 @@
 <script>
 	import { tick } from 'svelte';
+	import ChoiceChips from '$lib/components/ui/ChoiceChips.svelte';
 	import { correct, setProduct } from '$lib/data/cart';
 	import { isCounted } from '$lib/domain/put-away';
+	import { withinChoices } from '$lib/domain/use-by';
 	import { sideColumn } from '$lib/layout/side-column';
 	import { round } from '$lib/util/format';
 	import PackagesButton from './PackagesButton.svelte';
@@ -16,11 +18,13 @@
 
 	/**
 	 * The card of one item of the receipt: the photo of the product, the question "Which one?",
-	 * and the quantity as the largest text, with minus and plus. The main button is at the right,
-	 * as on the card of the Menu screen.
+	 * and the quantity as the largest text, with minus and plus. For food that spoils, "Use
+	 * within" proposes the usual days of the food: the answer is the use-by date in the pantry.
+	 * The main button is at the right, as on the card of the Menu screen.
 	 *
 	 * An item in the cart: "Put away" puts it into the pantry. A change on the card goes into the
-	 * record at once, so the receipt shows it after "Later" too.
+	 * record at once, so the receipt shows it after "Later" too. "Not bought" is for a wrong tap,
+	 * or for a store that had none: the item goes back on the shopping list.
 	 * An item that is put away: the card corrects it. The changes go into the record with "Save",
 	 * so that the pantry changes one time. "Cancel" makes no change.
 	 *
@@ -35,10 +39,11 @@
 	 *   entries: CartEntry[],
 	 *   onputaway: (entry: CartEntry) => void,
 	 *   onamend: (entry: CartEntry) => void,
+	 *   onnotbought: (entry: CartEntry) => void,
 	 *   onnew: (entry: CartEntry) => void
 	 * }}
 	 */
-	let { entries, onputaway, onamend, onnew } = $props();
+	let { entries, onputaway, onamend, onnotbought, onnew } = $props();
 
 	const uid = $props.id();
 
@@ -56,12 +61,18 @@
 	let newQuantity = $state(null);
 	/** @type {Product | null} */
 	let newProduct = $state(null);
+	/**
+	 * The answer to "Use within" that the owner selected on this card. Null: no change.
+	 * @type {import('$lib/types').UseWithin | null}
+	 */
+	let newWithin = $state(null);
 
 	const entry = $derived(entries.find((item) => item.purchase.id === openId));
 	const product = $derived(newProduct ?? entry?.product);
 	const quantity = $derived(newQuantity ?? entry?.quantity ?? 0);
 	const counted = $derived(isCounted(entry?.ingredient));
 	const unit = $derived(entry?.ingredient?.unit);
+	const within = $derived(newWithin ?? entry?.within ?? null);
 
 	/** True when the card is open as a panel in the side column. */
 	const isPanel = () => Boolean(dialog?.open && !dialog.matches(':modal'));
@@ -76,6 +87,7 @@
 		amending = entries.some((item) => item.purchase.id === purchaseId && item.purchase.putAwayAt);
 		newQuantity = null;
 		newProduct = null;
+		newWithin = null;
 
 		if (isPanel() && sideColumn(dialog)) {
 			// The panel stays open. Only its item changes.
@@ -132,6 +144,26 @@
 	}
 
 	/**
+	 * @param {CartEntry} item
+	 * @param {string} value A number of days, or "freezer".
+	 */
+	function setWithin(item, value) {
+		newWithin = value === 'freezer' ? value : Number(value);
+		correct(item.purchase, { within: newWithin });
+	}
+
+	/**
+	 * The item goes back on the list. The panel goes on to the next item in the cart.
+	 * @param {CartEntry} item
+	 */
+	function notBought(item) {
+		const next = isPanel() ? nextWaiting(item) : undefined;
+		onnotbought(item);
+		if (next) open(next.purchase.id);
+		else dialog?.close();
+	}
+
+	/**
 	 * A new product goes into the record when it is made, also for an item that is put away.
 	 * @param {CartEntry} item
 	 */
@@ -162,6 +194,7 @@
 		const values = {
 			...entry,
 			product,
+			within,
 			quantity: counted ? Number(data.get('quantity')) || 0 : null,
 			price: price && Number.isFinite(Number(price)) ? Number(price) : null
 		};
@@ -221,6 +254,14 @@
 					/>
 				{/if}
 
+				{#if ingredient && within !== null && !amending}
+					<ChoiceChips
+						legend="Use within"
+						options={withinChoices(ingredient)}
+						bind:value={() => String(within), (value) => setWithin(item, value)}
+					/>
+				{/if}
+
 				<div class="item-card__price">
 					<PackagesButton {purchase} />
 					<div class="field">
@@ -250,6 +291,16 @@
 						{amending ? 'Save' : 'Put away'}
 					</button>
 				</div>
+
+				{#if !amending}
+					<button
+						class="button button--link item-card__not"
+						type="button"
+						onclick={() => notBought(item)}
+					>
+						Not bought
+					</button>
+				{/if}
 			</form>
 		{/key}
 	{/if}
@@ -297,6 +348,12 @@
 		& .field {
 			flex: 1;
 		}
+	}
+
+	/* A quiet action below the two buttons: it is not the usual answer. */
+	.item-card__not {
+		align-self: center;
+		margin-block-start: calc(-1 * var(--space-2));
 	}
 
 	/* The main button is at the right, and it is the wide one. */

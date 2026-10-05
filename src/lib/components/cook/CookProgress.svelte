@@ -1,7 +1,7 @@
 <script>
 	/**
-	 * One mark for each card of Cook mode. The marks of the cards before this one are ink.
-	 * This one is olive.
+	 * One segment for each card of Cook mode, on the dark surround. The segments of the cards
+	 * before this one are white. This one is olive.
 	 * @type {{ keys: string[], index: number }}
 	 *   keys: the key of each card. index: the place of the card on the screen.
 	 */
@@ -23,23 +23,26 @@
 <style>
 	.cook-progress {
 		display: flex;
+		flex: 1;
 		gap: var(--space-1);
-		padding-inline: var(--space-5);
 	}
 
 	.cook-progress__mark {
 		flex: 1;
-		block-size: 0.5rem;
-		background: var(--paper-deep);
-		transition: background-color 0.3s;
+		block-size: 0.375rem;
+		background: var(--ink-soft);
+		transition:
+			background-color 0.3s,
+			scale 0.35s var(--ease-spring);
 	}
 
 	.cook-progress__mark--done {
-		background: var(--ink);
+		background: var(--card);
 	}
 
+	/* The card on the screen: olive, and a little higher. */
 	.cook-progress__mark--current {
 		background: var(--olive);
-		box-shadow: inset 0 0 0 2px var(--ink);
+		scale: 1 1.5;
 	}
 </style>

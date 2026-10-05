@@ -24,7 +24,12 @@ export function recipeShape(recipe) {
 					selectedPhotoId: step.selectedPhotoId ?? null
 				}));
 
-	return /** @type {Recipe} */ ({ ...recipe, steps, coverPhotoId: recipe.coverPhotoId ?? null });
+	return /** @type {Recipe} */ ({
+		...recipe,
+		steps,
+		minutes: recipe.minutes ?? null,
+		coverPhotoId: recipe.coverPhotoId ?? null
+	});
 }
 
 /**

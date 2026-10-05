@@ -42,6 +42,7 @@
 	 *   lastSessions: Map<string, import('$lib/types').CookSession>,
 	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   cooking?: Map<string, import('$lib/types').CookSession>,
+	 *   toBuy?: Map<string, number>,
 	 *   head?: import('svelte').Snippet<[{ number: number, total: number, onnext: () => void }]>,
 	 *   onstart: (entry: MenuEntry) => void,
 	 *   oncook: (entry: MenuEntry) => void,
@@ -49,9 +50,10 @@
 	 * }}
 	 *   soon: the food to use first, for the line "In the pantry" of each card.
 	 *   cooking: the open cook sessions of the meals that the owner is cooking, by menu item ID.
+	 *   toBuy: the items that each meal needs and that are not in the cart, by menu item ID.
 	 *   head: the top of the screen. It gets the place of the top card, and the action "Next".
 	 */
-	let { entries, lastSessions, soon, cooking, head, onstart, oncook, onprep } = $props();
+	let { entries, lastSessions, soon, cooking, toBuy, head, onstart, oncook, onprep } = $props();
 
 	/**
 	 * The IDs from the top of the pile down.
@@ -257,6 +259,7 @@
 						{entry}
 						{soon}
 						session={cooking?.get(entry.item.id)}
+						toBuy={toBuy?.get(entry.item.id)}
 						facedown={down}
 						onturn={(card) => sheet?.open(entry.item.id, card)}
 						{onstart}

@@ -5,8 +5,10 @@
 	import { pantryCount } from '$lib/domain/availability';
 	import { cookProgress, stepsToCook } from '$lib/domain/cook-cards';
 	import { entryName } from '$lib/domain/menu';
+	import { nightName } from '$lib/domain/nights';
 	import { hasPhoto } from '$lib/domain/recipe-photo';
-	import { oldestUse, stockAge, URGENT_DAYS } from '$lib/domain/use-up';
+	import { isUrgent } from '$lib/domain/use-by';
+	import { firstUse, soonText } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { formatWhen } from '$lib/util/format';
@@ -32,18 +34,32 @@
 	 * of its steps. Its main action is "Continue".
 	 * A recipe with steps has two actions. "Cook" opens Cook mode with "onstart".
 	 * "Cooked" is the one-tap path for a meal that the owner knows from memory.
+	 * A ready meal shows its night on the sticker: "Tonight", "Tomorrow", or the day.
+	 * A ready meal that has items to buy has "Go shopping" as its main action.
 	 * @type {{
 	 *   entry: MenuEntry,
 	 *   soon?: import('$lib/domain/use-up').SoonItem[],
 	 *   session?: import('$lib/types').CookSession,
+	 *   toBuy?: number,
 	 *   facedown?: boolean,
 	 *   onturn?: (card: HTMLElement) => void,
 	 *   onstart?: (entry: MenuEntry) => void,
 	 *   oncook: (entry: MenuEntry) => void,
 	 *   onprep?: (entry: MenuEntry) => unknown
 	 * }}
+	 *   toBuy: the items that the meal needs and that are not in the cart.
 	 */
-	let { entry, soon = [], session, facedown = false, onturn, onstart, oncook, onprep } = $props();
+	let {
+		entry,
+		soon = [],
+		session,
+		toBuy = 0,
+		facedown = false,
+		onturn,
+		onstart,
+		oncook,
+		onprep
+	} = $props();
 
 	const kitchen = useKitchen();
 
@@ -57,7 +73,7 @@
 	const count = $derived(
 		pantryCount(entry.recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
 	);
-	const oldest = $derived(oldestUse(entry.recipe, soon));
+	const first = $derived(firstUse(entry.recipe, soon));
 	const progress = $derived(session ? cookProgress(entry.recipe, session) : null);
 
 	/** What a meal that needs preparation says, for a card with no photo. */
@@ -115,7 +131,13 @@
 						Ready {formatWhen(entry.readyAt)}
 					</span>
 				{:else}
-					<span class="sticker">{entry.item.kind === 'leftover' ? 'Leftovers' : 'Ready'}</span>
+					<span class="sticker">
+						{#if entry.item.kind === 'leftover'}
+							Leftovers
+						{:else}
+							{entry.item.night ? nightName(entry.item.night, Date.now()) : 'Ready'}
+						{/if}
+					</span>
 				{/if}
 			</p>
 
@@ -163,9 +185,9 @@
 				<div class="pack__line">
 					<p>
 						<span class="label">In the pantry</span>
-						{#if oldest}
-							<span class={['pack__sub', oldest.days >= URGENT_DAYS && 'pack__sub--urgent']}>
-								{oldest.ingredient.name}: {stockAge(oldest.days).toLowerCase()}
+						{#if first}
+							<span class={['pack__sub', isUrgent(first.left) && 'pack__sub--urgent']}>
+								{first.ingredient.name}: {soonText(first).toLowerCase()}
 							</span>
 						{:else}
 							<span class="pack__sub">
@@ -214,6 +236,17 @@
 							Details <span class="visually-hidden">: {name}</span>
 						</button>
 					{/if}
+				{:else if toBuy > 0 && entry.state === 'ready'}
+					<a class="button button--strong pack__main" href={resolve('/shop')}>
+						Go shopping <span class="visually-hidden">: {toBuy} to buy for {name}</span>
+					</a>
+					<button
+						class="button"
+						type="button"
+						onclick={() => (onstart && hasSteps ? onstart(entry) : oncook(entry))}
+					>
+						{onstart && hasSteps ? 'Cook' : 'Cooked'} <span class="visually-hidden">: {name}</span>
+					</button>
 				{:else if onstart && hasSteps}
 					<button
 						class={['button', 'pack__main', entry.state === 'ready' && 'button--strong']}

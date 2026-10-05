@@ -14,8 +14,9 @@
 
 	/**
 	 * A row that is also a level control. The fill of the row shows the level, and a tick shows
-	 * the low line. A tap or a slide on the row changes the level. A hidden range input gives the same control to the keyboard and to
-	 * screen readers.
+	 * the low line. A tap or a slide on the row changes the level. A hidden range input gives the
+	 * same control to the keyboard and to screen readers. A flag is a small badge at the left of
+	 * the value, such as "2 days".
 	 *
 	 * With "from", the row starts at that value and moves to the saved value after "delay"
 	 * milliseconds, so that the eye sees a change that occurred a moment ago.
@@ -23,13 +24,25 @@
 	 *   label: string,
 	 *   scale: import('$lib/types').LevelScale,
 	 *   note?: string,
+	 *   flag?: string,
+	 *   urgent?: boolean,
 	 *   done?: boolean,
 	 *   from?: number,
 	 *   delay?: number,
 	 *   onchange: (value: number) => unknown
 	 * }}
 	 */
-	let { label, scale, note = '', done = false, from, delay = 0, onchange } = $props();
+	let {
+		label,
+		scale,
+		note = '',
+		flag = '',
+		urgent = false,
+		done = false,
+		from,
+		delay = 0,
+		onchange
+	} = $props();
 
 	const uid = $props.id();
 
@@ -118,6 +131,13 @@
 		{#if note}
 			<span class="gauge__note" id="{uid}-note">{note}</span>
 		{/if}
+		{#if flag}
+			{#key flag}
+				<span class={['badge', 'gauge__flag', urgent && 'badge--urgent']} id="{uid}-flag" in:pop>
+					{flag}
+				</span>
+			{/key}
+		{/if}
 	</span>
 
 	{#if done}
@@ -146,7 +166,8 @@
 		step={scale.step}
 		value={shown}
 		aria-valuetext={text}
-		aria-describedby={note ? `${uid}-note` : undefined}
+		aria-describedby={[note && `${uid}-note`, flag && `${uid}-flag`].filter(Boolean).join(' ') ||
+			undefined}
 		oninput={(event) => (draft = event.currentTarget.valueAsNumber)}
 		onchange={(event) => save(event.currentTarget.valueAsNumber)}
 	/>
@@ -198,6 +219,12 @@
 	.gauge__note {
 		color: var(--ink-soft);
 		font-size: 0.85rem;
+	}
+
+	/* The flag is at the right edge of the text, next to the value. */
+	.gauge__flag {
+		align-self: center;
+		margin-inline-start: auto;
 	}
 
 	.gauge__done {

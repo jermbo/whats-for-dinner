@@ -12,10 +12,12 @@
 	 * @type {{
 	 *   idea: import('$lib/domain/use-up').UseUpIdea,
 	 *   selected: Set<string>,
+	 *   facts?: string,
 	 *   children?: import('svelte').Snippet
 	 * }}
+	 *   facts: a small line above the name, such as "Last 5/5 · 45 min".
 	 */
-	let { idea, selected, children } = $props();
+	let { idea, selected, facts = '', children } = $props();
 
 	const recipe = $derived(idea.recipe);
 	const photo = $derived(hasPhoto(recipe));
@@ -48,6 +50,9 @@
 		<h3 class="pack__name">
 			<a href={resolve('/recipes/[id]', { id: recipe.id })}>{recipe.name}</a>
 		</h3>
+		{#if facts}
+			<p class="label">{facts}</p>
+		{/if}
 	</div>
 
 	<div class="pack__foot">

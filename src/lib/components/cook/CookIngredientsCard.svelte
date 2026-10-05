@@ -1,12 +1,14 @@
 <script>
 	import { checkIngredient } from '$lib/data/cooking';
 	import { shortfall } from '$lib/domain/availability';
+	import { pop } from '$lib/motion/transitions';
 	import { formatQuantity } from '$lib/util/format';
 
 	/**
-	 * The first card of Cook mode: a checklist of all ingredients with their quantities. The
-	 * owner taps each one when it is on the counter, and finds what is gone before the pan is
-	 * hot. The cook session keeps the checks.
+	 * The first card of Cook mode: "Get out". It is a checklist of all ingredients with their
+	 * quantities. The owner taps each one when it is on the counter, and finds what is gone
+	 * before the pan is hot. The cook session keeps the checks.
+	 * On a wide card, the title is the left half and the list is the right half.
 	 * @type {{
 	 *   recipe: import('$lib/types').Recipe,
 	 *   session: import('$lib/types').CookSession,
@@ -15,6 +17,8 @@
 	 * }}
 	 */
 	let { recipe, session, ingredientsById, pantryByIngredient } = $props();
+
+	const uid = $props.id();
 
 	const rows = $derived(
 		recipe.ingredients.flatMap((row) => {
@@ -33,13 +37,25 @@
 		})
 	);
 
-	const left = $derived(rows.filter((row) => !row.checked).length);
+	const out = $derived(rows.filter((row) => row.checked).length);
 </script>
 
-<section class="cook-ingredients" aria-labelledby="cook-ingredients-title">
+<section class="cook-ingredients" aria-labelledby="{uid}-title">
 	<div class="cook-ingredients__head">
-		<h2 id="cook-ingredients-title">Get the ingredients</h2>
-		<p class="muted" aria-live="polite">{left === 0 ? 'All on the counter' : `${left} to get`}</p>
+		<div>
+			<p class="label">{recipe.name}</p>
+			<h2 class="cook-ingredients__title" id="{uid}-title">Get out</h2>
+		</div>
+		<p class="cook-ingredients__count" aria-live="polite">
+			<span class="count">
+				{#key out}<span class="cook-ingredients__out" in:pop>{out}</span>{/key}<span
+					class="count__total"
+					><span aria-hidden="true">/</span><span class="visually-hidden">of</span
+					>{rows.length}</span
+				>
+			</span>
+			<span class="cook-ingredients__where">on the counter</span>
+		</p>
 	</div>
 
 	<ul class="cook-ingredients__list">
@@ -47,6 +63,7 @@
 			<li>
 				<label class={['cook-ingredients__row', row.checked && 'cook-ingredients__row--checked']}>
 					<input
+						class="cook-ingredients__box"
 						type="checkbox"
 						checked={row.checked}
 						onchange={(event) =>
@@ -66,16 +83,43 @@
 <style>
 	.cook-ingredients {
 		display: flex;
+		flex: 1;
 		flex-direction: column;
-		gap: var(--space-4);
+		gap: var(--space-3);
 	}
 
 	.cook-ingredients__head {
 		display: flex;
-		flex-wrap: wrap;
-		align-items: baseline;
+		align-items: end;
 		justify-content: space-between;
-		gap: var(--space-2);
+		gap: var(--space-3);
+		padding-block-end: var(--space-3);
+		border-block-end: var(--rule-8) solid var(--ink);
+	}
+
+	.cook-ingredients__title {
+		margin-block-start: var(--space-1);
+		font-size: clamp(3.25rem, 20cqi, 5rem);
+		line-height: 0.86;
+	}
+
+	.cook-ingredients__count {
+		display: grid;
+		justify-items: end;
+		gap: var(--space-1);
+	}
+
+	/* A transform needs a box. */
+	.cook-ingredients__out {
+		display: inline-block;
+		transform-origin: bottom center;
+	}
+
+	.cook-ingredients__where {
+		font-size: 0.8125rem;
+		font-weight: 700;
+		white-space: nowrap;
+		color: var(--ink-soft);
 	}
 
 	.cook-ingredients__list {
@@ -84,7 +128,6 @@
 		margin: 0;
 		padding: 0;
 		list-style: none;
-		border-block-start: var(--rule-4) solid var(--ink);
 	}
 
 	/* The full row is the target: a knuckle is sufficient. */
@@ -92,18 +135,49 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-3);
-		min-block-size: 3.5rem;
-		padding: var(--space-2) var(--space-4);
-		font-size: 1.15rem;
-		border-block-end: var(--rule-1) solid var(--hairline);
+		min-block-size: 3.75rem;
+		padding-block: var(--space-2);
+		font-size: 1.35rem;
+		border-block-end: var(--rule-1) solid var(--ink);
 		cursor: pointer;
-		transition:
-			background-color 0.2s,
-			color 0.2s;
+		transition: color 0.25s;
 
 		&:has(:focus-visible) {
 			outline: 3px solid var(--ink);
-			outline-offset: -3px;
+			outline-offset: 2px;
+		}
+	}
+
+	/* A square box. Checked: ink, with a white check that the clip path cuts. */
+	.cook-ingredients__box {
+		position: relative;
+		flex: none;
+		inline-size: 2rem;
+		block-size: 2rem;
+		margin: 0;
+		background: var(--card);
+		border: 2px solid var(--ink);
+		border-radius: var(--radius-sticker);
+		appearance: none;
+		cursor: pointer;
+		transition: background-color 0.15s;
+
+		&:checked {
+			background: var(--ink);
+		}
+
+		&:checked::after {
+			position: absolute;
+			inset: 22%;
+			content: '';
+			background: var(--card);
+			clip-path: polygon(14% 44%, 0 65%, 44% 100%, 100% 18%, 82% 4%, 40% 66%);
+		}
+
+		/* The row shows the focus. */
+		&:focus-visible {
+			outline: none;
+			box-shadow: none;
 		}
 	}
 
@@ -113,16 +187,48 @@
 	}
 
 	.cook-ingredients__amount {
-		font-weight: 800;
-		font-variant-numeric: tabular-nums;
+		font-family: var(--font-display);
+		font-size: 1.5rem;
+		line-height: 1;
+		white-space: nowrap;
 	}
 
-	/* A row that is checked is olive: the done state. */
+	/* A row that is on the counter goes quiet: the rows to get stay ink. */
 	.cook-ingredients__row--checked {
-		background: var(--olive);
+		color: var(--hairline);
+	}
 
-		& .cook-ingredients__name {
-			text-decoration: line-through;
+	/* A wide card has two halves: the title at the left, and the list at the right. */
+	@container cook-card (min-width: 48rem) {
+		.cook-ingredients {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			gap: 0;
+		}
+
+		.cook-ingredients__head {
+			flex-direction: column;
+			align-items: start;
+			padding: var(--space-4) var(--space-8) var(--space-4) var(--space-4);
+			border-block-end: 0;
+			border-inline-end: var(--rule-4) solid var(--ink);
+		}
+
+		.cook-ingredients__title {
+			font-size: clamp(5rem, 13cqi, 11rem);
+		}
+
+		.cook-ingredients__count {
+			justify-items: start;
+
+			& .count {
+				font-size: 5rem;
+			}
+		}
+
+		.cook-ingredients__list {
+			padding: var(--space-4) var(--space-4) var(--space-4) var(--space-8);
+			overflow-y: auto;
 		}
 	}
 </style>

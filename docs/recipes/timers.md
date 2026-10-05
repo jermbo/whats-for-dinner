@@ -1,8 +1,8 @@
 ---
 title: Timers
-summary: 'A time in the text of a step is a button. A timer that runs stays in view on each card.'
+summary: 'A time in the text of a step is a large clock on its card. A timer that runs stays in view on each card.'
 parent: cook-mode.md
-updated: 2026-10-03
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Cook mode](cook-mode.md) / Timers
@@ -11,9 +11,9 @@ updated: 2026-10-03
 
 A meal often has two things on the heat at the same time. The app gives each of them a timer.
 
-## A time in the text is a button
+## A time in the text is a clock
 
-The app [finds each time in the text](step-text.md) of a step. On the step card, that time is a button in the sentence. A tap starts it, and the button then shows the time that remains.
+The app [finds each time in the text](step-text.md) of a step. On the step card, that time is a large clock below the text, with one button: "Start". You read the clock from the other side of the kitchen. While the timer runs, the clock shows the time that remains, and the button is "Stop".
 
 ## A timer stays in view
 

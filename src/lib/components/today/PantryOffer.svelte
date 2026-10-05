@@ -2,7 +2,8 @@
 	import { resolve } from '$app/paths';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import { hasPhoto } from '$lib/domain/recipe-photo';
-	import { stockAge, URGENT_DAYS } from '$lib/domain/use-up';
+	import { isUrgent } from '$lib/domain/use-by';
+	import { soonText } from '$lib/domain/use-up';
 	import { photoMorph } from '$lib/motion/photo-morph';
 
 	/**
@@ -19,8 +20,8 @@
 
 	const recipe = $derived(idea.recipe);
 	const photo = $derived(hasPhoto(recipe));
-	/** The food that the meal uses up, the oldest first. */
-	const oldest = $derived(idea.uses.toSorted((a, b) => b.days - a.days)[0]);
+	/** The food that the meal uses up, the food that spoils first. */
+	const first = $derived(idea.uses.toSorted((a, b) => a.left - b.left)[0]);
 </script>
 
 <article class={['card', 'pack', !photo && 'pack--plain']} use:photoMorph>
@@ -49,10 +50,10 @@
 		<div class="pack__line">
 			<p>
 				<span class="label">
-					{oldest ? `Uses the ${oldest.ingredient.name.toLowerCase()}` : 'In the pantry'}
+					{first ? `Uses the ${first.ingredient.name.toLowerCase()}` : 'In the pantry'}
 				</span>
-				<span class={['pack__sub', oldest && oldest.days >= URGENT_DAYS && 'pack__sub--urgent']}>
-					{oldest ? stockAge(oldest.days) : 'All ingredients are here.'}
+				<span class={['pack__sub', first && isUrgent(first.left) && 'pack__sub--urgent']}>
+					{first ? soonText(first) : 'All ingredients are here.'}
 				</span>
 			</p>
 			<p class="count">

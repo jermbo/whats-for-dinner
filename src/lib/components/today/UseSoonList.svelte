@@ -1,12 +1,12 @@
 <script>
-	import { stockAge, URGENT_DAYS } from '$lib/domain/use-up';
+	import { isUrgent, leftText } from '$lib/domain/use-by';
 
 	/** The most items that the list shows. */
 	const MAX = 4;
 
 	/**
-	 * The food to use first, as a ruled list: the name, and a badge with the age of the stock.
-	 * The oldest stock is first. Stock that is old has a tomato badge: only for "Use first".
+	 * The food to use first, as a ruled list: the name, and a badge with the days that are left.
+	 * The earliest date is first. Only "Use today" has a tomato badge.
 	 * @type {{ items: import('$lib/domain/use-up').SoonItem[] }}
 	 */
 	let { items } = $props();
@@ -22,12 +22,9 @@
 			{#each shown as soon (soon.ingredient.id)}
 				<li class="soon-list__row">
 					<span>{soon.ingredient.name}</span>
-					{#if soon.days >= URGENT_DAYS}
-						<span class="badge badge--urgent">Use first</span>
-					{:else}
-						<span class="badge">{soon.days === 0 ? 'New' : `${soon.days} d`}</span>
-					{/if}
-					<span class="visually-hidden">{stockAge(soon.days)}.</span>
+					<span class={['badge', isUrgent(soon.left) && 'badge--urgent']}>
+						{leftText(soon.left)}
+					</span>
 				</li>
 			{/each}
 		</ul>

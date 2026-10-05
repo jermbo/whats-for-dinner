@@ -3,7 +3,8 @@
 import { greeting, plural } from '$lib/util/format';
 import { canMake } from './availability';
 import { isCooking } from './cook-session';
-import { oldestUse, useUpIdeas } from './use-up';
+import { nightOf } from './nights';
+import { firstUse, useUpIdeas } from './use-up';
 
 /**
  * @typedef {import('$lib/types').CookSession} CookSession
@@ -19,10 +20,14 @@ import { oldestUse, useUpIdeas } from './use-up';
  *   cooking: Map<string, CookSession>,
  *   ideas: UseUpIdea[],
  *   soon: SoonItem[],
+ *   toBuy: number,
+ *   menuSet: boolean,
  *   time: number
  * }} TodayFacts
  *   hand: the meals of the menu, in the order of the hand. cooking: the meals that the owner
  *   is in the middle of. ideas: the offers of the pantry. soon: the food to use first.
+ *   toBuy: the items of the shopping list that are not in the cart. menuSet: the owner
+ *   completed the plan of the week.
  */
 
 const STATE_ORDER = { ready: 0, waiting: 1, todo: 2 };
@@ -42,19 +47,35 @@ export function cookingNow(open, time) {
 }
 
 /**
- * The hand: the meals that the owner cooks now, then the ready meals, then the meals that
- * wait, then the preparation to do. In one group, the meal with the oldest food is first.
+ * The place of a meal in the hand by its night: a night of tonight or before is 0, a later
+ * night is 1, and a meal with no night is 2.
+ * @param {MenuEntry} entry
+ * @param {string} today
+ */
+function nightRank(entry, today) {
+	if (!entry.item.night) return 2;
+	return entry.item.night <= today ? 0 : 1;
+}
+
+/**
+ * The hand: the meals that the owner cooks now, then the meal of tonight, then the meals of
+ * the later nights in their sequence, then the meals with no night. In one group, a ready meal
+ * is before a meal that waits, and the meal with the food that spoils first is first.
  * @param {MenuEntry[]} entries
  * @param {Map<string, CookSession>} cooking
  * @param {SoonItem[]} soon
+ * @param {number} time
  * @returns {MenuEntry[]}
  */
-export function handOrder(entries, cooking, soon) {
+export function handOrder(entries, cooking, soon, time) {
+	const today = nightOf(time);
 	return entries.toSorted(
 		(a, b) =>
 			Number(cooking.has(b.item.id)) - Number(cooking.has(a.item.id)) ||
+			nightRank(a, today) - nightRank(b, today) ||
+			(a.item.night ?? '').localeCompare(b.item.night ?? '') ||
 			STATE_ORDER[a.state] - STATE_ORDER[b.state] ||
-			(oldestUse(b.recipe, soon)?.days ?? -1) - (oldestUse(a.recipe, soon)?.days ?? -1) ||
+			(firstUse(a.recipe, soon)?.left ?? Infinity) - (firstUse(b.recipe, soon)?.left ?? Infinity) ||
 			(a.readyAt ?? 0) - (b.readyAt ?? 0)
 	);
 }
@@ -87,8 +108,9 @@ const clockTime = (date) =>
  * The title of the screen: one word, or a short phrase, that tells the state of the day.
  * @param {TodayFacts} facts
  */
-export function todayHeading({ hand, cooking, ideas }) {
+export function todayHeading({ hand, cooking, ideas, toBuy, menuSet }) {
 	if (cooking.size > 0) return 'On the stove';
+	if (menuSet && toBuy > 0 && hand.length > 0) return 'Menu set';
 	if (hand.length === 0) return ideas.length > 0 ? 'Nothing is ready' : greeting();
 	const waitsOnly = hand.every((entry) => entry.state === 'waiting');
 	return waitsOnly ? 'Nothing is ready' : greeting();
@@ -98,7 +120,7 @@ export function todayHeading({ hand, cooking, ideas }) {
  * One sentence under the title. It names the reason for the order of the hand.
  * @param {TodayFacts} facts
  */
-export function todaySubline({ hand, cooking, ideas, soon, time }) {
+export function todaySubline({ hand, cooking, ideas, soon, toBuy, menuSet, time }) {
 	if (cooking.size > 0) {
 		const ends = [...cooking.values()]
 			.flatMap((session) => session.timers.map((timer) => Date.parse(timer.endsAt)))
@@ -112,11 +134,13 @@ export function todaySubline({ hand, cooking, ideas, soon, time }) {
 			? `The pantry can still make ${plural(ideas.length, 'meal')}.`
 			: 'Your hand is empty.';
 	}
+	if (menuSet && toBuy > 0)
+		return `${plural(hand.length, 'meal')}. ${plural(toBuy, 'thing')} to buy.`;
 
 	const ready = hand.filter((entry) => entry.state === 'ready').length;
 	const todo = hand.filter((entry) => entry.state === 'todo').length;
 	if (ready > 0) {
-		const first = oldestUse(hand[0].recipe, soon);
+		const first = firstUse(hand[0].recipe, soon);
 		const count = `${plural(ready, 'meal')} ${ready === 1 ? 'is' : 'are'} ready.`;
 		return first ? `${count} The ${first.ingredient.name.toLowerCase()} goes first.` : count;
 	}

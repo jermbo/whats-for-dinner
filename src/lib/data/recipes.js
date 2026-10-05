@@ -46,6 +46,7 @@ export function saveRecipe(recipe) {
 			name: recipe.name.trim() || NO_NAME,
 			source: recipe.source.trim(),
 			servings: Number(recipe.servings) || 1,
+			minutes: Number(recipe.minutes) > 0 ? Math.round(Number(recipe.minutes)) : null,
 			steps,
 			coverPhotoId: stored?.coverPhotoId ?? null,
 			// An empty number field gives null, so each number is made safe here.

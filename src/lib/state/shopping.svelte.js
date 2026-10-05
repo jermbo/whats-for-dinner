@@ -1,6 +1,7 @@
 import { getContext, setContext } from 'svelte';
 import { db } from '$lib/db/db';
 import { cartOf } from '$lib/domain/cart';
+import { belowLine } from '$lib/domain/pantry';
 import { inCart, shoppingList, shoppingNeeds } from '$lib/domain/shopping';
 import { useKitchen } from './kitchen.svelte';
 import { live } from './live.svelte';
@@ -32,8 +33,15 @@ function makeShopping() {
 			kitchen.pantryByIngredient
 		)
 	);
-	const list = $derived(shoppingList(needs, manualItems.current, kitchen.ingredientsById));
+	const low = $derived(belowLine(kitchen.pantry, kitchen.ingredientsById));
+	const list = $derived(shoppingList(needs, manualItems.current, kitchen.ingredientsById, low));
 	const needed = $derived(list.filter((row) => !inCart(row, cart)));
+	const listed = $derived(
+		new Set([
+			...list.flatMap((row) => row.ingredient?.id ?? []),
+			...cart.flatMap((purchase) => purchase.ingredientId ?? [])
+		])
+	);
 
 	return {
 		/** False until the database gives the purchases. */
@@ -52,13 +60,17 @@ function makeShopping() {
 		get needs() {
 			return needs;
 		},
-		/** The shopping list: the needs, plus the items that the owner added by hand. */
+		/** The shopping list: the needs, the items that the owner added, and the low items. */
 		get list() {
 			return list;
 		},
 		/** The rows of the list that are not in the cart: the items that the owner must still buy. */
 		get needed() {
 			return needed;
+		},
+		/** The IDs of the ingredients that are on the list or in the cart. */
+		get listed() {
+			return listed;
 		}
 	};
 }

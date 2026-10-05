@@ -20,7 +20,7 @@
 
 <section class="stack stack--tight" aria-labelledby="food-plan-title">
 	<div class="cluster cluster--between">
-		<h2 id="food-plan-title">Food to use</h2>
+		<h2 id="food-plan-title">Use first</h2>
 		{#if items.length > 0}
 			<span class={['badge', done && 'badge--good']}>
 				{done ? 'All planned' : `${planned} of ${items.length} planned`}

@@ -17,11 +17,13 @@ import { shortfall } from './availability';
  *   ingredient: Ingredient | null,
  *   quantity: number,
  *   recipeIds: string[],
- *   item: ShoppingItem | null
+ *   item: ShoppingItem | null,
+ *   low: boolean
  * }} ListRow
  *   One item of the shopping list. quantity: what the menu needs and the pantry does not have,
  *   zero for an item that only the owner added. recipeIds: the meals that need it.
- *   item: the record of the item that the owner added by hand.
+ *   item: the record of the item that the owner added by hand, or that "Add to Shop" made.
+ *   low: the item is on the list because it is low in the pantry.
  *
  * @typedef {{ name: string, rows: ListRow[] }} Aisle
  * @typedef {{ item: MenuItem, recipe: Recipe, toBuy: number }} ShopMeal
@@ -78,14 +80,18 @@ export function shoppingNeeds(menu, recipesById, ingredientsById, pantryByIngred
 }
 
 /**
- * The shopping list: what the menu needs, plus the items that the owner added by hand.
+ * The shopping list: what the menu needs, plus the items that the owner added by hand, plus
+ * the items that the pantry sent because they are low.
  * An ingredient is one row, also when the menu needs it and the owner added it.
+ * An item from the pantry is on the list only while it is low: when the owner fills the gauge
+ * again, the row goes away.
  * @param {Need[]} needs
- * @param {ShoppingItem[]} items The items that the owner added by hand.
+ * @param {ShoppingItem[]} items The items that the owner or the pantry added.
  * @param {Map<string, Ingredient>} ingredientsById
+ * @param {Set<string>} low The ingredients that are low in the pantry now.
  * @returns {ListRow[]}
  */
-export function shoppingList(needs, items, ingredientsById) {
+export function shoppingList(needs, items, ingredientsById, low) {
 	/** @type {Map<string, ListRow>} */
 	const rows = new Map();
 
@@ -96,22 +102,50 @@ export function shoppingList(needs, items, ingredientsById) {
 			ingredient,
 			quantity,
 			recipeIds,
-			item: null
+			item: null,
+			low: false
 		});
 	}
 
 	for (const item of items) {
 		const ingredient = (item.ingredientId && ingredientsById.get(item.ingredientId)) || null;
+		const isLow = item.fromPantry && ingredient !== null && low.has(ingredient.id);
+		if (item.fromPantry && !isLow) continue;
+
 		const row = ingredient && rows.get(ingredient.id);
 		if (row) {
 			row.item = item;
+			row.low = isLow;
 		} else {
 			const key = ingredient?.id ?? item.id;
-			rows.set(key, { key, name: item.name, ingredient, quantity: 0, recipeIds: [], item });
+			rows.set(key, {
+				key,
+				name: item.name,
+				ingredient,
+				quantity: 0,
+				recipeIds: [],
+				item,
+				low: isLow
+			});
 		}
 	}
 
 	return [...rows.values()];
+}
+
+/** The reason of a row that the pantry sent to the list. */
+const LOW_REASON = 'Low in the pantry';
+
+/**
+ * Why an item is on the list: the meals that need it, and "Low in the pantry".
+ * An item that the owner added by hand has no reason.
+ * @param {ListRow} row
+ * @param {Map<string, Recipe>} recipesById
+ * @returns {string}
+ */
+export function rowReason(row, recipesById) {
+	const meals = row.recipeIds.flatMap((id) => recipesById.get(id)?.name ?? []);
+	return [...meals, ...(row.low ? [LOW_REASON] : [])].join(' · ');
 }
 
 /**
@@ -171,4 +205,15 @@ export function shopMeals(menu, recipesById, needed) {
 		meals.push({ item, recipe, toBuy });
 	}
 	return meals.sort((a, b) => a.item.addedAt.localeCompare(b.item.addedAt));
+}
+
+/**
+ * The number of items that each meal needs and that are not in the cart.
+ * @param {MenuItem[]} menu
+ * @param {Map<string, Recipe>} recipesById
+ * @param {ListRow[]} needed The rows of the list that are not in the cart.
+ * @returns {Map<string, number>} By menu item ID.
+ */
+export function toBuyByMeal(menu, recipesById, needed) {
+	return new Map(shopMeals(menu, recipesById, needed).map((meal) => [meal.item.id, meal.toBuy]));
 }

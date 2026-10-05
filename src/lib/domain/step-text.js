@@ -58,6 +58,19 @@ export function splitByTimes(text) {
 	return parts;
 }
 
+/**
+ * The times in the text of a step, each with its words, its place, and its length.
+ * @param {string} text
+ * @returns {{ text: string, index: number, seconds: number }[]}
+ */
+export function timesIn(text) {
+	return splitByTimes(text).flatMap((part) =>
+		part.seconds === undefined || part.index === undefined
+			? []
+			: [{ text: part.text, index: part.index, seconds: part.seconds }]
+	);
+}
+
 /** @param {string} text */
 const escape = (text) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 

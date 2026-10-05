@@ -56,7 +56,7 @@
 		display: flex;
 		gap: var(--space-2);
 		margin: 0;
-		padding: var(--space-2) var(--space-5);
+		padding: var(--space-1) var(--space-4) var(--space-2);
 		overflow-x: auto;
 		list-style: none;
 		scrollbar-width: none;
@@ -70,8 +70,9 @@
 		padding: var(--space-1) var(--space-4) var(--space-1) var(--space-3);
 		font-weight: 800;
 		white-space: nowrap;
-		color: var(--paper);
-		background: var(--ink);
+		/* White, because the surround of Cook mode is ink. */
+		color: var(--ink);
+		background: var(--card);
 		border: 0;
 		border-radius: var(--radius-sticker);
 		cursor: pointer;

@@ -12,6 +12,8 @@
 	 * The last card of Cook mode: "Done?". It lists what "Cooked" takes from the pantry, so that
 	 * the owner sees the result before the tap. "Change amounts" makes each amount a field, for
 	 * a meal that used more or less than the recipe.
+	 * The card of Cook mode is olive for this card. On a wide card, the title is the left half
+	 * and the list is the right half.
 	 * @type {{
 	 *   recipe: import('$lib/types').Recipe,
 	 *   session: import('$lib/types').CookSession,
@@ -61,7 +63,10 @@
 </script>
 
 <section class="cook-done" aria-labelledby="{uid}-title">
-	<h2 class="cook-done__title" id="{uid}-title">Done?</h2>
+	<div class="cook-done__head">
+		<h2 class="cook-done__title" id="{uid}-title">Done?</h2>
+		<p class="label">{recipe.name}</p>
+	</div>
 
 	<div class="cook-done__takes">
 		{#if rows.length === 0}
@@ -133,18 +138,20 @@
 
 <style>
 	/*
-	 * An olive card that fills the height that is there. The list scrolls in its own box, so
-	 * "Cooked" stays in view below a long list.
+	 * The card fills the height that is there. The list scrolls in its own box, so "Cooked"
+	 * stays in view below a long list.
 	 */
 	.cook-done {
-		display: flex;
+		display: grid;
 		flex: 1 1 0;
-		flex-direction: column;
+		grid-template-rows: auto minmax(0, 1fr) auto;
 		gap: var(--space-4);
 		min-block-size: 20rem;
-		padding: var(--space-5);
-		background: var(--olive);
-		border-radius: var(--radius);
+	}
+
+	.cook-done__head {
+		display: grid;
+		gap: var(--space-2);
 	}
 
 	.cook-done__title {
@@ -234,5 +241,28 @@
 		gap: var(--space-2);
 		min-block-size: 3.75rem;
 		font-size: 1.2rem;
+	}
+
+	/* A wide card has two halves: the title at the left, and the list at the right. */
+	@container cook-card (min-width: 48rem) {
+		.cook-done {
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+			column-gap: var(--space-8);
+			padding: var(--space-4);
+		}
+
+		/* The title is at the top, and the name of the meal is at the lower edge. */
+		.cook-done__head {
+			grid-row: 1 / -1;
+			align-content: space-between;
+		}
+
+		.cook-done__title {
+			font-size: clamp(6rem, 17cqi, 14rem);
+		}
+
+		.cook-done__takes {
+			grid-row: 1 / 3;
+		}
 	}
 </style>

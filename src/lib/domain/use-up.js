@@ -1,21 +1,20 @@
 import { round } from '$lib/util/format';
 import { pantryCount } from './availability';
-import { daysInStock } from './freshness';
+import { daysLeft, isUrgent, leftText } from './use-by';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').PantryItem} PantryItem
- * @typedef {import('$lib/types').PantryChange} PantryChange
  * @typedef {import('$lib/types').Recipe} Recipe
  *
  * @typedef {{
  *   ingredient: Ingredient,
  *   item: PantryItem,
- *   days: number,
+ *   left: number,
  *   free: number,
  *   planned: string[]
  * }} SoonItem
- *   days: the days since the new stock. free: the amount that no meal on the menu uses
+ *   left: the days until the use-by date. free: the amount that no meal on the menu uses
  *   (1 or 0 for a "have, low, or out" item). planned: the meals on the menu that use it.
  *
  * @typedef {{
@@ -29,26 +28,26 @@ import { daysInStock } from './freshness';
  *   has, of those that the recipe needs. missing: the ingredients to buy.
  */
 
-/** The age that counts the most. An item that is older counts the same. */
-const MAX_DAYS = 14;
+/** Food with more days than this counts the same: it is not urgent. */
+const CALM_DAYS = 7;
 
 /**
- * The food to use first: the perishable items in stock, out of the freezer, the oldest stock
- * first. An item that the meals on the menu use completely comes last: it is "planned".
- * Assumption: the age of the stock tells the urgency. The ingredients have no shelf life yet.
+ * The food to use first: the items in stock that have a use-by date, the earliest date first.
+ * Food in the freezer and food that keeps have no date. An item that the meals on the menu use
+ * completely comes last: it is "planned".
  * @param {PantryItem[]} pantry
  * @param {Map<string, Ingredient>} ingredientsById
- * @param {Map<string, PantryChange[]>} changesByIngredient The log, oldest first.
  * @param {Map<string, { total: number, recipes: string[] }>} totals What the menu uses.
  * @param {number} time
  * @returns {SoonItem[]}
  */
-export function foodToUseFirst(pantry, ingredientsById, changesByIngredient, totals, time) {
+export function foodToUseFirst(pantry, ingredientsById, totals, time) {
 	/** @type {SoonItem[]} */
 	const items = [];
 	for (const item of pantry) {
 		const ingredient = ingredientsById.get(item.ingredientId);
-		if (!ingredient?.perishable || item.location === 'freezer') continue;
+		const left = daysLeft(item, time);
+		if (!ingredient || left === null) continue;
 
 		const counted = ingredient.tracking === 'quantity';
 		const have = counted ? item.quantity : Number(item.state !== 'out');
@@ -56,21 +55,20 @@ export function foodToUseFirst(pantry, ingredientsById, changesByIngredient, tot
 
 		const use = totals.get(ingredient.id);
 		const free = counted ? Math.max(0, round(have - (use?.total ?? 0))) : Number(!use);
-		const days = daysInStock(changesByIngredient.get(ingredient.id) ?? [], item, time);
-		items.push({ ingredient, item, days, free, planned: use?.recipes ?? [] });
+		items.push({ ingredient, item, left, free, planned: use?.recipes ?? [] });
 	}
 
 	return items.sort(
 		(a, b) =>
 			Number(a.free === 0) - Number(b.free === 0) ||
-			b.days - a.days ||
+			a.left - b.left ||
 			a.ingredient.name.localeCompare(b.ingredient.name)
 	);
 }
 
 /**
- * The recipes that use up the most of the food to use first. Each item counts, and an older item
- * counts more. Then a recipe that the pantry can make comes before a recipe that needs shopping.
+ * The recipes that use up the most of the food to use first. Each item counts, and an item
+ * with fewer days counts more. Then a recipe that the pantry can make comes before a recipe that needs shopping.
  * @param {Recipe[]} recipes The recipes to look at. A reference recipe is not an idea.
  * @param {SoonItem[]} soon
  * @param {Map<string, Ingredient>} ingredientsById
@@ -90,39 +88,38 @@ export function useUpIdeas(recipes, soon, ingredientsById, pantryByIngredient) {
 				.filter((item) => item !== undefined);
 			const count = pantryCount(recipe, ingredientsById, pantryByIngredient);
 			const missing = count.need - count.have;
-			const rescue = uses.reduce((sum, item) => sum + 1 + Math.min(item.days, MAX_DAYS) / 7, 0);
+			const rescue = uses.reduce(
+				(sum, item) => sum + 1 + Math.max(0, CALM_DAYS - Math.max(0, item.left)) / (CALM_DAYS / 2),
+				0
+			);
 			const have = count.need > 0 ? count.have / count.need : 0;
 			return { recipe, uses, count, missing, score: rescue * 3 + have * 2 - missing * 0.5 };
 		})
 		.sort((a, b) => b.score - a.score || a.recipe.name.localeCompare(b.recipe.name));
 }
 
-/** An item that is in stock this many days is the first to use. */
-export const URGENT_DAYS = 7;
-
 /**
- * The food to use first that a recipe uses, the oldest stock first. A meal that uses it can
+ * The food to use first that a recipe uses, the earliest date first. A meal that uses it can
  * save it. Undefined: the recipe uses no food that is on the list.
  * @param {Recipe} recipe
  * @param {SoonItem[]} soon
  * @returns {SoonItem | undefined}
  */
-export function oldestUse(recipe, soon) {
+export function firstUse(recipe, soon) {
 	const ids = new Set(recipe.ingredients.map((row) => row.ingredientId));
 	return soon
 		.filter((item) => ids.has(item.ingredient.id))
 		.reduce(
 			/** @param {SoonItem | undefined} best @param {SoonItem} item */
-			(best, item) => (!best || item.days > best.days ? item : best),
+			(best, item) => (!best || item.left < best.left ? item : best),
 			undefined
 		);
 }
 
 /**
- * The age of a stock in words, for example "2 days in stock".
- * @param {number} days
+ * The days that an item has left, as a sentence part: "use today", "2 days left".
+ * @param {SoonItem} item
  */
-export function stockAge(days) {
-	if (days === 0) return 'New today';
-	return `${days} ${days === 1 ? 'day' : 'days'} in stock`;
+export function soonText(item) {
+	return isUrgent(item.left) ? leftText(item.left) : `${leftText(item.left)} left`;
 }

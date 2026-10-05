@@ -29,6 +29,7 @@
 			<PantryGauge
 				item={row.item}
 				ingredient={row.ingredient}
+				left={row.left}
 				fresh={row.item.id === fresh}
 				onmore={() => onmore(row)}
 			/>

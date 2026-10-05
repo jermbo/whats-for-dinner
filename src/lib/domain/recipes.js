@@ -16,6 +16,7 @@ export function blankRecipe(servings) {
 		name: '',
 		mealType: 'dinner',
 		servings,
+		minutes: null,
 		steps: [],
 		source: '',
 		coverPhotoId: null,
@@ -37,4 +38,31 @@ export function hasContent(recipe) {
 		recipe.steps.some((step) => step.text.trim()) ||
 		recipe.ingredients.some((row) => row.ingredientId)
 	);
+}
+
+/** A meal of this many minutes, or fewer, is "quick". */
+const QUICK_MINUTES = 30;
+
+/**
+ * The minutes that a meal takes: the real time of the last cook in Cook mode, or the number
+ * that the owner typed. Null: not known.
+ * @param {Recipe} recipe
+ * @param {import('$lib/types').CookSession | undefined} last The last cook session of the recipe.
+ * @returns {number | null}
+ */
+export function cookMinutes(recipe, last) {
+	if (last?.startedAt && last.cookedAt) {
+		const minutes = (Date.parse(last.cookedAt) - Date.parse(last.startedAt)) / 60_000;
+		// A session of less than a minute is a tap on "Cooked", and not a cook.
+		if (minutes >= 1) return Math.round(minutes);
+	}
+	return recipe.minutes ?? null;
+}
+
+/**
+ * True for a meal that takes little time. A meal with no known time is not quick.
+ * @param {number | null} minutes
+ */
+export function isQuick(minutes) {
+	return minutes !== null && minutes <= QUICK_MINUTES;
 }

@@ -1,8 +1,9 @@
 <script>
 	import Gauge from '$lib/components/ui/Gauge.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { setQuantity, setState } from '$lib/data/pantry';
-	import { pantryScale, stateAt } from '$lib/domain/pantry-scale';
+	import { setLevel } from '$lib/data/pantry';
+	import { pantryScale } from '$lib/domain/pantry-scale';
+	import { useByBadge } from '$lib/domain/use-by';
 	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { collapse } from '$lib/motion/transitions';
 
@@ -15,6 +16,7 @@
 	 * @type {{
 	 *   item: PantryItem,
 	 *   ingredient: import('$lib/types').Ingredient,
+	 *   left?: number | null,
 	 *   note?: string,
 	 *   done?: boolean,
 	 *   checking?: boolean,
@@ -22,12 +24,14 @@
 	 *   onchange?: () => void,
 	 *   onmore: () => void
 	 * }}
+	 *   left: the days until the use-by date. The row shows a badge in the last three days.
 	 *   fresh: the owner added this item a moment ago. The screen moves to the row, and a row
 	 *   that is new fills from zero.
 	 */
 	let {
 		item,
 		ingredient,
+		left = null,
 		note,
 		done,
 		checking = false,
@@ -45,15 +49,11 @@
 	});
 
 	const scale = $derived(pantryScale(item, ingredient));
+	const badge = $derived(useByBadge(left));
 
 	/** @param {number} value */
 	async function change(value) {
-		if (ingredient.tracking === 'state') {
-			await setState(ingredient.id, stateAt(value), 'corrected');
-		} else {
-			const cause = checking || value > item.quantity ? 'corrected' : 'used';
-			await setQuantity(ingredient.id, value, cause);
-		}
+		await setLevel(item, ingredient, value, checking);
 		onchange?.();
 	}
 </script>
@@ -63,6 +63,8 @@
 		label={ingredient.name}
 		{scale}
 		{note}
+		flag={badge?.text}
+		urgent={badge?.urgent}
 		{done}
 		from={fresh ? 0 : undefined}
 		delay={350}

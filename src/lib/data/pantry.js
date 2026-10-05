@@ -1,5 +1,7 @@
 import { db } from '$lib/db/db';
-import { defaultLocation } from '$lib/domain/pantry';
+import { defaultLocation, inStock } from '$lib/domain/pantry';
+import { stateAt } from '$lib/domain/pantry-scale';
+import { useByAfterStock, useByIn, usualDays } from '$lib/domain/use-by';
 import { round } from '$lib/util/format';
 import { newId, now } from '$lib/util/ids';
 
@@ -9,6 +11,7 @@ import { newId, now } from '$lib/util/ids';
  * @typedef {import('$lib/types').Cause} Cause
  * @typedef {import('$lib/types').StockState} StockState
  * @typedef {import('$lib/types').StorageLocation} StorageLocation
+ * @typedef {import('$lib/types').UseWithin} UseWithin
  */
 
 /** @param {string} ingredientId */
@@ -30,6 +33,7 @@ async function create(ingredientId, location) {
 		fullQuantity: 0,
 		state: 'out',
 		location,
+		useBy: null,
 		updatedAt: now()
 	};
 	await db.pantry.add(item);
@@ -101,16 +105,62 @@ export function setState(ingredientId, state, cause, location = 'pantry') {
 }
 
 /**
- * Puts an ingredient into the pantry, in the way that the ingredient is tracked.
+ * Sets an item to the value that the owner gave on its gauge. A smaller amount is an amount
+ * that was used. In a pantry check, each change is a correction.
+ * @param {PantryItem} item
+ * @param {Ingredient} ingredient
+ * @param {number} value A value on the scale of the gauge.
+ * @param {boolean} [checking]
+ */
+export function setLevel(item, ingredient, value, checking = false) {
+	if (ingredient.tracking === 'state') return setState(ingredient.id, stateAt(value), 'corrected');
+	const cause = checking || value > item.quantity ? 'corrected' : 'used';
+	return setQuantity(ingredient.id, value, cause);
+}
+
+/**
+ * Gives an item its place and its use-by time after new stock came in. Call it in a transaction.
+ * @param {Ingredient} ingredient
+ * @param {PantryItem | undefined} before The item before the new stock. Not defined: a new item.
+ * @param {StorageLocation} location
+ * @param {number | null} days The days that the new stock keeps. Null: it keeps.
+ */
+async function freshen(ingredient, before, location, days) {
+	const item = await find(ingredient.id);
+	if (!item) return;
+	const fresh = days === null ? null : useByIn(days, Date.now());
+	const useBy = useByAfterStock(
+		{ useBy: before?.useBy ?? null, location },
+		inStock(before, ingredient),
+		fresh
+	);
+	await db.pantry.update(item.id, { location, useBy, updatedAt: now() });
+}
+
+/**
+ * Puts an ingredient into the pantry, in the way that the ingredient is tracked. The new stock
+ * gets a use-by time: from the answer of the owner, or from the usual days of the food.
  * @param {Ingredient} ingredient
  * @param {number} quantity
  * @param {Cause} cause
+ * @param {UseWithin | null} [within] The answer to "Use within". Null: the app decides.
  */
-export function stock(ingredient, quantity, cause) {
-	const location = defaultLocation(ingredient);
-	return ingredient.tracking === 'quantity'
-		? changeQuantity(ingredient.id, quantity, cause, { location })
-		: setState(ingredient.id, 'have', cause, location);
+export function stock(ingredient, quantity, cause, within = null) {
+	return db.transaction('rw', db.pantry, db.pantryLog, async () => {
+		const before = await find(ingredient.id);
+		let location = before?.location ?? defaultLocation(ingredient);
+		if (within === 'freezer') location = 'freezer';
+		// An answer in days takes the food out of the freezer.
+		else if (within !== null && location === 'freezer') location = defaultLocation(ingredient);
+
+		if (ingredient.tracking === 'quantity') {
+			await changeQuantity(ingredient.id, quantity, cause, { location });
+		} else {
+			await setState(ingredient.id, 'have', cause, location);
+		}
+		const days = typeof within === 'number' ? within : usualDays(ingredient);
+		await freshen(ingredient, before, location, days);
+	});
 }
 
 /**
@@ -132,17 +182,48 @@ export function addByHand(ingredient, { quantity, location, full = 0 }) {
 		}
 
 		const fullQuantity = Math.max(known?.fullQuantity ?? full, item.quantity + quantity);
-		await db.pantry.update(item.id, { location, fullQuantity, updatedAt: now() });
+		await db.pantry.update(item.id, { fullQuantity });
+		await freshen(ingredient, known, location, usualDays(ingredient));
 		return item.id;
 	});
 }
 
 /**
- * @param {string} id
+ * "Have it": the pantry has the food that the shopping list asks for. The count of the pantry
+ * was wrong, so the amount that is short comes in as a correction.
+ * @param {Ingredient} ingredient
+ * @param {number} short The amount that the menu needs and the pantry did not have.
+ */
+export function haveIt(ingredient, short) {
+	const location = defaultLocation(ingredient);
+	return ingredient.tracking === 'quantity'
+		? changeQuantity(ingredient.id, short, 'corrected', { location })
+		: setState(ingredient.id, 'have', 'corrected', location);
+}
+
+/**
+ * Moves an item to a different place. Food that goes into the freezer keeps. Food that comes
+ * out of the freezer gets its usual days from now.
+ * @param {PantryItem} item
+ * @param {Ingredient} ingredient
  * @param {StorageLocation} location
  */
-export function setLocation(id, location) {
-	return db.pantry.update(id, { location, updatedAt: now() });
+export function setLocation(item, ingredient, location) {
+	const days = usualDays(ingredient);
+	const thawed = item.location === 'freezer' && days !== null;
+	const useBy =
+		location === 'freezer' ? null : thawed ? useByIn(days, Date.now()) : (item.useBy ?? null);
+	return db.pantry.update(item.id, { location, useBy, updatedAt: now() });
+}
+
+/**
+ * Sets the days in which the owner must use an item. Null: the food keeps.
+ * @param {string} id
+ * @param {number | null} days
+ */
+export function setUseWithin(id, days) {
+	const useBy = days === null ? null : useByIn(days, Date.now());
+	return db.pantry.update(id, { useBy, updatedAt: now() });
 }
 
 /**

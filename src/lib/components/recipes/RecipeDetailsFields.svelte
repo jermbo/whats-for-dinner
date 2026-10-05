@@ -5,7 +5,7 @@
 
 	/**
 	 * The fields of the recipe form that have a usual value: the meal type, the servings, the
-	 * source, the rotation, and the preparation. They are closed until the owner needs them,
+	 * minutes, the source, the rotation, and the preparation. They are closed until the owner needs them,
 	 * and the closed line tells their values.
 	 * @type {{ recipe: import('$lib/types').Recipe }}
 	 */
@@ -17,6 +17,7 @@
 		[
 			labelOf(MEAL_TYPES, recipe.mealType),
 			plural(Number(recipe.servings) || 1, 'serving'),
+			Number(recipe.minutes) > 0 ? `${recipe.minutes} min` : '',
 			recipe.inRotation ? 'In rotation' : '',
 			recipe.prepSteps.length > 0 ? 'Preparation' : ''
 		]
@@ -51,6 +52,19 @@
 					inputmode="numeric"
 					min="1"
 					bind:value={recipe.servings}
+				/>
+			</div>
+
+			<div class="field">
+				<label class="field__label" for="{uid}-minutes">Minutes</label>
+				<input
+					class="field__control"
+					id="{uid}-minutes"
+					type="number"
+					inputmode="numeric"
+					min="1"
+					placeholder="?"
+					bind:value={recipe.minutes}
 				/>
 			</div>
 		</div>
@@ -106,7 +120,7 @@
 
 	.recipe-details__pair {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) 7rem;
+		grid-template-columns: minmax(0, 1fr) 5.5rem 5.5rem;
 		gap: var(--space-3);
 	}
 </style>

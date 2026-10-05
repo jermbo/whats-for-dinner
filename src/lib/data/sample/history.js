@@ -186,6 +186,7 @@ export function sampleHistory(recipes, ingredients) {
 				recipeId: recipe.id,
 				addedAt: daysAgo(days + 2),
 				prepDoneAt: null,
+				night: null,
 				updatedAt: daysAgo(days + 2)
 			},
 			cookedAt,

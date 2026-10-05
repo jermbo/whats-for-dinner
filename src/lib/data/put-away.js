@@ -10,7 +10,8 @@ import { settleTrip } from './trips';
 
 /**
  * "Put away": the items go from the cart into the pantry. Each purchase gets its quantity,
- * its price, and its put-away time. When the cart is empty, the trip is complete.
+ * its price, and its put-away time. The food gets its use-by time from the answer to "Use
+ * within". When the cart is empty, the trip is complete.
  * An item that is not an ingredient, such as soap, does not go into the pantry.
  * @param {Line[]} lines
  */
@@ -20,12 +21,12 @@ export function putAway(lines) {
 	return db.transaction('rw', tables, async () => {
 		const time = now();
 
-		for (const { purchase, ingredient, productId, quantity, price } of lines) {
+		for (const { purchase, ingredient, productId, quantity, price, within } of lines) {
 			// A second tap on "Put away" must not add the item to the pantry again.
 			const current = await db.purchases.get(purchase.id);
 			if (!current || current.putAwayAt) continue;
 
-			if (ingredient) await stock(ingredient, quantity ?? 0, 'bought');
+			if (ingredient) await stock(ingredient, quantity ?? 0, 'bought', within);
 			await db.purchases.update(purchase.id, {
 				productId,
 				quantity: isCounted(ingredient) ? (quantity ?? 0) : null,

@@ -229,6 +229,7 @@ export function setLeftovers(session, hasLeftovers) {
 				recipeId: session.recipeId,
 				addedAt: time,
 				prepDoneAt: null,
+				night: null,
 				updatedAt: time
 			});
 		}

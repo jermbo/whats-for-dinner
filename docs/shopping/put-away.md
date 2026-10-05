@@ -2,7 +2,7 @@
 title: Put away at home
 summary: 'At home you confirm the quantity of each item in the cart. Then it goes into the pantry.'
 parent: item-journey.md
-updated: 2026-10-03
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / [Shopping](README.md) / [The journey of an item](item-journey.md) / Put away at home
@@ -41,6 +41,12 @@ flowchart TD
 | Olive oil | The app does not count it. It only knows have, low, or out.     | Nothing. The pantry is set to "have".            |
 
 When an ingredient has more than one product and the app does not know which one you took, it asks you to [choose a product](choose-product.md) first.
+
+## Use within, and "Not bought"
+
+For food that can spoil, the card asks one more thing: "Use within". The app proposes the usual days of the food, and your answer is [the use-by date](use-by-date.md) of the item in the pantry.
+
+"Not bought" is for a wrong tap in the store, or for a store that had none. The line leaves the receipt and its total, and the item goes back on the shopping list.
 
 ## The price
 

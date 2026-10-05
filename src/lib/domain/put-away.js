@@ -1,19 +1,24 @@
 import { round } from '$lib/util/format';
+import { proposeWithin } from './use-by';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').Product} Product
  * @typedef {import('$lib/types').Purchase} Purchase
+ * @typedef {import('$lib/types').PantryItem} PantryItem
+ * @typedef {import('$lib/types').UseWithin} UseWithin
  *
  * @typedef {{
  *   purchase: Purchase,
  *   ingredient: Ingredient | null,
  *   productId: string | null,
  *   quantity: number | null,
- *   price: number | null
+ *   price: number | null,
+ *   within: UseWithin | null
  * }} Line
  *   One item to put away, with the product, the quantity, and the price that the owner
  *   confirmed. quantity: null for an item that the app does not count. price: for one package.
+ *   within: the answer to "Use within". Null: the food keeps.
  *
  * @typedef {{
  *   purchase: Purchase,
@@ -22,11 +27,14 @@ import { round } from '$lib/util/format';
  *   product: Product | undefined,
  *   quantity: number | null,
  *   price: number | null,
+ *   within: UseWithin | null,
  *   asks: boolean
  * }} CartEntry
  *   One item of a trip, with what the app knows and proposes. products: the products of the
  *   ingredient. product: the product of the purchase. quantity and price: what the owner gave,
- *   or what the app proposes. asks: the app needs an answer before it can propose a quantity.
+ *   or what the app proposes. within: the answer to "Use within", from the owner or from the
+ *   usual days of the food. Null: the food keeps. asks: the app needs an answer before it can
+ *   propose a quantity.
  */
 
 /** @param {Ingredient | null | undefined} ingredient */
@@ -77,14 +85,16 @@ function proposeQuantity({ purchase, ingredient, product, last, need }) {
  * @param {Purchase} known.purchase
  * @param {Ingredient | null} known.ingredient
  * @param {Product[]} known.products The products of the ingredient.
+ * @param {PantryItem | undefined} known.item The pantry item of the ingredient.
  * @param {Purchase | undefined} known.last The last purchase of the ingredient.
  * @param {number} known.need What the menu needs and the pantry does not have.
  * @param {Map<string, number>} known.prices The last price of each product.
  * @returns {CartEntry}
  */
-export function cartEntry({ purchase, ingredient, products, last, need, prices }) {
+export function cartEntry({ purchase, ingredient, products, item, last, need, prices }) {
 	const selected = products.find((product) => product.id === purchase.productId);
-	const entry = { purchase, ingredient, products };
+	const within = purchase.within ?? (ingredient ? proposeWithin(ingredient, item) : null);
+	const entry = { purchase, ingredient, products, within };
 
 	if (purchase.putAwayAt) {
 		const { quantity, price } = purchase;
@@ -110,6 +120,23 @@ export function cartEntry({ purchase, ingredient, products, last, need, prices }
  * @param {CartEntry} entry
  * @returns {Line}
  */
-export function toLine({ purchase, ingredient, product, quantity, price }) {
-	return { purchase, ingredient, productId: product?.id ?? null, quantity, price };
+export function toLine({ purchase, ingredient, product, quantity, price, within }) {
+	return { purchase, ingredient, productId: product?.id ?? null, quantity, price, within };
+}
+
+/**
+ * The food of a trip that is in the pantry now: the pantry item of each line that is put
+ * away, one time for each ingredient, in the sequence of the receipt.
+ * @param {CartEntry[]} entries The lines of the receipt.
+ * @param {Map<string, PantryItem>} pantryByIngredient
+ * @returns {{ item: PantryItem, ingredient: Ingredient }[]}
+ */
+export function pantryFills(entries, pantryByIngredient) {
+	/** @type {Map<string, { item: PantryItem, ingredient: Ingredient }>} */
+	const fills = new Map();
+	for (const { purchase, ingredient } of entries) {
+		const item = ingredient && pantryByIngredient.get(ingredient.id);
+		if (ingredient && item && purchase.putAwayAt) fills.set(ingredient.id, { item, ingredient });
+	}
+	return [...fills.values()];
 }

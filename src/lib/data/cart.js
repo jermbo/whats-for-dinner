@@ -56,6 +56,7 @@ export function take({ name, ingredient, item }, product = null) {
 			packages: 1,
 			quantity: null,
 			price: null,
+			within: null,
 			cartAt: time,
 			putAwayAt: null,
 			updatedAt: time
@@ -96,10 +97,14 @@ export function setPackages(purchase, packages) {
 }
 
 /**
- * Stores what the owner corrects at home, before the item is put away: the quantity or the
- * price. Null: the app proposes the value again.
+ * Stores what the owner corrects at home, before the item is put away: the quantity, the
+ * price, or the answer to "Use within". Null: the app proposes the value again.
  * @param {Purchase} purchase
- * @param {{ quantity?: number | null, price?: number | null }} values
+ * @param {{
+ *   quantity?: number | null,
+ *   price?: number | null,
+ *   within?: import('$lib/types').UseWithin | null
+ * }} values
  */
 export function correct(purchase, values) {
 	return change(purchase, values);

@@ -2,7 +2,7 @@
 title: Cook mode
 summary: 'Cook mode shows a recipe one card at a time, keeps the screen on, and keeps your place.'
 parent: README.md
-updated: 2026-10-04
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / Cook mode
@@ -29,7 +29,7 @@ stateDiagram-v2
 
 **The ingredients card** is a checklist of all ingredients with their quantities. You tap each one when it is on the counter. So you find that the cream is gone before the pan is hot.
 
-**A step card** shows one step: its text, its [photo](step-photos.md), the ingredients that [the app found in the text](step-text.md), and a button for each [timer](timers.md). It also shows each [note](step-notes.md) that you wrote on this step before.
+**A step card** shows one step: the place of its [photo](step-photos.md) at the top, its number in large digits, its text, a large clock for each [timer](timers.md), and the ingredients that [the app found in the text](step-text.md). The newest [note](step-notes.md) that you wrote on this step is an olive band at the lower edge of the card.
 
 **The last card** is olive and asks "Done?". It lists what "Cooked" takes from the pantry, for example "Rice −300 g", so you see the result before you tap. If the meal used more or less, "Change amounts" makes each amount a field. A row shows "Takes all" when the pantry has less than the amount. "Cooked" is a large button on this card. The screen after it asks for a [photo of the meal](finished-photo.md).
 

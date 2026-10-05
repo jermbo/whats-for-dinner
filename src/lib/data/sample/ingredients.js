@@ -15,9 +15,9 @@ const ROWS = [
 	['garlic', 'Garlic cloves', 'Produce', 'count'],
 	['potatoes', 'Potatoes', 'Produce', 'count'],
 	['broccoli', 'Broccoli', 'Produce', 'g', PERISHABLE],
-	['spinach', 'Spinach', 'Produce', 'g', PERISHABLE],
-	['carrots', 'Carrots', 'Produce', 'count', PERISHABLE],
-	['lemon', 'Lemons', 'Produce', 'count', PERISHABLE],
+	['spinach', 'Spinach', 'Produce', 'g', { ...PERISHABLE, keepsDays: 5 }],
+	['carrots', 'Carrots', 'Produce', 'count', { ...PERISHABLE, keepsDays: 14 }],
+	['lemon', 'Lemons', 'Produce', 'count', { ...PERISHABLE, keepsDays: 14 }],
 	['bananas', 'Bananas', 'Produce', 'count', PERISHABLE],
 	['pepper', 'Bell peppers', 'Produce', 'count', PERISHABLE],
 
@@ -25,10 +25,10 @@ const ROWS = [
 	['beef', 'Ground beef', 'Meat and fish', 'g', PERISHABLE],
 	['fish', 'Fish fillets', 'Meat and fish', 'count', PERISHABLE],
 
-	['eggs', 'Eggs', 'Dairy and eggs', 'count', { ...PERISHABLE, lowAt: 4 }],
+	['eggs', 'Eggs', 'Dairy and eggs', 'count', { ...PERISHABLE, lowAt: 4, keepsDays: 21 }],
 	['milk', 'Milk', 'Dairy and eggs', 'ml', PERISHABLE],
-	['butter', 'Butter', 'Dairy and eggs', 'g', PERISHABLE],
-	['cheddar', 'Cheddar cheese', 'Dairy and eggs', 'g', PERISHABLE],
+	['butter', 'Butter', 'Dairy and eggs', 'g', { ...PERISHABLE, keepsDays: 30 }],
+	['cheddar', 'Cheddar cheese', 'Dairy and eggs', 'g', { ...PERISHABLE, keepsDays: 21 }],
 	['yogurt', 'Yogurt', 'Dairy and eggs', 'g', PERISHABLE],
 	['cream', 'Cream', 'Dairy and eggs', 'ml', PERISHABLE],
 

@@ -35,6 +35,31 @@ export function plural(count, noun) {
 	return `${count} ${noun}${count === 1 ? '' : 's'}`;
 }
 
+/** A list of names shows this many. The others are a count. */
+const MAX_NAMES = 3;
+
+/**
+ * Some names as a part of a sentence: "Yogurt, lemons and rice", "Rice, milk, eggs and 2 more".
+ * @param {string[]} names
+ */
+export function nameList(names) {
+	const [first, ...others] = names.slice(0, MAX_NAMES);
+	if (first === undefined) return '';
+	const more = names.length - MAX_NAMES;
+	const words = [first, ...others.map((name) => name.toLowerCase())];
+	if (more > 0) return `${words.join(', ')} and ${more} more`;
+	if (words.length === 1) return first;
+	return `${words.slice(0, -1).join(', ')} and ${words.at(-1)}`;
+}
+
+/**
+ * A day as a receipt prints it: "28 Sep".
+ * @param {string | number} date
+ */
+export function formatShortDay(date) {
+	return new Date(date).toLocaleDateString(undefined, { day: '2-digit', month: 'short' });
+}
+
 /**
  * An amount of money with two decimals, for example "42.80". All prices are in one currency,
  * so there is no symbol.

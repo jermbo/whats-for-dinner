@@ -1,6 +1,7 @@
 <script>
 	import { untrack } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
+	import Icon from '$lib/components/ui/Icon.svelte';
 	import { swipeCard } from '$lib/input/swipe-card';
 	import { gsap } from '$lib/motion/gsap';
 	import { lessMotion } from '$lib/motion/less-motion.svelte';
@@ -13,8 +14,8 @@
 
 	/**
 	 * The dealer: one recipe that can go on the menu, as a card, the best first.
-	 * Swipe the card to the right, or use "Add to the menu": the card goes up, to the menu at the
-	 * top of the screen. Swipe it to the left, or use "Not this": the card goes out, and the next
+	 * Swipe the card to the right, or use "Keep": the card goes up, to the next place of the menu
+	 * at the top of the screen. Swipe it to the left, or use "Not this": the card goes out, and the next
 	 * idea comes. After the last idea, the first one comes again.
 	 * Each button is on the side of its swipe. While the card is far to one side, the button of
 	 * that side has a ring.
@@ -23,12 +24,14 @@
 	 *   title: string,
 	 *   deck: UseUpIdea[],
 	 *   selected: Set<string>,
+	 *   facts: (recipe: import('$lib/types').Recipe) => string,
 	 *   empty: string,
 	 *   onadd: (recipe: import('$lib/types').Recipe) => Promise<unknown>,
 	 *   children?: import('svelte').Snippet
 	 * }}
+	 *   facts: the small line of a card, such as "New · 20 min".
 	 */
-	let { title, deck, selected, empty, onadd, children } = $props();
+	let { title, deck, selected, facts, empty, onadd, children } = $props();
 
 	/** The recipes that got "Not this" in this round. */
 	const skipped = new SvelteSet();
@@ -150,13 +153,14 @@
 
 	{#if current}
 		<div class="dealer__card" bind:this={card} {@attach busy ? null : swipeCard(handlers)}>
-			<IdeaCard idea={current} {selected}>
+			<IdeaCard idea={current} {selected} facts={facts(current.recipe)}>
 				<div class="dealer__actions">
 					<button
 						class={['button', 'dealer__action', lean === -1 && 'dealer__action--lean']}
 						type="button"
 						onclick={skip}
 					>
+						<Icon name="back" />
 						Not this
 					</button>
 					<button
@@ -169,7 +173,8 @@
 						type="button"
 						onclick={() => add()}
 					>
-						Add to the menu
+						Keep
+						<Icon name="next" />
 					</button>
 				</div>
 			</IdeaCard>
@@ -214,15 +219,21 @@
 		}
 	}
 
-	/* "Not this" is at the left and "Add" is at the right, as the swipes. */
+	/* "Not this" is at the left and "Keep" is at the right, as the swipes. */
 	.dealer__actions {
 		display: grid;
-		grid-template-columns: 1fr 1.4fr;
+		grid-template-columns: 1fr 1.2fr;
 		gap: var(--space-3);
 	}
 
 	.dealer__action {
+		gap: var(--space-2);
 		padding-inline: var(--space-3);
+
+		& :global(.icon) {
+			inline-size: 1.25rem;
+			block-size: 1.25rem;
+		}
 
 		/* The card is far to the side of this button: a release does its action. */
 		&.dealer__action--lean {

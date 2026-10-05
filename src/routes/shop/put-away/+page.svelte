@@ -1,20 +1,22 @@
 <script>
 	import { resolve } from '$app/paths';
 	import NewProductDialog from '$lib/components/shop/NewProductDialog.svelte';
+	import PantryFills from '$lib/components/shop/PantryFills.svelte';
 	import PutAwayCard from '$lib/components/shop/PutAwayCard.svelte';
 	import Receipt from '$lib/components/shop/Receipt.svelte';
 	import ReceiptLine from '$lib/components/shop/ReceiptLine.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { setProduct } from '$lib/data/cart';
+	import { putBack, setProduct } from '$lib/data/cart';
 	import { allProducts } from '$lib/data/products';
 	import { amend, putAway } from '$lib/data/put-away';
 	import { allTrips } from '$lib/data/trips';
 	import { canMake } from '$lib/domain/availability';
 	import { productsByIngredient } from '$lib/domain/products';
-	import { cartEntry, lastPurchases, toLine } from '$lib/domain/put-away';
+	import { cartEntry, lastPurchases, pantryFills, toLine } from '$lib/domain/put-away';
 	import { lastPrices, tripCost } from '$lib/domain/trips';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
+	import { rise } from '$lib/motion/transitions';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { plural } from '$lib/util/format';
@@ -53,6 +55,7 @@
 					purchase,
 					ingredient: kitchen.ingredientsById.get(purchase.ingredientId ?? '') ?? null,
 					products: productsOf.get(purchase.ingredientId ?? '') ?? [],
+					item: kitchen.pantryByIngredient.get(purchase.ingredientId ?? ''),
 					last: last.get(purchase.ingredientId ?? ''),
 					need: needs.get(purchase.ingredientId ?? '') ?? 0,
 					prices
@@ -62,6 +65,9 @@
 
 	/** The items that are in the cart. */
 	const waiting = $derived(entries.filter((entry) => !entry.purchase.putAwayAt));
+
+	/** The food of the trip that is in the pantry now. */
+	const fills = $derived(pantryFills(entries, kitchen.pantryByIngredient));
 
 	/** The total of the receipt has the prices that the lines show. */
 	const cost = $derived(
@@ -98,6 +104,16 @@
 	async function amendOne(entry) {
 		await amend(toLine(entry));
 		status.say(`${entry.purchase.name} is corrected.`);
+	}
+
+	/**
+	 * A wrong tap, or the store had none: the line leaves the receipt and its total, and the
+	 * item goes back on the shopping list.
+	 * @param {CartEntry} entry
+	 */
+	async function notBought(entry) {
+		await putBack(entry.purchase);
+		status.say(`${entry.purchase.name} is back on the shopping list.`);
 	}
 
 	async function putAllAway() {
@@ -141,17 +157,22 @@
 
 		<div class="split__side split__side--sticky">
 			{#if trip.completedAt}
-				{#if meals.length > 0}
-					<p class="put-away__result">
-						The pantry has all the food for
-						<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
-					</p>
-				{/if}
+				<!-- The end of the trip: what went into the pantry, and what the pantry can make. -->
+				<div class="stack stack--tight" in:rise>
+					<p class="put-away__count">+{fills.length} in the pantry.</p>
 
-				<div class="cluster">
-					<a class="button button--primary" href={resolve('/')}>Today</a>
-					<a class="button" href={resolve('/shop')}>Shopping list</a>
-					<a class="button" href={resolve('/shop/trips')}>All trips</a>
+					{#if meals.length > 0}
+						<p class="put-away__result">
+							The pantry has all the food for
+							<strong>{complete.length} of {plural(meals.length, 'meal')}</strong> on the menu.
+						</p>
+					{/if}
+
+					<div class="cluster">
+						<a class="button button--primary" href={resolve('/')}>Done</a>
+						<a class="button" href={resolve('/pantry')}>See the pantry</a>
+						<a class="button button--link" href={resolve('/shop/trips')}>All trips</a>
+					</div>
 				</div>
 			{/if}
 
@@ -160,8 +181,13 @@
 				{entries}
 				onputaway={putOneAway}
 				onamend={amendOne}
+				onnotbought={notBought}
 				onnew={newProduct}
 			/>
+
+			<div class="split__extra">
+				<PantryFills {fills} />
+			</div>
 		</div>
 	{:else}
 		<div class="stack">
@@ -176,14 +202,18 @@
 <NewProductDialog bind:this={dialog} />
 
 <style>
-	/* The answer of the app is the largest text on the screen. */
-	.put-away__result {
+	/* The end of the flow: the largest text on the screen. */
+	.put-away__count {
 		font-family: var(--font-display);
-		font-size: 1.35rem;
-		line-height: 1.25;
+		font-size: clamp(3rem, 22cqi, 5.5rem);
+		line-height: 0.86;
+		text-transform: uppercase;
+	}
 
-		& strong {
-			color: var(--ink);
-		}
+	/* The better answer is below the count: the meals that the pantry can make in full. */
+	.put-away__result {
+		font-size: 1.0625rem;
+		font-weight: 600;
+		line-height: 1.3;
 	}
 </style>
