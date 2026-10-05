@@ -31,6 +31,8 @@ The sequence also agrees with the data. The meal plan must know which food spoil
 
 Each area page has a list of steps. A step is small: one part of one screen, which the owner can use on the phone.
 
+A step includes its motion. When a step changes what the screen shows, such as a new sequence of the rows, the change is a small animation and not a hard cut.
+
 1. The step is built.
 2. The owner uses it on the phone.
 3. The owner tells what is wrong, and the step changes.
@@ -46,7 +48,9 @@ The app is a prototype, so its data has no value yet. A step that changes the da
 
 ## The state on 4 October 2026
 
-No step is started.
+Pantry steps 1, 2, and 6 are built: the low line, the counts, "Low first", "Used up" that keeps the item, and the add card. A change of the view moves each row to its new place, and the ink fill of the view control slides. After an add, the screen moves to the new row and its gauge fills. The type check and the lint pass. The owner did not approve them on the phone yet.
+
+No other step is started.
 
 ## How to know that the work is done
 

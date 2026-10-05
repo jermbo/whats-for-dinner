@@ -22,10 +22,17 @@ export const STOCK_STATES = [
 
 /** @type {{ value: import('$lib/types').StorageLocation, label: string }[]} */
 export const LOCATIONS = [
-	{ value: 'pantry', label: 'Pantry' },
-	{ value: 'fridge', label: 'Refrigerator' },
-	{ value: 'freezer', label: 'Freezer' }
+	{ value: 'fridge', label: 'Fridge' },
+	{ value: 'freezer', label: 'Freezer' },
+	{ value: 'pantry', label: 'Cupboard' }
 ];
+
+/** The units as a short choice, for a card with little room. */
+export const UNIT_CHOICES = /** @type {{ value: import('$lib/types').Unit, label: string }[]} */ ([
+	{ value: 'g', label: 'Grams' },
+	{ value: 'ml', label: 'Milliliters' },
+	{ value: 'count', label: 'Pieces' }
+]);
 
 /** @type {{ value: import('$lib/types').MealType, label: string }[]} */
 export const MEAL_TYPES = [

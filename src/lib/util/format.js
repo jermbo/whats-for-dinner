@@ -6,11 +6,18 @@ export function round(value) {
 	return Math.round(value * 100) / 100;
 }
 
+/** The large unit of a weight and of a volume: 1000 of the small unit. */
+const LARGE_UNITS = { g: 'kg', ml: 'L', count: '' };
+
 /**
+ * A quantity with its unit, as a label on a package: "600 g", "1.2 L", "1 kg", "8".
  * @param {number} quantity
  * @param {import('$lib/types').Unit} unit
  */
 export function formatQuantity(quantity, unit) {
+	if (unit !== 'count' && Math.abs(quantity) >= 1000) {
+		return `${round(quantity / 1000)} ${LARGE_UNITS[unit]}`;
+	}
 	return `${round(quantity)} ${UNIT_LABELS[unit]}`.trim();
 }
 

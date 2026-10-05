@@ -114,6 +114,30 @@ export function stock(ingredient, quantity, cause) {
 }
 
 /**
+ * Puts food into the pantry by hand, at the place that the owner selects.
+ * @param {Ingredient} ingredient
+ * @param {{ quantity: number, location: StorageLocation, full?: number }} food
+ *   quantity: the amount to add. full: the quantity of a full gauge, for an item that is new.
+ * @returns {Promise<string>} The ID of the pantry item.
+ */
+export function addByHand(ingredient, { quantity, location, full = 0 }) {
+	return db.transaction('rw', db.pantry, db.pantryLog, async () => {
+		const known = await find(ingredient.id);
+		const item = known ?? (await create(ingredient.id, location));
+
+		if (ingredient.tracking === 'quantity') {
+			await changeQuantity(ingredient.id, quantity, 'corrected');
+		} else {
+			await setState(ingredient.id, 'have', 'corrected');
+		}
+
+		const fullQuantity = Math.max(known?.fullQuantity ?? full, item.quantity + quantity);
+		await db.pantry.update(item.id, { location, fullQuantity, updatedAt: now() });
+		return item.id;
+	});
+}
+
+/**
  * @param {string} id
  * @param {StorageLocation} location
  */
@@ -122,13 +146,23 @@ export function setLocation(id, location) {
 }
 
 /**
- * Removes an item that is gone. The cause is 'used' or 'thrown'.
- * @param {PantryItem} item
- * @param {Cause} cause
+ * Makes an item empty. The item stays in the pantry as "none": a reminder to buy it again.
+ * @param {Ingredient} ingredient
+ * @param {'used' | 'thrown'} cause
  */
-export function removeItem(item, cause) {
+export function emptyItem(ingredient, cause) {
+	return ingredient.tracking === 'quantity'
+		? setQuantity(ingredient.id, 0, cause)
+		: setState(ingredient.id, 'out', cause);
+}
+
+/**
+ * Removes an item from the pantry completely: a food that the owner does not keep.
+ * @param {PantryItem} item
+ */
+export function removeItem(item) {
 	return db.transaction('rw', db.pantry, db.pantryLog, async () => {
 		await db.pantry.delete(item.id);
-		await log(item.ingredientId, cause, -item.quantity, 'out', null);
+		await log(item.ingredientId, 'corrected', -item.quantity, 'out', null);
 	});
 }

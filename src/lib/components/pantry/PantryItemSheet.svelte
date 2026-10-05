@@ -1,8 +1,9 @@
 <script>
-	import { removeItem, setLocation } from '$lib/data/pantry';
+	import { emptyItem, removeItem, setLocation } from '$lib/data/pantry';
 	import { LOCATIONS } from '$lib/domain/options';
 	import { status } from '$lib/state/status.svelte';
 	import ExactQuantityForm from './ExactQuantityForm.svelte';
+	import LowLineForm from './LowLineForm.svelte';
 
 	/**
 	 * @typedef {import('$lib/types').PantryItem} PantryItem
@@ -10,8 +11,8 @@
 	 */
 
 	/**
-	 * The edits of one pantry item that the gauge cannot do: an exact number, the location,
-	 * and "gone".
+	 * The edits of one pantry item that the gauge cannot do: an exact number, the low line,
+	 * the location, "used up", and "remove". An item that is used up stays in the pantry as "none".
 	 * @type {{ onchange?: (item: PantryItem) => void }}
 	 */
 	let { onchange } = $props();
@@ -42,8 +43,16 @@
 	 * @param {PantryRow} gone
 	 * @param {'used' | 'thrown'} cause
 	 */
-	async function remove(gone, cause) {
-		await removeItem(gone.item, cause);
+	async function empty(gone, cause) {
+		await emptyItem(gone.ingredient, cause);
+		const { name } = gone.ingredient;
+		status.say(cause === 'used' ? `${name} is used up.` : `${name} is thrown away.`);
+		changed(gone.item);
+	}
+
+	/** @param {PantryRow} gone */
+	async function remove(gone) {
+		await removeItem(gone.item);
 		status.say(`${gone.ingredient.name} is removed from the pantry.`);
 		changed(gone.item);
 	}
@@ -60,6 +69,7 @@
 			{#key opened}
 				{#if ingredient.tracking === 'quantity'}
 					<ExactQuantityForm {item} {ingredient} ondone={() => changed(item)} />
+					<LowLineForm {item} {ingredient} ondone={() => changed(item)} />
 				{/if}
 
 				<div class="field">
@@ -81,18 +91,20 @@
 				</div>
 			{/key}
 
-			<div class="cluster">
-				<button class="button" type="button" onclick={() => remove(current, 'used')}>
-					Used up
-				</button>
-				<button
-					class="button button--danger"
-					type="button"
-					onclick={() => remove(current, 'thrown')}
-				>
-					Thrown away
-				</button>
-			</div>
+			{#if current.level !== 'out'}
+				<div class="cluster">
+					<button class="button" type="button" onclick={() => empty(current, 'used')}>
+						Used up
+					</button>
+					<button class="button" type="button" onclick={() => empty(current, 'thrown')}>
+						Thrown away
+					</button>
+				</div>
+			{/if}
+
+			<button class="button button--danger" type="button" onclick={() => remove(current)}>
+				Remove from the pantry
+			</button>
 
 			<button class="button button--strong" type="button" onclick={() => dialog?.close()}>
 				Close

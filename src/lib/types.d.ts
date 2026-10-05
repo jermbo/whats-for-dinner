@@ -19,6 +19,11 @@ export interface Ingredient {
 	/** 'quantity' counts an amount. 'state' is only have, low, or out. */
 	tracking: Tracking;
 	perishable: boolean;
+	/**
+	 * The low line, in the unit of the ingredient: at this quantity or less, the pantry is low.
+	 * With no value, the low line is a quarter of a full package. Not for a 'state' ingredient.
+	 */
+	lowAt?: number;
 	updatedAt: string;
 }
 
@@ -241,6 +246,8 @@ export interface LevelScale {
 	step: number;
 	/** The number of blocks that the row shows. Zero gives one smooth fill. */
 	blocks: number;
+	/** The low line: a value at or below it, and above zero, is low. */
+	low: number;
 	/** The fill of the row for a value, from 0 to 1. */
 	toFraction(value: number): number;
 	/** The value at a place on the row, from 0 to 1. */

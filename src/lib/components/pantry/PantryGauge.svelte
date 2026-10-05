@@ -3,6 +3,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { setQuantity, setState } from '$lib/data/pantry';
 	import { pantryScale, stateAt } from '$lib/domain/pantry-scale';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { collapse } from '$lib/motion/transitions';
 
 	/** @typedef {import('$lib/types').PantryItem} PantryItem */
@@ -17,11 +18,31 @@
 	 *   note?: string,
 	 *   done?: boolean,
 	 *   checking?: boolean,
+	 *   fresh?: boolean,
 	 *   onchange?: () => void,
 	 *   onmore: () => void
 	 * }}
+	 *   fresh: the owner added this item a moment ago. The screen moves to the row, and a row
+	 *   that is new fills from zero.
 	 */
-	let { item, ingredient, note, done, checking = false, onchange, onmore } = $props();
+	let {
+		item,
+		ingredient,
+		note,
+		done,
+		checking = false,
+		fresh = false,
+		onchange,
+		onmore
+	} = $props();
+
+	/** @type {HTMLElement | undefined} */
+	let node = $state();
+
+	$effect(() => {
+		if (fresh)
+			node?.scrollIntoView({ block: 'center', behavior: lessMotion.current ? 'auto' : 'smooth' });
+	});
 
 	const scale = $derived(pantryScale(item, ingredient));
 
@@ -37,8 +58,16 @@
 	}
 </script>
 
-<li class="pantry-gauge" transition:collapse>
-	<Gauge label={ingredient.name} {scale} {note} {done} onchange={change} />
+<li class="pantry-gauge" data-regroup={item.id} bind:this={node} transition:collapse>
+	<Gauge
+		label={ingredient.name}
+		{scale}
+		{note}
+		{done}
+		from={fresh ? 0 : undefined}
+		delay={350}
+		onchange={change}
+	/>
 
 	<button class="pantry-gauge__more" type="button" onclick={onmore}>
 		<Icon name="more" />

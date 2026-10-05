@@ -2,20 +2,19 @@
 	import { onMount, untrack } from 'svelte';
 	import { cubicInOut } from 'svelte/easing';
 	import { Tween } from 'svelte/motion';
+	import { stockLevel } from '$lib/domain/pantry-scale';
 	import { levelDrag } from '$lib/input/level-drag';
 	import { vibrate } from '$lib/input/vibrate';
 	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { pop } from '$lib/motion/transitions';
 	import Icon from './Icon.svelte';
 
-	/** A fill at or below this fraction shows as low. */
-	const LOW = 0.25;
 	/** The time of the move from the "from" value to the saved value, in milliseconds. */
 	const POUR_MS = 900;
 
 	/**
-	 * A row that is also a level control. The fill of the row shows the level. A tap or a slide
-	 * on the row changes it. A hidden range input gives the same control to the keyboard and to
+	 * A row that is also a level control. The fill of the row shows the level, and a tick shows
+	 * the low line. A tap or a slide on the row changes the level. A hidden range input gives the same control to the keyboard and to
 	 * screen readers.
 	 *
 	 * With "from", the row starts at that value and moves to the saved value after "delay"
@@ -43,6 +42,7 @@
 
 	const shown = $derived(draft ?? (pouring ? pour.current : scale.value));
 	const level = $derived(scale.toFraction(shown));
+	const stock = $derived(stockLevel(scale, shown));
 	// The number counts in full units during the move.
 	const text = $derived(scale.text(pouring && draft === null ? Math.round(shown) : shown));
 
@@ -105,10 +105,11 @@
 		sliding && 'gauge--sliding',
 		pouring && 'gauge--pouring',
 		scale.blocks > 0 && 'gauge--blocks',
-		level === 0 && 'gauge--empty',
-		level > 0 && level <= LOW && 'gauge--low'
+		stock === 'out' && 'gauge--empty',
+		stock === 'low' && 'gauge--low'
 	]}
 	style:--level={level}
+	style:--low={scale.toFraction(scale.low)}
 	style:--blocks={scale.blocks}
 	use:levelDrag={drag}
 >
@@ -129,7 +130,12 @@
 	<!-- The range input gives the value to screen readers, so this text is only for the eye. -->
 	<span class="gauge__value" aria-hidden="true">{text}</span>
 
-	<span class="gauge__track" aria-hidden="true"><span class="gauge__fill"></span></span>
+	<span class="gauge__track" aria-hidden="true">
+		<span class="gauge__fill"></span>
+		{#if scale.low > 0}
+			<span class="gauge__tick"></span>
+		{/if}
+	</span>
 
 	<input
 		class="visually-hidden"
@@ -149,8 +155,8 @@
 <style>
 	/*
 	 * A row on paper: the label and the value on one line, and a track of 14 high under them.
-	 * The track is paper-deep and the fill is ink. A level that is low is amber. An empty level
-	 * has a ticked track, as "none" in the design.
+	 * The track is paper-deep and the fill is ink. A tick marks the low line: a level at or below
+	 * it is amber. An empty level has a ticked track, as "none" in the design.
 	 */
 	.gauge {
 		--gauge-fill: var(--ink);
@@ -216,7 +222,17 @@
 		grid-column: 1 / -1;
 		block-size: var(--gauge-height);
 		background: var(--paper-deep);
-		overflow: hidden;
+	}
+
+	/* The low line. It is longer than the track is high, so that it shows on an ink fill also. */
+	.gauge__tick {
+		position: absolute;
+		z-index: 1;
+		inset-block: -3px;
+		inset-inline-start: calc(var(--low) * 100%);
+		inline-size: 2px;
+		margin-inline-start: -1px;
+		background: var(--ink);
 	}
 
 	.gauge__fill {

@@ -105,9 +105,9 @@
 					{plural(sure.length, 'item')} that I am sure about
 				</summary>
 				<div class="check__sure grid">
-					{#each sureGroups as group (group.location)}
-						<section class="stack stack--tight" aria-labelledby="check-{group.location}">
-							<h3 class="section-title" id="check-{group.location}">{group.label}</h3>
+					{#each sureGroups as group (group.key)}
+						<section class="stack stack--tight" aria-labelledby="check-{group.key}">
+							<h3 class="section-title" id="check-{group.key}">{group.label}</h3>
 							<ul class="gauges">
 								{#each group.rows as row (row.item.id)}
 									<PantryGauge

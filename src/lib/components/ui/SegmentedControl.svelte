@@ -13,6 +13,9 @@
 
 	const name = $props.id();
 
+	/** The place of the selected option. -1: no option is selected. */
+	const index = $derived(options.findIndex((option) => option.value === value));
+
 	/** @param {string} next */
 	function select(next) {
 		value = next;
@@ -22,7 +25,11 @@
 
 <fieldset class="segmented">
 	<legend class={['segmented__legend', hideLegend && 'visually-hidden']}>{legend}</legend>
-	<div class="segmented__options">
+	<div
+		class={['segmented__options', index < 0 && 'segmented__options--none']}
+		style:--count={options.length}
+		style:--index={index}
+	>
 		{#each options as option (option.value)}
 			<label class="segmented__option">
 				<input
@@ -56,37 +63,53 @@
 		text-transform: uppercase;
 	}
 
-	/* One box with an ink rule holds the options. */
+	/* One box with an ink rule holds the options. The options have the same width. */
 	.segmented__options {
-		display: flex;
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(var(--count), minmax(0, 1fr));
 		background: var(--card);
 		border: 2px solid var(--ink);
 		border-radius: var(--radius-control);
 		overflow: hidden;
+
+		/* The ink fill of the selected option. It slides from the old option to the new one. */
+		&::before {
+			position: absolute;
+			inset-block: 0;
+			inset-inline-start: 0;
+			inline-size: calc(100% / var(--count));
+			content: '';
+			background: var(--ink);
+			translate: calc(var(--index) * 100%) 0;
+			transition: translate 0.4s var(--ease-spring);
+		}
+
+		&.segmented__options--none::before {
+			display: none;
+		}
 	}
 
 	.segmented__option {
+		/* Above the ink fill. */
+		position: relative;
 		display: grid;
-		flex: 1;
 		place-items: center;
 		min-block-size: calc(var(--tap) - 4px);
-		min-inline-size: var(--tap);
 		padding-inline: var(--space-3);
 		font-weight: 700;
+		text-align: center;
 		cursor: pointer;
-		transition:
-			background-color 0.2s,
-			color 0.2s;
+		transition: color 0.2s;
 
 		& + & {
 			border-inline-start: var(--rule-1) solid var(--ink);
 		}
 
-		/* The selected option has an ink fill and bold text. Color is not the only sign. */
+		/* The selected option has bold text on the ink fill. Color is not the only sign. */
 		&:has(:checked) {
 			font-weight: 800;
 			color: var(--paper);
-			background: var(--ink);
 		}
 
 		&:has(:focus-visible) {
@@ -94,5 +117,14 @@
 			outline-offset: -5px;
 			box-shadow: none;
 		}
+
+		/* The finger is down: the text gives a little, as a key. */
+		&:active .segmented__label {
+			scale: 0.94;
+		}
+	}
+
+	.segmented__label {
+		transition: scale 0.2s var(--ease-out);
 	}
 </style>

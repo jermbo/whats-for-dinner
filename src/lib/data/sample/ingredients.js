@@ -25,7 +25,7 @@ const ROWS = [
 	['beef', 'Ground beef', 'Meat and fish', 'g', PERISHABLE],
 	['fish', 'Fish fillets', 'Meat and fish', 'count', PERISHABLE],
 
-	['eggs', 'Eggs', 'Dairy and eggs', 'count', PERISHABLE],
+	['eggs', 'Eggs', 'Dairy and eggs', 'count', { ...PERISHABLE, lowAt: 4 }],
 	['milk', 'Milk', 'Dairy and eggs', 'ml', PERISHABLE],
 	['butter', 'Butter', 'Dairy and eggs', 'g', PERISHABLE],
 	['cheddar', 'Cheddar cheese', 'Dairy and eggs', 'g', PERISHABLE],
@@ -35,7 +35,7 @@ const ROWS = [
 	['bread', 'Bread slices', 'Bakery', 'count', PERISHABLE],
 	['tortillas', 'Tortillas', 'Bakery', 'count'],
 
-	['rice', 'Rice', 'Dry goods', 'g'],
+	['rice', 'Rice', 'Dry goods', 'g', { lowAt: 200 }],
 	['spaghetti', 'Spaghetti', 'Dry goods', 'g'],
 	['oats', 'Rolled oats', 'Dry goods', 'g'],
 	['flour', 'Flour', 'Dry goods', 'g'],

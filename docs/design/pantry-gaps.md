@@ -29,18 +29,18 @@ The images are `pantry-mobile-01` to `03` and `pantry-desktop-01` to `04` in `do
 ## The steps
 
 1. **The low line.** Each item has a low line. The row shows it as a tick, and the fill is amber below it.
-2. **The counts and "Low first".** The title shows the low and the out items. The view puts out first, then low, then enough.
+2. **The counts and "Low first".** The title shows the low and the out items. The view puts out first, then low, then enough. "Used up" keeps the item in the list as "None", because an empty row is a reminder to buy it again. "Remove from the pantry" is for a food that you do not keep.
 3. **"Add to Shop".** One button sends each item below the line to the shopping list. The row in Shop tells the reason: "Low in the pantry".
 4. **The use-by date.** A food has a usual number of days. The row shows a badge in the last three days. The "Use soon" view has three groups: Today, This week, Keeps.
 5. **The item detail.** It shows the meals that use the item, and the history of its changes. The app keeps this history, but no screen shows it.
-6. **The add card.** It opens in its place, and the list stays in view behind it.
+6. **The add card.** It opens in its place, and the list stays in view behind it. A name that the app knows is that ingredient. A new name makes a new ingredient, and the card then asks one more thing: grams, milliliters, or pieces. The scale is two packages, and one package is the first value.
 7. **The desktop columns.** The side column answers the two questions. A click on a row puts its detail there.
 
 Step 1 and step 4 change the database. The other steps change only the screens.
 
 ## What stays
 
-Scan, Pantry check, and the search "Do I have this?" are not in the design. All three stay on the screen, in view, and they get the look of the design: square buttons with a rule, and a field as the "Add an item" field of the desktop image. Step 2 gives them their place in the title row.
+Scan, Pantry check, and the search "Do I have this?" are not in the design. All three stay on the screen, in view, and they get the look of the design. The search is a field below the views, with the scan as a square button at its right. Pantry check is a link below them, with the date of the last check.
 
 ## Further reading
 
