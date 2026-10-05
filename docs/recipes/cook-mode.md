@@ -2,7 +2,7 @@
 title: Cook mode
 summary: 'Cook mode shows a recipe one card at a time, keeps the screen on, and keeps your place.'
 parent: README.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / Cook mode
@@ -35,7 +35,7 @@ stateDiagram-v2
 
 ## How you move
 
-A tap on the right half of the card goes to the next card. A tap on the left half goes back. A swipe does the same, and so do two large buttons at the bottom. The target is half of the card, so a knuckle is sufficient.
+A tap on the right half of the card goes to the next card. A tap on the left half goes back. A swipe does the same, and so do the arrow keys. The target is half of the card, so a knuckle is sufficient. The card has no "Back" and "Next" buttons: a small hint at its bottom edge, "Step 1 →", shows where to tap.
 
 ## The screen stays on
 

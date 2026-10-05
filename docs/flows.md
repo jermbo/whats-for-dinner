@@ -134,7 +134,7 @@ This list is **[Proposed]**.
 3. Proposed (2026-10-02): The pantry check shows the items with a doubt first. The other items are in a closed group. The owner must test this.
 4. Answered (2026-10-02): The week menu is one list. Each recipe has a meal type (breakfast, lunch, dinner). The "Today" screen and the week menu can filter by the type.
 5. Answered (2026-10-02): The meal stays on the week menu until the owner cooks it or removes it. The week session shows the meals that remain.
-6. Which meals must the owner cook first? Some ingredients (fresh fish) spoil before others (dry pasta).
+6. Answered (2026-10-04): The tool proposes a night for each meal, with the food that spoils first at the start. A night is a proposal, not a lock: the owner can cook each meal on any day. See [design/meal-plan-gaps.md](design/meal-plan-gaps.md).
 
 ## Related documents
 
