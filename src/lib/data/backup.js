@@ -2,6 +2,8 @@ import { db } from '$lib/db/db';
 import { getMeta, setMeta } from '$lib/db/meta';
 import { recipeShape, sessionShape } from '$lib/db/shape';
 import { newId, now } from '$lib/util/ids';
+import { CHECK_KEY } from './doubt';
+import { PLAN_KEY } from './menu-plan';
 import { mergeRecipes } from './merge';
 import { photoFromText, photoToText } from './photo-storage';
 import { planningPreferences, replacePlanningPreferences } from './preferences';
@@ -20,7 +22,8 @@ const FORMAT = 'meal-planner';
 // Version 3: the steps of a recipe are a list, a recipe file has photos, and a cook session
 // has the facts of Cook mode.
 // Version 4: a full backup has the planning preferences.
-const VERSION = 4;
+// Version 5: a full backup has the notes of the kitchen.
+const VERSION = 5;
 
 const TABLES = /** @type {const} */ ([
 	'ingredients',
@@ -35,6 +38,13 @@ const TABLES = /** @type {const} */ ([
 	'pantryLog',
 	'shopping'
 ]);
+
+/**
+ * The notes of the kitchen: the plan of the week and the time of the last pantry check. A full
+ * backup has them. The other notes, such as the hints that a device showed, are a fact about
+ * one device, and they stay on that device.
+ */
+const KITCHEN_NOTES = [PLAN_KEY, CHECK_KEY];
 
 /**
  * @param {Scope} scope
@@ -60,6 +70,7 @@ export async function exportAll() {
 	data.photos = await Promise.all(data.photos.map(photoToText));
 	// The preferences of this device stay on the device.
 	data.preferences = await planningPreferences();
+	data.meta = (await db.meta.bulkGet(KITCHEN_NOTES)).filter((note) => note !== undefined);
 	await setMeta('lastBackupAt', now());
 	return envelope('all', data);
 }
@@ -124,6 +135,10 @@ async function replaceAll(backup) {
 		}
 		// A file from before version 4 has no preferences: those of this device stay.
 		if (data.preferences) await replacePlanningPreferences(data.preferences);
+		// The notes of this device are about the data that the file replaced, so they go. A file
+		// from before version 5 has no notes: the device then has no plan of the week.
+		await db.meta.bulkDelete(KITCHEN_NOTES);
+		await db.meta.bulkPut((data.meta ?? []).filter((note) => KITCHEN_NOTES.includes(note.key)));
 	});
 	return 'The full backup replaced all data on this device.';
 }

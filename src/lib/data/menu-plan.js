@@ -12,7 +12,7 @@ import { setLocation } from './pantry';
  */
 
 /** The note of the plan of the week. */
-const PLAN_KEY = 'menuPlan';
+export const PLAN_KEY = 'menuPlan';
 
 /** @returns {Promise<MenuPlan | null>} The plan of the week. Null: there is none yet. */
 export async function readPlan() {

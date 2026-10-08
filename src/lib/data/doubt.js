@@ -6,7 +6,7 @@ import { now } from '$lib/util/ids';
 import { readPreferences } from './preferences';
 
 /** The note of the time of the last pantry check. */
-const CHECK_KEY = 'lastPantryCheckAt';
+export const CHECK_KEY = 'lastPantryCheckAt';
 
 /** @returns {Promise<string>} The time of the last pantry check, or '' when there was none. */
 export async function lastPantryCheck() {
