@@ -1,4 +1,5 @@
 import { round } from '$lib/util/format';
+import { inTapOrder } from './cart';
 import { productsByIngredient } from './products';
 import { lastPrices, tripCost } from './trips';
 import { proposeWithin } from './use-by';
@@ -53,7 +54,7 @@ export function isCounted(ingredient) {
 export function lastPurchases(purchases) {
 	/** @type {Map<string, Purchase>} */
 	const last = new Map();
-	for (const purchase of purchases.toSorted((a, b) => a.cartAt.localeCompare(b.cartAt))) {
+	for (const purchase of inTapOrder(purchases)) {
 		if (purchase.ingredientId && purchase.putAwayAt && purchase.quantity) {
 			last.set(purchase.ingredientId, purchase);
 		}
@@ -154,21 +155,18 @@ export function receiptLines({
 	const prices = lastPrices(purchases);
 	const needOf = new Map(needs.map((need) => [need.ingredient.id, need.quantity]));
 
-	return purchases
-		.filter((purchase) => purchase.tripId === trip.id)
-		.sort((a, b) => a.cartAt.localeCompare(b.cartAt))
-		.map((purchase) => {
-			const id = purchase.ingredientId ?? '';
-			return cartEntry({
-				purchase,
-				ingredient: ingredientsById.get(id) ?? null,
-				products: productsOf.get(id) ?? [],
-				item: pantryByIngredient.get(id),
-				last: last.get(id),
-				need: needOf.get(id) ?? 0,
-				prices
-			});
+	return inTapOrder(purchases.filter((purchase) => purchase.tripId === trip.id)).map((purchase) => {
+		const id = purchase.ingredientId ?? '';
+		return cartEntry({
+			purchase,
+			ingredient: ingredientsById.get(id) ?? null,
+			products: productsOf.get(id) ?? [],
+			item: pantryByIngredient.get(id),
+			last: last.get(id),
+			need: needOf.get(id) ?? 0,
+			prices
 		});
+	});
 }
 
 /**

@@ -27,7 +27,8 @@
 	import { usePantryHistory } from '$lib/state/pantry-history.svelte';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { formatDay, plural } from '$lib/util/format';
+	import { formatDay, pluralIs } from '$lib/util/format';
+	import { MINUTE } from '$lib/util/time';
 
 	/** @typedef {import('$lib/domain/pantry-view').PantryRow} PantryRow */
 
@@ -35,7 +36,7 @@
 	const shopping = useShopping();
 	const history = usePantryHistory();
 	// A use-by date comes nearer each day, so the clock must move.
-	const clock = useClock(60_000);
+	const clock = useClock(MINUTE);
 	const lastCheck = live(lastPantryCheck, '');
 
 	let view = $state(/** @type {import('$lib/domain/pantry-view').PantryView} */ ('place'));
@@ -99,7 +100,7 @@
 
 	async function allToShop() {
 		const count = await addLowItems(toShop.map((row) => row.ingredient));
-		status.say(`${plural(count, 'item')} ${count === 1 ? 'is' : 'are'} on the shopping list.`);
+		status.say(`${pluralIs(count, 'item')} on the shopping list.`);
 	}
 
 	/**

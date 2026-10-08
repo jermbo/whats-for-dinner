@@ -8,6 +8,26 @@ import { readyAfter } from './recipes';
  */
 
 /**
+ * The recipe that a menu item cooks. Leftovers cook no recipe: the food is made already, and
+ * it uses no ingredients.
+ * @param {MenuItem} item
+ * @param {Map<string, Recipe>} recipesById
+ * @returns {Recipe | undefined}
+ */
+export function recipeToCook(item, recipesById) {
+	return item.kind === 'recipe' ? recipesById.get(item.recipeId) : undefined;
+}
+
+/**
+ * The menu item that cooks a recipe. The leftovers of the recipe are a different item.
+ * @param {MenuItem[]} menu
+ * @param {string} recipeId
+ */
+export function mealOnMenu(menu, recipeId) {
+	return menu.find((item) => item.recipeId === recipeId && item.kind === 'recipe');
+}
+
+/**
  * The recipes that are on the menu as a meal to cook. Leftovers do not count.
  * @param {MenuItem[]} menu
  * @returns {Set<string>} The recipe IDs.

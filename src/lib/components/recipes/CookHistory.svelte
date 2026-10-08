@@ -1,11 +1,10 @@
 <script>
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
 	import { stepsToCook } from '$lib/domain/cook-cards';
+	import { sessionMinutes } from '$lib/domain/cook-session';
 	import { formatDate, plural } from '$lib/util/format';
 
 	/** @typedef {import('$lib/types').CookSession} CookSession */
-
-	const MINUTE = 60 * 1000;
 
 	/**
 	 * The cook sessions of one recipe, newest first: the date, the rating, the note, and the
@@ -26,11 +25,8 @@
 	 * @param {CookSession} session
 	 */
 	function cookTime(session) {
-		if (!session.startedAt) return '';
-		const minutes = Math.round(
-			(Date.parse(session.cookedAt) - Date.parse(session.startedAt)) / MINUTE
-		);
-		return minutes > 0 ? plural(minutes, 'minute') : '';
+		const minutes = sessionMinutes(session);
+		return minutes ? plural(minutes, 'minute') : '';
 	}
 </script>
 

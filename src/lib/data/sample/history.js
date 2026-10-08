@@ -1,4 +1,5 @@
 import { splitByTimes } from '$lib/domain/step-text';
+import { MINUTE, SECOND } from '$lib/util/time';
 import { finishedPhoto } from './cook-photos';
 import { daysAgo, id, SAMPLE_PREFIX } from './keys';
 import { stepId } from './recipes';
@@ -53,7 +54,6 @@ const STEP_NOTES = {
 	'lentil-soup-1': [[4, 'Add lemon juice at the end.']]
 };
 
-const MINUTE = 60 * 1000;
 /** The time that the owner uses for a card: to read it and to do it. A timer adds to it. */
 const CARD_MS = 2 * MINUTE;
 
@@ -72,7 +72,7 @@ function cookVisits(recipe, cookedAt) {
 			card: step.id,
 			ms:
 				CARD_MS +
-				splitByTimes(step.text).reduce((total, part) => total + (part.seconds ?? 0), 0) * 1000
+				splitByTimes(step.text).reduce((total, part) => total + (part.seconds ?? 0), 0) * SECOND
 		})),
 		{ card: 'finished', ms: CARD_MS }
 	];

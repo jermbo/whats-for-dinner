@@ -1,5 +1,6 @@
 import { round } from '$lib/util/format';
 import { shortfall } from './availability';
+import { recipeToCook } from './menu';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -44,7 +45,7 @@ export function menuTotals(menu, recipesById) {
 	const totals = new Map();
 
 	for (const item of menu) {
-		const recipe = item.kind === 'recipe' ? recipesById.get(item.recipeId) : undefined;
+		const recipe = recipeToCook(item, recipesById);
 		for (const row of recipe?.ingredients ?? []) {
 			const entry = totals.get(row.ingredientId) ?? { total: 0, recipes: [], recipeIds: [] };
 			entry.total += row.quantity;
@@ -199,7 +200,7 @@ export function shopMeals(menu, recipesById, needed) {
 	/** @type {ShopMeal[]} */
 	const meals = [];
 	for (const item of menu) {
-		const recipe = item.kind === 'recipe' ? recipesById.get(item.recipeId) : undefined;
+		const recipe = recipeToCook(item, recipesById);
 		if (!recipe || recipe.ingredients.length === 0) continue;
 		const toBuy = needed.filter((row) => row.recipeIds.includes(recipe.id)).length;
 		meals.push({ item, recipe, toBuy });

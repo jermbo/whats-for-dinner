@@ -6,6 +6,7 @@ import { toBuyByMeal } from '$lib/domain/shopping';
 import { cookingNow, handOrder, pantryOffers, todayHeading, todaySubline } from '$lib/domain/today';
 import { todayLines } from '$lib/domain/today-lines';
 import { weekPlan } from '$lib/domain/week';
+import { MINUTE } from '$lib/util/time';
 import { useClock } from './clock.svelte';
 import { useCookHistory } from './cook-history.svelte';
 import { useKitchen } from './kitchen.svelte';
@@ -27,7 +28,7 @@ export function useToday() {
 	const open = live(openSessions, []);
 	const plan = live(readPlan, null);
 	// A meal becomes ready when its lead time is over, so the clock must move.
-	const clock = useClock(60_000);
+	const clock = useClock(MINUTE);
 	const food = useSoon(() => clock.now);
 
 	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, clock.now));

@@ -1,6 +1,6 @@
 // The rules of the Today screen: the order of the hand, the offers of the pantry, and the
 // words of the title.
-import { greeting, plural } from '$lib/util/format';
+import { greeting, plural, pluralIs } from '$lib/util/format';
 import { canMake } from './availability';
 import { isCooking } from './cook-session';
 import { nightOf } from './nights';
@@ -141,7 +141,7 @@ export function todaySubline({ hand, cooking, ideas, soon, toBuy, menuSet, time 
 	const todo = hand.filter((entry) => entry.state === 'todo').length;
 	if (ready > 0) {
 		const first = firstUse(hand[0].recipe, soon);
-		const count = `${plural(ready, 'meal')} ${ready === 1 ? 'is' : 'are'} ready.`;
+		const count = `${pluralIs(ready, 'meal')} ready.`;
 		return first ? `${count} The ${first.ingredient.name.toLowerCase()} goes first.` : count;
 	}
 	if (todo > 0)

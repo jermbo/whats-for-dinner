@@ -3,6 +3,7 @@
 	import { readyAfter } from '$lib/domain/recipes';
 	import { useClock } from '$lib/state/clock.svelte';
 	import { formatWhen } from '$lib/util/format';
+	import { SECOND } from '$lib/util/time';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
@@ -17,7 +18,7 @@
 	let saving = $state(false);
 
 	// The time when the meal is ready, and the bar, move with the clock.
-	const clock = useClock(30_000);
+	const clock = useClock(30 * SECOND);
 	const now = $derived(clock.now);
 
 	const steps = $derived(entry.recipe.prepSteps);

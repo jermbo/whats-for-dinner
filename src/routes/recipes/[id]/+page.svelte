@@ -7,6 +7,7 @@
 	import { sessionsOfRecipe, startCook } from '$lib/data/cooking';
 	import { addToMenu } from '$lib/data/menu';
 	import { shareRecipe } from '$lib/data/share';
+	import { mealOnMenu } from '$lib/domain/menu';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { live } from '$lib/state/live.svelte';
 	import { status } from '$lib/state/status.svelte';
@@ -22,9 +23,7 @@
 	);
 
 	/** The recipe as a meal to cook on the menu. Leftovers are a different meal. */
-	const item = $derived(
-		kitchen.menu.find((entry) => entry.recipeId === id && entry.kind === 'recipe')
-	);
+	const item = $derived(mealOnMenu(kitchen.menu, id));
 
 	async function add() {
 		await addToMenu(id);

@@ -1,3 +1,5 @@
+import { recipeToCook } from './menu';
+
 /**
  * @typedef {import('$lib/types').Recipe} Recipe
  * @typedef {import('$lib/types').MenuItem} MenuItem
@@ -98,7 +100,7 @@ export function mealsInFull(menu, recipesById, ingredientsById, pantryByIngredie
 	let meals = 0;
 	let complete = 0;
 	for (const item of menu) {
-		const recipe = item.kind === 'recipe' ? recipesById.get(item.recipeId) : undefined;
+		const recipe = recipeToCook(item, recipesById);
 		if (!recipe || recipe.ingredients.length === 0) continue;
 		meals += 1;
 		if (canMake(recipe, ingredientsById, pantryByIngredient)) complete += 1;

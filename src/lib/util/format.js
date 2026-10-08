@@ -1,3 +1,5 @@
+import { DAY } from './time';
+
 /** @type {Record<import('$lib/types').Unit, string>} */
 const UNIT_LABELS = { g: 'g', ml: 'ml', count: '' };
 
@@ -33,6 +35,15 @@ export function unitLabel(unit) {
  */
 export function plural(count, noun) {
 	return `${count} ${noun}${count === 1 ? '' : 's'}`;
+}
+
+/**
+ * A number with its noun and its verb, for example "1 item is" or "3 items are".
+ * @param {number} count
+ * @param {string} noun
+ */
+export function pluralIs(count, noun) {
+	return `${plural(count, noun)} ${count === 1 ? 'is' : 'are'}`;
 }
 
 /** A list of names shows this many. The others are a count. */
@@ -87,7 +98,7 @@ export function formatDate(date) {
  * @param {string | number} date
  */
 export function formatAgo(date) {
-	const days = Math.round((Date.now() - new Date(date).getTime()) / (24 * 60 * 60 * 1000));
+	const days = Math.round((Date.now() - new Date(date).getTime()) / DAY);
 	return new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(-days, 'day');
 }
 
@@ -98,7 +109,7 @@ export function formatAgo(date) {
 export function formatWhen(ms) {
 	const date = new Date(ms);
 	const start = (/** @type {Date} */ day) => new Date(day).setHours(0, 0, 0, 0);
-	const days = Math.round((start(date) - start(new Date())) / (24 * 60 * 60 * 1000));
+	const days = Math.round((start(date) - start(new Date())) / DAY);
 	const day =
 		days >= 0 && days <= 1
 			? new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(days, 'day')

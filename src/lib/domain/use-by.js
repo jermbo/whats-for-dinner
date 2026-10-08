@@ -1,4 +1,5 @@
 // The use-by date of the food in stock: how long a food keeps, and how many days are left.
+import { DAY } from '$lib/util/time';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -6,8 +7,6 @@
  * @typedef {import('$lib/types').UseWithin} UseWithin
  * @typedef {{ text: string, urgent: boolean }} UseByBadge
  */
-
-const DAY = 24 * 60 * 60 * 1000;
 
 /** The usual days of a perishable food, by its category, until the owner gives a number. */
 const USUAL_DAYS = /** @type {Record<string, number>} */ ({

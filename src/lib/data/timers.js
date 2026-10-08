@@ -1,4 +1,5 @@
 import { newId } from '$lib/util/ids';
+import { SECOND } from '$lib/util/time';
 import { changeSession } from './cooking';
 
 /**
@@ -9,7 +10,7 @@ import { changeSession } from './cooking';
  * @param {{ stepId: string, index: number, seconds: number }} time
  */
 export function startTimer(sessionId, { stepId, index, seconds }) {
-	const endsAt = new Date(Date.now() + seconds * 1000).toISOString();
+	const endsAt = new Date(Date.now() + seconds * SECOND).toISOString();
 	return changeSession(sessionId, (session) => ({
 		timers: [
 			...session.timers.filter((timer) => timer.stepId !== stepId || timer.index !== index),

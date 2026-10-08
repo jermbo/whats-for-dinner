@@ -475,7 +475,7 @@
 
 		/* The bar shows the focus, and not the text field in it. */
 		&:focus-within {
-			outline: 3px solid var(--ink);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
 		}
 	}

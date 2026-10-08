@@ -1,4 +1,5 @@
 import { db } from '$lib/db/db';
+import { findByName, sameName } from '$lib/domain/ingredients';
 import { newId, now } from '$lib/util/ids';
 
 /** @typedef {import('$lib/types').Ingredient} Ingredient */
@@ -11,13 +12,11 @@ import { newId, now } from '$lib/util/ids';
  */
 export function addManualItem(name, ingredients) {
 	const text = name.trim();
-	const match = ingredients.find((i) => i.name.toLowerCase() === text.toLowerCase());
+	const match = findByName(ingredients, text);
 	const label = match?.name ?? text;
 
 	return db.transaction('rw', db.shopping, async () => {
-		const same = await db.shopping
-			.filter((item) => item.name.toLowerCase() === label.toLowerCase())
-			.first();
+		const same = await db.shopping.filter((item) => sameName(item.name, label)).first();
 		// An item that the pantry sent stays on the list now, also when it is not low.
 		if (same?.fromPantry) await db.shopping.update(same.id, { fromPantry: false });
 		if (same) return;

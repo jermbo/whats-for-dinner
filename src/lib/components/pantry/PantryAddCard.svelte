@@ -3,6 +3,7 @@
 	import LevelSlider from '$lib/components/ui/LevelSlider.svelte';
 	import { saveIngredient } from '$lib/data/ingredients';
 	import { addByHand } from '$lib/data/pantry';
+	import { findByName } from '$lib/domain/ingredients';
 	import { LOCATIONS, UNIT_CHOICES, labelOf } from '$lib/domain/options';
 	import { defaultLocation } from '$lib/domain/pantry';
 	import { addScale, pantryScale } from '$lib/domain/pantry-scale';
@@ -38,9 +39,7 @@
 	let unit = $state(/** @type {import('$lib/types').Unit} */ ('g'));
 
 	const text = $derived(name.trim());
-	const known = $derived(
-		ingredients.find((ingredient) => ingredient.name.toLowerCase() === text.toLowerCase())
-	);
+	const known = $derived(findByName(ingredients, text));
 	/** The item of the ingredient, when the pantry has it. */
 	const item = $derived(known && pantryByIngredient.get(known.id));
 	/** A "have, low, or out" ingredient has no amount. */

@@ -310,7 +310,7 @@
 
 	/* A meal that the owner cooks stays on top with an ink outline. */
 	.meal-card__front--cooking {
-		outline: 3px solid var(--ink);
+		outline: var(--focus-ring);
 		outline-offset: -3px;
 	}
 

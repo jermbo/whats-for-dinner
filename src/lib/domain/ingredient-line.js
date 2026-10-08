@@ -1,3 +1,5 @@
+import { findByName } from './ingredients';
+
 /** @typedef {import('$lib/types').Ingredient} Ingredient */
 
 const NUMBER = String.raw`\d+(?:[.,]\d+)?`;
@@ -33,10 +35,10 @@ export function parseLine(line) {
  * @returns {{ ingredient?: Ingredient, many: boolean }} many: more than one name starts with it.
  */
 export function findIngredient(name, ingredients) {
-	const lower = name.toLowerCase();
-	const same = ingredients.find((ingredient) => ingredient.name.toLowerCase() === lower);
+	const same = findByName(ingredients, name);
 	if (same) return { ingredient: same, many: false };
 
+	const lower = name.toLowerCase();
 	const starts = ingredients.filter((ingredient) =>
 		ingredient.name.toLowerCase().startsWith(lower)
 	);

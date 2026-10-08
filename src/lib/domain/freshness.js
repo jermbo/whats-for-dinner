@@ -1,9 +1,9 @@
+import { DAY } from '$lib/util/time';
+
 /**
  * @typedef {import('$lib/types').PantryItem} PantryItem
  * @typedef {import('$lib/types').PantryChange} PantryChange
  */
-
-const DAY = 24 * 60 * 60 * 1000;
 
 /**
  * The time when the pantry got new stock of an item: the last purchase, or the last correction

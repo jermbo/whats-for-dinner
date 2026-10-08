@@ -15,6 +15,7 @@ import {
 } from '$lib/domain/menu-plan';
 import { nightOf } from '$lib/domain/nights';
 import { useUpIdeas } from '$lib/domain/use-up';
+import { MINUTE } from '$lib/util/time';
 import { useClock } from './clock.svelte';
 import { useCookHistory } from './cook-history.svelte';
 import { useKitchen } from './kitchen.svelte';
@@ -40,7 +41,7 @@ export function useMenuPlan(view) {
 	const history = useCookHistory();
 	const preferences = usePreferences();
 	// A meal becomes ready when its lead time is over, so the clock must move.
-	const clock = useClock(60_000);
+	const clock = useClock(MINUTE);
 	const food = useSoon(() => clock.now);
 	/** Not defined until the database gives the plan. Null: there is no plan yet. */
 	const stored = live(

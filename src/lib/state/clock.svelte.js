@@ -1,3 +1,5 @@
+import { SECOND } from '$lib/util/time';
+
 /**
  * The time of now, which moves while a component uses it. A timer shows the difference
  * between its end time and this time.
@@ -5,7 +7,7 @@
  * @param {number} [interval] The time between two moves, in milliseconds.
  * @returns {{ readonly now: number }}
  */
-export function useClock(interval = 1000) {
+export function useClock(interval = SECOND) {
 	let now = $state(Date.now());
 
 	$effect(() => {

@@ -1,6 +1,7 @@
-/** @typedef {import('$lib/types').Recipe} Recipe */
+import { HOUR } from '$lib/util/time';
+import { sessionMinutes } from './cook-session';
 
-const HOUR = 60 * 60 * 1000;
+/** @typedef {import('$lib/types').Recipe} Recipe */
 
 /**
  * The most characters that the form accepts in the name of a recipe. A name is a title on a card
@@ -53,12 +54,7 @@ const QUICK_MINUTES = 30;
  * @returns {number | null}
  */
 export function cookMinutes(recipe, last) {
-	if (last?.startedAt && last.cookedAt) {
-		const minutes = (Date.parse(last.cookedAt) - Date.parse(last.startedAt)) / 60_000;
-		// A session of less than a minute is a tap on "Cooked", and not a cook.
-		if (minutes >= 1) return Math.round(minutes);
-	}
-	return recipe.minutes ?? null;
+	return sessionMinutes(last) ?? recipe.minutes ?? null;
 }
 
 /**

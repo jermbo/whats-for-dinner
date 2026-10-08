@@ -1,4 +1,5 @@
 import { round } from '$lib/util/format';
+import { inTapOrder } from './cart';
 
 /**
  * @typedef {import('$lib/types').Purchase} Purchase
@@ -29,7 +30,7 @@ export function tripCost(purchases) {
 export function lastPrices(purchases) {
 	/** @type {Map<string, number>} */
 	const prices = new Map();
-	for (const purchase of purchases.toSorted((a, b) => a.cartAt.localeCompare(b.cartAt))) {
+	for (const purchase of inTapOrder(purchases)) {
 		if (purchase.productId && purchase.price !== null) {
 			prices.set(purchase.productId, purchase.price);
 		}

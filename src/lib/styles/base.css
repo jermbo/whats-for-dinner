@@ -56,7 +56,7 @@ a {
 }
 
 :focus-visible {
-	outline: 3px solid var(--ink);
+	outline: var(--focus-ring);
 	outline-offset: 2px;
 	/* A second ring in white keeps the focus visible on an ink or olive surface. */
 	box-shadow: 0 0 0 5px var(--card);

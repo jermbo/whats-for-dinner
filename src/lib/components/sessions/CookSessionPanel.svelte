@@ -5,6 +5,7 @@
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import RatingInput from '$lib/components/ui/RatingInput.svelte';
 	import { setLeftovers, undoCook, updateSession } from '$lib/data/cooking';
+	import { sessionMinutes } from '$lib/domain/cook-session';
 	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { status } from '$lib/state/status.svelte';
 	import { formatQuantity, plural } from '$lib/util/format';
@@ -12,7 +13,6 @@
 
 	/** A session that is this new shows the change of the pantry as it occurs, in milliseconds. */
 	const FRESH_MS = 20_000;
-	const MINUTE = 60 * 1000;
 
 	/**
 	 * The screen after "Cooked": what the pantry lost, plus the optional photo of the finished
@@ -46,12 +46,8 @@
 			: []
 	);
 
-	/** The minutes from the start of Cook mode to "Cooked". Zero: the session has no start. */
-	const minutes = $derived.by(() => {
-		const current = session;
-		if (!current?.startedAt || !current.cookedAt) return 0;
-		return Math.round((Date.parse(current.cookedAt) - Date.parse(current.startedAt)) / MINUTE);
-	});
+	/** The minutes from the start of Cook mode to "Cooked". Zero: the session has no cook time. */
+	const minutes = $derived(sessionMinutes(session) ?? 0);
 
 	/** @param {import('$lib/types').CookSession} current */
 	async function undo(current) {

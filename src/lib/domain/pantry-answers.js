@@ -1,5 +1,5 @@
 // The two answers of the pantry in words: what must I use, and what must I buy?
-import { nameList, plural } from '$lib/util/format';
+import { nameList, pluralIs } from '$lib/util/format';
 import { leftText } from './use-by';
 
 /**
@@ -35,5 +35,5 @@ export function belowSentence(below, toShop) {
 	const listed = below.length - toShop;
 	if (listed === 0) return `${names}.`;
 	if (toShop === 0) return `${names}. All are on the Shop list.`;
-	return `${names}. ${plural(listed, 'item')} ${listed === 1 ? 'is' : 'are'} on the Shop list already.`;
+	return `${names}. ${pluralIs(listed, 'item')} on the Shop list already.`;
 }

@@ -20,6 +20,7 @@
 	} from '$lib/motion/hand';
 	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import { status } from '$lib/state/status.svelte';
+	import { SECOND } from '$lib/util/time';
 	import HandActions from './HandActions.svelte';
 
 	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
@@ -218,7 +219,7 @@
 			order = pileIds(pile);
 			await tick();
 			settle(true);
-			await wait((cards.length * DROP_GAP_S + 0.5) * 1000);
+			await wait((cards.length * DROP_GAP_S + 0.5) * SECOND);
 			down = false;
 		}
 

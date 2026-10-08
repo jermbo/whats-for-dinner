@@ -77,6 +77,9 @@
 	--rule-4: 4px;
 	--rule-8: 8px;
 
+	/* The ring of the element that has the focus. */
+	--focus-ring: 3px solid var(--ink);
+
 	/* A card. A button and a field. A sticker: a flag that sits on an edge. */
 	--radius: 0.75rem;
 	--radius-control: 0.5rem;

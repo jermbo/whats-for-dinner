@@ -23,7 +23,7 @@
 	import { rise } from '$lib/motion/transitions';
 	import { useShopping } from '$lib/state/shopping.svelte';
 	import { status } from '$lib/state/status.svelte';
-	import { plural } from '$lib/util/format';
+	import { plural, pluralIs } from '$lib/util/format';
 
 	/** @typedef {import('$lib/domain/put-away').CartEntry} CartEntry */
 
@@ -97,7 +97,7 @@
 	async function putAllAway() {
 		const count = waiting.length;
 		await putAway(waiting.map(toLine));
-		status.say(`${plural(count, 'item')} ${count === 1 ? 'is' : 'are'} put away.`);
+		status.say(`${pluralIs(count, 'item')} put away.`);
 	}
 
 	/** @param {CartEntry} entry */
