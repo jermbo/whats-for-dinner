@@ -1,12 +1,13 @@
 <script>
-	import { autosave } from '$lib/autosave.svelte';
 	import IngredientDialog from '$lib/components/ingredients/IngredientDialog.svelte';
-	import { blankIngredient } from '$lib/data/ingredients';
-	import { hasContent, RECIPE_NAME_MAX, saveRecipe } from '$lib/data/recipes';
-	import { endWithEmptyStep } from '$lib/data/step-list';
-	import { sortByName } from '$lib/util/collections';
 	import CharCount from '$lib/components/ui/CharCount.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
+	import { saveRecipe } from '$lib/data/recipes';
+	import { blankIngredient } from '$lib/domain/ingredients';
+	import { hasContent, RECIPE_NAME_MAX } from '$lib/domain/recipes';
+	import { endWithEmptyStep } from '$lib/domain/step-list';
+	import { autosave } from '$lib/state/autosave.svelte';
+	import { sortByName } from '$lib/util/collections';
 	import RecipeDetailsFields from './RecipeDetailsFields.svelte';
 	import RecipeIngredientFields from './RecipeIngredientFields.svelte';
 	import StepFields from './StepFields.svelte';

@@ -1,21 +1,15 @@
 <script>
-	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import ActionBar from '$lib/components/ui/ActionBar.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { pantryCount } from '$lib/data/availability';
-	import { stepsToCook } from '$lib/data/cook-cards';
-	import { isCooking, startCook } from '$lib/data/cooking';
-	import { finishedPhotos } from '$lib/data/finished-photos';
-	import { addToMenu } from '$lib/data/menu';
-	import { MEAL_TYPES, labelOf } from '$lib/data/options';
-	import { shareRecipe } from '$lib/data/share';
-	import { notesByStep } from '$lib/data/step-notes';
-	import { db } from '$lib/db/db';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
-	import { indexBy } from '$lib/util/collections';
+	import { pantryCount } from '$lib/domain/availability';
+	import { stepsToCook } from '$lib/domain/cook-cards';
+	import { isCooking } from '$lib/domain/cook-session';
+	import { finishedPhotos } from '$lib/domain/finished-photos';
+	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
+	import { notesByStep } from '$lib/domain/step-notes';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import CookHistory from './CookHistory.svelte';
 	import CoverCarousel from './CoverCarousel.svelte';
 	import PantryCount from './PantryCount.svelte';
@@ -24,37 +18,39 @@
 	import RecipeSource from './RecipeSource.svelte';
 	import RecipeStepRow from './RecipeStepRow.svelte';
 
-	/** @type {{ id: string }} */
-	let { id } = $props();
+	/**
+	 * The page of one recipe: its card at the side, and its steps and its cook history.
+	 * @type {{
+	 *   recipe: import('$lib/types').Recipe,
+	 *   sessions: import('$lib/types').CookSession[],
+	 *   item?: import('$lib/types').MenuItem,
+	 *   onadd: () => void,
+	 *   oncook: () => void,
+	 *   onshare: () => void
+	 * }}
+	 *   sessions: all cook sessions of the recipe. item: the recipe as a meal on the menu.
+	 */
+	let { recipe, sessions, item, onadd, oncook, onshare } = $props();
 
-	const recipe = live(() => db.recipes.get(id), undefined);
-	const sessions = live(() => db.sessions.where('recipeId').equals(id).toArray(), []);
-	const ingredients = live(() => db.ingredients.toArray(), []);
-	const pantry = live(() => db.pantry.toArray(), []);
-	const menu = live(() => db.menu.where('recipeId').equals(id).toArray(), []);
+	const uid = $props.id();
 
-	/** The recipe as a meal to cook on the menu. Leftovers are a different meal. */
-	const item = $derived(menu.current.find((entry) => entry.kind === 'recipe'));
-	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
-	const pantryByIngredient = $derived(indexBy(pantry.current, 'ingredientId'));
+	const kitchen = useKitchen();
+	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
+	const id = $derived(recipe.id);
 
 	/** The cook history has only the meals that are cooked. An open session is not history. */
-	const cooked = $derived(sessions.current.filter((session) => session.cookedAt));
+	const cooked = $derived(sessions.filter((session) => session.cookedAt));
 	const cooking = $derived(
-		sessions.current.some(
+		sessions.some(
 			(session) =>
 				!session.cookedAt && session.menuItem.id === item?.id && isCooking(session, Date.now())
 		)
 	);
-	const notes = $derived(notesByStep(sessions.current));
-	const photos = $derived(recipe.current ? finishedPhotos(recipe.current, sessions.current) : []);
-	const steps = $derived(recipe.current ? stepsToCook(recipe.current) : []);
+	const notes = $derived(notesByStep(sessions));
+	const photos = $derived(finishedPhotos(recipe, sessions));
+	const steps = $derived(stepsToCook(recipe));
 
-	const count = $derived(
-		recipe.current
-			? pantryCount(recipe.current, ingredientsById, pantryByIngredient)
-			: { have: 0, need: 0 }
-	);
+	const count = $derived(pantryCount(recipe, ingredientsById, pantryByIngredient));
 	const toBuy = $derived(count.need - count.have);
 
 	/** The label tells the result before the tap: how many ingredients the owner must buy. */
@@ -62,125 +58,101 @@
 		if (count.need === 0) return 'Add to the menu';
 		return toBuy > 0 ? `Add to the menu · ${toBuy} to buy` : 'Add to the menu · the pantry has all';
 	});
-
-	async function add() {
-		await addToMenu(id);
-		status.say('Added to the menu.');
-	}
-
-	async function cook() {
-		if (!item) return;
-		const sessionId = await startCook(item);
-		goto(resolve('/cook/[id]', { id: sessionId }));
-	}
-
-	async function share() {
-		if (!recipe.current) return;
-		const result = await shareRecipe(recipe.current);
-		if (result === 'downloaded') status.say('The recipe file is in the downloads.');
-	}
 </script>
 
-{#if recipe.current}
-	{@const current = recipe.current}
-
-	<!--
+<!--
 		The photo, the name, and the ingredients are the card of the recipe: the side column, at
 		the left, which stays in view. The work is the main column.
 	-->
-	<div class="split split--reverse split--loose">
-		<div class="split__side split__side--sticky">
-			<!-- With two or more finished photos, the owner swipes them and selects the cover. -->
-			{#if photos.length > 1}
-				<CoverCarousel recipe={current} {photos} />
-			{:else}
-				<RecipePhoto recipe={current} variant="hero" />
-			{/if}
+<div class="split split--reverse split--loose">
+	<div class="split__side split__side--sticky">
+		<!-- With two or more finished photos, the owner swipes them and selects the cover. -->
+		{#if photos.length > 1}
+			<CoverCarousel {recipe} {photos} />
+		{:else}
+			<RecipePhoto {recipe} variant="hero" />
+		{/if}
 
-			<PageHeader title={current.name}>
-				<button class="button recipe-detail__share" type="button" onclick={share}>
-					<Icon name="share" />
-					Share
+		<PageHeader title={recipe.name}>
+			<button class="button recipe-detail__share" type="button" onclick={onshare}>
+				<Icon name="share" />
+				Share
+			</button>
+			<a class="button" href={resolve('/recipes/[id]/edit', { id })}>Edit</a>
+		</PageHeader>
+
+		<p class="muted">
+			{labelOf(MEAL_TYPES, recipe.mealType)} · {recipe.servings} servings
+			{#if recipe.inRotation}· In rotation{/if}
+		</p>
+
+		<RecipeSource source={recipe.source} />
+
+		{#if !item}
+			<ActionBar>
+				<button class="button button--primary button--wide" type="button" onclick={onadd}>
+					{addLabel}
 				</button>
-				<a class="button" href={resolve('/recipes/[id]/edit', { id })}>Edit</a>
-			</PageHeader>
-
-			<p class="muted">
-				{labelOf(MEAL_TYPES, current.mealType)} · {current.servings} servings
-				{#if current.inRotation}· In rotation{/if}
-			</p>
-
-			<RecipeSource source={current.source} />
-
-			{#if !item}
+			</ActionBar>
+		{:else}
+			<div>
+				<span class="badge badge--good">On the menu</span>
+			</div>
+			{#if steps.length > 0}
 				<ActionBar>
-					<button class="button button--primary button--wide" type="button" onclick={add}>
-						{addLabel}
+					<button class="button button--primary button--wide" type="button" onclick={oncook}>
+						{cooking ? 'Continue to cook' : 'Cook'}
 					</button>
 				</ActionBar>
-			{:else}
-				<div>
-					<span class="badge badge--good">On the menu</span>
-				</div>
-				{#if steps.length > 0}
-					<ActionBar>
-						<button class="button button--primary button--wide" type="button" onclick={cook}>
-							{cooking ? 'Continue to cook' : 'Cook'}
-						</button>
-					</ActionBar>
-				{/if}
-				{#if toBuy > 0}
-					<a class="button" href={resolve('/shop')}>Open the shopping list</a>
-				{/if}
 			{/if}
-
-			<section class="stack stack--tight" aria-labelledby="recipe-ingredients">
-				<div class="cluster cluster--between">
-					<h2 id="recipe-ingredients">Ingredients</h2>
-					<PantryCount {...count} />
-				</div>
-				<RecipeIngredientList recipe={current} {ingredientsById} {pantryByIngredient} />
-			</section>
-		</div>
-
-		<div class="stack">
-			{#if current.prepSteps.length > 0}
-				<section class="stack stack--tight" aria-labelledby="recipe-prep">
-					<h2 id="recipe-prep">Preparation</h2>
-					<ul>
-						{#each current.prepSteps as step, index (index)}
-							<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
-						{/each}
-					</ul>
-				</section>
+			{#if toBuy > 0}
+				<a class="button" href={resolve('/shop')}>Open the shopping list</a>
 			{/if}
+		{/if}
 
-			{#if steps.length > 0}
-				<section class="stack stack--tight" aria-labelledby="recipe-steps">
-					<h2 id="recipe-steps">Steps</h2>
-					<ol class="recipe-detail__steps">
-						{#each steps as step, index (step.id)}
-							<RecipeStepRow
-								recipeId={id}
-								{step}
-								number={index + 1}
-								notes={notes.get(step.id) ?? []}
-							/>
-						{/each}
-					</ol>
-				</section>
-			{/if}
-
-			<section class="stack stack--tight" aria-labelledby="recipe-history">
-				<h2 id="recipe-history">Cook history</h2>
-				<CookHistory sessions={cooked} recipe={current} />
-			</section>
-		</div>
+		<section class="stack stack--tight" aria-labelledby="{uid}-ingredients">
+			<div class="cluster cluster--between">
+				<h2 id="{uid}-ingredients">Ingredients</h2>
+				<PantryCount {...count} />
+			</div>
+			<RecipeIngredientList {recipe} {ingredientsById} {pantryByIngredient} />
+		</section>
 	</div>
-{:else}
-	<PageHeader title="Recipe" />
-	<p class="muted">This recipe is not on this device.</p>
-{/if}
+
+	<div class="stack">
+		{#if recipe.prepSteps.length > 0}
+			<section class="stack stack--tight" aria-labelledby="{uid}-prep">
+				<h2 id="{uid}-prep">Preparation</h2>
+				<ul>
+					{#each recipe.prepSteps as step, index (index)}
+						<li>{step.text} <span class="muted">({step.leadHours} hours before)</span></li>
+					{/each}
+				</ul>
+			</section>
+		{/if}
+
+		{#if steps.length > 0}
+			<section class="stack stack--tight" aria-labelledby="{uid}-steps">
+				<h2 id="{uid}-steps">Steps</h2>
+				<ol class="recipe-detail__steps">
+					{#each steps as step, index (step.id)}
+						<RecipeStepRow
+							recipeId={id}
+							{step}
+							number={index + 1}
+							notes={notes.get(step.id) ?? []}
+						/>
+					{/each}
+				</ol>
+			</section>
+		{/if}
+
+		<section class="stack stack--tight" aria-labelledby="{uid}-history">
+			<h2 id="{uid}-history">Cook history</h2>
+			<CookHistory sessions={cooked} {recipe} />
+		</section>
+	</div>
+</div>
 
 <style>
 	.recipe-detail__steps {

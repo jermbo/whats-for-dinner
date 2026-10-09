@@ -1,4 +1,5 @@
-import { download, exportRecipes, fileName, fileText } from './backup';
+import { exportRecipes } from './backup';
+import { download, fileName, fileText } from './backup-file';
 
 /**
  * Makes the recipe file of one recipe and gives it to the owner.

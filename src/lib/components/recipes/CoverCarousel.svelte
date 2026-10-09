@@ -2,7 +2,7 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
 	import { setCover } from '$lib/data/finished-photos';
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { formatDate } from '$lib/util/format';
 
 	/**
@@ -13,7 +13,7 @@
 	 * The next photo shows a part of itself at the edge, so the row tells that it moves.
 	 * @type {{
 	 *   recipe: import('$lib/types').Recipe,
-	 *   photos: import('$lib/data/finished-photos').FinishedPhoto[]
+	 *   photos: import('$lib/domain/finished-photos').FinishedPhoto[]
 	 * }}
 	 */
 	let { recipe, photos } = $props();

@@ -1,163 +1,49 @@
 <script>
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import MealHand from '$lib/components/menu/MealHand.svelte';
-	import PantryIdeas from '$lib/components/menu/PantryIdeas.svelte';
 	import CartReminder from '$lib/components/shop/CartReminder.svelte';
 	import EmptyHand from '$lib/components/today/EmptyHand.svelte';
 	import HandNext from '$lib/components/today/HandNext.svelte';
+	import MealHand from '$lib/components/today/MealHand.svelte';
+	import PantryIdeas from '$lib/components/today/PantryIdeas.svelte';
 	import ShopGlance from '$lib/components/today/ShopGlance.svelte';
+	import TodayLines from '$lib/components/today/TodayLines.svelte';
 	import UseSoonList from '$lib/components/today/UseSoonList.svelte';
 	import WeekBoard from '$lib/components/today/WeekBoard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { canMake } from '$lib/data/availability';
-	import { cook, cookedSessions, isCooking, openSessions, startCook } from '$lib/data/cooking';
-	import { addToMenu, markPrepDone, menuEntries, recipesOnMenu } from '$lib/data/menu';
-	import { menuTotals } from '$lib/data/shopping';
-	import { oldestUse, useSoon, useUpIdeas } from '$lib/data/use-up';
-	import { weekPlan } from '$lib/data/week';
-	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { useShopCount } from '$lib/shop-count.svelte';
-	import { status } from '$lib/status.svelte';
-	import { groupBy, indexBy } from '$lib/util/collections';
-	import { greeting, nowMs, plural, todayInWords } from '$lib/util/format';
-
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
-
-	const kitchen = useKitchen();
-	const shop = useShopCount();
-	const sessions = live(cookedSessions, []);
-	const open = live(openSessions, []);
-	const log = live(() => db.pantryLog.orderBy('at').toArray(), []);
-
-	/** The last cook session of each recipe. The sessions are oldest first, so the last one stays. */
-	const lastSessions = $derived(indexBy(sessions.current, 'recipeId'));
-
-	let time = $state(nowMs());
-
-	// A meal becomes ready when its lead time is over, so the clock must move.
-	onMount(() => {
-		const timer = setInterval(() => (time = nowMs()), 60_000);
-		return () => clearInterval(timer);
-	});
-
-	const entries = $derived(menuEntries(kitchen.menu, kitchen.recipesById, time));
-
-	/** The meals that you can cook now. */
-	const ready = $derived(entries.filter((entry) => entry.state === 'ready'));
-	const todo = $derived(entries.filter((entry) => entry.state === 'todo'));
+	import { addAndStartCook, cook, startCook } from '$lib/data/cooking';
+	import { addToMenu, markPrepDone } from '$lib/data/menu';
+	import { orderIn, prepareForTomorrow, startPreparation } from '$lib/data/menu-plan';
+	import { usePreferences } from '$lib/state/preferences.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
+	import { status } from '$lib/state/status.svelte';
+	import { useToday } from '$lib/state/today.svelte';
+	import { todayInWords } from '$lib/util/format';
 
 	/**
-	 * The food to use first, the oldest stock first.
-	 * Assumption: the age of the stock tells what spoils first. The ingredients have no shelf life.
+	 * @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry
+	 * @typedef {import('$lib/domain/today-lines').TodayLine} TodayLine
 	 */
-	const soon = $derived(
-		useSoon(
-			kitchen.pantry,
-			kitchen.ingredientsById,
-			new Map(groupBy(log.current, (change) => change.ingredientId)),
-			menuTotals(kitchen.menu, kitchen.recipesById),
-			time
-		)
-	);
 
-	/** The meals that the owner is in the middle of, by menu item ID. Their cards show the steps. */
-	const cooking = $derived(
-		new Map(
-			open.current
-				.filter((session) => isCooking(session, time))
-				.map((session) => [session.menuItem.id, session])
-		)
-	);
+	const today = useToday();
+	const shopping = useShopping();
+	const preferences = usePreferences();
 
-	/**
-	 * The hand: the meals that the owner cooks now, then the ready meals, then the meals that
-	 * wait, then the preparation to do. In one group, the meal with the oldest food is first.
-	 */
-	const STATE_ORDER = { ready: 0, waiting: 1, todo: 2 };
-	const hand = $derived(
-		entries.toSorted(
-			(a, b) =>
-				Number(cooking.has(b.item.id)) - Number(cooking.has(a.item.id)) ||
-				STATE_ORDER[a.state] - STATE_ORDER[b.state] ||
-				(oldestUse(b.recipe, soon)?.days ?? -1) - (oldestUse(a.recipe, soon)?.days ?? -1) ||
-				(a.readyAt ?? 0) - (b.readyAt ?? 0)
-		)
-	);
-
-	const onMenu = $derived(recipesOnMenu(kitchen.menu));
-
-	/** The meals that the pantry can make, when no meal on the menu is ready. */
-	const ideas = $derived(
-		ready.length > 0 || cooking.size > 0
-			? []
-			: useUpIdeas(
-					kitchen.recipes.filter(
-						(recipe) =>
-							!onMenu.has(recipe.id) &&
-							recipe.prepSteps.length === 0 &&
-							canMake(recipe, kitchen.ingredientsById, kitchen.pantryByIngredient)
-					),
-					soon,
-					kitchen.ingredientsById,
-					kitchen.pantryByIngredient
-				)
-	);
-
-	const week = $derived(weekPlan(sessions.current, kitchen.menu, time));
-
-	/** @param {Date} date */
-	const clockTime = (date) =>
-		date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false });
-
-	/** The title of the screen: one word, or a short phrase, that tells the state of the day. */
-	const heading = $derived.by(() => {
-		if (cooking.size > 0) return 'On the stove';
-		if (entries.length === 0) return ideas.length > 0 ? 'Nothing is ready' : greeting();
-		return ready.length === 0 && todo.length === 0 ? 'Nothing is ready' : greeting();
-	});
-
-	/** One sentence under the title. It names the reason for the order of the hand. */
-	const subline = $derived.by(() => {
-		if (cooking.size > 0) {
-			const ends = [...cooking.values()]
-				.flatMap((session) => session.timers.map((timer) => Date.parse(timer.endsAt)))
-				.filter((end) => end > time);
-			if (ends.length > 0) return `The timer ends at ${clockTime(new Date(Math.min(...ends)))}.`;
-			const name = hand[0]?.recipe.name ?? 'The meal';
-			return `${name} is in progress.`;
-		}
-		if (entries.length === 0) {
-			return ideas.length > 0
-				? `The pantry can still make ${plural(ideas.length, 'meal')}.`
-				: 'Your hand is empty.';
-		}
-		if (ready.length > 0) {
-			const first = oldestUse(hand[0].recipe, soon);
-			const count = `${plural(ready.length, 'meal')} ${ready.length === 1 ? 'is' : 'are'} ready.`;
-			return first ? `${count} The ${first.ingredient.name.toLowerCase()} goes first.` : count;
-		}
-		if (todo.length > 0) {
-			return todo.length === 1
-				? 'One thing to start first.'
-				: `${plural(todo.length, 'thing')} to start first.`;
-		}
-		return 'Wait for the next meal.';
+	/** The title block of the screen. */
+	const header = $derived({
+		title: 'Today',
+		heading: today.heading,
+		eyebrow: todayInWords(),
+		subline: today.subline
 	});
 
 	/** The food names for the line of the empty hand. */
 	const soonNames = $derived(
-		soon
+		today.soon
 			.filter((item) => item.free > 0)
 			.slice(0, 2)
 			.map((item) => item.ingredient.name)
 	);
-
-	/** The title block of the screen. */
-	const header = $derived({ title: 'Today', heading, eyebrow: todayInWords(), subline });
 
 	/** @param {MenuEntry} entry */
 	async function start(entry) {
@@ -177,6 +63,23 @@
 		status.say(`Preparation is done for ${entry.recipe.name}.`);
 	}
 
+	/** @param {TodayLine} line */
+	async function started({ entry, frozen }) {
+		await startPreparation(entry.item, frozen);
+		status.say(`Preparation is done for ${entry.recipe.name}.`);
+	}
+
+	/** @param {TodayLine} line */
+	async function forTomorrow({ entry, frozen }) {
+		await prepareForTomorrow(entry.item, frozen);
+		status.say(`${entry.recipe.name} is the meal of tomorrow.`);
+	}
+
+	async function ordered() {
+		await orderIn();
+		status.say('Each meal moved one night.');
+	}
+
 	/** @param {import('$lib/types').Recipe} recipe */
 	async function add(recipe) {
 		await addToMenu(recipe.id);
@@ -185,24 +88,25 @@
 
 	/** @param {import('$lib/types').Recipe} recipe */
 	async function cookNow(recipe) {
-		const itemId = await addToMenu(recipe.id);
-		const item = await db.menu.get(itemId);
-		if (!item) return;
-		const id = await startCook(item);
-		goto(resolve('/cook/[id]', { id }));
+		const id = await addAndStartCook(recipe.id);
+		if (id) goto(resolve('/cook/[id]', { id }));
 	}
 </script>
+
+{#snippet lines()}
+	<TodayLines lines={today.lines} ondone={started} ontomorrow={forTomorrow} onorder={ordered} />
+{/snippet}
 
 <!-- The hand is the main column. The plan of the week and of the food is the side column. -->
 <div class="split split--loose today">
 	<div class="today__main">
-		{#if hand.length > 0}
+		{#if today.hand.length > 0}
 			<MealHand
-				entries={hand}
-				{kitchen}
-				{lastSessions}
-				{soon}
-				{cooking}
+				entries={today.hand}
+				lastSessions={today.lastSessions}
+				soon={today.soon}
+				cooking={today.cooking}
+				toBuy={today.toBuy}
 				onstart={start}
 				oncook={cooked}
 				onprep={prepared}
@@ -214,28 +118,30 @@
 					<PageHeader {...header} aside={count}>
 						<CartReminder />
 					</PageHeader>
+					{@render lines()}
 				{/snippet}
 			</MealHand>
 		{:else}
 			<PageHeader {...header}>
 				<CartReminder />
 			</PageHeader>
-			{#if ideas.length === 0}
-				<EmptyHand soon={soonNames} />
+			{@render lines()}
+			{#if today.ideas.length === 0}
+				<EmptyHand meals={preferences.values.mealsInWeek} soon={soonNames} />
 			{/if}
 		{/if}
 
-		{#if ideas.length > 0}
-			<PantryIdeas {ideas} oncook={cookNow} onadd={add} />
+		{#if today.ideas.length > 0}
+			<PantryIdeas ideas={today.ideas} oncook={cookNow} onadd={add} />
 		{/if}
 	</div>
 
 	<div class="split__side today__side">
 		<div class="split__extra">
 			<div class="today__panels">
-				<WeekBoard {...week} />
-				<UseSoonList items={soon} />
-				<ShopGlance names={shop.names} />
+				<WeekBoard {...today.week} />
+				<UseSoonList items={today.soon} />
+				<ShopGlance names={shopping.needed.map((row) => row.name)} />
 			</div>
 		</div>
 
@@ -268,9 +174,10 @@
 		/*
 		 * A tall screen: the page has the height of the screen, and nothing scrolls. The hand fills
 		 * the main column. Offers from the pantry go below the hand, and the page scrolls to them. The side column
-		 * goes to the top, the bottom, and the right edge of the screen.
+		 * goes to the top, the bottom, and the right edge of the screen. The same condition is in
+		 * MealHand: it tells why the screen must be this tall.
 		 */
-		@media (min-height: 36rem) {
+		@media (min-height: 52rem) {
 			.today {
 				grid-template-rows: minmax(0, 1fr);
 				block-size: calc(100dvh - 2 * var(--space-8));

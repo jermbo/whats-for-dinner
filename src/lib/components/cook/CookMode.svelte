@@ -1,60 +1,55 @@
 <script>
 	import { onMount } from 'svelte';
+	import { SvelteMap } from 'svelte/reactivity';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
-	import Icon from '$lib/components/ui/Icon.svelte';
-	import { useClock } from '$lib/clock.svelte';
-	import { cookCards } from '$lib/data/cook-cards';
 	import { cook, visitCard } from '$lib/data/cooking';
-	import { notesByStep } from '$lib/data/step-notes';
 	import { stopTimer } from '$lib/data/timers';
-	import { db } from '$lib/db/db';
+	import { cookCards } from '$lib/domain/cook-cards';
+	import { notesByStep } from '$lib/domain/step-notes';
 	import { cardSides } from '$lib/input/card-sides';
 	import { keepScreenOn } from '$lib/input/wake-lock';
-	import { live } from '$lib/live.svelte';
 	import { turnPage } from '$lib/motion/transitions';
-	import { chime, unlockSound } from '$lib/sound/chime';
-	import { status } from '$lib/status.svelte';
-	import { indexBy } from '$lib/util/collections';
+	import { unlockSound } from '$lib/sound/chime';
+	import { useClock } from '$lib/state/clock.svelte';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { usePreferences } from '$lib/state/preferences.svelte';
+	import { status } from '$lib/state/status.svelte';
+	import { useTimerBell } from '$lib/state/timer-bell.svelte';
 	import CookFinishedCard from './CookFinishedCard.svelte';
+	import CookHead from './CookHead.svelte';
+	import CookHint from './CookHint.svelte';
 	import CookIngredientsCard from './CookIngredientsCard.svelte';
 	import CookStepCard from './CookStepCard.svelte';
 	import TimerChips from './TimerChips.svelte';
-
-	/** A timer that ended this long ago, or less, makes its sound. An older one is only "Done". */
-	const RING_WINDOW_MS = 3000;
 
 	/**
 	 * Cook mode: a recipe as a row of cards, one card on the screen at a time. The owner cooks
 	 * with wet hands, so the text is large and one tap goes to the next card.
 	 * It is a modal dialog: it covers the navigation and keeps the focus. The screen stays on.
+	 * The surround is ink and the card is white, as a card in a holder.
 	 * The cook session records each card that the owner opens. So the app keeps the place of
 	 * the owner, and the insights get the real time of each step.
-	 * @type {{ id: string }} The ID of the cook session.
+	 * @type {{
+	 *   id: string,
+	 *   session?: import('$lib/types').CookSession,
+	 *   recipe?: import('$lib/types').Recipe,
+	 *   cooks: import('$lib/types').CookSession[]
+	 * }}
+	 *   id: the ID of the cook session. cooks: all cook sessions of the recipe.
 	 */
-	let { id } = $props();
+	let { id, session, recipe, cooks } = $props();
 
 	const uid = $props.id();
 
-	const session = live(() => db.sessions.get(id), undefined);
-	const recipe = live(async () => {
-		const current = await db.sessions.get(id);
-		return current && db.recipes.get(current.recipeId);
-	}, undefined);
-	/** All cook sessions of the recipe. Their notes show on the steps. */
-	const cooks = live(async () => {
-		const current = await db.sessions.get(id);
-		return current ? db.sessions.where('recipeId').equals(current.recipeId).toArray() : [];
-	}, []);
-	const ingredients = live(() => db.ingredients.toArray(), []);
-	const pantry = live(() => db.pantry.toArray(), []);
+	const kitchen = useKitchen();
+	const preferences = usePreferences();
+	const { ingredientsById, pantryByIngredient } = $derived(kitchen);
 	const clock = useClock();
 
-	const ingredientsById = $derived(indexBy(ingredients.current, 'id'));
-	const pantryByIngredient = $derived(indexBy(pantry.current, 'ingredientId'));
-	const notes = $derived(notesByStep(cooks.current));
+	const notes = $derived(notesByStep(cooks));
 
-	const cards = $derived(recipe.current ? cookCards(recipe.current) : []);
+	const cards = $derived(recipe ? cookCards(recipe) : []);
 	/** The number of each step, by its ID. */
 	const numbers = $derived(
 		new Map(cards.flatMap((card) => (card.kind === 'step' ? [[card.key, card.number]] : [])))
@@ -66,12 +61,25 @@
 	let direction = $state(1);
 	/** True after "Cooked", until the next page opens. */
 	let finishing = $state(false);
+	/**
+	 * The amounts that the owner changed on the last card, by ingredient ID. They are here and
+	 * not in the card, so that they stay when the owner goes back one card.
+	 * @type {SvelteMap<string, number>}
+	 */
+	const changes = new SvelteMap();
 	const card = $derived(cards[Math.min(index, cards.length - 1)]);
 
 	const label = $derived.by(() => {
 		if (!card) return '';
 		if (card.kind === 'ingredients') return 'Ingredients';
 		return card.kind === 'step' ? `Step ${card.number} of ${total}` : 'Finished';
+	});
+
+	/** The words of the hint for the next card. Empty: this is the last card. */
+	const next = $derived.by(() => {
+		const after = cards[index + 1];
+		if (!after) return '';
+		return after.kind === 'step' ? `Step ${after.number}` : 'Done?';
 	});
 
 	/** @type {HTMLDialogElement | undefined} */
@@ -81,7 +89,8 @@
 		if (dialog && !dialog.open) dialog.showModal();
 	});
 
-	onMount(() => keepScreenOn());
+	// The effect gives back the function that lets the screen turn off again.
+	$effect(() => (preferences.values.screenOn ? keepScreenOn() : undefined));
 
 	/**
 	 * The database needs a moment to give the cook session. The message "not on this device"
@@ -99,8 +108,8 @@
 	 */
 	let placed = $state(false);
 	$effect(() => {
-		if (placed || !session.current || cards.length === 0) return;
-		const last = session.current.visits.at(-1)?.card;
+		if (placed || !session || cards.length === 0) return;
+		const last = session.visits.at(-1)?.card;
 		const place = Math.max(
 			0,
 			cards.findIndex((item) => item.key === last)
@@ -121,23 +130,10 @@
 	/** @param {string} key */
 	const open = (key) => show(cards.findIndex((item) => item.key === key));
 
-	/**
-	 * The IDs of the timers that made their sound. It is a plain object, because the screen
-	 * does not show it.
-	 * @type {Record<string, true>}
-	 */
-	const rung = {};
-	$effect(() => {
-		const now = clock.now;
-		for (const timer of session.current?.timers ?? []) {
-			const end = Date.parse(timer.endsAt);
-			if (end > now || rung[timer.id]) continue;
-			rung[timer.id] = true;
-			if (now - end > RING_WINDOW_MS) continue;
-			chime();
-			navigator.vibrate?.([200, 100, 200]);
-		}
-	});
+	useTimerBell(
+		() => session?.timers ?? [],
+		() => clock.now
+	);
 
 	/** The owner leaves Cook mode. The cook session stays open, so the meal shows "Continue". */
 	function leave() {
@@ -148,11 +144,11 @@
 	}
 
 	async function finish() {
-		const current = session.current;
+		const current = session;
 		if (!current || finishing) return;
 		finishing = true;
 		try {
-			const sessionId = await cook(current.menuItem);
+			const sessionId = await cook(current.menuItem, changes);
 			goto(resolve('/sessions/[id]', { id: sessionId }));
 		} catch (error) {
 			finishing = false;
@@ -179,7 +175,7 @@
 </script>
 
 <svelte:head>
-	<title>{recipe.current ? `Cook: ${recipe.current.name}` : 'Cook'} · Larder</title>
+	<title>{recipe ? `Cook: ${recipe.name}` : 'Cook'} · Larder</title>
 </svelte:head>
 
 <dialog
@@ -190,31 +186,17 @@
 	onkeydown={keys}
 	onpointerdown={unlockSound}
 >
-	{#if placed && session.current && recipe.current && card && (!session.current.cookedAt || finishing)}
-		{@const current = session.current}
+	{#if placed && session && recipe && card && (!session.cookedAt || finishing)}
+		{@const current = session}
 		<div class="cook__inner">
-			<header class="cook__head">
-				<button class="cook__leave" type="button" onclick={leave}>
-					<Icon name="close" />
-					<span class="visually-hidden">Leave Cook mode. The app keeps your place.</span>
-				</button>
-				<div class="cook__title">
-					<h1 class="cook__name" id="{uid}-title">{recipe.current.name}</h1>
-					<p class="cook__place" aria-live="polite">{label}</p>
-				</div>
-			</header>
-
-			<div class="cook__progress" aria-hidden="true">
-				{#each cards as item, at (item.key)}
-					<span
-						class={[
-							'cook__mark',
-							at < index && 'cook__mark--done',
-							at === index && 'cook__mark--current'
-						]}
-					></span>
-				{/each}
-			</div>
+			<CookHead
+				name={recipe.name}
+				place={label}
+				titleId="{uid}-title"
+				keys={cards.map((item) => item.key)}
+				{index}
+				onleave={leave}
+			/>
 
 			<TimerChips
 				timers={current.timers}
@@ -230,72 +212,59 @@
 			>
 				{#key card.key}
 					<div
-						class="cook__card"
+						class={['cook__card', card.kind === 'finished' && 'cook__card--done']}
 						in:turnPage={{ direction }}
 						out:turnPage={{ direction, leave: true }}
 					>
-						{#if card.kind === 'ingredients'}
-							<CookIngredientsCard
-								recipe={recipe.current}
-								session={current}
-								{ingredientsById}
-								{pantryByIngredient}
-							/>
-						{:else if card.kind === 'step'}
-							<CookStepCard
-								recipe={recipe.current}
-								step={card.step}
-								number={card.number}
-								session={current}
-								notes={notes.get(card.key) ?? []}
-								{ingredientsById}
-								now={clock.now}
-							/>
-						{:else}
-							<CookFinishedCard session={current} />
-						{/if}
+						<div class="cook__content">
+							{#if card.kind === 'ingredients'}
+								<CookIngredientsCard
+									{recipe}
+									session={current}
+									{ingredientsById}
+									{pantryByIngredient}
+								/>
+							{:else if card.kind === 'step'}
+								<CookStepCard
+									{recipe}
+									step={card.step}
+									number={card.number}
+									{total}
+									session={current}
+									notes={notes.get(card.key) ?? []}
+									{ingredientsById}
+									now={clock.now}
+								/>
+							{:else}
+								<CookFinishedCard
+									{recipe}
+									session={current}
+									{ingredientsById}
+									{pantryByIngredient}
+									{changes}
+									{finishing}
+									onamount={(ingredientId, amount) => changes.set(ingredientId, amount)}
+									onfinish={finish}
+								/>
+							{/if}
+						</div>
+
+						<CookHint
+							back={index > 0}
+							{next}
+							onback={() => show(index - 1)}
+							onnext={() => show(index + 1)}
+						/>
 					</div>
 				{/key}
 			</div>
 
 			<p class="cook__status" role="status">{status.message}</p>
-
-			<footer class="cook__foot">
-				<button
-					class="button cook__step"
-					type="button"
-					disabled={index === 0}
-					onclick={() => show(index - 1)}
-				>
-					<Icon name="back" />
-					Back
-				</button>
-				{#if card.kind === 'finished'}
-					<button
-						class="button button--strong cook__step cook__step--main"
-						type="button"
-						disabled={finishing}
-						onclick={finish}
-					>
-						<Icon name="check" />
-						Cooked
-					</button>
-				{:else}
-					<button
-						class="button button--primary cook__step cook__step--main"
-						type="button"
-						onclick={() => show(index + 1)}
-					>
-						Next
-						<Icon name="next" />
-					</button>
-				{/if}
-			</footer>
 		</div>
 	{:else if waited}
 		<div class="cook__empty stack">
 			<h1 id="{uid}-title">Cook mode</h1>
-			{#if session.current?.cookedAt}
+			{#if session?.cookedAt}
 				<p>This meal is cooked.</p>
 				<a class="button button--primary" href={resolve('/sessions/[id]', { id })}>
 					Open the cook session
@@ -310,7 +279,7 @@
 
 <style>
 	/*
-	 * Phone: the full screen. A wider main area: a large card in the middle of the screen.
+	 * The full screen, in ink: the phone becomes a holder for the card of the cook.
 	 * The selector has two classes, so that it is stronger than the styles of "dialog".
 	 */
 	.cook.cook {
@@ -321,14 +290,10 @@
 		margin: 0;
 		padding: 0;
 		overflow: hidden;
-		background: var(--color-surface);
+		background: var(--ink);
 		border: 0;
 		border-radius: 0;
 		box-shadow: none;
-
-		&::backdrop {
-			background: rgb(29 28 26 / 0.6);
-		}
 	}
 
 	/* A column. The card gets the height that the other parts leave. */
@@ -339,109 +304,50 @@
 		block-size: 100%;
 	}
 
-	.cook__head {
-		display: flex;
-		align-items: center;
-		gap: var(--space-3);
-		padding: max(var(--space-3), env(safe-area-inset-top)) var(--space-5) var(--space-3);
-	}
-
-	.cook__leave {
-		display: grid;
-		flex: none;
-		place-items: center;
-		inline-size: var(--tap);
-		block-size: var(--tap);
-		padding: 0;
-		color: var(--paper);
-		background: var(--ink);
-		border: 0;
-		border-radius: var(--radius-control);
-		cursor: pointer;
-		transition: scale 0.2s var(--ease-out);
-
-		&:active {
-			scale: 0.9;
-		}
-	}
-
-	.cook__title {
-		min-inline-size: 0;
-	}
-
-	.cook__name {
-		overflow: hidden;
-		font-size: 1.5rem;
-		line-height: 1;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-
-	.cook__place {
-		font-size: 0.75rem;
-		font-weight: 800;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-	}
-
-	/* One mark for each card. The marks of the cards before this one are ink. This one is olive. */
-	.cook__progress {
-		display: flex;
-		gap: var(--space-1);
-		padding-inline: var(--space-5);
-	}
-
-	.cook__mark {
-		flex: 1;
-		block-size: 0.5rem;
-		background: var(--paper-deep);
-		transition: background-color 0.3s;
-	}
-
-	.cook__mark--done {
-		background: var(--ink);
-	}
-
-	.cook__mark--current {
-		background: var(--olive);
-		box-shadow: inset 0 0 0 2px var(--ink);
-	}
-
 	/* The old card and the new card are in one cell while one goes out and one comes in. */
 	.cook__body {
 		display: grid;
 		flex: 1;
 		min-block-size: 0;
+		padding: var(--space-2) var(--space-3) max(var(--space-3), env(safe-area-inset-bottom));
 		overflow: hidden;
 	}
 
-	/* The card scrolls up and down. A move to the side is a swipe: see input/card-sides.js. */
+	/*
+	 * The card: white, in the dark surround. Its parts ask how wide it is: a wide card has two
+	 * halves. It is a column, so that the hint stays at its lower edge.
+	 */
 	.cook__card {
+		display: flex;
+		flex-direction: column;
 		grid-area: 1 / 1;
+		inline-size: min(100%, 76rem);
 		min-block-size: 0;
-		padding: var(--space-5);
+		margin-inline: auto;
+		overflow: hidden;
+		background: var(--card);
+		border-radius: var(--radius);
+		container: cook-card / inline-size;
+	}
+
+	/* The last card is olive: the done state. */
+	.cook__card--done {
+		background: var(--olive);
+	}
+
+	/*
+	 * The content scrolls up and down. A move to the side is a swipe: see input/card-sides.js.
+	 * It is a column, so that a card can fill the height that is there.
+	 */
+	.cook__content {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-block-size: 0;
+		padding: var(--space-5) var(--space-5) 0;
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		touch-action: pan-y;
-	}
-
-	/* The two buttons are large and in reach of the thumb. "Next" is the wide one. */
-	.cook__foot {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		gap: var(--space-3);
-		padding: var(--space-3) var(--space-5) max(var(--space-4), env(safe-area-inset-bottom));
-		border-block-start: var(--rule-4) solid var(--ink);
-	}
-
-	.cook__step {
-		gap: var(--space-2);
-		min-block-size: 3.75rem;
-		font-size: 1.1rem;
-	}
-
-	.cook__step--main {
-		font-size: 1.2rem;
 	}
 
 	/*
@@ -450,8 +356,8 @@
 	 */
 	.cook__status {
 		position: absolute;
-		inset-inline: var(--space-4);
-		inset-block-end: 6.5rem;
+		inset-inline: var(--space-6);
+		inset-block-end: 4.5rem;
 		padding: var(--space-3) var(--space-5);
 		font-weight: 700;
 		text-align: center;
@@ -469,18 +375,12 @@
 		}
 	}
 
+	/* The message for a session that is not there: paper, in the middle of the dark screen. */
 	.cook__empty {
+		max-inline-size: 32rem;
+		margin: var(--space-6) auto;
 		padding: var(--space-6);
-	}
-
-	@container main (min-width: 38rem) {
-		.cook.cook {
-			inline-size: min(44rem, 100% - 4rem);
-			block-size: min(54rem, 100dvh - 4rem);
-			margin: auto;
-			border: var(--rule-4) solid var(--ink);
-			border-radius: var(--radius);
-			box-shadow: var(--shadow);
-		}
+		background: var(--paper);
+		border-radius: var(--radius);
 	}
 </style>

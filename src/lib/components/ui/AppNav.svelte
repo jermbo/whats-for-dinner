@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
-	import { useShopCount } from '$lib/shop-count.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
 
 	const links = /** @type {const} */ ([
 		{ path: '/', label: 'Today' },
@@ -9,10 +9,12 @@
 		{ path: '/shop', label: 'Shop' },
 		{ path: '/pantry', label: 'Pantry' },
 		{ path: '/recipes', label: 'Recipes' },
-		{ path: '/more', label: 'More' }
+		{ path: '/settings', label: 'Settings' }
 	]);
 
-	const shopCount = useShopCount();
+	const shopping = useShopping();
+	/** The number of items that the owner must still buy. */
+	const toBuy = $derived(shopping.needed.length);
 
 	/** @param {(typeof links)[number]['path']} path */
 	function isCurrent(path) {
@@ -33,9 +35,9 @@
 					aria-current={isCurrent(link.path) ? 'page' : undefined}
 				>
 					<span class="app-nav__label">{link.label}</span>
-					{#if link.path === '/shop' && shopCount.current > 0}
+					{#if link.path === '/shop' && toBuy > 0}
 						<span class="app-nav__count">
-							{shopCount.current}
+							{toBuy}
 							<span class="visually-hidden">items to buy</span>
 						</span>
 					{/if}
@@ -63,9 +65,10 @@
 		display: none;
 	}
 
+	/* An item is as wide as its word, plus an equal part of the room that is left. */
 	.app-nav__list {
 		display: grid;
-		grid-template-columns: repeat(6, minmax(0, 1fr));
+		grid-template-columns: repeat(6, auto);
 		margin: 0;
 		padding: 0;
 		list-style: none;

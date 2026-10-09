@@ -58,33 +58,33 @@ The tool has one loop. Each feature must make this loop easier or better.
 
 ## 4. Principles
 
-| # | Principle | Meaning | Label |
-|---|---|---|---|
-| 1 | **Cooked means deducted.** | When I confirm that I cooked a meal, the tool subtracts the ingredients from the pantry. I do not do this manually. | [Owner] |
-| 2 | **Manual work is permitted, but it must be easy.** | A pantry edit takes a small number of taps. A new item can come from a barcode scan. | [Owner] |
-| 3 | **Offline first.** | All functions of the core loop work with no connection. The data is on the device. | [Owner] |
-| 4 | **Phone first.** | The design starts from a phone screen that I use with one hand in the kitchen or the store. Desktop is second. | [Owner] for phone. [Proposed] for "one hand". |
-| 5 | **One user first.** | The tool is for me. Family features come after I use the tool regularly. | [Owner] |
-| 6 | **Use before growth.** | A new feature comes only after real use shows that it is necessary. | [Owner] |
-| 14 | **Build fast, use it, report, iterate.** | A design on paper does not show how the tool feels. Each small part goes to the phone quickly. If the tool is not pleasant, or I do not use it each day, something must change. | [Owner] |
-| 7 | **My data is mine, and JSON connects things.** | I can export and import all data, or only a part of it such as the recipes. The JSON format is a defined contract. | [Owner] |
-| 8 | **My recipes first.** | The tool starts with the recipes that I put in my rotation. More recipes can come from import or reference. | [Owner] |
-| 9 | **Each cook teaches something.** | Each cook session can have a rating from 1 to 5 and a short note. | [Owner] |
-| 10 | **Build for later sync, but do not build sync now.** | The data model permits sync later. The first versions have no server database and no login. A server database comes after the owner uses the tool regularly. | [Owner] |
-| 11 | **Decide before, not at 18:00.** | The tool moves decisions and preparation to a calm moment. I select a set of meals for the week and buy for all of them. On the day, I select from this short list. A meal has no fixed day, so one bad day does not break the plan. | [Owner] |
-| 12 | **Always have an answer.** | On a day with no plan, the tool shows what the pantry can make now. The alternative must be easier than a pizza order. | [Owner] confirmed the function. [Proposed] wording. |
-| 13 | **The plan comes before the store.** | I go to the store with a list that comes from the pantry check and the meal plan. The list does not include items that I have. | [Owner] |
+| #   | Principle                                            | Meaning                                                                                                                                                                                                                              | Label                                               |
+| --- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------- |
+| 1   | **Cooked means deducted.**                           | When I confirm that I cooked a meal, the tool subtracts the ingredients from the pantry. I do not do this manually.                                                                                                                  | [Owner]                                             |
+| 2   | **Manual work is permitted, but it must be easy.**   | A pantry edit takes a small number of taps. A new item can come from a barcode scan.                                                                                                                                                 | [Owner]                                             |
+| 3   | **Offline first.**                                   | All functions of the core loop work with no connection. The data is on the device.                                                                                                                                                   | [Owner]                                             |
+| 4   | **Phone first.**                                     | The design starts from a phone screen that I use with one hand in the kitchen or the store. Desktop is second.                                                                                                                       | [Owner] for phone. [Proposed] for "one hand".       |
+| 5   | **One user first.**                                  | The tool is for me. Family features come after I use the tool regularly.                                                                                                                                                             | [Owner]                                             |
+| 6   | **Use before growth.**                               | A new feature comes only after real use shows that it is necessary.                                                                                                                                                                  | [Owner]                                             |
+| 14  | **Build fast, use it, report, iterate.**             | A design on paper does not show how the tool feels. Each small part goes to the phone quickly. If the tool is not pleasant, or I do not use it each day, something must change.                                                      | [Owner]                                             |
+| 7   | **My data is mine, and JSON connects things.**       | I can export and import all data, or only a part of it such as the recipes. The JSON format is a defined contract.                                                                                                                   | [Owner]                                             |
+| 8   | **My recipes first.**                                | The tool starts with the recipes that I put in my rotation. More recipes can come from import or reference.                                                                                                                          | [Owner]                                             |
+| 9   | **Each cook teaches something.**                     | Each cook session can have a rating from 1 to 5 and a short note.                                                                                                                                                                    | [Owner]                                             |
+| 10  | **Build for later sync, but do not build sync now.** | The data model permits sync later. The first versions have no server database and no login. A server database comes after the owner uses the tool regularly.                                                                         | [Owner]                                             |
+| 11  | **Decide before, not at 18:00.**                     | The tool moves decisions and preparation to a calm moment. I select a set of meals for the week and buy for all of them. On the day, I select from this short list. A meal has no fixed day, so one bad day does not break the plan. | [Owner]                                             |
+| 12  | **Always have an answer.**                           | On a day with no plan, the tool shows what the pantry can make now. The alternative must be easier than a pizza order.                                                                                                               | [Owner] confirmed the function. [Proposed] wording. |
+| 13  | **The plan comes before the store.**                 | I go to the store with a list that comes from the pantry check and the meal plan. The list does not include items that I have.                                                                                                       | [Owner]                                             |
 
 ## 5. What the tool is not (for now)
 
-| Not this | Label |
-|---|---|
+| Not this                                                | Label                             |
+| ------------------------------------------------------- | --------------------------------- |
 | Not a shared household application with real-time sync. | [Owner] ("we can grow into that") |
-| Not a service with accounts and a server database. | [Owner] (IndexedDB first) |
-| Not a nutrition calculator. | [Proposed] |
-| Not an AI that makes the plan for me. | [Proposed] |
-| Not a store or retailer integration. | [Proposed] |
-| Not a general household manager (chores, equipment). | [Proposed] |
+| Not a service with accounts and a server database.      | [Owner] (IndexedDB first)         |
+| Not a nutrition calculator.                             | [Proposed]                        |
+| Not an AI that makes the plan for me.                   | [Proposed]                        |
+| Not a store or retailer integration.                    | [Proposed]                        |
+| Not a general household manager (chores, equipment).    | [Proposed]                        |
 
 ## 6. Decision test
 

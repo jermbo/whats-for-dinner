@@ -9,8 +9,6 @@
 	--font-display: 'Anton', 'Impact', 'Arial Narrow Bold', sans-serif;
 	--font-body: 'Schibsted Grotesk Variable', system-ui, sans-serif;
 	--font-mono: 'IBM Plex Mono', ui-monospace, monospace;
-	/* The old name of the display font. Components that use it get Anton. */
-	--font-heading: var(--font-display);
 
 	/*
 	 * The materials. The paper is the page: flat, warm, never white. A card, the receipt, and a
@@ -30,33 +28,41 @@
 	/* The lines on paper that are not rules: a ruled list, a dotted leader. */
 	--hairline: #a9a598;
 
-	--color-bg: var(--paper);
-	--color-surface: var(--card);
-	--color-surface-soft: var(--paper-deep);
-
-	--color-text: var(--ink);
-	--color-muted: var(--ink-soft);
-	--color-border: var(--hairline);
-
-	/* The old names of the palette. The main action, the active item, and the focus are ink. */
-	--color-accent: var(--ink);
-	--color-on-accent: var(--paper);
-	--color-accent-soft: var(--olive);
-	--color-strong: var(--ink);
-	--color-on-strong: var(--paper);
-	--color-accent-strong: var(--ink);
-
-	/* Amber for a level that is low. The text on it stays ink. */
-	--color-low: var(--amber);
-	--color-low-strong: var(--ink);
-
-	--color-danger: var(--tomato);
-	--color-danger-text: var(--tomato-text);
-	--color-notice: var(--paper-deep);
-
 	/* A card has a soft, dark shadow: it is a card on a table. */
 	--shadow: 0 0.6rem 1.4rem rgb(29 28 26 / 0.16);
 	--shadow-small: 0 0.2rem 0.6rem rgb(29 28 26 / 0.14);
+
+	/* A fast start and a soft stop. */
+	--ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+	/* A small overshoot, as a spring. */
+	--ease-spring: linear(
+		0,
+		0.009,
+		0.035 2.1%,
+		0.141,
+		0.281 6.7%,
+		0.723 12.9%,
+		0.938 16.7%,
+		1.017,
+		1.077,
+		1.121,
+		1.149 24.3%,
+		1.159,
+		1.163,
+		1.161,
+		1.154 29.9%,
+		1.129 32.8%,
+		1.051 39.6%,
+		1.017 43.1%,
+		0.991,
+		0.977 51%,
+		0.974 53.8%,
+		0.975 57.1%,
+		0.997 69.8%,
+		1.003 76.9%,
+		1.004 83.8%,
+		1
+	);
 
 	--space-1: 0.25rem;
 	--space-2: 0.5rem;
@@ -71,19 +77,19 @@
 	--rule-4: 4px;
 	--rule-8: 8px;
 
+	/* The ring of the element that has the focus. */
+	--focus-ring: 3px solid var(--ink);
+
 	/* A card. A button and a field. A sticker: a flag that sits on an edge. */
 	--radius: 0.75rem;
 	--radius-control: 0.5rem;
 	--radius-sticker: 2px;
-	/* The old name of a pill. The design has no pills: a chip is a square sticker. */
-	--radius-pill: var(--radius-control);
 
 	/* The smallest size of a control that a finger must hit. */
 	--tap: 3rem;
 	/* The height of the main button. */
 	--button-height: 3.125rem;
-	/* A chip is 32 high. Its hit area is 44 high. */
-	--chip-height: 2rem;
+	/* The hit area of a chip is 44 high. */
 	--chip-hit: 2.75rem;
 	/* A gauge is 14 high. */
 	--gauge-height: 0.875rem;

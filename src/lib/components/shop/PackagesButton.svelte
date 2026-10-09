@@ -1,5 +1,6 @@
 <script>
-	import { nextPackages, setPackages } from '$lib/data/cart';
+	import { setPackages } from '$lib/data/cart';
+	import { nextPackages } from '$lib/domain/cart';
 	import { plural } from '$lib/util/format';
 
 	/**

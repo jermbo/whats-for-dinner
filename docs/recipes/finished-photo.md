@@ -1,8 +1,8 @@
 ---
 title: The finished photo and the cover
-summary: 'The last card of Cook mode asks for a photo of the meal. You select which finished photo is the cover of the recipe.'
+summary: 'The screen after "Cooked" asks for a photo of the meal. You select which finished photo is the cover of the recipe.'
 parent: cook-mode.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Cook mode](cook-mode.md) / The finished photo and the cover
@@ -13,7 +13,7 @@ A list of recipes with photos of your own plates makes you want to cook. This pa
 
 ## The app asks at the end
 
-The last card of Cook mode is the finished card. It has one large camera button, "Take a photo of your meal". The moment is short, because the plate is full and people wait. So the photo is one tap. The photo is optional: "Cooked" works with no photo.
+The last card of Cook mode has the "Cooked" button, and the screen after "Cooked" has one large camera button, "Take a photo of your meal". The moment is short, because the plate is full and people wait. So the photo is one tap. The photo is optional: you can leave the screen with no photo.
 
 Each [cook session](cook-session.md) has one finished photo or none.
 

@@ -1,9 +1,12 @@
 import { db } from '$lib/db/db';
-import { setMeta } from '$lib/db/meta';
-import { newId, now } from '$lib/db/ids';
+import { getMeta, setMeta } from '$lib/db/meta';
 import { recipeShape, sessionShape } from '$lib/db/shape';
+import { newId, now } from '$lib/util/ids';
+import { CHECK_KEY } from './doubt';
+import { PLAN_KEY } from './menu-plan';
 import { mergeRecipes } from './merge';
 import { photoFromText, photoToText } from './photo-storage';
+import { planningPreferences, replacePlanningPreferences } from './preferences';
 
 /**
  * The JSON format. It is the contract between devices now, and with a server later.
@@ -18,7 +21,9 @@ const FORMAT = 'meal-planner';
 // Version 2: a product has an ID and a photo, and the file has photos, trips, and purchases.
 // Version 3: the steps of a recipe are a list, a recipe file has photos, and a cook session
 // has the facts of Cook mode.
-const VERSION = 3;
+// Version 4: a full backup has the planning preferences.
+// Version 5: a full backup has the notes of the kitchen.
+const VERSION = 5;
 
 const TABLES = /** @type {const} */ ([
 	'ingredients',
@@ -35,12 +40,25 @@ const TABLES = /** @type {const} */ ([
 ]);
 
 /**
+ * The notes of the kitchen: the plan of the week and the time of the last pantry check. A full
+ * backup has them. The other notes, such as the hints that a device showed, are a fact about
+ * one device, and they stay on that device.
+ */
+const KITCHEN_NOTES = [PLAN_KEY, CHECK_KEY];
+
+/**
  * @param {Scope} scope
  * @param {Record<string, any[]>} data
  * @returns {BackupFile}
  */
 function envelope(scope, data) {
 	return { format: FORMAT, version: VERSION, scope, exportedAt: now(), data };
+}
+
+/** @returns {Promise<string>} The time of the last full backup, or '' when there was none. */
+export async function lastBackupAt() {
+	const time = await getMeta('lastBackupAt');
+	return typeof time === 'string' ? time : '';
 }
 
 /** @returns {Promise<BackupFile>} */
@@ -50,6 +68,9 @@ export async function exportAll() {
 	for (const name of TABLES) data[name] = await db.table(name).toArray();
 	// A photo is a block of bytes. JSON can contain only text.
 	data.photos = await Promise.all(data.photos.map(photoToText));
+	// The preferences of this device stay on the device.
+	data.preferences = await planningPreferences();
+	data.meta = (await db.meta.bulkGet(KITCHEN_NOTES)).filter((note) => note !== undefined);
 	await setMeta('lastBackupAt', now());
 	return envelope('all', data);
 }
@@ -112,6 +133,12 @@ async function replaceAll(backup) {
 			await db.table(name).clear();
 			await db.table(name).bulkPut(data[name] ?? []);
 		}
+		// A file from before version 4 has no preferences: those of this device stay.
+		if (data.preferences) await replacePlanningPreferences(data.preferences);
+		// The notes of this device are about the data that the file replaced, so they go. A file
+		// from before version 5 has no notes: the device then has no plan of the week.
+		await db.meta.bulkDelete(KITCHEN_NOTES);
+		await db.meta.bulkPut((data.meta ?? []).filter((note) => KITCHEN_NOTES.includes(note.key)));
 	});
 	return 'The full backup replaced all data on this device.';
 }
@@ -122,41 +149,4 @@ async function replaceAll(backup) {
  */
 function withId(product) {
 	return product.id ? product : { ...product, id: newId(), photoId: null };
-}
-
-/**
- * The name of the file of an export, for example "meal-planner-all-2026-10-03.json".
- * @param {BackupFile} backup
- * @param {string} [label] The name of the one recipe in the file.
- */
-export function fileName(backup, label = backup.scope) {
-	const slug = label
-		.toLowerCase()
-		.replace(/[^\p{L}\d]+/gu, '-')
-		.replace(/^-|-$/g, '');
-	return `meal-planner-${slug || backup.scope}-${backup.exportedAt.slice(0, 10)}.json`;
-}
-
-/**
- * The text of the file. A recipe file is for a different device, so it has no line breaks:
- * it is smaller.
- * @param {BackupFile} backup
- */
-export function fileText(backup) {
-	return JSON.stringify(backup, null, backup.scope === 'all' ? '\t' : undefined);
-}
-
-/**
- * Gives the file to the browser as a download.
- * @param {BackupFile} backup
- * @param {string} [name]
- */
-export function download(backup, name = fileName(backup)) {
-	const blob = new Blob([fileText(backup)], { type: 'application/json' });
-	const link = document.createElement('a');
-	link.href = URL.createObjectURL(blob);
-	link.download = name;
-	link.click();
-	// The browser needs the URL until the download starts.
-	setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }

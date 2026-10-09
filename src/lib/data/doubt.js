@@ -1,62 +1,22 @@
 import { db } from '$lib/db/db';
-import { getMeta } from '$lib/db/meta';
+import { getMeta, setMeta } from '$lib/db/meta';
+import { doubtOf } from '$lib/domain/doubt';
 import { groupBy } from '$lib/util/collections';
-import { plural } from '$lib/util/format';
-import { daysInStock } from './freshness';
+import { now } from '$lib/util/ids';
+import { readPreferences } from './preferences';
 
-/**
- * @typedef {import('$lib/types').Ingredient} Ingredient
- * @typedef {import('$lib/types').PantryItem} PantryItem
- * @typedef {import('$lib/types').PantryChange} PantryChange
- */
+/** The note of the time of the last pantry check. */
+export const CHECK_KEY = 'lastPantryCheckAt';
 
-/** A perishable item with no new stock for this many days gets a doubt. */
-const STALE_DAYS = 7;
-/** A 'state' item that this many meals used gets a doubt. Cooking does not change its state. */
-const MANY_MEALS = 3;
+/** @returns {Promise<string>} The time of the last pantry check, or '' when there was none. */
+export async function lastPantryCheck() {
+	const time = await getMeta(CHECK_KEY);
+	return typeof time === 'string' ? time : '';
+}
 
-/**
- * Why the app is not sure about one pantry item. The app is sure when the text is empty.
- * The pantry check asks the owner about the items with a doubt, and not about the others.
- * @param {{
- *   item: PantryItem,
- *   ingredient: Ingredient,
- *   changes: PantryChange[],
- *   uses: string[],
- *   since: string,
- *   time: number
- * }} facts
- *   changes: the log of this ingredient, oldest first. uses: the times of the meals that had
- *   this ingredient. since: the time of the last pantry check, or '' when there was none.
- * @returns {string}
- */
-export function doubtOf({ item, ingredient, changes, uses, since, time }) {
-	// The last time that a person gave the amount of this item.
-	const corrected = changes.findLast((change) => change.cause === 'corrected')?.at ?? '';
-	const looked = corrected > since ? corrected : since;
-
-	if (ingredient.tracking === 'state') {
-		if (item.state === 'low') return 'Low at the last look.';
-		const meals = uses.filter((at) => at > looked).length;
-		if (item.state === 'have' && meals >= MANY_MEALS) {
-			return `Used in ${plural(meals, 'meal')} since the last look.`;
-		}
-	} else if (ingredient.unit !== 'count') {
-		// A recipe gives a weight or a volume, but the cook does not measure each gram.
-		const recent = changes.filter((change) => change.at > looked);
-		const meals =
-			recent.filter((change) => change.cause === 'cooked').length -
-			recent.filter((change) => change.cause === 'undo').length;
-		if (meals > 0) return `Used in ${plural(meals, 'meal')} since the last look.`;
-	}
-
-	const inStock = ingredient.tracking === 'state' ? item.state !== 'out' : item.quantity > 0;
-	if (ingredient.perishable && item.location !== 'freezer' && inStock) {
-		const days = daysInStock(changes, item, time);
-		if (days >= STALE_DAYS) return `Perishable. No new stock for ${days} days.`;
-	}
-
-	return '';
+/** Records that the owner completed a pantry check now. */
+export function finishPantryCheck() {
+	return setMeta(CHECK_KEY, now());
 }
 
 /**
@@ -64,19 +24,20 @@ export function doubtOf({ item, ingredient, changes, uses, since, time }) {
  * @returns {Promise<Map<string, string>>} The item ID and the reason.
  */
 export async function findDoubts() {
-	const [pantry, ingredients, recipes, sessions, log, lastCheck] = await Promise.all([
+	const [pantry, ingredients, recipes, sessions, log, lastCheck, preferences] = await Promise.all([
 		db.pantry.toArray(),
 		db.ingredients.toArray(),
 		db.recipes.toArray(),
 		db.sessions.toArray(),
 		db.pantryLog.orderBy('at').toArray(),
-		getMeta('lastPantryCheckAt')
+		lastPantryCheck(),
+		readPreferences()
 	]);
 
-	const since = typeof lastCheck === 'string' ? lastCheck : '';
+	const since = lastCheck;
 	const ingredientsById = new Map(ingredients.map((ingredient) => [ingredient.id, ingredient]));
 	const recipesById = new Map(recipes.map((recipe) => [recipe.id, recipe]));
-	const changesByIngredient = new Map(groupBy(log, (change) => change.ingredientId));
+	const changesByIngredient = groupBy(log, (change) => change.ingredientId);
 
 	/** @type {Map<string, string[]>} The times of the meals that had each ingredient. */
 	const usesByIngredient = new Map();
@@ -103,6 +64,7 @@ export async function findDoubts() {
 			changes: changesByIngredient.get(ingredient.id) ?? [],
 			uses: usesByIngredient.get(ingredient.id) ?? [],
 			since,
+			staleDays: preferences.doubtDays,
 			time
 		});
 		if (reason) doubts.set(item.id, reason);

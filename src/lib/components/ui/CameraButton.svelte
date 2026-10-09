@@ -1,6 +1,6 @@
 <script>
-	import { shrinkPhoto } from '$lib/data/photo-capture';
-	import { status } from '$lib/status.svelte';
+	import { shrinkPhoto } from '$lib/input/photo-capture';
+	import { status } from '$lib/state/status.svelte';
 	import Icon from './Icon.svelte';
 
 	/**
@@ -62,7 +62,7 @@
 		cursor: pointer;
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--ink);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
 		}
 

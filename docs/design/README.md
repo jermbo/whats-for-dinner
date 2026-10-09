@@ -38,6 +38,10 @@ Because a thing has one material, you know what it is before you read it. A dash
 - [The parts of the screen](parts.md): the sizes of buttons, chips, gauges, and badges.
 - [The Today screen](today-screen.md): the hand of cards, and the states of a card.
 
+## Where the app is behind the design
+
+The [record of the design gaps](design-gaps-2026-10-04.md) compares the app with the screens in `docs/inspiration/`. The [gap plan](gap-plan.md) gives the sequence of the work: Pantry, Cook mode, Meal plan, and then the rest.
+
 ## Where the code is
 
 The shared styles are in `src/lib/styles/`. The colours and sizes are in `tokens.css`. A screen uses these tokens and never a fixed value.

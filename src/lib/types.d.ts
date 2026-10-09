@@ -6,6 +6,8 @@ export type StockState = 'have' | 'low' | 'out';
 export type StorageLocation = 'pantry' | 'fridge' | 'freezer';
 export type MealType = 'breakfast' | 'lunch' | 'dinner';
 export type MenuKind = 'recipe' | 'leftover';
+/** The answer to "Use within": a number of days, or the freezer. */
+export type UseWithin = number | 'freezer';
 
 /** Why a pantry quantity changed. The insights and the undo use it. */
 export type Cause = 'bought' | 'cooked' | 'used' | 'corrected' | 'thrown' | 'undo';
@@ -19,6 +21,16 @@ export interface Ingredient {
 	/** 'quantity' counts an amount. 'state' is only have, low, or out. */
 	tracking: Tracking;
 	perishable: boolean;
+	/**
+	 * The low line, in the unit of the ingredient: at this quantity or less, the pantry is low.
+	 * With no value, the low line is a quarter of a full package. Not for a 'state' ingredient.
+	 */
+	lowAt?: number;
+	/**
+	 * The usual number of days that this food keeps out of the freezer. With no value, a
+	 * perishable food gets the usual days of its category, and other food keeps.
+	 */
+	keepsDays?: number;
 	updatedAt: string;
 }
 
@@ -50,6 +62,11 @@ export interface Recipe {
 	name: string;
 	mealType: MealType;
 	servings: number;
+	/**
+	 * The minutes that the meal takes, as the owner typed them. Null: not known. After a cook in
+	 * Cook mode, the real time of that cook is used and not this number.
+	 */
+	minutes: number | null;
 	steps: RecipeStep[];
 	/** A URL, or a book name and a page. */
 	source: string;
@@ -77,6 +94,8 @@ export interface PantryItem {
 	fullQuantity: number;
 	state: StockState;
 	location: StorageLocation;
+	/** The time by which the owner must use this stock. Null: the food keeps. */
+	useBy: string | null;
 	updatedAt: string;
 }
 
@@ -136,6 +155,8 @@ export interface Purchase {
 	quantity: number | null;
 	/** The price of one package. Null when the owner gave no price. */
 	price: number | null;
+	/** The answer of the owner to "Use within". Null: the app proposes the usual days. */
+	within: UseWithin | null;
 	cartAt: string;
 	/** Null while the item is in the cart. */
 	putAwayAt: string | null;
@@ -148,7 +169,20 @@ export interface MenuItem {
 	recipeId: string;
 	addedAt: string;
 	prepDoneAt: string | null;
+	/**
+	 * The night that the app proposes for the meal, as a local date: "2026-10-05". It is a
+	 * proposal and not a lock: the owner can cook the meal on any day. Null: no night yet.
+	 */
+	night: string | null;
 	updatedAt: string;
+}
+
+/** The plan of one week: the nights that the owner cooks, and the moment of "Set the menu". */
+export interface MenuPlan {
+	/** The nights of the plan, as local dates, the first night first. */
+	nights: string[];
+	/** The time of "Set the menu". Null: the owner did not complete the flow. */
+	setAt: string | null;
 }
 
 export interface Deduction {
@@ -229,6 +263,8 @@ export interface ShoppingItem {
 	/** Null for an item that is not an ingredient, such as soap. */
 	ingredientId: string | null;
 	quantity: number;
+	/** True for an item that "Add to Shop" of the pantry made, because the item is low. */
+	fromPantry: boolean;
 	updatedAt: string;
 }
 
@@ -241,6 +277,8 @@ export interface LevelScale {
 	step: number;
 	/** The number of blocks that the row shows. Zero gives one smooth fill. */
 	blocks: number;
+	/** The low line: a value at or below it, and above zero, is low. */
+	low: number;
 	/** The fill of the row for a value, from 0 to 1. */
 	toFraction(value: number): number;
 	/** The value at a place on the row, from 0 to 1. */
@@ -250,6 +288,12 @@ export interface LevelScale {
 }
 
 export interface Meta {
+	key: string;
+	value: unknown;
+}
+
+/** A preference that the owner changed. A preference with its default has no record. */
+export interface Preference {
 	key: string;
 	value: unknown;
 }
@@ -267,4 +311,5 @@ export type Database = Dexie & {
 	pantryLog: EntityTable<PantryChange, 'id'>;
 	shopping: EntityTable<ShoppingItem, 'id'>;
 	meta: EntityTable<Meta, 'key'>;
+	preferences: EntityTable<Preference, 'key'>;
 };

@@ -1,5 +1,5 @@
 <script>
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 </script>
 
 <!-- The element is always in the page, so that screen readers read each new message. -->

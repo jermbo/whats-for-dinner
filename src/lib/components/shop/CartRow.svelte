@@ -1,7 +1,7 @@
 <script>
 	import { putBack } from '$lib/data/cart';
 	import { collapse } from '$lib/motion/transitions';
-	import { status } from '$lib/status.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { plural } from '$lib/util/format';
 	import PackagesButton from './PackagesButton.svelte';
 	import ProductPhoto from './ProductPhoto.svelte';
@@ -63,7 +63,7 @@
 	}
 
 	.cart-row__name {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.cart-row__undo {

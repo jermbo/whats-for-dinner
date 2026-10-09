@@ -1,5 +1,5 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
+import { newId, now } from '$lib/util/ids';
 import { openOrStartTrip, settleTrip } from './trips';
 
 /**
@@ -10,9 +10,6 @@ import { openOrStartTrip, settleTrip } from './trips';
  * @typedef {{ name: string, ingredient: Ingredient | null, item: ShoppingItem | null }} Taken
  *   The item that the owner took: an ingredient, or an item that the owner added by hand.
  */
-
-/** The button for the packages goes back to one after this number. */
-const MAX_PACKAGES = 6;
 
 /**
  * Puts an item in the cart: makes a purchase with no quantity and no price.
@@ -59,6 +56,7 @@ export function take({ name, ingredient, item }, product = null) {
 			packages: 1,
 			quantity: null,
 			price: null,
+			within: null,
 			cartAt: time,
 			putAwayAt: null,
 			updatedAt: time
@@ -91,14 +89,6 @@ export function putBack(purchase) {
 }
 
 /**
- * The number of packages that the button for the packages sets next: 2, 3, and so on, then 1.
- * @param {number} packages
- */
-export function nextPackages(packages) {
-	return packages >= MAX_PACKAGES ? 1 : packages + 1;
-}
-
-/**
  * @param {Purchase} purchase
  * @param {number} packages
  */
@@ -107,10 +97,14 @@ export function setPackages(purchase, packages) {
 }
 
 /**
- * Stores what the owner corrects at home, before the item is put away: the quantity or the
- * price. Null: the app proposes the value again.
+ * Stores what the owner corrects at home, before the item is put away: the quantity, the
+ * price, or the answer to "Use within". Null: the app proposes the value again.
  * @param {Purchase} purchase
- * @param {{ quantity?: number | null, price?: number | null }} values
+ * @param {{
+ *   quantity?: number | null,
+ *   price?: number | null,
+ *   within?: import('$lib/types').UseWithin | null
+ * }} values
  */
 export function correct(purchase, values) {
 	return change(purchase, values);

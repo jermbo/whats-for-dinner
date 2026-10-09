@@ -1,5 +1,5 @@
 <script>
-	import { addManualItem } from '$lib/data/shopping';
+	import { addManualItem } from '$lib/data/shopping-items';
 
 	/**
 	 * Adds an item that no meal needs, such as soap. It has one text field.

@@ -2,7 +2,7 @@
 title: Backup
 summary: 'A backup is one text file with all tables. Each photo is in it as text.'
 parent: data-model.md
-updated: 2026-10-03
+updated: 2026-10-08
 ---
 
 [Wiki](../README.md) / [Shopping](README.md) / [Data model](data-model.md) / Backup
@@ -18,7 +18,7 @@ The file is JSON: text that a person and a program can read. It has a header and
 ```json
 {
 	"format": "meal-planner",
-	"version": 3,
+	"version": 5,
 	"scope": "all",
 	"exportedAt": "2026-10-03T18:20:00Z",
 	"data": {
@@ -32,7 +32,7 @@ The file is JSON: text that a person and a program can read. It has a header and
 }
 ```
 
-The example shows four of the tables. A real file has all tables of the app.
+The example shows four of the tables. A real file has all tables of the app, the [planning preferences](../settings/how-a-preference-works.md) of your kitchen, the nights of the plan of the week, and the time of the last pantry check.
 
 ## How a photo goes into a text file
 

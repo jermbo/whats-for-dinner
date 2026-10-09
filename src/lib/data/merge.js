@@ -2,9 +2,10 @@
 // the newer text wins as a whole, and the photos of the two sides stay.
 import { db } from '$lib/db/db';
 import { recipeShape } from '$lib/db/shape';
+import { findByName } from '$lib/domain/ingredients';
+import { limitStepPhotos } from '$lib/domain/step-photos';
 import { indexBy } from '$lib/util/collections';
 import { photoFromText } from './photo-storage';
-import { limitStepPhotos } from './step-photos';
 
 /**
  * @typedef {import('$lib/types').Ingredient} Ingredient
@@ -25,9 +26,7 @@ async function mergeIngredients(incoming) {
 	const ids = new Map();
 
 	for (const ingredient of incoming) {
-		const same =
-			local.find((i) => i.id === ingredient.id) ??
-			local.find((i) => i.name.toLowerCase() === ingredient.name.toLowerCase());
+		const same = local.find((i) => i.id === ingredient.id) ?? findByName(local, ingredient.name);
 		ids.set(ingredient.id, same?.id ?? ingredient.id);
 		if (!same) await db.ingredients.add(ingredient);
 	}

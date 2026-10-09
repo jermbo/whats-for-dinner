@@ -1,6 +1,6 @@
 <script>
 	import { resolve } from '$app/paths';
-	import { MEAL_TYPES, labelOf } from '$lib/data/options';
+	import { MEAL_TYPES, labelOf } from '$lib/domain/options';
 	import { photoMorph } from '$lib/motion/photo-morph';
 	import PantryCount from './PantryCount.svelte';
 	import RecipePhoto from './RecipePhoto.svelte';

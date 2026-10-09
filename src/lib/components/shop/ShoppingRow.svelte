@@ -1,6 +1,6 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { isCounted } from '$lib/data/put-away';
+	import { isCounted } from '$lib/domain/put-away';
 	import { collapse } from '$lib/motion/transitions';
 	import { formatQuantity } from '$lib/util/format';
 	import ProductTile from './ProductTile.svelte';
@@ -11,17 +11,19 @@
 	const MAX_PHOTOS = 3;
 
 	/**
-	 * One item of the shopping list that is not in the cart. A tap on the row puts the item in
-	 * the cart. A tap on a photo does the same, and tells the app which product it is.
+	 * One item of the shopping list that is not in the cart, with the reason that it is on the
+	 * list below its name: the meal that needs it, or "Low in the pantry". A tap on the row puts
+	 * the item in the cart. A tap on a photo does the same, and tells the app which product it is.
 	 * An item that only the owner added has a button that removes it from the list.
 	 * @type {{
-	 *   row: import('$lib/data/shopping').ListRow,
+	 *   row: import('$lib/domain/shopping').ListRow,
+	 *   reason?: string,
 	 *   products: Product[],
 	 *   ontake: (product: Product | null) => void,
 	 *   onremove?: () => void
 	 * }}
 	 */
-	let { row, products, ontake, onremove } = $props();
+	let { row, reason = '', products, ontake, onremove } = $props();
 
 	const unit = $derived(row.ingredient?.unit);
 	const amount = $derived(
@@ -45,10 +47,15 @@
 <li class="list__item shopping-row" transition:collapse>
 	<!-- This button covers the full row. The photos and "Remove" lie on it. -->
 	<button class="shopping-row__take" type="button" onclick={() => take(null)}>
-		<span class="visually-hidden">Put in the cart:</span>
-		<strong>{row.name}</strong>
+		<span class="shopping-row__text">
+			<span class="visually-hidden">Put in the cart:</span>
+			<strong class="shopping-row__name">{row.name}</strong>
+			{#if reason}
+				<span class="shopping-row__reason">{reason}</span>
+			{/if}
+		</span>
 		{#if amount}
-			<span class="muted">{amount}</span>
+			<span class="shopping-row__amount">{amount}</span>
 		{/if}
 	</button>
 
@@ -87,13 +94,12 @@
 	.shopping-row__take {
 		display: flex;
 		flex: 1;
-		flex-wrap: wrap;
-		align-items: baseline;
-		gap: 0 var(--space-2);
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-3);
 		min-inline-size: 0;
 		min-block-size: var(--tap);
 		padding: 0;
-		align-content: center;
 		text-align: start;
 		background: none;
 		border: 0;
@@ -107,13 +113,13 @@
 		}
 
 		&:active::after {
-			background: rgb(29 28 26 / 0.07);
+			background: color-mix(in srgb, var(--ink) 7%, transparent);
 		}
 
 		/* Only for a mouse: on a touch screen, a hover stays after the tap. */
 		@media (hover: hover) {
 			&:hover::after {
-				background: rgb(29 28 26 / 0.04);
+				background: color-mix(in srgb, var(--ink) 4%, transparent);
 			}
 		}
 
@@ -121,9 +127,34 @@
 			outline: none;
 
 			&::after {
-				outline: 3px solid var(--ink);
+				outline: var(--focus-ring);
 			}
 		}
+	}
+
+	.shopping-row__text {
+		display: grid;
+		min-inline-size: 0;
+	}
+
+	.shopping-row__name {
+		font-size: 1.0625rem;
+		font-weight: 800;
+		line-height: 1.25;
+	}
+
+	/* Why the item is on the list: the meal that needs it, or the pantry. */
+	.shopping-row__reason {
+		font-size: 0.875rem;
+		line-height: 1.25;
+		color: var(--ink-soft);
+	}
+
+	.shopping-row__amount {
+		font-family: var(--font-display);
+		font-size: 1.375rem;
+		line-height: 1;
+		white-space: nowrap;
 	}
 
 	.shopping-row__products {

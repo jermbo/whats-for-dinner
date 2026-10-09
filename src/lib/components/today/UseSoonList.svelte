@@ -1,33 +1,32 @@
 <script>
-	import { stockAge, URGENT_DAYS } from '$lib/data/use-up';
+	import { isUrgent, leftText } from '$lib/domain/use-by';
 
 	/** The most items that the list shows. */
 	const MAX = 4;
 
 	/**
-	 * The food to use first, as a ruled list: the name, and a badge with the age of the stock.
-	 * The oldest stock is first. Stock that is old has a tomato badge: only for "Use first".
-	 * @type {{ items: import('$lib/data/use-up').SoonItem[] }}
+	 * The food to use first, as a ruled list: the name, and a badge with the days that are left.
+	 * The earliest date is first. Only "Use today" has a tomato badge.
+	 * @type {{ items: import('$lib/domain/use-up').SoonItem[] }}
 	 */
 	let { items } = $props();
+
+	const uid = $props.id();
 
 	const shown = $derived(items.filter((item) => item.free > 0).slice(0, MAX));
 </script>
 
-<section class="soon-list" aria-labelledby="soon-title">
-	<h2 id="soon-title">Use soon</h2>
+<section class="soon-list" aria-labelledby="{uid}-title">
+	<h2 id="{uid}-title">Use soon</h2>
 
 	{#if shown.length > 0}
 		<ul class="soon-list__rows">
 			{#each shown as soon (soon.ingredient.id)}
 				<li class="soon-list__row">
 					<span>{soon.ingredient.name}</span>
-					{#if soon.days >= URGENT_DAYS}
-						<span class="badge badge--urgent">Use first</span>
-					{:else}
-						<span class="badge">{soon.days === 0 ? 'New' : `${soon.days} d`}</span>
-					{/if}
-					<span class="visually-hidden">{stockAge(soon.days)}.</span>
+					<span class={['badge', isUrgent(soon.left) && 'badge--urgent']}>
+						{leftText(soon.left)}
+					</span>
 				</li>
 			{/each}
 		</ul>
@@ -67,6 +66,6 @@
 
 	.soon-list__empty {
 		font-size: 0.9375rem;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 </style>

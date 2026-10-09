@@ -7,20 +7,22 @@
 	 * A tap on an item selects it: the dealer then shows only the recipes that use it.
 	 * With no "ontoggle", the plan only shows the food.
 	 * @type {{
-	 *   items: import('$lib/data/use-up').SoonItem[],
+	 *   items: import('$lib/domain/use-up').SoonItem[],
 	 *   selected?: Set<string>,
 	 *   ontoggle?: (ingredientId: string) => void
 	 * }}
 	 */
 	let { items, selected, ontoggle } = $props();
 
+	const uid = $props.id();
+
 	const planned = $derived(items.filter((item) => item.free === 0).length);
 	const done = $derived(planned === items.length);
 </script>
 
-<section class="stack stack--tight" aria-labelledby="food-plan-title">
+<section class="stack stack--tight" aria-labelledby="{uid}-title">
 	<div class="cluster cluster--between">
-		<h2 id="food-plan-title">Food to use</h2>
+		<h2 id="{uid}-title">Use first</h2>
 		{#if items.length > 0}
 			<span class={['badge', done && 'badge--good']}>
 				{done ? 'All planned' : `${planned} of ${items.length} planned`}

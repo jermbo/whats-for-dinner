@@ -2,8 +2,9 @@
 	import BarcodeScanner from '$lib/components/pantry/BarcodeScanner.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import { savePhoto } from '$lib/data/photo-storage';
-	import { blankProduct, findProduct, lookupProduct, saveProduct } from '$lib/data/products';
-	import { isCounted } from '$lib/data/put-away';
+	import { findProduct, lookupProduct, saveProduct } from '$lib/data/products';
+	import { blankProduct } from '$lib/domain/products';
+	import { isCounted } from '$lib/domain/put-away';
 	import { unitLabel } from '$lib/util/format';
 	import PhotoField from './PhotoField.svelte';
 

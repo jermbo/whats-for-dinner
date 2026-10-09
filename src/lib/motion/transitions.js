@@ -1,6 +1,6 @@
 import { backOut, cubicOut } from 'svelte/easing';
-import { prefersReducedMotion } from 'svelte/motion';
 import { fly, scale, slide } from 'svelte/transition';
+import { lessMotion } from './less-motion.svelte';
 
 /**
  * The transitions for elements that come into the page, go out of it, or change place.
@@ -8,7 +8,7 @@ import { fly, scale, slide } from 'svelte/transition';
  */
 
 /** @param {number} duration */
-const ms = (duration) => (prefersReducedMotion.current ? 0 : duration);
+const ms = (duration) => (lessMotion.current ? 0 : duration);
 
 /**
  * A row that opens when it comes in and closes when it goes out.
@@ -81,11 +81,11 @@ export function turnPage(node, { direction = 1, leave = false } = {}) {
  * It only moves the element: it does not scale it. The "flip" of Svelte also scales the element
  * by the ratio of two sizes, and a size of zero makes a transform that is not valid (NaN or
  * Infinity). Then the browser drops the animation, and the element can stay out of view.
- * @param {Element} node
+ * @param {Element} _node Svelte gives the element first. This motion needs only the two places.
  * @param {{ from: DOMRect, to: DOMRect }} rects
  * @returns {import('svelte/animate').AnimationConfig}
  */
-export function reorder(node, { from, to }) {
+export function reorder(_node, { from, to }) {
 	const dx = from.left - to.left;
 	const dy = from.top - to.top;
 	if (!Number.isFinite(dx) || !Number.isFinite(dy) || (dx === 0 && dy === 0)) {

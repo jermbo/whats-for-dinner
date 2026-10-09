@@ -1,3 +1,4 @@
+import { mealOnMenu } from '$lib/domain/menu';
 import { hoursAgo, id } from './keys';
 
 /**
@@ -24,7 +25,7 @@ const minutesAgo = (minutes) => hoursAgo(minutes / 60);
  */
 export function sampleOpenCook(recipes, menu) {
 	const recipe = recipes.find((item) => item.id === id(RECIPE_KEY));
-	const item = menu.find((entry) => entry.recipeId === recipe?.id && entry.kind === 'recipe');
+	const item = recipe && mealOnMenu(menu, recipe.id);
 	const [first, second] = recipe?.steps ?? [];
 	if (!recipe || !item || !first || !second) return [];
 

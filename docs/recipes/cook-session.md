@@ -2,7 +2,7 @@
 title: What a cook session remembers
 summary: 'A cook session stores the raw facts of one cook, with their times. The app gets most of them with no tap from you.'
 parent: data-model.md
-updated: 2026-10-03
+updated: 2026-10-04
 ---
 
 [Wiki](../README.md) / [Recipes](README.md) / [Data model](data-model.md) / What a cook session remembers
@@ -26,7 +26,7 @@ The app stores each fact that it can see by itself, with its time. It never asks
 | The end time                            | You tap "Cooked".                   | None      |
 | The servings                            | The recipe, at that time.           | None      |
 | The pantry amounts                      | The app subtracts the ingredients.  | None      |
-| The [finished photo](finished-photo.md) | The finished card.                  | Optional  |
+| The [finished photo](finished-photo.md) | The screen after "Cooked".          | Optional  |
 | The [step notes](step-notes.md)         | A step card.                        | Optional  |
 | The rating and the note                 | The screen after "Cooked".          | Optional  |
 
@@ -47,7 +47,7 @@ A session with a start and no end is open: you are in the middle of the meal. Th
 
 ## An example
 
-Chicken curry, 3 October. The start is 18:02. Step 4 opens at 18:20, and the finished card opens at 18:36. The end is 18:41. So the cook took 39 minutes, and step 4, "Simmer for 15 minutes", took 16.
+Chicken curry, 3 October. The start is 18:02. Step 4 opens at 18:20, and the last card opens at 18:36. The end is 18:41. So the cook took 39 minutes, and step 4, "Simmer for 15 minutes", took 16.
 
 ## Further reading
 

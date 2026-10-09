@@ -1,19 +1,21 @@
 <script>
-	import { download, exportAll, exportRecipes } from '$lib/data/backup';
-	import { getMeta } from '$lib/db/meta';
-	import { live } from '$lib/live.svelte';
+	import { exportAll, exportRecipes } from '$lib/data/backup';
+	import { download } from '$lib/data/backup-file';
 	import { formatDateTime } from '$lib/util/format';
 
-	const lastBackup = live(() => getMeta('lastBackupAt'), undefined);
+	/** @type {{ lastBackup: string }} The time of the last full backup, or '' for none. */
+	let { lastBackup } = $props();
+
+	const uid = $props.id();
 </script>
 
-<section class="stack" aria-labelledby="export-title">
-	<h2 id="export-title">Export</h2>
+<section class="stack" aria-labelledby="{uid}-title">
+	<h2 id="{uid}-title">Export</h2>
 
 	<p>
 		This device has the only copy of the data.
-		{#if typeof lastBackup.current === 'string'}
-			Last full backup: {formatDateTime(lastBackup.current)}.
+		{#if lastBackup}
+			Last full backup: {formatDateTime(lastBackup)}.
 		{:else}
 			There is no full backup yet.
 		{/if}

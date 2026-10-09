@@ -1,11 +1,17 @@
 <script>
 	import { tick } from 'svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { endWithEmptyStep, newStep, splitLines } from '$lib/data/step-list';
+	import {
+		endWithEmptyStep,
+		newStep,
+		pasteAtCursor,
+		splitAtCursor,
+		splitLines
+	} from '$lib/domain/step-list';
 	import { dragSort, isDropping } from '$lib/input/drag-sort';
+	import { fitHeight } from '$lib/input/fit-height';
 	import { appear, reorder, shrink } from '$lib/motion/transitions';
-
-	/** @typedef {Event & { currentTarget: HTMLTextAreaElement }} FieldEvent */
+	import { useUndo } from '$lib/state/undo.svelte';
 
 	/**
 	 * The steps of the recipe form, as a list that you type like a note. The list ends with an
@@ -64,16 +70,15 @@
 	/** The ID of the step that has the cursor, or that had it last. */
 	let currentId = $state('');
 
-	/** The time that "Undo" stays, in milliseconds. */
-	const UNDO_MS = 8000;
 	/**
 	 * The last step that the owner removed, and its place. It is only for a step with no photos:
 	 * the save deletes the photos of a step that is gone.
-	 * @type {{ step: import('$lib/types').RecipeStep, index: number } | null}
+	 * @type {import('$lib/state/undo.svelte').Undo<{
+	 *   step: import('$lib/types').RecipeStep,
+	 *   index: number
+	 * }>}
 	 */
-	let undo = $state.raw(null);
-	/** @type {ReturnType<typeof setTimeout> | undefined} */
-	let undoTimer;
+	const removed = useUndo();
 
 	/** @param {string} stepId */
 	const fieldId = (stepId) => `${uid}-${stepId}`;
@@ -120,19 +125,16 @@
 		// The list always has one row to type in.
 		if (steps.length === 0) steps.push(newStep());
 
-		clearTimeout(undoTimer);
-		undo = step.photoIds.length === 0 ? { step: $state.snapshot(step), index } : null;
-		if (undo) undoTimer = setTimeout(() => (undo = null), UNDO_MS);
+		removed.keep(step.photoIds.length === 0 ? { step: $state.snapshot(step), index } : null);
 
 		focus(Math.max(0, index - 1));
 	}
 
 	/** Puts the step that was removed back in its place. */
 	function restore() {
-		if (!undo) return;
-		const { step, index } = undo;
-		clearTimeout(undoTimer);
-		undo = null;
+		const kept = removed.take();
+		if (!kept) return;
+		const { step, index } = kept;
 		// The empty row at the end stays the last row.
 		steps.splice(Math.min(index, steps.length - 1), 0, step);
 		focus(Math.min(index, steps.length - 2));
@@ -164,8 +166,8 @@
 			event.preventDefault();
 			// Enter in an empty step does not make a second empty step.
 			if (!text.trim()) return;
-			const after = text.slice(field.selectionEnd).trimStart();
-			steps[index].text = text.slice(0, field.selectionStart).trimEnd();
+			const { before, after } = splitAtCursor(text, field.selectionStart, field.selectionEnd);
+			steps[index].text = before;
 			// At the end of a step, an empty step below is the next step: Enter goes to it.
 			if (after || steps[index + 1]?.text !== '') insertAfter(index, [after]);
 			focus(index + 1, 0);
@@ -184,15 +186,17 @@
 	function paste(event, index) {
 		const pasted = event.clipboardData?.getData('text/plain') ?? '';
 		if (!pasted.includes('\n')) return;
-		const lines = splitLines(pasted);
-		if (lines.length === 0) return;
+		const pastedLines = splitLines(pasted);
+		if (pastedLines.length === 0) return;
 		event.preventDefault();
 
 		const field = event.currentTarget;
-		const text = steps[index].text;
-		// The first line goes at the cursor. The text after the cursor goes after the last line.
-		lines[0] = text.slice(0, field.selectionStart) + lines[0];
-		lines[lines.length - 1] += text.slice(field.selectionEnd);
+		const lines = pasteAtCursor(
+			steps[index].text,
+			field.selectionStart,
+			field.selectionEnd,
+			pastedLines
+		);
 
 		steps[index].text = lines[0];
 		insertAfter(index, lines.slice(1));
@@ -214,16 +218,6 @@
 		}
 		insertAfter(index, rest);
 		focus(index + rest.length, 0);
-	}
-
-	/**
-	 * Makes a text field as tall as its text, in a browser that cannot do this with CSS.
-	 * @param {HTMLTextAreaElement} node
-	 */
-	function fitHeight(node) {
-		if (CSS.supports('field-sizing', 'content')) return;
-		node.style.blockSize = 'auto';
-		node.style.blockSize = `${node.scrollHeight + 2}px`;
 	}
 </script>
 
@@ -330,9 +324,9 @@
 		{/each}
 	</ol>
 
-	{#if undo}
+	{#if removed.current}
 		<p class="step-fields__undo" role="status">
-			<span>Step {undo.index + 1} is removed.</span>
+			<span>Step {removed.current.index + 1} is removed.</span>
 			<button class="button button--link" type="button" onclick={restore}>Undo</button>
 		</p>
 	{/if}
@@ -353,7 +347,7 @@
 		padding: 0;
 		overflow-y: auto;
 		list-style: none;
-		background: var(--color-surface);
+		background: var(--card);
 		border-radius: var(--radius);
 		box-shadow: var(--shadow);
 		scrollbar-width: thin;
@@ -438,8 +432,8 @@
 		position: sticky;
 		inset-block-end: 0;
 		padding-block: var(--space-3);
-		background: var(--color-surface);
-		border-block-start: 1px solid var(--color-border);
+		background: var(--card);
+		border-block-start: 1px solid var(--hairline);
 
 		&:first-child {
 			border-block-start: 0;
@@ -449,7 +443,7 @@
 	/* A plus sign and a line of dashes: a place that is free. */
 	.step-fields__row--next:not(.step-fields__row--current) {
 		& .step-fields__number {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 			background: none;
 			box-shadow: inset 0 0 0 2px var(--hairline);
 		}
@@ -475,13 +469,13 @@
 		align-items: center;
 		min-inline-size: 0;
 		min-block-size: var(--tap);
-		background: var(--color-surface-soft);
+		background: var(--paper-deep);
 		border: 2px solid transparent;
 		border-radius: var(--radius-control);
 
 		/* The bar shows the focus, and not the text field in it. */
 		&:focus-within {
-			outline: 3px solid var(--ink);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
 		}
 	}
@@ -501,7 +495,7 @@
 		field-sizing: content;
 
 		&::placeholder {
-			color: var(--color-muted);
+			color: var(--ink-soft);
 		}
 
 		&:focus-visible {

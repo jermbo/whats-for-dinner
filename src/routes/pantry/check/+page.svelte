@@ -5,17 +5,17 @@
 	import PantryGauge from '$lib/components/pantry/PantryGauge.svelte';
 	import PantryItemSheet from '$lib/components/pantry/PantryItemSheet.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
-	import { findDoubts } from '$lib/data/doubt';
-	import { groupByLocation, pantryRows } from '$lib/data/pantry-view';
-	import { now } from '$lib/db/ids';
-	import { getMeta, setMeta } from '$lib/db/meta';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { findDoubts, finishPantryCheck, lastPantryCheck } from '$lib/data/doubt';
+	import { groupByLocation, pantryRows } from '$lib/domain/pantry-view';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { formatDate, plural } from '$lib/util/format';
 
+	const uid = $props.id();
+
 	const kitchen = useKitchen();
-	const lastCheck = live(() => getMeta('lastPantryCheckAt'), undefined);
+	const lastCheck = live(lastPantryCheck, '');
 
 	/**
 	 * The doubts at the start of the check: the item ID and the reason.
@@ -33,13 +33,13 @@
 		doubts = await findDoubts();
 	});
 
-	const rows = $derived(pantryRows(kitchen.pantry, kitchen.ingredientsById));
+	const rows = $derived(pantryRows(kitchen.pantry, kitchen.ingredientsById, Date.now()));
 	const doubtful = $derived(rows.filter((row) => doubts?.has(row.item.id)));
 	const sure = $derived(rows.filter((row) => !doubts?.has(row.item.id)));
 	const sureGroups = $derived(groupByLocation(sure));
 
 	async function finish() {
-		await setMeta('lastPantryCheckAt', now());
+		await finishPantryCheck();
 		status.say('The pantry check is complete.');
 		finished = true;
 	}
@@ -52,9 +52,9 @@
 </PageHeader>
 
 {#if finished}
-	<section class="stack" aria-labelledby="check-done">
+	<section class="stack" aria-labelledby="{uid}-done">
 		<p><span class="stamp">Checked</span></p>
-		<h2 id="check-done">The pantry is correct</h2>
+		<h2 id="{uid}-done">The pantry is correct</h2>
 		<p>{changed.size === 0 ? 'No item changed.' : `${plural(changed.size, 'item')} changed.`}</p>
 		<div class="cluster">
 			<a class="button button--primary" href={resolve('/menu')}>Plan the menu</a>
@@ -76,15 +76,15 @@
 			</p>
 			<p class="muted">
 				Slide a row to the real amount. Do not touch a row that is correct.
-				{#if typeof lastCheck.current === 'string'}
+				{#if lastCheck.current}
 					Last check: {formatDate(lastCheck.current)}.
 				{/if}
 			</p>
 		</div>
 
 		{#if doubtful.length > 0}
-			<section class="stack stack--tight" aria-labelledby="check-doubts">
-				<h2 class="section-title" id="check-doubts">Look at these</h2>
+			<section class="stack stack--tight" aria-labelledby="{uid}-doubts">
+				<h2 class="section-title" id="{uid}-doubts">Look at these</h2>
 				<ul class="gauges">
 					{#each doubtful as row (row.item.id)}
 						<PantryGauge
@@ -107,9 +107,9 @@
 					{plural(sure.length, 'item')} that I am sure about
 				</summary>
 				<div class="check__sure grid">
-					{#each sureGroups as group (group.location)}
-						<section class="stack stack--tight" aria-labelledby="check-{group.location}">
-							<h3 class="section-title" id="check-{group.location}">{group.label}</h3>
+					{#each sureGroups as group (group.key)}
+						<section class="stack stack--tight" aria-labelledby="check-{group.key}">
+							<h3 class="section-title" id="check-{group.key}">{group.label}</h3>
 							<ul class="gauges">
 								{#each group.rows as row (row.item.id)}
 									<PantryGauge
@@ -139,12 +139,12 @@
 <style>
 	/* The answer of the app is the largest text on the screen. */
 	.check__verdict {
-		font-family: var(--font-heading);
+		font-family: var(--font-display);
 		font-size: 1.5rem;
 		line-height: 1.25;
 
 		& strong {
-			color: var(--color-accent-strong);
+			color: var(--ink);
 		}
 	}
 

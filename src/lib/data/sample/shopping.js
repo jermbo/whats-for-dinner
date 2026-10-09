@@ -111,6 +111,7 @@ export function sampleTrips() {
 				packages,
 				quantity,
 				price,
+				within: null,
 				cartAt: at,
 				putAwayAt: at,
 				updatedAt: at
@@ -138,6 +139,7 @@ export function sampleShopping() {
 		name,
 		ingredientId,
 		quantity: 0,
+		fromPantry: false,
 		updatedAt: daysAgo(0)
 	}));
 }

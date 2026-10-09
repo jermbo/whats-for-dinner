@@ -1,5 +1,5 @@
+import { settleTrip } from '$lib/data/trips';
 import { db } from '$lib/db/db';
-import { settleTrip } from '../trips';
 import { SAMPLE_PREFIX } from './keys';
 import { sampleCookPhotos, samplePhotos } from './photos';
 import { sampleRecords } from './records';
@@ -65,7 +65,8 @@ async function clear() {
 
 /**
  * Adds the sample data. A second call puts the sample data back to its first state: it also
- * removes the changes that the tests made, and it sets the date of the last pantry check.
+ * removes the changes that the tests made, and it sets the date of the last pantry check and
+ * the plan of the week.
  */
 export async function loadSampleData() {
 	const records = sampleRecords();
@@ -90,6 +91,7 @@ export async function loadSampleData() {
 		await db.purchases.bulkPut(records.purchases);
 		await db.shopping.bulkPut(records.shopping);
 		await db.meta.put({ key: 'lastPantryCheckAt', value: records.lastPantryCheckAt });
+		await db.meta.put({ key: 'menuPlan', value: records.plan });
 	});
 }
 

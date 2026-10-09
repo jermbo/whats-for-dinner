@@ -1,11 +1,14 @@
 import { db } from '$lib/db/db';
-import { newId, now } from '$lib/db/ids';
+import { blankSession, isCooking } from '$lib/domain/cook-session';
+import { cookAmounts } from '$lib/domain/cook-takes';
+import { newId, now } from '$lib/util/ids';
 import { dropFinishedPhoto } from './finished-photos';
+import { addToMenu } from './menu';
 import { changeQuantity } from './pantry';
 
 /**
  * @typedef {import('$lib/types').MenuItem} MenuItem
- * @typedef {import('$lib/types').Recipe} Recipe
+ * @typedef {import('$lib/types').Ingredient} Ingredient
  * @typedef {import('$lib/types').CookSession} CookSession
  * @typedef {import('$lib/types').Deduction} Deduction
  */
@@ -21,12 +24,6 @@ const TABLES = [
 ];
 
 /**
- * An open session with no action for this long is from a meal that the owner did not finish.
- * The next start begins again, so that the times of the session are the times of one cook.
- */
-const STALE_MS = 6 * 60 * 60 * 1000;
-
-/**
  * The cook sessions that are open: Cook mode started, and "Cooked" did not occur yet.
  * An open session has an empty "cookedAt".
  */
@@ -34,48 +31,22 @@ export function openSessions() {
 	return db.sessions.where('cookedAt').equals('').toArray();
 }
 
+/** @param {string} id */
+export function sessionById(id) {
+	return db.sessions.get(id);
+}
+
+/**
+ * All cook sessions of a recipe: the cooked ones and the open one.
+ * @param {string} recipeId
+ */
+export function sessionsOfRecipe(recipeId) {
+	return db.sessions.where('recipeId').equals(recipeId).toArray();
+}
+
 /** The cook sessions of the meals that are cooked, oldest first. This is the cook history. */
 export function cookedSessions() {
 	return db.sessions.where('cookedAt').above('').toArray();
-}
-
-/**
- * True when the owner is in the middle of this meal: the last action is not long ago.
- * @param {CookSession} session An open session.
- * @param {number} nowMs
- */
-export function isCooking(session, nowMs) {
-	const last = session.visits.at(-1)?.at ?? session.startedAt ?? session.updatedAt;
-	return Date.parse(last) > nowMs - STALE_MS;
-}
-
-/**
- * @param {MenuItem} item
- * @param {Recipe} recipe
- * @param {string} time
- * @returns {CookSession}
- */
-function blankSession(item, recipe, time) {
-	return {
-		id: newId(),
-		recipeId: recipe.id,
-		recipeName: recipe.name,
-		kind: item.kind,
-		menuItem: item,
-		startedAt: time,
-		cookedAt: '',
-		servings: recipe.servings,
-		rating: null,
-		note: '',
-		deductions: [],
-		leftoverMenuId: null,
-		photoId: null,
-		visits: [],
-		stepNotes: [],
-		timers: [],
-		checked: [],
-		updatedAt: time
-	};
 }
 
 /** @param {string} itemId The ID of a menu item. */
@@ -117,9 +88,11 @@ export function startCook(item) {
  * and closes the cook session of the meal. A meal with no open session gets a session that
  * has only the end time.
  * @param {MenuItem} item
+ * @param {Map<string, number>} [changes] The amounts that the owner changed on the last card
+ *   of Cook mode, by ingredient ID.
  * @returns {Promise<string>} The ID of the cook session.
  */
-export function cook(item) {
+export function cook(item, changes) {
 	return db.transaction('rw', TABLES, async () => {
 		const recipe = await db.recipes.get(item.recipeId);
 		if (!recipe) throw new Error('The recipe of this meal does not exist.');
@@ -135,15 +108,20 @@ export function cook(item) {
 		/** @type {Deduction[]} */
 		const deductions = [];
 
-		// Leftovers use no ingredients. A 'state' ingredient does not change.
-		const rows = item.kind === 'recipe' ? recipe.ingredients : [];
-		for (const row of rows) {
-			const ingredient = await db.ingredients.get(row.ingredientId);
-			if (ingredient?.tracking !== 'quantity') continue;
-			const applied = await changeQuantity(row.ingredientId, -row.quantity, 'cooked', {
+		/** @type {Map<string, Ingredient>} */
+		const ingredientsById = new Map();
+		const ids = recipe.ingredients.map((row) => row.ingredientId);
+		for (const ingredient of await db.ingredients.bulkGet(ids)) {
+			if (ingredient) ingredientsById.set(ingredient.id, ingredient);
+		}
+
+		for (const { ingredient, amount } of cookAmounts(item.kind, recipe, ingredientsById, changes)) {
+			// The owner set this amount to zero: the meal did not use the ingredient.
+			if (amount <= 0) continue;
+			const applied = await changeQuantity(ingredient.id, -amount, 'cooked', {
 				sessionId: session.id
 			});
-			if (applied !== 0) deductions.push({ ingredientId: row.ingredientId, amount: -applied });
+			if (applied !== 0) deductions.push({ ingredientId: ingredient.id, amount: -applied });
 		}
 
 		await db.menu.delete(item.id);
@@ -251,9 +229,21 @@ export function setLeftovers(session, hasLeftovers) {
 				recipeId: session.recipeId,
 				addedAt: time,
 				prepDoneAt: null,
+				night: null,
 				updatedAt: time
 			});
 		}
 		await db.sessions.update(session.id, { leftoverMenuId, updatedAt: time });
 	});
+}
+
+/**
+ * "Cook now": puts a recipe on the menu and starts Cook mode for it.
+ * @param {string} recipeId
+ * @returns {Promise<string | undefined>} The ID of the cook session.
+ */
+export async function addAndStartCook(recipeId) {
+	const itemId = await addToMenu(recipeId);
+	const item = await db.menu.get(itemId);
+	return item && startCook(item);
 }

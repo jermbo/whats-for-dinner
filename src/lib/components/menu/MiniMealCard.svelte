@@ -1,9 +1,9 @@
 <script>
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
 	import Icon from '$lib/components/ui/Icon.svelte';
-	import { entryName } from '$lib/data/menu';
+	import { entryName } from '$lib/domain/menu';
 
-	/** @typedef {import('$lib/data/menu').MenuEntry} MenuEntry */
+	/** @typedef {import('$lib/domain/menu').MenuEntry} MenuEntry */
 
 	/**
 	 * One meal of the menu as a small card: the photo, and the name on one line.
@@ -92,7 +92,7 @@
 			outline: none;
 
 			&::after {
-				outline: 3px solid var(--ink);
+				outline: var(--focus-ring);
 				outline-offset: 2px;
 			}
 		}

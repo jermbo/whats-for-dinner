@@ -3,10 +3,20 @@
 	import { onMount } from 'svelte';
 	import AppNav from '$lib/components/ui/AppNav.svelte';
 	import StatusMessage from '$lib/components/ui/StatusMessage.svelte';
-	import { requestPersistence } from '$lib/db/persistence';
+	import { requestPersistence } from '$lib/data/persistence';
 	import { usePageTransitions } from '$lib/motion/page-transition';
+	import { useDevicePreferences } from '$lib/state/device.svelte';
+	import { provideKitchen } from '$lib/state/kitchen.svelte';
+	import { providePreferences } from '$lib/state/preferences.svelte';
+	import { provideShopping } from '$lib/state/shopping.svelte';
 
 	let { children } = $props();
+
+	// All screens and components read the same kitchen, shopping list, and preferences.
+	provideKitchen();
+	provideShopping();
+	providePreferences();
+	useDevicePreferences();
 
 	usePageTransitions();
 
@@ -50,7 +60,7 @@
 	 */
 	.app__main {
 		container: main / inline-size;
-		max-inline-size: 44rem;
+		max-inline-size: var(--measure);
 		margin-inline: auto;
 		padding: var(--space-6) var(--gutter);
 		/* Room for the navigation that is fixed to the bottom. */

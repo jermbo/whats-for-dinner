@@ -73,7 +73,7 @@
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--ink);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
 		}
 	}
@@ -81,7 +81,7 @@
 	.rating__icon {
 		inline-size: 2.25rem;
 		fill: transparent;
-		stroke: var(--color-text);
+		stroke: var(--ink);
 		stroke-width: 1.75;
 		stroke-linejoin: miter;
 		transition: fill 0.2s;

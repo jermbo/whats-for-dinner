@@ -1,7 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import RecipePhoto from '$lib/components/recipes/RecipePhoto.svelte';
-	import { hasPhoto } from '$lib/data/photos';
+	import { hasPhoto } from '$lib/domain/recipe-photo';
 	import { photoMorph } from '$lib/motion/photo-morph';
 
 	/**
@@ -10,12 +10,14 @@
 	 * an ink fill.
 	 * The children are the actions of the card. They are at the bottom of the card.
 	 * @type {{
-	 *   idea: import('$lib/data/use-up').UseUpIdea,
+	 *   idea: import('$lib/domain/use-up').UseUpIdea,
 	 *   selected: Set<string>,
+	 *   facts?: string,
 	 *   children?: import('svelte').Snippet
 	 * }}
+	 *   facts: a small line above the name, such as "Last 5/5 · 45 min".
 	 */
-	let { idea, selected, children } = $props();
+	let { idea, selected, facts = '', children } = $props();
 
 	const recipe = $derived(idea.recipe);
 	const photo = $derived(hasPhoto(recipe));
@@ -48,6 +50,9 @@
 		<h3 class="pack__name">
 			<a href={resolve('/recipes/[id]', { id: recipe.id })}>{recipe.name}</a>
 		</h3>
+		{#if facts}
+			<p class="label">{facts}</p>
+		{/if}
 	</div>
 
 	<div class="pack__foot">

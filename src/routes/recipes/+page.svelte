@@ -1,11 +1,11 @@
 <script>
 	import { resolve } from '$app/paths';
-	import MealFilter from '$lib/components/menu/MealFilter.svelte';
+	import MealFilter from '$lib/components/recipes/MealFilter.svelte';
 	import RecipeCard from '$lib/components/recipes/RecipeCard.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import ToggleChip from '$lib/components/ui/ToggleChip.svelte';
-	import { canMake, pantryCount } from '$lib/data/availability';
-	import { useKitchen } from '$lib/kitchen.svelte';
+	import { canMake, pantryCount } from '$lib/domain/availability';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
 	import { sortByName } from '$lib/util/collections';
 
 	const kitchen = useKitchen();

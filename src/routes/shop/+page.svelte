@@ -1,6 +1,7 @@
 <script>
 	import { resolve } from '$app/paths';
 	import AddItemForm from '$lib/components/shop/AddItemForm.svelte';
+	import CartProgress from '$lib/components/shop/CartProgress.svelte';
 	import CartRow from '$lib/components/shop/CartRow.svelte';
 	import ScanDialog from '$lib/components/shop/ScanDialog.svelte';
 	import ShopMeals from '$lib/components/shop/ShopMeals.svelte';
@@ -8,32 +9,29 @@
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import PageHeader from '$lib/components/ui/PageHeader.svelte';
 	import { take } from '$lib/data/cart';
-	import { productsByIngredient } from '$lib/data/products';
-	import {
-		aisles,
-		inCart,
-		removeManualItem,
-		shopMeals,
-		shoppingList,
-		shoppingNeeds
-	} from '$lib/data/shopping';
-	import { db } from '$lib/db/db';
-	import { useKitchen } from '$lib/kitchen.svelte';
-	import { live } from '$lib/live.svelte';
-	import { status } from '$lib/status.svelte';
+	import { allProducts } from '$lib/data/products';
+	import { removeManualItem } from '$lib/data/shopping-items';
+	import { productsByIngredient } from '$lib/domain/products';
+	import { aisles, rowReason, shopMeals } from '$lib/domain/shopping';
+	import { rise } from '$lib/motion/transitions';
+	import { useKitchen } from '$lib/state/kitchen.svelte';
+	import { live } from '$lib/state/live.svelte';
+	import { usePreferences } from '$lib/state/preferences.svelte';
+	import { useShopping } from '$lib/state/shopping.svelte';
+	import { status } from '$lib/state/status.svelte';
 	import { indexBy } from '$lib/util/collections';
 
 	/**
-	 * @typedef {import('$lib/data/shopping').ListRow} ListRow
+	 * @typedef {import('$lib/domain/shopping').ListRow} ListRow
 	 * @typedef {import('$lib/types').Product} Product
 	 */
 
 	const uid = $props.id();
 
 	const kitchen = useKitchen();
-	const manualItems = live(() => db.shopping.toArray(), []);
-	const products = live(() => db.products.toArray(), []);
-	const purchases = live(() => db.purchases.toArray(), []);
+	const shopping = useShopping();
+	const preferences = usePreferences();
+	const products = live(allProducts, []);
 
 	/** The recipe ID of the meal whose items the list shows. Empty: all items. */
 	let mealId = $state('');
@@ -41,28 +39,11 @@
 	let scanner = $state();
 
 	const productsById = $derived(indexBy(products.current, 'id'));
-	const productsOf = $derived(productsByIngredient(products.current, purchases.current));
+	const productsOf = $derived(productsByIngredient(products.current, shopping.purchases));
 
-	/** The cart is the purchases that are not put away. The item of the last tap is first. */
-	const cart = $derived(
-		purchases.current
-			.filter((purchase) => !purchase.putAwayAt)
-			.sort((a, b) => b.cartAt.localeCompare(a.cartAt))
-	);
-
-	const list = $derived(
-		shoppingList(
-			shoppingNeeds(
-				kitchen.menu,
-				kitchen.recipesById,
-				kitchen.ingredientsById,
-				kitchen.pantryByIngredient
-			),
-			manualItems.current,
-			kitchen.ingredientsById
-		)
-	);
-	const needed = $derived(list.filter((row) => !inCart(row, cart)));
+	const cart = $derived(shopping.cart);
+	const list = $derived(shopping.list);
+	const needed = $derived(shopping.needed);
 	const meals = $derived(shopMeals(kitchen.menu, kitchen.recipesById, needed));
 
 	/** The meal that is selected. When it goes off the menu, the list shows all items again. */
@@ -75,9 +56,11 @@
 	const shownCart = $derived(
 		meal ? cart.filter((purchase) => mealIngredients.has(purchase.ingredientId ?? '')) : cart
 	);
-	const groups = $derived(aisles(shownNeeded));
+	const groups = $derived(aisles(shownNeeded, preferences.values.categoryOrder));
 
 	const total = $derived(cart.length + needed.length);
+	/** True when the list has items, and each one is in the cart. */
+	const allTaken = $derived(shopping.ready && cart.length > 0 && needed.length === 0);
 
 	/**
 	 * @param {ListRow} row
@@ -112,6 +95,7 @@
 	<div class="stack">
 		<div class="stack stack--tight">
 			<PageHeader title="Shopping list">
+				<a class="button" href={resolve('/shop/trips')}>Trips</a>
 				<button class="button button--round" type="button" onclick={() => scanner?.open()}>
 					<Icon name="scan" />
 					<span class="visually-hidden">Scan a barcode</span>
@@ -122,16 +106,23 @@
 				<ShopMeals {meals} selected={meal?.id ?? ''} onselect={(id) => (mealId = id)} />
 			{/if}
 
-			<p class="shop__progress">
-				{#if total === 0}
-					The pantry has all ingredients for the menu.
-				{:else if needed.length === 0}
-					You have all items: <strong>{cart.length} of {total}</strong> in the cart.
-				{:else}
-					<strong>{cart.length} of {total}</strong> in the cart
-				{/if}
-			</p>
+			{#if total > 0}
+				<CartProgress taken={cart.length} {total} />
+			{:else if shopping.ready}
+				<p class="muted">The pantry has all ingredients for the menu.</p>
+			{/if}
 		</div>
+
+		{#if allTaken}
+			<!-- The list is done: one large line, and the one next step. -->
+			<div class="stack" in:rise>
+				<p class="shop__all">All in the cart.</p>
+				<p class="shop__names">{cart.map((purchase) => purchase.name).join(' · ')}</p>
+				<a class="button button--primary button--wide" href={resolve('/shop/put-away')}>
+					Put away at home
+				</a>
+			</div>
+		{/if}
 
 		{#if groups.length > 0}
 			<div class="grid shop__aisles">
@@ -144,6 +135,7 @@
 								{@const added = row.quantity === 0 ? row.item : null}
 								<ShoppingRow
 									{row}
+									reason={rowReason(row, kitchen.recipesById)}
 									products={productsOf.get(row.ingredient?.id ?? '') ?? []}
 									ontake={(product) => taken(row, product)}
 									onremove={added ? () => removeManualItem(added.id) : undefined}
@@ -161,7 +153,9 @@
 			<section class="stack stack--tight" aria-labelledby="{uid}-cart">
 				<div class="cluster cluster--between">
 					<h2 class="shop__aisle" id="{uid}-cart">In the cart</h2>
-					<a class="button button--primary" href={resolve('/shop/put-away')}>Put away</a>
+					{#if !allTaken}
+						<a class="button" href={resolve('/shop/put-away')}>Put away</a>
+					{/if}
 				</div>
 				<ul class="list">
 					{#each shownCart as purchase (purchase.id)}
@@ -192,13 +186,20 @@
 		--grid-min: 21rem;
 	}
 
-	.shop__progress {
-		color: var(--color-muted);
+	/* The largest text of the screen: the list is done. */
+	.shop__all {
+		padding-block-end: var(--space-3);
+		font-family: var(--font-display);
+		font-size: clamp(3.5rem, 24cqi, 7rem);
+		line-height: 0.86;
+		text-transform: uppercase;
+		border-block-end: var(--rule-1) solid var(--ink);
+	}
 
-		& strong {
-			color: var(--color-text);
-			font-variant-numeric: tabular-nums;
-		}
+	.shop__names {
+		font-size: 1.0625rem;
+		font-weight: 600;
+		color: var(--ink-soft);
 	}
 
 	/* An aisle is a label of the list, not a part of the page: its title is small. */

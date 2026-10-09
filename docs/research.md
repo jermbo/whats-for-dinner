@@ -20,12 +20,12 @@ This document does not make design decisions. Section 9 lists the decisions that
 
 Each fact has a label. The label tells you how much you can trust the fact.
 
-| Label | Meaning |
-|---|---|
-| **[V]** | Verified today from a primary source (vendor page, official documentation, npm registry, or the repository). |
+| Label   | Meaning                                                                                                                  |
+| ------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **[V]** | Verified today from a primary source (vendor page, official documentation, npm registry, or the repository).             |
 | **[S]** | From a secondary source. Many of these sources are blogs from companies that sell a competing product. Bias is possible. |
-| **[M]** | From the memory of the author (Claude). Not verified today. |
-| **[A]** | Assumption or proposal by the author. Not a fact. |
+| **[M]** | From the memory of the author (Claude). Not verified today.                                                              |
+| **[A]** | Assumption or proposal by the author. Not a fact.                                                                        |
 
 Limits of this research:
 
@@ -39,14 +39,14 @@ The owner gave these inputs before the research started.
 
 Update, 2026-10-02: After the review, the owner changed the scope. The tool is for one user first, with IndexedDB and a manual import and export. A shared household and a server database come later. [vision.md](vision.md) and [roadmap.md](roadmap.md) replace the table below where they disagree.
 
-| Topic | Input |
-|---|---|
-| Goal | Organize the pantry. Plan meals from available items. Make a shopping list. |
-| Shopping rule | Plan meals around related items. Do not buy one small ingredient for one dish. |
-| Architecture | Offline-first PWA. Astro is in the repository. |
-| Sharing | One shared household. All family members see and change the same data. |
-| Hosting | Vercel. The database comes through Vercel. |
-| Devices | Android phones or tablets, and desktop or laptop computers. |
+| Topic          | Input                                                                          |
+| -------------- | ------------------------------------------------------------------------------ |
+| Goal           | Organize the pantry. Plan meals from available items. Make a shopping list.    |
+| Shopping rule  | Plan meals around related items. Do not buy one small ingredient for one dish. |
+| Architecture   | Offline-first PWA. Astro is in the repository.                                 |
+| Sharing        | One shared household. All family members see and change the same data.         |
+| Hosting        | Vercel. The database comes through Vercel.                                     |
+| Devices        | Android phones or tablets, and desktop or laptop computers.                    |
 | Recipe sources | First: public recipe database and manual entry. Later: import from a web page. |
 
 ## 4. The problem in numbers
@@ -59,30 +59,30 @@ Update, 2026-10-02: After the review, the owner changed the scope. The tool is f
 
 ### 5.1 Commercial products
 
-| Product | Pantry | Meal plan | Shopping list | Offline | Sharing | Price | Label |
-|---|---|---|---|---|---|---|---|
-| **Paprika 3** | Yes. Sources disagree on the detail (see note 1). | Week and month. Reusable menus. | Combines equal ingredients ("1 egg + 2 eggs = 3 eggs"). Sorts by aisle. | Yes (local storage). | Cloud sync between the devices of one account. | One-time purchase for each platform. USD 4.99 on iOS, USD 29.99 on Windows. | [V] features, [S] price and offline |
-| **AnyList** | No pantry feature found. | Calendar. | Shared list. Combines ingredients. Sorts by category. | Yes. | Real-time shared lists and shared meal plan. | Free core. Complete: USD 9.99 for each year (one person) or USD 14.99 (household). | [V] |
-| **Mealime** | No. Each plan assumes an empty pantry. | The app selects recipes from its own catalog. More than 200 personal options. | Automatic. Sorted by category. | Not found. | Not found. | Free. Pro: USD 2.99 for each month. | [V] features, [S] pantry and price |
-| **Plan to Eat** | Removed (one source). | Calendar. | Automatic from the calendar. | Not found. | Not found. | USD 5.95 for each month or USD 49 for each year. | [S] |
-| **KitchenPal** | Quantities, expiry alerts, barcode scan, automatic deduction. | Yes. One source calls it "lighter". | Adds used items automatically. | Not found. | Family sharing. | Free. Premium approximately USD 3.99 for each month. | [S] (includes the vendor's own page) |
-| **SuperCook** | Checklist only. "Have it or do not have it." No quantities. No expiry. | No. | No. | No (web only). | No. | Free. | [S] |
-| **Cooklist** | Yes. Imports from store receipts and loyalty accounts. | Yes. | Connects to more than 80 retailers. | Not found. | Yes. | USD 5.99 to 9.99 for each month. | [S] |
-| **Samsung Food** | "Thin". No quantities. | Yes. | Automatic from the plan. | Not found. | Not found. | Free. Food+: USD 6.99 for each month. | [S] |
-| **SummitPlate** | Not found. | AI makes the plan. The AI reuses proteins, produce, grains, and sauces across meals. | Made together with the plan. | Not found. | Not found. | Not found. | [S] (vendor page) |
-| **NoWaste** | Quantities, expiry (core feature), barcode. | Basic. | Basic. | Not found. | Not found. | Free, or USD 7 for each year. | [S] |
-| **MealBoard** | Quantities, expiry, barcode. | Yes. | Moves empty items to the list. | Not found. | Not found. | USD 4 one-time. | [S] |
+| Product          | Pantry                                                                 | Meal plan                                                                            | Shopping list                                                           | Offline              | Sharing                                        | Price                                                                              | Label                                |
+| ---------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | -------------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------- | ------------------------------------ |
+| **Paprika 3**    | Yes. Sources disagree on the detail (see note 1).                      | Week and month. Reusable menus.                                                      | Combines equal ingredients ("1 egg + 2 eggs = 3 eggs"). Sorts by aisle. | Yes (local storage). | Cloud sync between the devices of one account. | One-time purchase for each platform. USD 4.99 on iOS, USD 29.99 on Windows.        | [V] features, [S] price and offline  |
+| **AnyList**      | No pantry feature found.                                               | Calendar.                                                                            | Shared list. Combines ingredients. Sorts by category.                   | Yes.                 | Real-time shared lists and shared meal plan.   | Free core. Complete: USD 9.99 for each year (one person) or USD 14.99 (household). | [V]                                  |
+| **Mealime**      | No. Each plan assumes an empty pantry.                                 | The app selects recipes from its own catalog. More than 200 personal options.        | Automatic. Sorted by category.                                          | Not found.           | Not found.                                     | Free. Pro: USD 2.99 for each month.                                                | [V] features, [S] pantry and price   |
+| **Plan to Eat**  | Removed (one source).                                                  | Calendar.                                                                            | Automatic from the calendar.                                            | Not found.           | Not found.                                     | USD 5.95 for each month or USD 49 for each year.                                   | [S]                                  |
+| **KitchenPal**   | Quantities, expiry alerts, barcode scan, automatic deduction.          | Yes. One source calls it "lighter".                                                  | Adds used items automatically.                                          | Not found.           | Family sharing.                                | Free. Premium approximately USD 3.99 for each month.                               | [S] (includes the vendor's own page) |
+| **SuperCook**    | Checklist only. "Have it or do not have it." No quantities. No expiry. | No.                                                                                  | No.                                                                     | No (web only).       | No.                                            | Free.                                                                              | [S]                                  |
+| **Cooklist**     | Yes. Imports from store receipts and loyalty accounts.                 | Yes.                                                                                 | Connects to more than 80 retailers.                                     | Not found.           | Yes.                                           | USD 5.99 to 9.99 for each month.                                                   | [S]                                  |
+| **Samsung Food** | "Thin". No quantities.                                                 | Yes.                                                                                 | Automatic from the plan.                                                | Not found.           | Not found.                                     | Free. Food+: USD 6.99 for each month.                                              | [S]                                  |
+| **SummitPlate**  | Not found.                                                             | AI makes the plan. The AI reuses proteins, produce, grains, and sauces across meals. | Made together with the plan.                                            | Not found.           | Not found.                                     | Not found.                                                                         | [S] (vendor page)                    |
+| **NoWaste**      | Quantities, expiry (core feature), barcode.                            | Basic.                                                                               | Basic.                                                                  | Not found.           | Not found.                                     | Free, or USD 7 for each year.                                                      | [S]                                  |
+| **MealBoard**    | Quantities, expiry, barcode.                                           | Yes.                                                                                 | Moves empty items to the list.                                          | Not found.           | Not found.                                     | USD 4 one-time.                                                                    | [S]                                  |
 
 Note 1: The Paprika website shows a pantry feature: "keep track of your groceries and what you have on hand". **[V]** One blog says that Paprika has no pantry awareness. A different blog says that Paprika tracks quantities and expiry but does not deduct after you cook. **[S]** The author did not find which statement is correct.
 
 ### 5.2 Open-source, self-hosted products
 
-| Product | Strong points | Weak points | Stack | Label |
-|---|---|---|---|---|
-| **Grocy** | Stock with quantities and due dates. Barcode scan with the camera. Product lookup through Open Food Facts. Minimum stock amounts. Each recipe shows if the stock can make it. One click adds missing items to the shopping list. A "Due Score" shows recipes that use items near their due date. | PWA with no offline function. The scope is large (chores, batteries, equipment). | Web application, self-hosted. | [V] |
-| **Mealie** | Good recipe import from URLs. Calendar meal plan. Automatic shopping list. Households and groups. Documented API. | No pantry found. No offline found. | Python (FastAPI), Vue, SQLite or PostgreSQL. | [S] |
-| **Tandoor** | Most features. Shopping list sorted by aisle with real-time sync. Nutrition. Meal cost. iCal export. Fine permissions. | Needs PostgreSQL. More configuration. | Django, Vue, PostgreSQL. | [S] |
-| **KitchenOwl** | Made for a household. Shared lists work partially offline in a store. Native mobile apps. Expense tracking. | Limited recipe import. Basic meal plan. | Flutter, Python, SQLite. | [S] |
+| Product        | Strong points                                                                                                                                                                                                                                                                                    | Weak points                                                                      | Stack                                        | Label |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- | -------------------------------------------- | ----- |
+| **Grocy**      | Stock with quantities and due dates. Barcode scan with the camera. Product lookup through Open Food Facts. Minimum stock amounts. Each recipe shows if the stock can make it. One click adds missing items to the shopping list. A "Due Score" shows recipes that use items near their due date. | PWA with no offline function. The scope is large (chores, batteries, equipment). | Web application, self-hosted.                | [V]   |
+| **Mealie**     | Good recipe import from URLs. Calendar meal plan. Automatic shopping list. Households and groups. Documented API.                                                                                                                                                                                | No pantry found. No offline found.                                               | Python (FastAPI), Vue, SQLite or PostgreSQL. | [S]   |
+| **Tandoor**    | Most features. Shopping list sorted by aisle with real-time sync. Nutrition. Meal cost. iCal export. Fine permissions.                                                                                                                                                                           | Needs PostgreSQL. More configuration.                                            | Django, Vue, PostgreSQL.                     | [S]   |
+| **KitchenOwl** | Made for a household. Shared lists work partially offline in a store. Native mobile apps. Expense tracking.                                                                                                                                                                                      | Limited recipe import. Basic meal plan.                                          | Flutter, Python, SQLite.                     | [S]   |
 
 ### 5.3 Findings from the survey
 
@@ -103,41 +103,41 @@ The groups below are a proposal by the author. **[A]** The owner makes the decis
 
 ### 6.1 Group A: Necessary for the stated goal
 
-| Feature | Seen in | Reason |
-|---|---|---|
-| Pantry with quantity and unit for each item | Grocy, KitchenPal, MealBoard | The planner cannot calculate what remains without quantities. |
-| "Can I make this?" status on each recipe | Grocy, SuperCook | This is the core of "plan with what is available". |
-| Sort recipes by pantry match | SuperCook, Grocy | Shows the meals that need the fewest purchases. |
-| Week calendar for the meal plan | All planners | Standard function. |
-| Shopping list from the plan, minus the pantry stock | Grocy, KitchenPal | Prevents a second purchase of an item that is in stock. |
-| Combine equal ingredients on the list | Paprika, AnyList | Standard function. |
-| Sort the list by store category | Paprika, AnyList, Mealime, Tandoor | Makes the store visit faster. |
-| Shared list that works with no connection | KitchenOwl, AnyList | Stores frequently have a weak signal. |
-| Deduct ingredients from the pantry when a meal is cooked | KitchenPal, NoWaste | Decreases the upkeep work. This is the primary cause of failure (finding 5). |
-| Move bought items from the list into the pantry | KitchenPal, MealBoard | Decreases the upkeep work. |
-| Ingredient overlap in the plan (see section 7) | SummitPlate | The owner asked for this function. |
+| Feature                                                  | Seen in                            | Reason                                                                       |
+| -------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------------- |
+| Pantry with quantity and unit for each item              | Grocy, KitchenPal, MealBoard       | The planner cannot calculate what remains without quantities.                |
+| "Can I make this?" status on each recipe                 | Grocy, SuperCook                   | This is the core of "plan with what is available".                           |
+| Sort recipes by pantry match                             | SuperCook, Grocy                   | Shows the meals that need the fewest purchases.                              |
+| Week calendar for the meal plan                          | All planners                       | Standard function.                                                           |
+| Shopping list from the plan, minus the pantry stock      | Grocy, KitchenPal                  | Prevents a second purchase of an item that is in stock.                      |
+| Combine equal ingredients on the list                    | Paprika, AnyList                   | Standard function.                                                           |
+| Sort the list by store category                          | Paprika, AnyList, Mealime, Tandoor | Makes the store visit faster.                                                |
+| Shared list that works with no connection                | KitchenOwl, AnyList                | Stores frequently have a weak signal.                                        |
+| Deduct ingredients from the pantry when a meal is cooked | KitchenPal, NoWaste                | Decreases the upkeep work. This is the primary cause of failure (finding 5). |
+| Move bought items from the list into the pantry          | KitchenPal, MealBoard              | Decreases the upkeep work.                                                   |
+| Ingredient overlap in the plan (see section 7)           | SummitPlate                        | The owner asked for this function.                                           |
 
 ### 6.2 Group B: Useful, but not necessary for a first version
 
-| Feature | Seen in | Note |
-|---|---|---|
-| Due dates and a "use first" sort | Grocy (Due Score), NoWaste, KitchenPal | Adds data entry work for each item. |
-| Barcode scan to add pantry items | Grocy, KitchenPal, Pantry Check | Android Chrome has a browser API for this (section 8.5). |
-| Minimum stock amounts for staples | Grocy | Adds staples to the list automatically. |
-| Recipe scale by servings | Paprika, AnyList | Changes ingredient quantities. |
-| Unit conversion (metric and imperial) | Paprika | Necessary if recipes and pantry use different units. |
-| Reusable menus (a saved week) | Paprika | Fast planning for a regular week. |
-| Diet rules, allergies, dislikes | Mealime | Filters the recipe list. |
+| Feature                               | Seen in                                | Note                                                     |
+| ------------------------------------- | -------------------------------------- | -------------------------------------------------------- |
+| Due dates and a "use first" sort      | Grocy (Due Score), NoWaste, KitchenPal | Adds data entry work for each item.                      |
+| Barcode scan to add pantry items      | Grocy, KitchenPal, Pantry Check        | Android Chrome has a browser API for this (section 8.5). |
+| Minimum stock amounts for staples     | Grocy                                  | Adds staples to the list automatically.                  |
+| Recipe scale by servings              | Paprika, AnyList                       | Changes ingredient quantities.                           |
+| Unit conversion (metric and imperial) | Paprika                                | Necessary if recipes and pantry use different units.     |
+| Reusable menus (a saved week)         | Paprika                                | Fast planning for a regular week.                        |
+| Diet rules, allergies, dislikes       | Mealime                                | Filters the recipe list.                                 |
 
 ### 6.3 Group C: Later, or possibly out of scope
 
-| Feature | Seen in | Note |
-|---|---|---|
-| Recipe import from a URL | Paprika, Mealie, Tandoor, AnyList | The owner put this in a later phase. |
-| Receipt scan or retailer account import | Cooklist | Needs retailer integrations. |
-| Nutrition data and meal cost | Tandoor | Needs more data for each ingredient. |
-| AI-made plans | SummitPlate, Mealime (partially) | Needs a network connection and a paid API. |
-| Cook mode (step by step, hands-free) | Mealime | Not related to the plan or the pantry. |
+| Feature                                 | Seen in                           | Note                                       |
+| --------------------------------------- | --------------------------------- | ------------------------------------------ |
+| Recipe import from a URL                | Paprika, Mealie, Tandoor, AnyList | The owner put this in a later phase.       |
+| Receipt scan or retailer account import | Cooklist                          | Needs retailer integrations.               |
+| Nutrition data and meal cost            | Tandoor                           | Needs more data for each ingredient.       |
+| AI-made plans                           | SummitPlate, Mealime (partially)  | Needs a network connection and a paid API. |
+| Cook mode (step by step, hands-free)    | Mealime                           | Not related to the plan or the pantry.     |
 
 ## 7. Ingredient overlap
 
@@ -161,12 +161,12 @@ These points are an analysis by the author. **[A]**
 
 These are proposals. **[A]** The author did not test them.
 
-| Method | Description | Needs |
-|---|---|---|
-| **Overlap score** | When the user adds a recipe to the week, sort the other recipes by the number of perishable ingredients that they share with the plan and the pantry. | Items 1 and 5 of section 7.2. |
-| **Remainder list** | After the plan is made, show each purchase with its unused part. Suggest recipes that use this part. | Items 1 to 5. |
-| **"Lonely ingredient" warning** | Show a warning when a perishable ingredient on the list is used by only one planned meal. | Items 1 and 5. |
-| **Automatic week** | The program selects the full week to get the smallest waste. | Items 1 to 5, plus an optimization algorithm. |
+| Method                          | Description                                                                                                                                           | Needs                                         |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| **Overlap score**               | When the user adds a recipe to the week, sort the other recipes by the number of perishable ingredients that they share with the plan and the pantry. | Items 1 and 5 of section 7.2.                 |
+| **Remainder list**              | After the plan is made, show each purchase with its unused part. Suggest recipes that use this part.                                                  | Items 1 to 5.                                 |
+| **"Lonely ingredient" warning** | Show a warning when a perishable ingredient on the list is used by only one planned meal.                                                             | Items 1 and 5.                                |
+| **Automatic week**              | The program selects the full week to get the smallest waste.                                                                                          | Items 1 to 5, plus an optimization algorithm. |
 
 The first and third methods need the least data. They do not need quantities.
 
@@ -182,13 +182,13 @@ Update, 2026-10-02: The owner changed the project from Astro to SvelteKit. Secti
 
 ### 8.2 PWA tooling for Astro 7
 
-| Option | Fact | Label |
-|---|---|---|
-| `@vite-pwa/astro` 1.2.0 | The peer dependency range stops at Astro 5. An open issue (number 72, opened 2026-03-11) reports that the range blocks installation on Astro 6. | [V] range, [S] issue |
-| `vite-plugin-pwa` 1.3.0 | Supports Vite 3 to 8. Uses Workbox 7.4. It is possible to add it directly as a Vite plugin in the Astro configuration. The author did not test this with Astro 7. | [V] range, [A] method |
-| `@serwist/vite` 9.5.12 | Supports Vite 5 and later. | [V] |
-| Hand-written service worker | No dependency. The developer writes the cache logic and the precache list. | [M] |
-| `@astrojs/vercel` 11.0.11 | Supports Astro 7. Necessary only if the application has server routes (API endpoints) on Vercel. | [V] |
+| Option                      | Fact                                                                                                                                                              | Label                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `@vite-pwa/astro` 1.2.0     | The peer dependency range stops at Astro 5. An open issue (number 72, opened 2026-03-11) reports that the range blocks installation on Astro 6.                   | [V] range, [S] issue  |
+| `vite-plugin-pwa` 1.3.0     | Supports Vite 3 to 8. Uses Workbox 7.4. It is possible to add it directly as a Vite plugin in the Astro configuration. The author did not test this with Astro 7. | [V] range, [A] method |
+| `@serwist/vite` 9.5.12      | Supports Vite 5 and later.                                                                                                                                        | [V]                   |
+| Hand-written service worker | No dependency. The developer writes the cache logic and the precache list.                                                                                        | [M]                   |
+| `@astrojs/vercel` 11.0.11   | Supports Astro 7. Necessary only if the application has server routes (API endpoints) on Vercel.                                                                  | [V]                   |
 
 A small prototype is necessary to find which option works with Astro 7. **[A]**
 
@@ -213,36 +213,36 @@ Facts about Vercel:
 
 Sync options:
 
-| Option | How it works | Fit with Vercel and a Marketplace database | Cost and license | Label |
-|---|---|---|---|---|
-| **Custom push and pull over HTTP** | The device keeps a local database and a queue of changes. It sends the queue to an API route and pulls changes from other devices. The developer writes the conflict rules. | Good. Uses standard Vercel Functions and Postgres (Neon). The database can sleep between requests. | No library cost. The most development work. | [A] |
-| **CRDT library: Yjs 13.6 or Automerge 3.5** | Each device keeps a document that merges automatically with no conflicts. The server stores and relays updates. | Possible. The updates can go through HTTP routes. Live updates need WebSocket (beta on Vercel) or a regular poll. | MIT. Free. | [V] license, [A] fit |
-| **PowerSync** | A sync service reads the Postgres replication log and keeps a SQLite database on each device. | Partial. The sync service does not run on Vercel. It needs PowerSync Cloud or a self-hosted container. | Cloud free plan: 50 concurrent clients, 2 GB synced for each month. Free projects are deactivated after 1 week with no activity. Pro starts at USD 49 for each month. Client SDK: Apache-2.0. | [V] |
-| **Zero** (Rocicorp) | A server process (`zero-cache`) keeps a replica and syncs queries to clients. Version 1.0 in June 2026. | No. `zero-cache` needs a server that runs continuously, and Postgres with logical replication. | Apache-2.0. | [V] deployment and license, [S] version date |
-| **ElectricSQL** | Streams Postgres data to clients. Writes go through your own API. | Partial. Needs the Electric sync service outside Vercel. | Not verified. | [S] |
-| **Dexie Cloud** | An add-on for Dexie. It gives sync, login, and shared "realms". | No. It uses the Dexie Cloud backend, not a Vercel database. | Free: 3 production users, 100 MB. Pro: EUR 0.12 for each user for each month. | [V] |
+| Option                                      | How it works                                                                                                                                                                | Fit with Vercel and a Marketplace database                                                                        | Cost and license                                                                                                                                                                              | Label                                        |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- |
+| **Custom push and pull over HTTP**          | The device keeps a local database and a queue of changes. It sends the queue to an API route and pulls changes from other devices. The developer writes the conflict rules. | Good. Uses standard Vercel Functions and Postgres (Neon). The database can sleep between requests.                | No library cost. The most development work.                                                                                                                                                   | [A]                                          |
+| **CRDT library: Yjs 13.6 or Automerge 3.5** | Each device keeps a document that merges automatically with no conflicts. The server stores and relays updates.                                                             | Possible. The updates can go through HTTP routes. Live updates need WebSocket (beta on Vercel) or a regular poll. | MIT. Free.                                                                                                                                                                                    | [V] license, [A] fit                         |
+| **PowerSync**                               | A sync service reads the Postgres replication log and keeps a SQLite database on each device.                                                                               | Partial. The sync service does not run on Vercel. It needs PowerSync Cloud or a self-hosted container.            | Cloud free plan: 50 concurrent clients, 2 GB synced for each month. Free projects are deactivated after 1 week with no activity. Pro starts at USD 49 for each month. Client SDK: Apache-2.0. | [V]                                          |
+| **Zero** (Rocicorp)                         | A server process (`zero-cache`) keeps a replica and syncs queries to clients. Version 1.0 in June 2026.                                                                     | No. `zero-cache` needs a server that runs continuously, and Postgres with logical replication.                    | Apache-2.0.                                                                                                                                                                                   | [V] deployment and license, [S] version date |
+| **ElectricSQL**                             | Streams Postgres data to clients. Writes go through your own API.                                                                                                           | Partial. Needs the Electric sync service outside Vercel.                                                          | Not verified.                                                                                                                                                                                 | [S]                                          |
+| **Dexie Cloud**                             | An add-on for Dexie. It gives sync, login, and shared "realms".                                                                                                             | No. It uses the Dexie Cloud backend, not a Vercel database.                                                       | Free: 3 production users, 100 MB. Pro: EUR 0.12 for each user for each month.                                                                                                                 | [V]                                          |
 
 Important interaction: PowerSync, Zero, and ElectricSQL use Postgres logical replication. While a replication subscriber is connected, a Neon compute does not scale to zero. **[V]** A compute that runs for a full month possibly uses more than the 100 free CU-hours. **[A]** (The author did not verify the minimum compute size.)
 
 ### 8.5 Browser APIs on Android and desktop
 
-| API | Use | Support | Label |
-|---|---|---|---|
-| Service Worker and Cache API | Offline application shell. | All current browsers. | [M] |
-| Background Sync API | Sends queued changes when the connection returns, also when the application is closed. | MDN marks it "limited availability". Chromium browsers (Chrome, Edge, Chrome on Android) support it. Firefox and Safari do not. | [V] status, [M] browser list |
-| Barcode Detection API | Reads EAN-13 and UPC-A barcodes from the camera. | MDN marks it "experimental". Chrome on Android supports it. Desktop support is different for each operating system. | [V] status and formats, [M] browser list |
-| Web App Manifest | Makes the PWA installable. | Chrome on Android and desktop Chromium browsers. | [M] |
+| API                          | Use                                                                                    | Support                                                                                                                         | Label                                    |
+| ---------------------------- | -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------- |
+| Service Worker and Cache API | Offline application shell.                                                             | All current browsers.                                                                                                           | [M]                                      |
+| Background Sync API          | Sends queued changes when the connection returns, also when the application is closed. | MDN marks it "limited availability". Chromium browsers (Chrome, Edge, Chrome on Android) support it. Firefox and Safari do not. | [V] status, [M] browser list             |
+| Barcode Detection API        | Reads EAN-13 and UPC-A barcodes from the camera.                                       | MDN marks it "experimental". Chrome on Android supports it. Desktop support is different for each operating system.             | [V] status and formats, [M] browser list |
+| Web App Manifest             | Makes the PWA installable.                                                             | Chrome on Android and desktop Chromium browsers.                                                                                | [M]                                      |
 
 ### 8.6 Recipe and product data
 
-| Source | Content | Terms | Fit with offline-first | Label |
-|---|---|---|---|---|
-| **TheMealDB** | Recipe database with a JSON API. Filter by one ingredient is free. | Test key "1" is for development or education. A public release on an app store needs a paid supporter account. The filter by many ingredients is a paid function. | No cache limit found. It is not clear if a family PWA is a "public release". | [V] |
-| **Spoonacular** | Large recipe API. | Free: 50 points for each day, backlink necessary. Paid plans start at USD 29 for each month. Cached data must be deleted after 1 hour. | Poor. The 1-hour cache limit conflicts with local storage of recipes. | [V] |
-| **Edamam** | Recipe search and nutrition APIs. | Free tier exists. Recipe Search goes up to USD 999 for each month. Cache terms not verified. | Not known. | [S] |
-| **Open Recipes dataset** | Bulk recipe data from 2017 or before. | CC BY 3.0. Commercial use is permitted with attribution. | Good (bulk file). The content quality is not verified. | [S] |
-| **RecipeNLG** | More than 2 million recipes. | CC BY-NC-SA 4.0. No commercial use. | Good (bulk file) for a private, non-commercial application. | [S] |
-| **Open Food Facts** | Packaged products by barcode. It is not a recipe source. | Open Database License. No key for read access. A custom User-Agent is necessary. Limit: 15 product requests for each minute for each IP address. Bulk download is available. | Good for the barcode scan. Needs a connection for each new product. | [V] |
+| Source                   | Content                                                            | Terms                                                                                                                                                                        | Fit with offline-first                                                       | Label |
+| ------------------------ | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | ----- |
+| **TheMealDB**            | Recipe database with a JSON API. Filter by one ingredient is free. | Test key "1" is for development or education. A public release on an app store needs a paid supporter account. The filter by many ingredients is a paid function.            | No cache limit found. It is not clear if a family PWA is a "public release". | [V]   |
+| **Spoonacular**          | Large recipe API.                                                  | Free: 50 points for each day, backlink necessary. Paid plans start at USD 29 for each month. Cached data must be deleted after 1 hour.                                       | Poor. The 1-hour cache limit conflicts with local storage of recipes.        | [V]   |
+| **Edamam**               | Recipe search and nutrition APIs.                                  | Free tier exists. Recipe Search goes up to USD 999 for each month. Cache terms not verified.                                                                                 | Not known.                                                                   | [S]   |
+| **Open Recipes dataset** | Bulk recipe data from 2017 or before.                              | CC BY 3.0. Commercial use is permitted with attribution.                                                                                                                     | Good (bulk file). The content quality is not verified.                       | [S]   |
+| **RecipeNLG**            | More than 2 million recipes.                                       | CC BY-NC-SA 4.0. No commercial use.                                                                                                                                          | Good (bulk file) for a private, non-commercial application.                  | [S]   |
+| **Open Food Facts**      | Packaged products by barcode. It is not a recipe source.           | Open Database License. No key for read access. A custom User-Agent is necessary. Limit: 15 product requests for each minute for each IP address. Bulk download is available. | Good for the barcode scan. Needs a connection for each new product.          | [V]   |
 
 Facts for recipe import (later phase):
 
@@ -251,15 +251,15 @@ Facts for recipe import (later phase):
 
 ## 9. Risks
 
-| Risk | Basis |
-|---|---|
-| The family stops pantry updates after a short time. | Section 5.3, finding 5. **[S]** |
-| Public recipe data does not have structured ingredients. The overlap function then needs manual work for each recipe. | Sections 7.2 and 8.6. **[A]** |
-| The license terms of a recipe API do not permit local storage. | Spoonacular, section 8.6. **[V]** |
-| The standard Astro PWA integration does not install on Astro 7. | Section 8.2. **[V]** |
-| A browser deletes local data before the sync is complete. | Section 8.3. **[V]** |
-| Two family members change the same item while offline. | Conflict rules are necessary for each data type. **[A]** |
-| A sync engine needs a server that Vercel cannot run. | Section 8.4. **[V]** for Zero. |
+| Risk                                                                                                                  | Basis                                                    |
+| --------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| The family stops pantry updates after a short time.                                                                   | Section 5.3, finding 5. **[S]**                          |
+| Public recipe data does not have structured ingredients. The overlap function then needs manual work for each recipe. | Sections 7.2 and 8.6. **[A]**                            |
+| The license terms of a recipe API do not permit local storage.                                                        | Spoonacular, section 8.6. **[V]**                        |
+| The standard Astro PWA integration does not install on Astro 7.                                                       | Section 8.2. **[V]**                                     |
+| A browser deletes local data before the sync is complete.                                                             | Section 8.3. **[V]**                                     |
+| Two family members change the same item while offline.                                                                | Conflict rules are necessary for each data type. **[A]** |
+| A sync engine needs a server that Vercel cannot run.                                                                  | Section 8.4. **[V]** for Zero.                           |
 
 ## 10. Open questions for the grill session
 

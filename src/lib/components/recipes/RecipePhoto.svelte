@@ -1,6 +1,6 @@
 <script>
-	import { recipePhoto } from '$lib/data/photos';
-	import { photoAddress } from '$lib/photo-address.svelte';
+	import { recipePhoto } from '$lib/domain/recipe-photo';
+	import { photoAddress } from '$lib/state/photo-address.svelte';
 
 	/**
 	 * The photo of a recipe: its cover, which is a photo of the finished meal from the database.
@@ -48,7 +48,7 @@
 		background: linear-gradient(
 				100deg,
 				transparent 30%,
-				rgb(255 255 255 / 0.45) 50%,
+				color-mix(in srgb, var(--card) 45%, transparent) 50%,
 				transparent 70%
 			)
 			var(--olive);

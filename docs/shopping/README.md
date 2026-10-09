@@ -2,7 +2,7 @@
 title: Shopping
 summary: 'The full picture of how food goes from the shopping list into the pantry.'
 parent: ../README.md
-updated: 2026-10-03
+updated: 2026-10-05
 ---
 
 [Wiki](../README.md) / Shopping
@@ -46,5 +46,6 @@ All of this works with [no connection](offline.md), because the data is on the p
 
 ## Further reading
 
+- [The use-by date](use-by-date.md): how the app knows which food goes first.
 - [Data model](data-model.md): the tables behind shopping.
 - [Glossary](glossary.md): the meaning of each word.

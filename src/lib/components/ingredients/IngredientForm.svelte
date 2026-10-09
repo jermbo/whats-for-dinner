@@ -1,6 +1,6 @@
 <script>
 	import { saveIngredient } from '$lib/data/ingredients';
-	import { CATEGORIES, TRACKING, UNITS } from '$lib/data/options';
+	import { CATEGORIES, TRACKING, UNITS } from '$lib/domain/options';
 
 	/** @typedef {import('$lib/types').Ingredient} Ingredient */
 

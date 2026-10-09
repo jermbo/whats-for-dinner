@@ -1,17 +1,15 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
+	import { isUrgent, leftText } from '$lib/domain/use-by';
 	import { pop } from '$lib/motion/transitions';
 	import { formatQuantity } from '$lib/util/format';
-
-	/** An item this old shows its age in a warning color. */
-	const OLD_DAYS = 7;
 
 	/**
 	 * One food item to use first. A tap selects it, and the ideas show only the recipes with the
 	 * selected food. An item that the menu uses completely has a check, and no tap.
 	 * With no "ontoggle", the item only shows the food, and it has no tap.
 	 * @type {{
-	 *   soon: import('$lib/data/use-up').SoonItem,
+	 *   soon: import('$lib/domain/use-up').SoonItem,
 	 *   pressed: boolean,
 	 *   ontoggle?: () => void
 	 * }}
@@ -24,9 +22,8 @@
 			? formatQuantity(soon.free, soon.ingredient.unit)
 			: 'Have'
 	);
-	const age = $derived(
-		soon.days === 0 ? 'New today' : `${soon.days} ${soon.days === 1 ? 'day' : 'days'}`
-	);
+	const age = $derived(leftText(soon.left));
+	const urgent = $derived(isUrgent(soon.left));
 </script>
 
 {#snippet food()}
@@ -36,7 +33,7 @@
 	</span>
 	<span class="soon__age">
 		<Icon name="clock" />
-		<span class="visually-hidden">In stock:</span>
+		<span class="visually-hidden">Use by:</span>
 		{age}
 	</span>
 {/snippet}
@@ -45,11 +42,11 @@
 	<div class="soon soon--planned">
 		<span class="soon__name">{soon.ingredient.name}</span>
 		<span class="soon__amount" in:pop><Icon name="check" /> On the menu</span>
-		<span class="soon__age"><span class="visually-hidden">In stock:</span> {age}</span>
+		<span class="soon__age"><span class="visually-hidden">Use by:</span> {age}</span>
 	</div>
 {:else if ontoggle}
 	<button
-		class={['soon', 'soon--tap', soon.days >= OLD_DAYS && 'soon--old']}
+		class={['soon', 'soon--tap', urgent && 'soon--old']}
 		type="button"
 		aria-pressed={pressed}
 		onclick={ontoggle}
@@ -57,7 +54,7 @@
 		{@render food()}
 	</button>
 {:else}
-	<div class={['soon', soon.days >= OLD_DAYS && 'soon--old']}>
+	<div class={['soon', urgent && 'soon--old']}>
 		{@render food()}
 	</div>
 {/if}
@@ -125,7 +122,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-1);
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		font-size: 0.8rem;
 		font-weight: 600;
 	}
@@ -136,7 +133,7 @@
 		block-size: 1rem;
 	}
 
-	/* Old stock: the age is in tomato, and bold. */
+	/* Food for today: the days are in tomato, and bold. */
 	.soon--old .soon__age {
 		color: var(--tomato-text);
 		font-weight: 800;
@@ -148,7 +145,7 @@
 
 	/* Planned: the menu uses all of it. It is quiet, with a dashed rule. */
 	.soon--planned {
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: transparent;
 		border-style: dashed;
 

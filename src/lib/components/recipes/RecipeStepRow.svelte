@@ -1,6 +1,6 @@
 <script>
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
-	import { splitByTimes } from '$lib/data/step-text';
+	import { splitByTimes } from '$lib/domain/step-text';
 	import { formatDay } from '$lib/util/format';
 	import StepPhotoPicker from './StepPhotoPicker.svelte';
 
@@ -88,7 +88,7 @@
 
 	.step-row__date {
 		font-weight: 800;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 	}
 
 	.step-row__photo {

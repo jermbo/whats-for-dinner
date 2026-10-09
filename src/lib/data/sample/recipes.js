@@ -24,6 +24,7 @@ function recipe(key, name, mealType, rows, { steps = [], ...options } = {}) {
 		name,
 		mealType,
 		servings: 2,
+		minutes: null,
 		// Each step has a fixed ID, so that the notes and the photos of the sample history find it.
 		steps: steps.map((text, index) => ({
 			id: stepId(key, index + 1),
@@ -56,6 +57,7 @@ const BREAKFASTS = () => [
 			['salt', 0]
 		],
 		{
+			minutes: 10,
 			inRotation: true,
 			steps: [
 				'Toast the bread slices.',
@@ -76,6 +78,7 @@ const BREAKFASTS = () => [
 			['honey', 0]
 		],
 		{
+			minutes: 5,
 			prepSteps: [
 				{ text: 'Mix the rolled oats and the milk. Put them in the refrigerator', leadHours: 8 }
 			],
@@ -94,6 +97,7 @@ const BREAKFASTS = () => [
 			['sugar', 20]
 		],
 		{
+			minutes: 25,
 			servings: 4,
 			steps: [
 				'Mix the flour and the sugar.',
@@ -114,6 +118,7 @@ const BREAKFASTS = () => [
 			['honey', 0]
 		],
 		{
+			minutes: 5,
 			steps: [
 				'Put the bananas, the milk, the yogurt, and honey in a blender.',
 				'Blend for 1 minute.'
@@ -134,6 +139,7 @@ const LUNCHES = () => [
 			['oil', 0]
 		],
 		{
+			minutes: 15,
 			steps: [
 				'Grate the cheddar cheese. Drain the canned black beans.',
 				'Put cheese and beans on 2 tortillas. Put the other tortillas on top.',
@@ -154,6 +160,7 @@ const LUNCHES = () => [
 			['oil', 0]
 		],
 		{
+			minutes: 20,
 			inRotation: true,
 			steps: [
 				'Boil the rice for 12 minutes. Let it cool.',
@@ -175,6 +182,7 @@ const LUNCHES = () => [
 			['mayonnaise', 0]
 		],
 		{
+			minutes: 10,
 			steps: [
 				'Mix the canned tuna with mayonnaise.',
 				'Put the mix on 2 bread slices. Add the cheddar cheese and the other slices.',
@@ -198,6 +206,7 @@ const DINNERS = () => [
 			['oil', 0]
 		],
 		{
+			minutes: 35,
 			inRotation: true,
 			prepSteps: [
 				{ text: 'Move the chicken thighs from the freezer to the refrigerator', leadHours: 24 }
@@ -224,6 +233,7 @@ const DINNERS = () => [
 			['salt', 0]
 		],
 		{
+			minutes: 25,
 			inRotation: true,
 			source: 'https://example.com/spaghetti-with-tomato-sauce',
 			steps: [
@@ -248,6 +258,7 @@ const DINNERS = () => [
 			['salt', 0]
 		],
 		{
+			minutes: 40,
 			servings: 4,
 			steps: [
 				'Cut the onion and the carrots. Fry them in olive oil for 5 minutes.',
@@ -273,6 +284,7 @@ const DINNERS = () => [
 			['oil', 0]
 		],
 		{
+			minutes: 60,
 			servings: 4,
 			prepSteps: [
 				{ text: 'Move the ground beef from the freezer to the refrigerator', leadHours: 12 }
@@ -301,6 +313,7 @@ const DINNERS = () => [
 			['oil', 0]
 		],
 		{
+			minutes: 45,
 			servings: 4,
 			source: 'The Family Cookbook, page 58',
 			prepSteps: [
@@ -328,6 +341,7 @@ const DINNERS = () => [
 			['black-pepper', 0]
 		],
 		{
+			minutes: 50,
 			steps: [
 				'Heat the oven to 200 °C.',
 				'Cut the potatoes. Bake them for 20 minutes.',

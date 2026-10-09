@@ -1,7 +1,8 @@
 <script>
 	import Icon from '$lib/components/ui/Icon.svelte';
 	import StoredPhoto from '$lib/components/ui/StoredPhoto.svelte';
-	import { STEP_PHOTO_LIMIT, deleteStepPhoto, selectStepPhoto } from '$lib/data/step-photos';
+	import { deleteStepPhoto, selectStepPhoto } from '$lib/data/step-photos';
+	import { STEP_PHOTO_LIMIT } from '$lib/domain/step-photos';
 
 	/**
 	 * The photos of one step, side by side. A tap on a photo makes it the selected photo: the
@@ -104,7 +105,7 @@
 	}
 
 	.photo-picker__photo--selected {
-		border-color: var(--color-accent-strong);
+		border-color: var(--ink);
 	}
 
 	.photo-picker__mark {
@@ -134,7 +135,7 @@
 		inline-size: var(--tap);
 		block-size: var(--tap);
 		padding: 0;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		background: none;
 		border: 0;
 		border-radius: var(--radius-control);

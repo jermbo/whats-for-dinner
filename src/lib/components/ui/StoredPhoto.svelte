@@ -1,5 +1,5 @@
 <script>
-	import { photoAddress } from '$lib/photo-address.svelte';
+	import { photoAddress } from '$lib/state/photo-address.svelte';
 
 	/**
 	 * A photo from the database, as an image that fills its box. The box has a soft color until

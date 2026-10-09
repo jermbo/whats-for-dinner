@@ -7,7 +7,7 @@
 	 * items are not in the cart, or "Ready" when you have them all. A tap on a meal shows only
 	 * the items of that meal. A second tap shows all items again.
 	 * @type {{
-	 *   meals: import('$lib/data/shopping').ShopMeal[],
+	 *   meals: import('$lib/domain/shopping').ShopMeal[],
 	 *   selected: string,
 	 *   onselect: (recipeId: string) => void
 	 * }}
@@ -75,7 +75,7 @@
 		/* The meal whose items the list shows: a dark ring, and a bold name. */
 		&:has([aria-pressed='true']) {
 			& :global(.recipe-photo) {
-				outline-color: var(--color-strong);
+				outline-color: var(--ink);
 			}
 
 			& .shop-meal__name {
@@ -84,7 +84,7 @@
 		}
 
 		&:has(:focus-visible) :global(.recipe-photo) {
-			outline-color: var(--color-accent-strong);
+			outline-color: var(--ink);
 		}
 	}
 
@@ -123,12 +123,12 @@
 		display: flex;
 		align-items: center;
 		gap: 0.125rem;
-		color: var(--color-muted);
+		color: var(--ink-soft);
 		white-space: nowrap;
 
 		&.shop-meal__state--ready {
 			font-weight: 600;
-			color: var(--color-accent-strong);
+			color: var(--ink);
 		}
 
 		& :global(.icon) {

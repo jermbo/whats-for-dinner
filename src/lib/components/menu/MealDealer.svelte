@@ -1,20 +1,18 @@
 <script>
 	import { untrack } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
+	import Icon from '$lib/components/ui/Icon.svelte';
 	import { swipeCard } from '$lib/input/swipe-card';
-	import { gsap } from '$lib/motion/gsap';
+	import { dealIdea, keepIdea, placeIdea, settleIdea, skipIdea } from '$lib/motion/dealer';
+	import { lessMotion } from '$lib/motion/less-motion.svelte';
 	import IdeaCard from './IdeaCard.svelte';
 
-	/** @typedef {import('$lib/data/use-up').UseUpIdea} UseUpIdea */
-
-	/** The card in its place. */
-	const REST = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
+	/** @typedef {import('$lib/domain/use-up').UseUpIdea} UseUpIdea */
 
 	/**
 	 * The dealer: one recipe that can go on the menu, as a card, the best first.
-	 * Swipe the card to the right, or use "Add to the menu": the card goes up, to the menu at the
-	 * top of the screen. Swipe it to the left, or use "Not this": the card goes out, and the next
+	 * Swipe the card to the right, or use "Keep": the card goes up, to the next place of the menu
+	 * at the top of the screen. Swipe it to the left, or use "Not this": the card goes out, and the next
 	 * idea comes. After the last idea, the first one comes again.
 	 * Each button is on the side of its swipe. While the card is far to one side, the button of
 	 * that side has a ring.
@@ -23,12 +21,16 @@
 	 *   title: string,
 	 *   deck: UseUpIdea[],
 	 *   selected: Set<string>,
+	 *   facts: (recipe: import('$lib/types').Recipe) => string,
 	 *   empty: string,
 	 *   onadd: (recipe: import('$lib/types').Recipe) => Promise<unknown>,
 	 *   children?: import('svelte').Snippet
 	 * }}
+	 *   facts: the small line of a card, such as "New · 20 min".
 	 */
-	let { title, deck, selected, empty, onadd, children } = $props();
+	let { title, deck, selected, facts, empty, onadd, children } = $props();
+
+	const uid = $props.id();
 
 	/** The recipes that got "Not this" in this round. */
 	const skipped = new SvelteSet();
@@ -54,18 +56,11 @@
 		if (adding && !deck.some((idea) => idea.recipe.id === adding)) adding = '';
 	});
 
-	/** The card comes in from below. */
+	/** A person who asks for reduced motion sees only the new card. */
 	function deal() {
 		if (!card) return;
-		if (prefersReducedMotion.current) {
-			gsap.set(card, REST);
-			return;
-		}
-		gsap.fromTo(
-			card,
-			{ x: 0, y: 40, rotation: 0, scale: 0.94, opacity: 0 },
-			{ ...REST, duration: 0.45, ease: 'back.out(1.4)', overwrite: true }
-		);
+		if (lessMotion.current) placeIdea(card);
+		else dealIdea(card);
 	}
 
 	// A card comes in: the first one, the one after a card that went out, and the one after a
@@ -75,21 +70,12 @@
 		if (!busy) untrack(deal);
 	});
 
-	/**
-	 * The card goes out. A person who asks for reduced motion sees only the change.
-	 * @param {gsap.TweenVars} to
-	 */
-	async function leave(to) {
-		if (!card || prefersReducedMotion.current) return;
-		await gsap.to(card, { ...to, opacity: 0, ease: 'power1.in', overwrite: true });
-	}
-
-	/** "Not this": the card goes out to the left. */
+	/** "Not this": the card goes out, and the next idea comes. */
 	async function skip() {
 		if (busy || !current) return;
 		busy = true;
 		const { id } = current.recipe;
-		await leave({ x: -innerWidth, rotation: -18, duration: 0.25 });
+		if (card && !lessMotion.current) await skipIdea(card);
 
 		skipped.add(id);
 		note = '';
@@ -103,20 +89,14 @@
 	}
 
 	/**
-	 * "Add to the menu": the card goes up to the menu. After a swipe, it goes up from the right.
-	 * @param {boolean} [swiped]
+	 * "Keep": the card goes out, and the recipe goes on the menu.
+	 * @param {boolean} [swiped] The owner swiped the card. The button was not used.
 	 */
 	async function add(swiped = false) {
 		if (busy || !current) return;
 		busy = true;
 		const { recipe } = current;
-		await leave({
-			x: swiped ? innerWidth * 0.5 : 0,
-			y: -280,
-			rotation: swiped ? 12 : 0,
-			scale: 0.4,
-			duration: 0.35
-		});
+		if (card && !lessMotion.current) await keepIdea(card, swiped);
 
 		adding = recipe.id;
 		try {
@@ -134,15 +114,13 @@
 	const handlers = {
 		onswipe: (_node, side) => (side === 1 ? add(true) : skip()),
 		onlean: (side) => (lean = side),
-		onstay(node) {
-			gsap.to(node, { ...REST, duration: 0.6, ease: 'elastic.out(1, 0.6)', overwrite: true });
-		}
+		onstay: settleIdea
 	};
 </script>
 
-<section class="dealer" aria-labelledby="dealer-title">
+<section class="dealer" aria-labelledby="{uid}-title">
 	<div class="cluster cluster--between">
-		<h2 id="dealer-title">{title}</h2>
+		<h2 id="{uid}-title">{title}</h2>
 		{#if current}
 			<p class="dealer__place muted">{place} of {deck.length}</p>
 		{/if}
@@ -150,13 +128,14 @@
 
 	{#if current}
 		<div class="dealer__card" bind:this={card} {@attach busy ? null : swipeCard(handlers)}>
-			<IdeaCard idea={current} {selected}>
+			<IdeaCard idea={current} {selected} facts={facts(current.recipe)}>
 				<div class="dealer__actions">
 					<button
 						class={['button', 'dealer__action', lean === -1 && 'dealer__action--lean']}
 						type="button"
 						onclick={skip}
 					>
+						<Icon name="back" />
 						Not this
 					</button>
 					<button
@@ -169,7 +148,8 @@
 						type="button"
 						onclick={() => add()}
 					>
-						Add to the menu
+						Keep
+						<Icon name="next" />
 					</button>
 				</div>
 			</IdeaCard>
@@ -214,19 +194,25 @@
 		}
 	}
 
-	/* "Not this" is at the left and "Add" is at the right, as the swipes. */
+	/* "Not this" is at the left and "Keep" is at the right, as the swipes. */
 	.dealer__actions {
 		display: grid;
-		grid-template-columns: 1fr 1.4fr;
+		grid-template-columns: 1fr 1.2fr;
 		gap: var(--space-3);
 	}
 
 	.dealer__action {
+		gap: var(--space-2);
 		padding-inline: var(--space-3);
+
+		& :global(.icon) {
+			inline-size: 1.25rem;
+			block-size: 1.25rem;
+		}
 
 		/* The card is far to the side of this button: a release does its action. */
 		&.dealer__action--lean {
-			outline: 3px solid var(--color-accent-strong);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
 			scale: 1.04;
 		}

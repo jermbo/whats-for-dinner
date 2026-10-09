@@ -4,13 +4,14 @@
 	/**
 	 * A check box that looks like a chip, for one filter that is on or off.
 	 * The chip that is on has an ink fill, bold text, and a check: color is not the only sign.
-	 * @type {{ label: string, checked?: boolean }}
+	 * "disabled": the chip keeps its state, such as the last chip of a group that must stay on.
+	 * @type {{ label: string, checked?: boolean, disabled?: boolean }}
 	 */
-	let { label, checked = $bindable(false) } = $props();
+	let { label, checked = $bindable(false), disabled = false } = $props();
 </script>
 
 <label class="toggle-chip">
-	<input class="visually-hidden" type="checkbox" bind:checked />
+	<input class="visually-hidden" type="checkbox" bind:checked {disabled} />
 	<span class="toggle-chip__mark"><Icon name="check" /></span>
 	{label}
 </label>
@@ -46,8 +47,16 @@
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--ink);
+			outline: var(--focus-ring);
 			outline-offset: 2px;
+		}
+
+		&:has(:disabled) {
+			cursor: not-allowed;
+
+			&:active {
+				scale: none;
+			}
 		}
 	}
 

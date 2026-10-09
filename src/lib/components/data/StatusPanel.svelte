@@ -15,12 +15,14 @@
 
 	/** @param {boolean | null} value */
 	const yesNo = (value) => (value === null ? '…' : value ? 'Yes' : 'No');
+
+	const uid = $props.id();
 </script>
 
 <svelte:window ononline={() => (online = true)} onoffline={() => (online = false)} />
 
-<section class="stack stack--tight" aria-labelledby="status-title">
-	<h2 id="status-title">Status</h2>
+<section class="stack stack--tight" aria-labelledby="{uid}-title">
+	<h2 id="{uid}-title">Status</h2>
 
 	<dl class="status-panel">
 		<dt>Connection</dt>
