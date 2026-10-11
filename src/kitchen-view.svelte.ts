@@ -1,7 +1,7 @@
 import { ItemView, type WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
-import KitchenScreen from './Kitchen.svelte';
 import type { Kitchen } from './kitchen-state.svelte';
+import KitchenScreen from './ui/Kitchen.svelte';
 
 export const KITCHEN_VIEW = 'whats-for-dinner-kitchen';
 
@@ -30,6 +30,8 @@ export class KitchenView extends ItemView {
 	async onOpen() {
 		// At the start of the app, the vault is empty until the layout is ready.
 		this.app.workspace.onLayoutReady(() => void this.kitchen.start());
+		// The styles of the plugin apply only below this class.
+		this.contentEl.addClass('wfd');
 		this.screen = mount(KitchenScreen, {
 			target: this.contentEl,
 			props: { kitchen: this.kitchen }

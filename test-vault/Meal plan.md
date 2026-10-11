@@ -1,3 +1,1 @@
-- [x] [[Recipes/Chicken curry|Chicken curry]]
-- [ ] [[Recipes/Spinach omelette|Spinach omelette]]
-- [ ] [[Recipes/Pasta with tomato sauce|Pasta with tomato sauce]]
+

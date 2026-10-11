@@ -24,3 +24,19 @@ export function addRecord(text: string, hasInstructions: boolean, record: CookRe
 	}
 	return `${result}\n${lines.join('\n')}\n`;
 }
+
+// The newest note that you wrote after you cooked this recipe. Cook Mode shows it the next time.
+export function lastNote(instructions: string | null): string | null {
+	const lines = (instructions ?? '').split(/\r?\n/);
+	const start = lines.findIndex((line) => new RegExp(`^#+ ${RECORD_HEADING}\\s*$`).test(line));
+	if (start === -1) return null;
+
+	const records = lines.slice(start + 1).filter((line) => line.startsWith('- '));
+	for (const record of records.reverse()) {
+		// A record is "date · stars · note". The date is always there.
+		const [, ...parts] = record.slice(2).split(' · ');
+		const note = parts.filter((part) => !/^[★☆]+$/.test(part)).join(' · ');
+		if (note) return note;
+	}
+	return null;
+}

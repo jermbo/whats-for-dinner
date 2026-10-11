@@ -39,6 +39,10 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 | Timer          | The first time in the text of a step is the time of its timer.                                                |
 | Take out       | At the end of Cook Mode, the row with the first use-by date gives its food first.                             |
 | Record         | The date, the rating, the note, and the photo go below the heading "Cooked" in the recipe note.               |
+| Look           | The Larder look from the archived design pages. In the dark scheme, paper and ink change places.              |
+| Fonts          | Fonts of the device stand in for Anton and Schibsted Grotesk, until the font packages are approved.           |
+| Recipe type    | The type of a recipe is its first tag, such as "dinner".                                                      |
+| Pantry row     | One row is one food item in one place. A tap opens the row, and you change it there.                          |
 
 ## The food item
 

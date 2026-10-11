@@ -1,3 +1,3 @@
 | Place   | Amount | Use by |
 | ------- | ------ | ------ |
-| Kitchen | 30 g   |        |
+| Kitchen | 50 g   |        |

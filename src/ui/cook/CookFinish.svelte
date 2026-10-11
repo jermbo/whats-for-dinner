@@ -1,10 +1,11 @@
 <script lang="ts">
-	import type { CookResult, RecipeEntry } from './kitchen-state.svelte';
-	import { showName } from './match/names';
-	import type { FoodNote } from './note';
-	import { available, takeOut } from './pantry/total';
-	import type { Stock } from './pantry/types';
-	import { showMeasure, type Measure } from './units';
+	import type { CookResult, RecipeEntry } from '../../kitchen-state.svelte';
+	import { showName } from '../../match/names';
+	import type { FoodNote } from '../../note';
+	import { available, takeOut } from '../../pantry/total';
+	import type { Stock } from '../../pantry/types';
+	import { showMeasure, type Measure } from '../../units';
+	import Button from '../parts/Button.svelte';
 
 	type Props = { entry: RecipeEntry; ondone: (result: CookResult) => Promise<void> };
 	let { entry, ondone }: Props = $props();
@@ -61,18 +62,17 @@
 	}
 </script>
 
-<form class="finish" onsubmit={done}>
-	<fieldset class="finish__part">
-		<legend class="finish__legend">Take out of the pantry</legend>
+<form class="wfd-finish" onsubmit={done}>
+	<fieldset class="wfd-finish__part">
+		<legend class="wfd-finish__legend wfd-display">Out of the pantry</legend>
 		{#if !counted.length}
-			<p class="finish__hint">The plugin cannot count an ingredient of this recipe.</p>
+			<p class="wfd-finish__hint">The plugin cannot count an ingredient of this recipe.</p>
 		{/if}
 		{#each counted as row, at}
-			<div class="finish__row">
-				<label class="finish__used">
+			<div class="wfd-finish__row">
+				<label class="wfd-finish__used">
 					<input type="checkbox" bind:checked={choices[at].used} />
-					<span>{row.name}</span>
-					<span class="finish__amount">{showMeasure(row.need)}</span>
+					<span class="wfd-finish__name">{row.name}</span>
 				</label>
 				{#if row.options.length > 1}
 					<select aria-label="The food item for {row.name}" bind:value={choices[at].food}>
@@ -81,129 +81,168 @@
 						{/each}
 					</select>
 				{/if}
+				<span class="wfd-finish__amount wfd-display">{showMeasure(row.need)}</span>
 			</div>
 		{/each}
 		{#if others.length}
-			<p class="finish__hint">Not counted: {others.join(', ')}.</p>
+			<p class="wfd-finish__hint">Not counted: {others.join(', ')}.</p>
 		{/if}
 	</fieldset>
 
-	<fieldset class="finish__part">
-		<legend class="finish__legend">Rating</legend>
-		<div class="finish__stars">
+	<fieldset class="wfd-finish__part">
+		<legend class="wfd-finish__legend wfd-display">How was it?</legend>
+		<div class="wfd-finish__stars">
 			{#each [1, 2, 3, 4, 5] as value}
 				{@const on = rating !== null && value <= rating}
 				<button
-					class="finish__star"
+					class="wfd-finish__star"
+					class:wfd-finish__star--on={on}
 					type="button"
 					aria-label="{value} of 5"
 					aria-pressed={on}
 					onclick={() => (rating = rating === value ? null : value)}
 				>
-					{on ? '★' : '☆'}
+					★
 				</button>
 			{/each}
 		</div>
 	</fieldset>
 
-	<label class="finish__part" for="{uid}-note">
-		<span class="finish__legend">Note for the next time</span>
-		<textarea id="{uid}-note" rows="3" bind:value={note}></textarea>
+	<label class="wfd-finish__part" for="{uid}-note">
+		<span class="wfd-label">Note for the next time</span>
+		<textarea id="{uid}-note" rows="2" bind:value={note}></textarea>
 	</label>
 
-	<label class="finish__part" for="{uid}-photo">
-		<span class="finish__legend">Photo</span>
-		<input id="{uid}-photo" type="file" accept="image/*" capture="environment" bind:files={photos} />
+	<label class="wfd-finish__part" for="{uid}-photo">
+		<span class="wfd-label">Photo</span>
+		<input
+			class="wfd-finish__photo"
+			id="{uid}-photo"
+			type="file"
+			accept="image/*"
+			capture="environment"
+			bind:files={photos}
+		/>
 	</label>
 
-	<button class="finish__done mod-cta" type="submit" disabled={busy}>
-		{busy ? 'One moment' : 'Done'}
-	</button>
+	<Button kind="main" type="submit" disabled={busy}>
+		{busy ? 'One moment' : 'Done. Update the pantry'}
+	</Button>
 </form>
 
 <style>
-	.finish {
+	.wfd-finish {
 		display: grid;
-		gap: var(--size-4-6);
+		grid-template-columns: minmax(0, 1fr);
+		gap: 22px;
 	}
 
-	.finish__part {
+	.wfd-finish__part {
 		display: grid;
-		gap: var(--size-4-2);
+		gap: 6px;
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
 		border: 0;
+		color: var(--wfd-ink-2);
 	}
 
-	.finish__legend {
-		padding: 0;
-		font-size: var(--font-ui-medium);
-		font-weight: var(--font-semibold);
+	.wfd-finish__legend {
+		inline-size: 100%;
+		margin-block-end: 4px;
+		padding: 0 0 6px;
+		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		color: var(--wfd-ink);
+		font-size: 22px;
 	}
 
-	.finish__row {
+	.wfd-finish__row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: var(--size-4-2);
+		gap: 6px 12px;
 		align-items: center;
-		justify-content: space-between;
-		border-block-end: var(--border-width) solid var(--background-modifier-border);
+		min-block-size: 52px;
+		padding-block: 4px;
+		border-block-end: 1px solid var(--wfd-ink);
+		color: var(--wfd-ink);
 	}
 
-	.finish__used {
+	.wfd-finish__used {
 		display: flex;
-		flex: 1 1 12rem;
-		gap: var(--size-4-3);
+		flex: 1 1 10rem;
+		gap: 12px;
 		align-items: center;
 		min-block-size: 44px;
 		cursor: pointer;
 	}
 
-	.finish__amount,
-	.finish__hint {
-		color: var(--text-muted);
+	.wfd-finish__name {
+		font-size: 17px;
+		font-weight: 600;
 	}
 
-	.finish__hint {
+	.wfd-finish__row :global(select) {
+		min-block-size: 40px;
+		font-size: 14px;
+	}
+
+	.wfd-finish__amount {
+		font-size: 22px;
+	}
+
+	.wfd-finish__hint {
 		margin: 0;
-		font-size: var(--font-ui-small);
+		font-size: 14px;
 	}
 
-	.finish__stars {
+	.wfd-finish__stars {
 		display: flex;
-		gap: var(--size-4-1);
+		gap: 6px;
 	}
 
-	.finish__star {
-		inline-size: 48px;
-		block-size: 48px;
+	button.wfd-finish__star {
+		inline-size: 52px;
+		block-size: 52px;
 		padding: 0;
-		border: 0;
-		background: none;
+		border: 2px solid var(--wfd-ink);
+		border-radius: var(--wfd-radius-button);
+		background: var(--wfd-card);
 		box-shadow: none;
-		color: var(--text-muted);
-		font-size: 2rem;
+		color: var(--wfd-track);
+		font-size: 26px;
 		line-height: 1;
-		transition: scale 0.15s ease-out;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease-out,
+			scale 0.15s ease-out;
 
-		&[aria-pressed='true'] {
-			color: var(--color-yellow);
-			scale: 1.1;
+		&:focus-visible {
+			outline: 3px solid var(--wfd-olive);
+			outline-offset: 2px;
+		}
+
+		&:active {
+			scale: 0.9;
 		}
 	}
 
-	.finish__part :global(textarea) {
+	button.wfd-finish__star--on {
+		background: var(--wfd-ink);
+		color: var(--wfd-on-ink);
+	}
+
+	.wfd-finish__part :global(textarea) {
 		inline-size: 100%;
 	}
 
-	.finish__done {
-		min-block-size: 56px;
-		font-size: var(--font-ui-medium);
+	.wfd-finish__photo {
+		color: var(--wfd-ink);
+		font-family: inherit;
+		font-size: 15px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		.finish__star {
+		button.wfd-finish__star {
 			transition: none;
 		}
 	}
