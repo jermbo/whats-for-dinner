@@ -13,6 +13,8 @@ export type Stock = {
 // One food of the pantry. Its note has the same name.
 export type FoodItem = {
 	name: string;
+	// Other names that a recipe can use for this food item, such as "pasta" for elbow pasta.
+	aliases: string[];
 	brands: string[];
 	stocks: Stock[];
 };

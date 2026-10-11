@@ -1,9 +1,16 @@
 import { Plugin } from 'obsidian';
+import { Kitchen } from './kitchen-state.svelte';
 import { KITCHEN_VIEW, KitchenView } from './kitchen-view.svelte';
 
 export default class WhatsForDinnerPlugin extends Plugin {
 	async onload() {
-		this.registerView(KITCHEN_VIEW, (leaf) => new KitchenView(leaf));
+		const kitchen = new Kitchen(
+			this.app,
+			{ load: () => this.loadData(), save: (data) => this.saveData(data) },
+			(ref) => this.registerEvent(ref)
+		);
+
+		this.registerView(KITCHEN_VIEW, (leaf) => new KitchenView(leaf, kitchen));
 		this.addRibbonIcon('utensils', "Open What's for Dinner", () => this.openKitchen());
 		this.addCommand({
 			id: 'open-kitchen',

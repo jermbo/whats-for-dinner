@@ -1,4 +1,5 @@
-// Reads the note of a food item: the brands are a property, and the table has one row for each place.
+// Reads the note of a food item: the brands and the other names are properties, and the table has
+// one row for each place.
 
 import { parseAmount } from '../recipemd/amount';
 import { readTable } from './table';
@@ -11,22 +12,23 @@ export function readFoodItem(
 	properties: Record<string, unknown>,
 	body: string
 ): FoodItem {
-	return { name, brands: textList(properties.brands), stocks: readStocks(body) };
+	return {
+		name,
+		aliases: textList(properties.aliases),
+		brands: textList(properties.brands),
+		stocks: readTable(body)
+			.filter((row) => row['place'])
+			.map((row) => makeStock(row['place'], row['amount'] ?? '', row['use by'] ?? ''))
+	};
 }
 
-function readStocks(body: string): Stock[] {
-	return readTable(body)
-		.filter((row) => row['place'])
-		.map((row) => {
-			const amountText = row['amount'] ?? '';
-			const useBy = row['use by'] ?? '';
-			return {
-				place: row['place'],
-				amount: parseAmount(amountText),
-				amountText,
-				useBy: DATE.test(useBy) ? useBy : null
-			};
-		});
+export function makeStock(place: string, amountText: string, useBy: string): Stock {
+	return {
+		place: place.trim(),
+		amount: parseAmount(amountText),
+		amountText: amountText.trim(),
+		useBy: DATE.test(useBy.trim()) ? useBy.trim() : null
+	};
 }
 
 // A property can be one text or a list of texts.

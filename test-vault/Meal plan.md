@@ -1,0 +1,2 @@
+- [ ] [[Recipes/Chicken curry|Chicken curry]]
+- [ ] [[Recipes/Spinach omelette|Spinach omelette]]

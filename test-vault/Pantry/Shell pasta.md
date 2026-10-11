@@ -1,4 +1,6 @@
 ---
+aliases:
+  - pasta
 brands:
   - Brand A
 ---

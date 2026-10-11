@@ -1,7 +1,12 @@
 <script lang="ts" generics="Value extends string">
 	type Option = { value: Value; label: string };
-	type Props = { label: string; options: readonly Option[]; value: Value };
-	let { label, options, value = $bindable() }: Props = $props();
+	type Props = {
+		label: string;
+		options: readonly Option[];
+		value: Value;
+		onchange: (value: Value) => void;
+	};
+	let { label, options, value, onchange }: Props = $props();
 
 	const uid = $props.id();
 	const at = $derived(options.findIndex((option) => option.value === value));
@@ -16,8 +21,8 @@
 				class="switch__input"
 				type="radio"
 				name={uid}
-				value={option.value}
-				bind:group={value}
+				checked={option.value === value}
+				onchange={() => onchange(option.value)}
 			/>
 			{option.label}
 		</label>

@@ -5,6 +5,5 @@ brands:
   - Brand C
 ---
 
-| Place          | Amount | Use by |
-| -------------- | ------ | ------ |
-| Kitchen pantry | 2 bags |        |
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

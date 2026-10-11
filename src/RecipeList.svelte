@@ -1,46 +1,43 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { Note } from './note';
+	import type { Kitchen } from './kitchen-state.svelte';
 	import RecipeCard from './RecipeCard.svelte';
 
-	let { notes }: { notes: Note[] } = $props();
+	let { kitchen, oncook }: { kitchen: Kitchen; oncook: (path: string) => void } = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-
-	const recipes = $derived(
-		notes
-			.flatMap(({ path, result }) => (result.ok ? [{ path, recipe: result.recipe }] : []))
-			.sort((a, b) => a.recipe.title.localeCompare(b.recipe.title))
-	);
-	const rejected = $derived(
-		notes
-			.flatMap(({ path, result }) => (result.ok ? [] : [{ path, reason: result.reason }]))
-			.sort((a, b) => a.path.localeCompare(b.path))
-	);
-
 	const plural = (count: number, one: string, many: string) =>
 		`${count} ${count === 1 ? one : many}`;
 </script>
 
 <section class="recipes" aria-label="Recipes">
-	<p class="recipes__count" aria-live="polite">{plural(recipes.length, 'recipe', 'recipes')}</p>
+	<p class="recipes__count" aria-live="polite">
+		{plural(kitchen.recipes.length, 'recipe', 'recipes')}, the best for your pantry first
+	</p>
 
 	<ul class="recipes__list">
-		{#each recipes as { path, recipe } (path)}
+		{#each kitchen.recipes as entry (entry.path)}
 			<li transition:slide={{ duration }}>
-				<RecipeCard {path} {recipe} />
+				<RecipeCard
+					{entry}
+					planned={kitchen.isPlanned(entry.path)}
+					onplan={() => kitchen.addToPlan(entry.path)}
+					onunplan={() => kitchen.removeFromPlan(entry.path)}
+					oncook={() => oncook(entry.path)}
+					onopen={() => kitchen.open(entry.path)}
+				/>
 			</li>
 		{/each}
 	</ul>
 
-	{#if rejected.length}
+	{#if kitchen.rejected.length}
 		<details class="recipes__rejected">
 			<summary class="recipes__rejected-summary">
-				{plural(rejected.length, 'note is not a recipe', 'notes are not recipes')}
+				{plural(kitchen.rejected.length, 'note is not a recipe', 'notes are not recipes')}
 			</summary>
 			<ul class="recipes__reasons">
-				{#each rejected as { path, reason } (path)}
+				{#each kitchen.rejected as { path, reason } (path)}
 					<li class="recipes__reason" transition:slide={{ duration }}>
 						<span class="recipes__path">{path}</span>
 						<span class="recipes__why">{reason}</span>

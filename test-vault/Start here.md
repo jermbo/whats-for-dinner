@@ -4,7 +4,11 @@ This vault is the test kitchen of the plugin. Open this folder in Obsidian with 
 
 ## Recipes
 
-Five recipes in the [RecipeMD](https://recipemd.org/specification.html) format. Each is a correct recipe.
+Seven recipes in the [RecipeMD](https://recipemd.org/specification.html) format. Each is a correct recipe.
+
+## Pantry
+
+One note for each food item. The brands and the other names are properties. The table has one row for each place.
 
 ## Edge cases
 

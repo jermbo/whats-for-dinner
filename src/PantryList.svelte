@@ -2,30 +2,61 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import FoodCard from './FoodCard.svelte';
-	import type { FoodNote } from './note';
+	import FoodForm from './FoodForm.svelte';
+	import type { Kitchen } from './kitchen-state.svelte';
+	import { firstUseBy } from './pantry/total';
 
-	let { foods }: { foods: FoodNote[] } = $props();
+	let { kitchen }: { kitchen: Kitchen } = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-	const sorted = $derived([...foods].sort((a, b) => a.item.name.localeCompare(b.item.name)));
-	const count = $derived(`${foods.length} ${foods.length === 1 ? 'food item' : 'food items'}`);
+	const count = $derived(
+		`${kitchen.foods.length} ${kitchen.foods.length === 1 ? 'food item' : 'food items'}`
+	);
+
+	// The food that you must use first is at the top. Food with no date comes last, by name.
+	const sorted = $derived(
+		kitchen.foods
+			.map((food) => ({ ...food, useBy: firstUseBy(food.item.stocks) }))
+			.sort(
+				(a, b) =>
+					(a.useBy ?? '9999').localeCompare(b.useBy ?? '9999') ||
+					a.item.name.localeCompare(b.item.name)
+			)
+	);
 </script>
 
 <section class="pantry" aria-label="Pantry">
 	<p class="pantry__count" aria-live="polite">{count}</p>
 
+	<FoodForm
+		names={kitchen.foods.map(({ item }) => item.name).sort()}
+		places={kitchen.places}
+		onadd={(name, stock) => kitchen.addStock(name, stock)}
+	/>
+
 	<ul class="pantry__list">
 		{#each sorted as { path, item } (path)}
 			<li transition:slide={{ duration }}>
-				<FoodCard {item} />
+				<FoodCard
+					{item}
+					today={kitchen.today}
+					places={kitchen.places}
+					onsave={(stocks) => kitchen.setStocks(path, stocks)}
+					onopen={() => kitchen.open(path)}
+				/>
 			</li>
 		{/each}
 	</ul>
 </section>
 
 <style>
+	.pantry {
+		display: grid;
+		gap: var(--size-4-3);
+	}
+
 	.pantry__count {
-		margin-block: 0 var(--size-4-3);
+		margin: 0;
 		color: var(--text-muted);
 	}
 

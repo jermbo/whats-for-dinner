@@ -1,4 +1,7 @@
 ---
+aliases:
+  - pasta
+  - macaroni
 brands:
   - Brand A
   - Store brand

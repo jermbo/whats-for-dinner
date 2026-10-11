@@ -1,0 +1,316 @@
+// The kitchen: all that the screens show, and all that they can do. The notes of the vault are the
+// only source. Each action writes a note, and the kitchen reads the note again after the change.
+
+import { Notice, TFile, type App, type EventRef, type TAbstractFile } from 'obsidian';
+import { shrinkPhoto } from './cook/photo';
+import { addRecord } from './cook/record';
+import { today } from './dates';
+import { indexFoods, matchRecipe, type RecipeMatch } from './match/match';
+import { nameKey } from './match/names';
+import type { FoodNote, Note } from './note';
+import { makeStock, readFoodItem } from './pantry/food-item';
+import type { Stock } from './pantry/types';
+import { addStock, replaceStocks, showStocks } from './pantry/write';
+import { readPlan, showPlan, type PlannedMeal } from './plan/plan-note';
+import { readProperties } from './read-properties';
+import { readRecipe } from './recipemd/parse';
+import type { Recipe } from './recipemd/types';
+import { shoppingList } from './shop/shopping-list';
+import { showMeasure } from './units';
+
+// The notes in this folder are food items. All other notes are read as recipes.
+const PANTRY_FOLDER = 'Pantry/';
+// The note with the plan of the week.
+const PLAN_NOTE = 'Meal plan.md';
+// The place of food that is new in the pantry, until you change it.
+const NEW_FOOD_PLACE = 'Kitchen';
+
+export type RecipeEntry = {
+	path: string;
+	recipe: Recipe;
+	rating: number | null;
+	match: RecipeMatch;
+};
+
+// A meal of the plan. The entry is null when the note of the recipe is gone.
+export type Meal = PlannedMeal & { entry: RecipeEntry | null };
+
+export type CookResult = {
+	// The new rows of each food item that the meal used, by the path of its note.
+	stocks: Map<string, Stock[]>;
+	rating: number | null;
+	note: string;
+	photo: Blob | null;
+};
+
+// What the plugin keeps in its data file: the keys of the shopping rows that are in the cart.
+type Saved = { cart: string[] };
+type Disk = { load: () => Promise<Saved | null>; save: (data: Saved) => Promise<void> };
+
+const share = (entry: RecipeEntry) =>
+	entry.match.ingredients.length ? entry.match.inPantry / entry.match.ingredients.length : 0;
+
+function ratingOf(properties: Record<string, unknown>): number | null {
+	const rating = Number(properties.rating);
+	return rating >= 1 && rating <= 5 ? Math.round(rating) : null;
+}
+
+// A name that is safe as the name of a note, with a capital first letter.
+function noteName(name: string): string {
+	const clean = name.replace(/[\\/:*?"<>|#^[\]]/g, ' ').replace(/\s+/g, ' ').trim();
+	return clean.charAt(0).toUpperCase() + clean.slice(1);
+}
+
+export class Kitchen {
+	notes = $state.raw<Note[]>([]);
+	foods = $state.raw<FoodNote[]>([]);
+	plan = $state.raw<PlannedMeal[]>([]);
+	cart = $state.raw<string[]>([]);
+	today = $state(today());
+
+	// The recipes that use up the pantry come first, and food to use soon moves its recipes up.
+	recipes = $derived.by(() => {
+		const index = indexFoods(this.foods);
+		return this.notes
+			.flatMap(({ path, result, rating }): RecipeEntry[] => {
+				if (!result.ok) return [];
+				const match = matchRecipe(result.recipe, index, this.today);
+				return [{ path, recipe: result.recipe, rating, match }];
+			})
+			.sort(
+				(a, b) =>
+					Number(b.match.useSoon.length > 0) - Number(a.match.useSoon.length > 0) ||
+					share(b) - share(a) ||
+					a.recipe.title.localeCompare(b.recipe.title)
+			);
+	});
+
+	rejected = $derived(
+		this.notes
+			.flatMap(({ path, result }) => (result.ok ? [] : [{ path, reason: result.reason }]))
+			.sort((a, b) => a.path.localeCompare(b.path))
+	);
+
+	places = $derived(
+		[...new Set(this.foods.flatMap(({ item }) => item.stocks.map((stock) => stock.place)))].sort()
+	);
+
+	meals = $derived(
+		this.plan.map((meal): Meal => {
+			const entry = this.recipes.find((recipe) => recipe.path === meal.path) ?? null;
+			return { ...meal, entry };
+		})
+	);
+
+	// The list is the meals that you did not cook, minus the pantry.
+	shopping = $derived(
+		shoppingList(
+			this.meals.flatMap(({ cooked, entry }) =>
+				cooked || !entry
+					? []
+					: [{ title: entry.recipe.title, ingredients: entry.match.ingredients }]
+			)
+		)
+	);
+
+	private app: App;
+	private disk: Disk;
+	// Obsidian removes a registered event when the plugin stops.
+	private register: (ref: EventRef) => void;
+	private started = false;
+	private notesByPath = new Map<string, Note>();
+	private foodsByPath = new Map<string, FoodNote>();
+	private planNow: PlannedMeal[] = [];
+
+	constructor(app: App, disk: Disk, register: (ref: EventRef) => void) {
+		this.app = app;
+		this.disk = disk;
+		this.register = register;
+	}
+
+	// Reads the vault one time, and then follows each change of a note.
+	async start() {
+		if (this.started) return;
+		this.started = true;
+
+		const { vault } = this.app;
+		const { register } = this;
+		this.cart = (await this.disk.load())?.cart ?? [];
+		await Promise.all(vault.getMarkdownFiles().map((file) => this.read(file)));
+		this.show();
+
+		register(vault.on('create', (file) => this.update(file)));
+		register(vault.on('modify', (file) => this.update(file)));
+		register(vault.on('delete', (file) => this.forget(file.path)));
+		register(
+			vault.on('rename', (file, oldPath) => {
+				this.forget(oldPath);
+				void this.update(file);
+			})
+		);
+	}
+
+	notify(text: string) {
+		new Notice(text);
+	}
+
+	open(path: string) {
+		const file = this.fileAt(path);
+		if (file) void this.app.workspace.getLeaf('tab').openFile(file);
+	}
+
+	// --- Pantry ---
+
+	async setStocks(path: string, stocks: Stock[]) {
+		const file = this.fileAt(path);
+		if (file) await this.app.vault.process(file, (text) => replaceStocks(text, stocks));
+	}
+
+	// Adds an amount to a food item. A food item that is new gets its own note.
+	async addStock(name: string, stock: Stock) {
+		const key = nameKey(name);
+		const food = this.foods.find(({ item }) => nameKey(item.name) === key);
+		const path = food?.path ?? `${PANTRY_FOLDER}${noteName(name)}.md`;
+
+		const file = this.fileAt(path);
+		if (file) {
+			await this.app.vault.process(file, (text) => addStock(text, stock));
+			return;
+		}
+		const folder = PANTRY_FOLDER.slice(0, -1);
+		if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
+		await this.app.vault.create(path, `${showStocks([stock])}\n`);
+	}
+
+	// --- Plan ---
+
+	isPlanned(path: string) {
+		return this.plan.some((meal) => meal.path === path && !meal.cooked);
+	}
+
+	async addToPlan(path: string) {
+		const others = this.plan.filter((meal) => meal.path !== path);
+		await this.savePlan([...others, { path, cooked: false }]);
+	}
+
+	async removeFromPlan(path: string) {
+		await this.savePlan(this.plan.filter((meal) => meal.path !== path));
+	}
+
+	async clearPlan() {
+		await this.savePlan([]);
+	}
+
+	// --- Shop ---
+
+	async toggleCart(key: string) {
+		this.cart = this.cart.includes(key)
+			? this.cart.filter((other) => other !== key)
+			: [...this.cart, key];
+		await this.disk.save({ cart: this.cart });
+	}
+
+	// Puts each row of the cart into the pantry, in the place where that food item is now.
+	async putAway() {
+		const rows = this.shopping.filter((row) => this.cart.includes(row.key));
+		for (const row of rows) {
+			const place = row.food?.item.stocks[0]?.place ?? NEW_FOOD_PLACE;
+			// A row with no amount, such as salt, goes in as one.
+			const amounts = row.buy.length ? row.buy.map(showMeasure) : ['1'];
+			for (const amount of amounts) await this.addStock(row.name, makeStock(place, amount, ''));
+		}
+		this.cart = [];
+		await this.disk.save({ cart: [] });
+		this.notify(`${rows.length} ${rows.length === 1 ? 'item is' : 'items are'} in the pantry.`);
+	}
+
+	// --- Cook ---
+
+	// Takes the food out of the pantry, and writes the rating and the record into the recipe note.
+	async finishCooking(path: string, result: CookResult) {
+		for (const [foodPath, stocks] of result.stocks) await this.setStocks(foodPath, stocks);
+
+		const file = this.fileAt(path);
+		const entry = this.recipes.find((recipe) => recipe.path === path);
+		if (file && entry) {
+			const photo = result.photo ? await this.savePhoto(result.photo, file) : null;
+			const { rating, note } = result;
+			if (rating) {
+				await this.app.fileManager.processFrontMatter(file, (properties) => {
+					properties.rating = rating;
+				});
+			}
+			const hasInstructions = entry.recipe.instructions !== null;
+			const record = { date: this.today, rating, note, photo };
+			await this.app.vault.process(file, (text) => addRecord(text, hasInstructions, record));
+		}
+
+		if (this.isPlanned(path)) {
+			await this.savePlan(
+				this.plan.map((meal) => (meal.path === path ? { ...meal, cooked: true } : meal))
+			);
+		}
+	}
+
+	private async savePhoto(photo: Blob, recipe: TFile): Promise<string> {
+		const name = `${recipe.basename} ${this.today}.jpg`;
+		const path = await this.app.fileManager.getAvailablePathForAttachment(name, recipe.path);
+		await this.app.vault.createBinary(path, await shrinkPhoto(photo));
+		return path;
+	}
+
+	private async savePlan(meals: PlannedMeal[]) {
+		const text = showPlan(
+			meals.map((meal) => {
+				const entry = this.recipes.find((recipe) => recipe.path === meal.path);
+				return { ...meal, title: entry?.recipe.title ?? meal.path.replace(/\.md$/, '') };
+			})
+		);
+		const file = this.fileAt(PLAN_NOTE);
+		if (file) await this.app.vault.modify(file, text);
+		else await this.app.vault.create(PLAN_NOTE, text);
+	}
+
+	// --- The notes of the vault ---
+
+	private fileAt(path: string): TFile | null {
+		const file = this.app.vault.getAbstractFileByPath(path);
+		return file instanceof TFile ? file : null;
+	}
+
+	private async read(file: TAbstractFile) {
+		if (!(file instanceof TFile) || file.extension !== 'md') return;
+		const text = await this.app.vault.cachedRead(file);
+		// A rename can occur during the read, so the path comes after it.
+		const { path } = file;
+		const { properties, body } = readProperties(text);
+
+		if (path === PLAN_NOTE) {
+			this.planNow = readPlan(text);
+		} else if (path.startsWith(PANTRY_FOLDER)) {
+			const item = readFoodItem(file.basename, properties, body);
+			this.foodsByPath.set(path, { path, item });
+		} else {
+			this.notesByPath.set(path, { path, result: readRecipe(text), rating: ratingOf(properties) });
+		}
+	}
+
+	private async update(file: TAbstractFile) {
+		await this.read(file);
+		this.show();
+	}
+
+	private forget(path: string) {
+		if (path === PLAN_NOTE) this.planNow = [];
+		this.notesByPath.delete(path);
+		this.foodsByPath.delete(path);
+		this.show();
+	}
+
+	private show() {
+		this.notes = [...this.notesByPath.values()];
+		this.foods = [...this.foodsByPath.values()];
+		this.plan = this.planNow;
+		this.today = today();
+	}
+}
