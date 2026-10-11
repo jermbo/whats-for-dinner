@@ -1,11 +1,11 @@
 ---
 title: Plan
 summary: 'How the week works: meals with no fixed day, room for each type of meal, and one note that holds the plan.'
-parent: ../README.md
+parent: ../../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / Plan
+[Wiki](../../README.md) / Plan
 
 # Plan
 
@@ -17,7 +17,7 @@ A plan with a day for each meal breaks on the first bad day. So a meal is only "
 
 ## The week has room for each type
 
-The type of a meal is the first tag of its [recipe](../recipes/README.md): dinner, breakfast, lunch, or snack. The week has room for 7 meals of each type, one for each day. You do not have to fill it. A type of your own, such as "dessert", shows when it has a meal.
+The type of a meal is the first tag of its [recipe](recipes.md): dinner, breakfast, lunch, or snack. The week has room for 7 meals of each type, one for each day. You do not have to fill it. A type of your own, such as "dessert", shows when it has a meal.
 
 A meal that you cooked gives its place back, and it stays in view until you start a new week.
 
@@ -44,5 +44,5 @@ The plugin changes only these lines. All other text of the note stays, so the no
 
 ## Further reading
 
-- [Shopping](../shopping/README.md): what the plan puts on the shopping list.
-- [Cook Mode](../cook-mode/README.md): what the button "Cook" opens.
+- [Shopping](shopping.md): what the plan puts on the shopping list.
+- [Cook Mode](cook-mode.md): what the button "Cook" opens.

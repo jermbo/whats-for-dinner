@@ -8,7 +8,7 @@ Your recipes and your pantry are plain notes in your vault. The plugin has no se
 
 - [Wiki](docs/README.md): how the plugin works, from the full picture down to the exact rules.
 - [Build plan](PLAN.md): the slices of the first version, and the choices that are open.
-- [Roadmap](docs/roadmap.md): what is left.
+- [Roadmap](docs/features/roadmap.md): what is left.
 
 ## How to run it
 

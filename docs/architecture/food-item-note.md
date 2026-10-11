@@ -1,11 +1,11 @@
 ---
 title: Food item note
 summary: 'The exact form of the note of a food item: its name, its four properties, and its table.'
-parent: README.md
+parent: ../features/v0.1.0/pantry.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Pantry](README.md) / Food item note
+[Wiki](../README.md) / [Pantry](../features/v0.1.0/pantry.md) / Food item note
 
 # Food item note
 
@@ -40,12 +40,12 @@ There is no property for the name. Elbow pasta and shell pasta are two notes, be
 
 Each property is optional.
 
-| Property  | Value                                                        | With no value                                   |
-| --------- | ------------------------------------------------------------ | ----------------------------------------------- |
-| `aliases` | Other names that a recipe can use. One text, or a list.      | A recipe finds the food item only by its name.  |
-| `brands`  | The brands that you buy. One text, or a list.                | The shopping list shows no brand.               |
-| `full`    | The full amount, such as `2 kg` or `12`.                     | It is the amount that you have now.             |
-| `low`     | The low line, such as `500 g`.                               | The line is a percentage of the full amount.    |
+| Property  | Value                                                   | With no value                                  |
+| --------- | ------------------------------------------------------- | ---------------------------------------------- |
+| `aliases` | Other names that a recipe can use. One text, or a list. | A recipe finds the food item only by its name. |
+| `brands`  | The brands that you buy. One text, or a list.           | The shopping list shows no brand.              |
+| `full`    | The full amount, such as `2 kg` or `12`.                | It is the amount that you have now.            |
+| `low`     | The low line, such as `500 g`.                          | The line is a percentage of the full amount.   |
 
 The [level](level.md) of the food item comes from `full`, from `low`, and from the table.
 
@@ -53,11 +53,11 @@ The [level](level.md) of the food item comes from `full`, from `low`, and from t
 
 The plugin reads the first table of the note. It finds each column by its name, so the sequence of the columns is free.
 
-| Column   | Value                                                                                             |
-| -------- | ------------------------------------------------------------------------------------------------- |
-| `Place`  | Where the food is. A row with no place is not a row of the pantry.                                |
+| Column   | Value                                                                                               |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| `Place`  | Where the food is. A row with no place is not a row of the pantry.                                  |
 | `Amount` | A number and a unit: `500 g`, `1 1/2 kg`, or `6`. Text with no number, such as `tap`, is permitted. |
-| `Use by` | A date as year-month-day, or nothing.                                                             |
+| `Use by` | A date as year-month-day, or nothing.                                                               |
 
 A note with no row is a food item that is out.
 
@@ -69,4 +69,4 @@ The plugin writes the table again with the three columns of this page. A column 
 
 ## Further reading
 
-- [Notes of the kitchen](../notes-of-the-kitchen.md): the other kinds of notes, and why the plugin has no database.
+- [Notes of the kitchen](notes-of-the-kitchen.md): the other kinds of notes, and why the plugin has no database.

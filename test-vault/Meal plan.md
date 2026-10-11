@@ -1,3 +1,7 @@
 - [ ] [[Recipes/Chicken curry|Chicken curry]]
+- [ ] [[Edge cases/Recipe with wikilinks|Fried rice]]
+- [ ] [[Edge cases/Recipe with properties|Tomato soup]]
 - [ ] [[Recipes/Tacos|Tacos]]
-- [ ] [[Recipes/Pancakes|Pancakes]]
+- [ ] [[Edge cases/Recipe with no steps|Trail mix]]
+- [ ] [[Recipes/Pasta with tomato sauce|Pasta with tomato sauce]]
+- [ ] [[Recipes/Guacamole|Guacamole]]

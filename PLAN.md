@@ -2,7 +2,7 @@
 
 The plugin grows in small slices. Each slice ends with one result that you can test in the test vault, on the computer and on the phone.
 
-All eight slices are built as a first version. The work that is left is in the [roadmap](docs/roadmap.md).
+All eight slices are built as a first version. The work that is left is in the [roadmap](docs/features/roadmap.md).
 
 ## Two fixed decisions
 

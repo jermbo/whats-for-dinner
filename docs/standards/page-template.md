@@ -2,10 +2,10 @@
 title: Page template
 summary: 'The five parts of a page, with a block that you can copy.'
 parent: documentation-standards.md
-updated: 2026-10-03
+updated: 2026-10-11
 ---
 
-[Wiki](README.md) / [Documentation standards](documentation-standards.md) / Page template
+[Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Page template
 
 # Page template
 
@@ -13,21 +13,21 @@ Each page has the same five parts, so that a reader always knows where to look. 
 
 ```markdown
 ---
-title: In the store
-summary: 'The shopping list screen: what it shows, and what one tap does.'
-parent: item-journey.md
-updated: 2026-10-03
+title: Level
+summary: 'How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line.'
+parent: ../features/v0.1.0/pantry.md
+updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Shopping](README.md) / [The journey of an item](item-journey.md) / In the store
+[Wiki](../README.md) / [Pantry](../features/v0.1.0/pantry.md) / Level
 
-# In the store
+# Level
 
 One or two sentences: what this page explains, and why it is important.
 
 ## A heading that tells what the section says
 
-The explanation, with [a link](other-page.md) in the sentence where the reader needs it.
+The explanation, with [a link](food-item-note.md) in the sentence where the reader needs it.
 
 ## Further reading
 
@@ -55,11 +55,21 @@ The explanation, with [a link](other-page.md) in the sentence where the reader n
 
 ## The file
 
-- A topic of the system is one folder in `docs/`. Its start page is `README.md`.
-- All pages of a topic are in that folder. The hierarchy is in `parent` and in the breadcrumb, not in more folders.
-- A file name is the title in small letters, with hyphens between the words: `in-the-store.md`.
+The folder tells the kind of a page. The links tell how the pages connect.
+
+| Folder                | Its pages                                                                                       |
+| --------------------- | ----------------------------------------------------------------------------------------------- |
+| `docs/`               | The wiki home and the vision.                                                                   |
+| `features/<version>/` | One page for each feature of that version: what you can do, and why.                            |
+| `architecture/`       | How the system works: where the data is, how a mechanism decides, and the exact form of a note. |
+| `initiatives/<slug>/` | The pages of one piece of work that is larger than one feature.                                 |
+| `standards/`          | The rules for the pages of the wiki.                                                            |
+
+- A page is one file. A subject does not get a folder of its own.
+- The hierarchy is in `parent` and in the breadcrumb, not in the folders. A parent can be in a different folder.
+- A file name is the title in small letters, with hyphens between the words: `food-item-note.md`.
 
 ## Further reading
 
-- [Writing style](documentation-writing-style.md): how to write the description.
-- [Diagrams](documentation-diagrams.md): how to add a diagram to the description.
+- [Writing style](writing-style.md): how to write the description.
+- [Diagrams](diagrams.md): how to add a diagram to the description.

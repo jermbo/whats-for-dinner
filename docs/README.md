@@ -42,20 +42,20 @@ On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must
 
 Start with the page that has your question. Each page goes one step down, to more detail.
 
-| Your question                              | Page                                            |
-| ------------------------------------------ | ----------------------------------------------- |
-| Which problem does the plugin solve?       | [Vision](vision.md)                             |
-| What can you do with it?                   | [Features](features.md)                         |
-| Where is the data?                         | [Notes of the kitchen](notes-of-the-kitchen.md) |
-| How does the plugin know what you have?    | [Pantry](pantry/README.md)                      |
-| How does it select a recipe?               | [Recipes](recipes/README.md)                    |
-| How does the week work?                    | [Plan](plan/README.md)                          |
-| How does the list know what is missing?    | [Shopping](shopping/README.md)                  |
-| What occurs when you cook?                 | [Cook Mode](cook-mode/README.md)                |
-| What does a word mean?                     | [Glossary](glossary.md)                         |
-| What is left to build?                     | [Roadmap](roadmap.md)                           |
+| Your question                           | Page                                                         |
+| --------------------------------------- | ------------------------------------------------------------ |
+| Which problem does the plugin solve?    | [Vision](vision.md)                                          |
+| What can you do with it?                | [Features](features/README.md)                               |
+| Where is the data?                      | [Notes of the kitchen](architecture/notes-of-the-kitchen.md) |
+| How does the plugin know what you have? | [Pantry](features/v0.1.0/pantry.md)                          |
+| How does it select a recipe?            | [Recipes](features/v0.1.0/recipes.md)                        |
+| How does the week work?                 | [Plan](features/v0.1.0/plan.md)                              |
+| How does the list know what is missing? | [Shopping](features/v0.1.0/shopping.md)                      |
+| What occurs when you cook?              | [Cook Mode](features/v0.1.0/cook-mode.md)                    |
+| What does a word mean?                  | [Glossary](architecture/glossary.md)                         |
+| What is left to build?                  | [Roadmap](features/roadmap.md)                               |
 
 ## Further reading
 
-- [Documentation standards](documentation-standards.md): the rules for a new page in this wiki.
+- [Documentation standards](standards/documentation-standards.md): the rules for a new page in this wiki.
 - [Build a plugin](https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin): the guide from Obsidian on how to build, load, and reload a plugin.

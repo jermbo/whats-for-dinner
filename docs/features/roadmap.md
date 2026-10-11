@@ -1,15 +1,15 @@
 ---
 title: Roadmap
 summary: 'What is left between the plugin of today and the features page, in the sequence of the work.'
-parent: README.md
+parent: ../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](README.md) / Roadmap
+[Wiki](../README.md) / Roadmap
 
 # Roadmap
 
-The [features](features.md) page tells what the plugin does when it is complete. This page tells what is left until then, and in which sequence. It is the only page of the wiki with status. When an item is done, it goes off this page.
+The [features](README.md) page tells what the plugin does when it is complete. This page tells what is left until then, and in which sequence. It is the only page of the wiki with status. When an item is done, it goes off this page.
 
 ## The new functions need a test on the phone
 
@@ -49,8 +49,8 @@ The plugin has a fixed value for each of these. A value becomes a setting when i
 - **A drag on a closed row.** The first design sets an amount with no tap to open the row.
 - **Preparation from the pantry.** Food in a place with the name "Freezer" needs time before you can cook it. The plugin does not tell you this: only the callout of a recipe is a preparation.
 
-The first version also has choices that you did not confirm, such as how the name in a recipe finds a food item. They are in the table "Choices that are not decided" of the [build plan](../PLAN.md).
+The first version also has choices that you did not confirm, such as how the name in a recipe finds a food item. They are in the table "Choices that are not decided" of the [build plan](../../PLAN.md).
 
 ## Further reading
 
-- [What's for Dinner](README.md): the loop that each item on this page serves.
+- [What's for Dinner](../README.md): the loop that each item on this page serves.

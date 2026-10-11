@@ -1,11 +1,11 @@
 ---
 title: Recipes
 summary: 'How a note becomes a recipe, how each ingredient finds its food, and why the pantry decides which recipe comes first.'
-parent: ../README.md
+parent: ../../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / Recipes
+[Wiki](../../README.md) / Recipes
 
 # Recipes
 
@@ -25,13 +25,13 @@ The format does not come from the plugin, so your recipes do not depend on it. A
 
 ## Each ingredient looks for its food
 
-The plugin compares each ingredient with the [pantry](../pantry/README.md). The name of the ingredient finds a food item by its name, or by one of its other names. Then the amounts decide.
+The plugin compares each ingredient with the [pantry](pantry.md). The name of the ingredient finds a food item by its name, or by one of its other names. Then the amounts decide.
 
-| The pantry has                           | The ingredient shows |
-| ---------------------------------------- | -------------------- |
-| The amount, or more                      | A check mark         |
-| Less than the amount                     | "Low"                |
-| No food item, or a food item with no row | "None"               |
+| The pantry has                            | The ingredient shows |
+| ----------------------------------------- | -------------------- |
+| The amount, or more                       | A check mark         |
+| Less than the amount                      | "Low"                |
+| No food item, or a food item with no row  | "None"               |
 | The food, in a unit that does not compare | A check mark         |
 
 An ingredient with no amount, such as salt, needs only that the pantry has the food.
@@ -52,9 +52,9 @@ You can select a different sequence, such as by rating. A filter shows only the 
 
 ## What the plugin adds to a recipe note
 
-The plugin does not change your recipe. It adds two things after a meal: your rating, as a property, and a record of the meal at the end of the note. [Cook Mode](../cook-mode/README.md) writes them.
+The plugin does not change your recipe. It adds two things after a meal: your rating, as a property, and a record of the meal at the end of the note. [Cook Mode](cook-mode.md) writes them.
 
 ## Further reading
 
-- [Plan](../plan/README.md): how a recipe becomes a meal of the week.
-- [Notes of the kitchen](../notes-of-the-kitchen.md): how the plugin finds the notes that are recipes.
+- [Plan](plan.md): how a recipe becomes a meal of the week.
+- [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): how the plugin finds the notes that are recipes.

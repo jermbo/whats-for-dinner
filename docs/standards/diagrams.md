@@ -5,7 +5,7 @@ parent: documentation-standards.md
 updated: 2026-10-11
 ---
 
-[Wiki](README.md) / [Documentation standards](documentation-standards.md) / Diagrams
+[Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Diagrams
 
 # Diagrams
 
@@ -21,7 +21,7 @@ The text must be complete without the diagram. An agent reads the code of the di
 
 | The question of the reader                           | Type              | Example                                                       |
 | ---------------------------------------------------- | ----------------- | ------------------------------------------------------------- |
-| What occurs, and where does it branch?               | `flowchart`       | The loop of the plugin, on the [wiki home](README.md).        |
+| What occurs, and where does it branch?               | `flowchart`       | The loop of the plugin, on the [wiki home](../README.md).     |
 | Which states are there, and what moves between them? | `stateDiagram-v2` | A meal: in the week, selected for today, and cooked.          |
 | Who tells what to whom, in which sequence?           | `sequenceDiagram` | What one tap on "Put into the pantry" does.                   |
 | Which things are there, and how do they connect?     | `erDiagram`       | A recipe, its ingredients, and the food items that they find. |
@@ -44,4 +44,4 @@ Open the page in a Markdown preview before you commit. A diagram with an error s
 
 ## Further reading
 
-- [Writing style](documentation-writing-style.md): the text around a diagram.
+- [Writing style](writing-style.md): the text around a diagram.

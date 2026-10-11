@@ -5,7 +5,7 @@ parent: documentation-standards.md
 updated: 2026-10-11
 ---
 
-[Wiki](README.md) / [Documentation standards](documentation-standards.md) / Writing style
+[Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Writing style
 
 # Writing style
 
@@ -36,7 +36,7 @@ The pages use Simplified Technical English (ASD-STE100).
 - Use the active voice and the present tense. "The app makes the row", not "the row is made".
 - Speak to the reader as "you".
 - Use simple words. Explain a technical word at its first use: "a blob: a block of bytes with a type".
-- Use one word for one thing, each time. The [glossary](glossary.md) has the words of the kitchen.
+- Use one word for one thing, each time. The [glossary](../architecture/glossary.md) has the words of the kitchen.
 
 ## Headings
 
@@ -50,5 +50,5 @@ A heading tells what the section says: "Why the photo is too large". Do not use 
 
 ## Further reading
 
-- [Level](pantry/level.md): a page that explains a mechanism in this style.
-- [Page template](documentation-template.md): the parts around the description.
+- [Level](../architecture/level.md): a page that explains a mechanism in this style.
+- [Page template](page-template.md): the parts around the description.

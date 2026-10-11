@@ -1,11 +1,11 @@
 ---
 title: Notes of the kitchen
 summary: 'Where the plugin keeps its data: three kinds of notes in your vault, and the path that each change takes.'
-parent: README.md
+parent: ../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](README.md) / Notes of the kitchen
+[Wiki](../README.md) / Notes of the kitchen
 
 # Notes of the kitchen
 
@@ -17,13 +17,13 @@ Only its program can read a database. If the program stops, your data stops with
 
 ## Three kinds of notes
 
-| Note      | One note for            | Where it is                                  |
-| --------- | ----------------------- | -------------------------------------------- |
-| Recipe    | Each recipe             | The recipes folder of the settings           |
-| Food item | Each food of the pantry | The pantry folder of the settings            |
+| Note      | One note for            | Where it is                                   |
+| --------- | ----------------------- | --------------------------------------------- |
+| Recipe    | Each recipe             | The recipes folder of the settings            |
+| Food item | Each food of the pantry | The pantry folder of the settings             |
 | Plan      | The meals of the week   | The plan note of the settings: `Meal plan.md` |
 
-A [recipe](recipes/README.md) follows a public format. A [food item](pantry/food-item-note.md) and the [plan](plan/README.md) have a form of the plugin, and you can write each of them by hand.
+A [recipe](../features/v0.1.0/recipes.md) follows a public format. A [food item](food-item-note.md) and the [plan](../features/v0.1.0/plan.md) have a form of the plugin, and you can write each of them by hand.
 
 ## Each change goes through a note
 
@@ -56,4 +56,4 @@ Three things are not facts of the kitchen, so they are in the data file of the p
 ## Further reading
 
 - [Glossary](glossary.md): the meaning of "food item", "row", and the other words of the kitchen.
-- [Cook Mode](cook-mode/README.md): all that the plugin writes when you finish a meal.
+- [Cook Mode](../features/v0.1.0/cook-mode.md): all that the plugin writes when you finish a meal.

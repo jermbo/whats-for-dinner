@@ -1,11 +1,11 @@
 ---
 title: Level
 summary: 'How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line.'
-parent: README.md
+parent: ../features/v0.1.0/pantry.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Pantry](README.md) / Level
+[Wiki](../README.md) / [Pantry](../features/v0.1.0/pantry.md) / Level
 
 # Level
 
@@ -15,11 +15,11 @@ The level of a food item tells how much is left. It makes a bar amber, and it ca
 
 Is 500 g of rice much or little? The answer depends on how much rice you usually have. So the level compares three amounts.
 
-| Amount        | Meaning                                    | Where it comes from                                         |
-| ------------- | ------------------------------------------ | ----------------------------------------------------------- |
-| What you have | The sum of all rows of the food item       | The table of the [food item note](food-item-note.md)        |
-| Full amount   | The most that the pantry had of this food  | The property `full`                                         |
-| Low line      | Below this amount, the food item is low    | The property `low`, or a percentage of the full amount      |
+| Amount        | Meaning                                   | Where it comes from                                    |
+| ------------- | ----------------------------------------- | ------------------------------------------------------ |
+| What you have | The sum of all rows of the food item      | The table of the [food item note](food-item-note.md)   |
+| Full amount   | The most that the pantry had of this food | The property `full`                                    |
+| Low line      | Below this amount, the food item is low   | The property `low`, or a percentage of the full amount |
 
 ## All places count together
 
@@ -46,4 +46,4 @@ A food item with no level is never low.
 
 ## Further reading
 
-- [Shopping](../shopping/README.md): how a food item that is low gets on the list.
+- [Shopping](../features/v0.1.0/shopping.md): how a food item that is low gets on the list.

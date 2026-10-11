@@ -52,4 +52,4 @@ It is not a service, and it is not for a group. It is for one cook, on the devic
 
 ## Further reading
 
-- [Features](features.md): what the plugin does to give these results.
+- [Features](features/README.md): what the plugin does to give these results.
