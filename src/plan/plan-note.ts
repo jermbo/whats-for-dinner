@@ -2,6 +2,9 @@
 // "- [ ] [[Recipes/Tacos|Tacos]] · 2026-10-11 · prep done". A task that is done is a meal that you
 // cooked. A meal has no fixed day: the date is the day for which you selected the meal, and it has
 // no effect after that day.
+//
+// The note is yours. A change of the plan changes only the lines of the meals, and each change
+// starts from the text of the note, so the other text stays.
 
 export type PlannedMeal = {
 	path: string;
@@ -12,39 +15,73 @@ export type PlannedMeal = {
 	prepDone: boolean;
 };
 
-const MEAL = /^\s*[-*]\s+\[([ xX])\]\s+\[\[([^\]|#]+)[^\]]*\]\](.*)$/;
+const MEAL = /^\s*[-*]\s+\[([ xX])\]\s+(\[\[([^\]|#]+)[^\]]*\]\])(.*)$/;
 const DAY = /\b\d{4}-\d{2}-\d{2}\b/;
 const PREP_DONE = /\bprep done\b/i;
 
-export const newMeal = (path: string): PlannedMeal => ({
-	path,
-	cooked: false,
-	day: null,
-	prepDone: false
-});
+// The link stays as you wrote it, so a change of a meal does not change its name in the note.
+type MealLine = { meal: PlannedMeal; link: string };
 
-export function readPlan(text: string): PlannedMeal[] {
-	return text.split(/\r?\n/).flatMap((line) => {
-		const match = MEAL.exec(line);
-		if (!match) return [];
-		const [, mark, link, facts] = match;
-		const target = link.trim();
-		return [
-			{
-				path: target.endsWith('.md') ? target : `${target}.md`,
-				cooked: mark !== ' ',
-				day: DAY.exec(facts)?.[0] ?? null,
-				prepDone: PREP_DONE.test(facts)
-			}
-		];
-	});
+function readLine(line: string): MealLine | null {
+	const match = MEAL.exec(line);
+	if (!match) return null;
+
+	const [, mark, link, target, facts] = match;
+	const path = target.trim();
+	return {
+		link,
+		meal: {
+			path: path.endsWith('.md') ? path : `${path}.md`,
+			cooked: mark !== ' ',
+			day: DAY.exec(facts)?.[0] ?? null,
+			prepDone: PREP_DONE.test(facts)
+		}
+	};
 }
 
-export function showPlan(meals: (PlannedMeal & { title: string })[]): string {
-	const lines = meals.map(({ path, cooked, day, prepDone, title }) => {
-		const target = path.replace(/\.md$/, '');
-		const task = `- [${cooked ? 'x' : ' '}] [[${target}|${title}]]`;
-		return [task, day, prepDone ? 'prep done' : null].filter(Boolean).join(' · ');
+function showLine({ cooked, day, prepDone }: PlannedMeal, link: string): string {
+	const task = `- [${cooked ? 'x' : ' '}] ${link}`;
+	return [task, day, prepDone ? 'prep done' : null].filter(Boolean).join(' · ');
+}
+
+const linesOf = (text: string) => text.split(/\r?\n/);
+const isMeal = (line: string) => readLine(line) !== null;
+const isMealOf = (line: string, path: string) => readLine(line)?.meal.path === path;
+
+export function readPlan(text: string): PlannedMeal[] {
+	return linesOf(text).flatMap((line) => readLine(line)?.meal ?? []);
+}
+
+// A recipe is in the plan one time. A line that the recipe has already, such as a meal that you
+// cooked, goes out, and the new meal comes after the last meal of the note.
+export function addMeal(text: string, path: string, title: string): string {
+	const meal = { path, cooked: false, day: null, prepDone: false };
+	const line = showLine(meal, `[[${path.replace(/\.md$/, '')}|${title}]]`);
+
+	const lines = linesOf(text).filter((other) => !isMealOf(other, path));
+	const last = lines.findLastIndex(isMeal);
+	if (last === -1) return `${lines.join('\n').trimEnd()}\n\n${line}\n`.trimStart();
+
+	lines.splice(last + 1, 0, line);
+	return lines.join('\n');
+}
+
+export function changeMeal(text: string, path: string, change: Partial<PlannedMeal>): string {
+	const changed = linesOf(text).map((line) => {
+		const found = readLine(line);
+		return found?.meal.path === path ? showLine({ ...found.meal, ...change }, found.link) : line;
 	});
-	return `${lines.join('\n')}\n`;
+	return changed.join('\n');
+}
+
+export function removeMeal(text: string, path: string): string {
+	return linesOf(text)
+		.filter((line) => !isMealOf(line, path))
+		.join('\n');
+}
+
+export function removeMeals(text: string): string {
+	return linesOf(text)
+		.filter((line) => !isMeal(line))
+		.join('\n');
 }

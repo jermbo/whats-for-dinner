@@ -3,6 +3,7 @@
 
 import { allIngredients } from '../match/match';
 import { nameKey } from '../match/names';
+import { parseAmount } from '../recipemd/amount';
 import { readBlocks } from '../recipemd/blocks';
 import type { Ingredient, Recipe } from '../recipemd/types';
 
@@ -17,14 +18,36 @@ export type Step = {
 // The plugin writes its record of cooked meals below this heading. It is not a step.
 export const RECORD_HEADING = 'Cooked';
 
-const TIME = /(\d+(?:[.,]\d+)?)\s*(hours?|hrs?|minutes?|mins?|seconds?|secs?)\b/i;
+// A time is a number and a unit: "8 minutes", "1 1/2 hours", "½ hour". The number has the same
+// forms as an amount of an ingredient.
+const NUMBER = String.raw`\d+\s+\d+\s*/\s*\d+|\d+\s*/\s*\d+|\d*[.,]\d+|\d*\s*[¼-¾⅐-⅞]|\d+`;
+const UNIT = 'hours?|hrs?|minutes?|mins?|seconds?|secs?';
+const TIME = new RegExp(`(${NUMBER})[\\s-]*(${UNIT})\\b`, 'gi');
+// The text between two parts of one time: "1 hour and 30 minutes", "1 hour, 30 minutes".
+const BETWEEN = /^[\s,]*(and)?\s*$/i;
 
+const secondsPer = (unit: string) => {
+	const first = unit[0].toLowerCase();
+	return first === 'h' ? 3600 : first === 'm' ? 60 : 1;
+};
+
+// The first time in the text is the time of the timer. A time can have parts, from large to small.
 function secondsIn(text: string): number | null {
-	const match = TIME.exec(text);
-	if (!match) return null;
-	const unit = match[2].toLowerCase();
-	const size = unit.startsWith('h') ? 3600 : unit.startsWith('m') ? 60 : 1;
-	return Math.round(Number(match[1].replace(',', '.')) * size);
+	const parts = [...text.matchAll(TIME)].map((match) => {
+		const unit = secondsPer(match[2]);
+		const count = parseAmount(match[1])?.factor ?? 0;
+		return { start: match.index, end: match.index + match[0].length, unit, seconds: count * unit };
+	});
+	if (!parts.length) return null;
+
+	let seconds = parts[0].seconds;
+	for (let at = 1; at < parts.length; at++) {
+		const between = text.slice(parts[at - 1].end, parts[at].start);
+		const isNextPart = parts[at].unit < parts[at - 1].unit && BETWEEN.test(between);
+		if (!isNextPart) break;
+		seconds += parts[at].seconds;
+	}
+	return Math.round(seconds);
 }
 
 export function readSteps(recipe: Recipe): Step[] {

@@ -1,4 +1,5 @@
 import { addTo, measure, showMeasure, type Measure } from '../units';
+import { withAmount } from './stock-amount';
 import type { Stock } from './types';
 
 // How much of a food item the pantry has, in one kind of measure.
@@ -44,14 +45,7 @@ export function takeOut(stocks: Stock[], need: Measure): Stock[] {
 
 		const taken = Math.min(left, has.value);
 		left -= taken;
-		// The row keeps its unit: 2 kg less 300 g is 1.7 kg.
-		const factor = Number((stock.amount.factor * (1 - taken / has.value)).toFixed(2));
-		if (factor <= 0) {
-			result[at] = null;
-		} else {
-			const amountText = `${factor} ${stock.amount.unit ?? ''}`.trim();
-			result[at] = { ...stock, amountText, amount: { ...stock.amount, factor, text: amountText } };
-		}
+		result[at] = withAmount(stock, has.value - taken);
 	}
 	return result.filter((stock) => stock !== null);
 }

@@ -18,10 +18,15 @@ export function readFoodItem(
 		brands: textList(properties.brands),
 		full: amountOf(properties.full),
 		low: amountOf(properties.low),
-		stocks: readTable(body)
-			.filter((row) => row['place'])
-			.map((row) => makeStock(row['place'], row['amount'] ?? '', row['use by'] ?? ''))
+		stocks: readStocks(body)
 	};
+}
+
+// A row of the table with no place is not a row of the pantry.
+export function readStocks(text: string): Stock[] {
+	return readTable(text)
+		.filter((row) => row['place'])
+		.map((row) => makeStock(row['place'], row['amount'] ?? '', row['use by'] ?? ''));
 }
 
 export function makeStock(place: string, amountText: string, useBy: string): Stock {

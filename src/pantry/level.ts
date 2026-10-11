@@ -14,9 +14,11 @@ export type Level = { kind: string; has: number; full: number; low: number; isLo
 
 export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null {
 	const fullSet = item.full ? measure(item.full) : null;
-	const first = item.stocks.find((stock) => stock.amount)?.amount;
-	const kind = fullSet?.kind ?? (first ? measure(first).kind : null);
-	if (kind === null) return null;
+	const kinds = item.stocks.flatMap((stock) => (stock.amount ? [measure(stock.amount).kind] : []));
+	const kind = fullSet?.kind ?? kinds[0];
+	if (kind === undefined) return null;
+	// The full amount is "2 kg" and the rows are "3 bags": the plugin cannot count this food item.
+	if (kinds.length && !kinds.includes(kind)) return null;
 
 	const has = available(item.stocks, kind);
 	// The pantry can have more than it had before. Then that amount is the full amount.

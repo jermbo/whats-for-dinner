@@ -38,6 +38,19 @@
 			.filter((entry) => !kitchen.plan.some((meal) => meal.path === entry.path))
 			.slice(0, 3)
 	);
+
+	// A new week removes each meal from the plan, so the plugin asks first.
+	let asking = $state(false);
+	const question = $derived(
+		kitchen.meals.length === 1
+			? 'Remove the meal of this week?'
+			: `Remove all ${kitchen.meals.length} meals of this week?`
+	);
+
+	async function startNewWeek() {
+		asking = false;
+		await kitchen.clearPlan();
+	}
 </script>
 
 <section class="wfd-plan" aria-label="Plan of the week">
@@ -147,7 +160,15 @@
 
 	{#if kitchen.meals.length}
 		<div class="wfd-plan__end">
-			<Button kind="link" onclick={() => kitchen.clearPlan()}>Start a new week</Button>
+			{#if asking}
+				<div class="wfd-plan__ask" in:slide={{ duration }}>
+					<p class="wfd-plan__question" role="alert">{question}</p>
+					<Button onclick={() => (asking = false)}>Keep the plan</Button>
+					<Button kind="main" onclick={startNewWeek}>Start a new week</Button>
+				</div>
+			{:else}
+				<Button kind="link" onclick={() => (asking = true)}>Start a new week</Button>
+			{/if}
 		</div>
 	{/if}
 </section>
@@ -251,5 +272,20 @@
 	.wfd-plan__end {
 		display: flex;
 		justify-content: center;
+	}
+
+	/* The question, with the two answers side by side below it. */
+	.wfd-plan__ask {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 10px 12px;
+		inline-size: 100%;
+	}
+
+	.wfd-plan__question {
+		grid-column: 1 / -1;
+		margin: 0;
+		font-weight: 600;
+		text-align: center;
 	}
 </style>

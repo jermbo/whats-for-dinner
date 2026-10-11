@@ -1,9 +1,15 @@
-import { singular } from '../units';
-
 // A wikilink in a recipe is the name of its note: "[[Pantry/Rice|rice]]" is "Rice".
 const WIKILINK = /\[\[([^\]|#]+)[^\]]*\]\]/g;
 
-// The form of a name that the plugin compares: small letters, no marks, each word in the singular.
+// A word and its plural must give the same key: "cookie" and "cookies", "berry" and "berries",
+// "leaf" and "leaves". The key is not on the screen, so it does not have to be a correct word:
+// "olive" and "olives" are "olif".
+function wordKey(word: string): string {
+	const one = /(ch|sh|x|ss|o)es$/.test(word) ? word.slice(0, -2) : word.replace(/([^s])s$/, '$1');
+	return one.replace(/(ie|y)$/, 'i').replace(/ve$/, 'f');
+}
+
+// The form of a name that the plugin compares: small letters, no marks, and no plural.
 // "Chicken thighs" and "chicken thigh" have the same key.
 export function nameKey(name: string): string {
 	return name
@@ -12,7 +18,7 @@ export function nameKey(name: string): string {
 		.replace(/[^\p{L}\p{N}]+/gu, ' ')
 		.trim()
 		.split(' ')
-		.map(singular)
+		.map(wordKey)
 		.join(' ');
 }
 

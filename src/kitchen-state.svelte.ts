@@ -12,7 +12,14 @@ import { makeStock, readFoodItem } from './pantry/food-item';
 import { fullAfter } from './pantry/level';
 import type { FoodItem, Stock } from './pantry/types';
 import { addStock, replaceStocks, showStocks } from './pantry/write';
-import { newMeal, readPlan, showPlan, type PlannedMeal } from './plan/plan-note';
+import {
+	addMeal,
+	changeMeal,
+	readPlan,
+	removeMeal,
+	removeMeals,
+	type PlannedMeal
+} from './plan/plan-note';
 import { hasRoom, ROOM } from './plan/week';
 import { readProperties } from './read-properties';
 import { readRecipe } from './recipemd/parse';
@@ -260,31 +267,26 @@ export class Kitchen {
 			this.notify(`The week has ${ROOM} meals of the type "${type}". Cook or remove one first.`);
 			return;
 		}
-		const others = this.plan.filter((meal) => meal.path !== path);
-		await this.savePlan([...others, newMeal(path)]);
+		const title = entry?.recipe.title ?? path.replace(/\.md$/, '');
+		await this.writePlan((text) => addMeal(text, path, title));
 	}
 
 	// Selects a meal for today, or puts it back with the other meals of the week.
 	async setToday(path: string, on: boolean) {
-		await this.changeMeal(path, { day: on ? this.today : null });
+		const day = on ? this.today : null;
+		await this.writePlan((text) => changeMeal(text, path, { day }));
 	}
 
 	async setPrepDone(path: string, prepDone: boolean) {
-		await this.changeMeal(path, { prepDone });
-	}
-
-	private async changeMeal(path: string, change: Partial<PlannedMeal>) {
-		await this.savePlan(
-			this.plan.map((meal) => (meal.path === path ? { ...meal, ...change } : meal))
-		);
+		await this.writePlan((text) => changeMeal(text, path, { prepDone }));
 	}
 
 	async removeFromPlan(path: string) {
-		await this.savePlan(this.plan.filter((meal) => meal.path !== path));
+		await this.writePlan((text) => removeMeal(text, path));
 	}
 
 	async clearPlan() {
-		await this.savePlan([]);
+		await this.writePlan(removeMeals);
 	}
 
 	// --- Shop ---
@@ -337,7 +339,9 @@ export class Kitchen {
 			await this.app.vault.process(file, (text) => addRecord(text, hasInstructions, record));
 		}
 
-		if (this.isPlanned(path)) await this.changeMeal(path, { cooked: true });
+		if (this.isPlanned(path)) {
+			await this.writePlan((text) => changeMeal(text, path, { cooked: true }));
+		}
 	}
 
 	private async savePhoto(photo: Blob, recipe: TFile): Promise<string> {
@@ -347,16 +351,12 @@ export class Kitchen {
 		return path;
 	}
 
-	private async savePlan(meals: PlannedMeal[]) {
-		const text = showPlan(
-			meals.map((meal) => {
-				const entry = this.recipes.find((recipe) => recipe.path === meal.path);
-				return { ...meal, title: entry?.recipe.title ?? meal.path.replace(/\.md$/, '') };
-			})
-		);
+	// The change gets the text that the note has at that moment. Thus two taps, one directly after
+	// the other, do not lose a meal.
+	private async writePlan(change: (text: string) => string) {
 		const file = this.fileAt(this.where.plan);
-		if (file) await this.app.vault.modify(file, text);
-		else await this.app.vault.create(this.where.plan, text);
+		if (file) await this.app.vault.process(file, change);
+		else await this.app.vault.create(this.where.plan, change(''));
 	}
 
 	private save() {

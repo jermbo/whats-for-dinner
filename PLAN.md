@@ -35,6 +35,8 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 | Water            | No food is always there. A recipe finds water only if the pantry has a row for water, such as "tap".                 |
 | Use soon         | Food with a use-by date in 5 days or less is food to use soon. The number of days is a setting.                      |
 | Plan             | The plan is one note, `Meal plan.md` or the note of the settings: one task for each meal. A done task is cooked.     |
+| Plan note        | The plugin changes only the lines of the meals in the plan note. All other text of the note stays.                   |
+| New week         | "Start a new week" removes each meal from the plan note. The plugin asks before it does this.                        |
 | Week             | The week has room for 7 meals of each type that you did not cook. The type of a meal is the first tag of its recipe. |
 | Types            | Dinner, breakfast, lunch, and snack show always, in this sequence. Each other type shows when it has a meal.         |
 | Today            | "Today" selects a meal for this day. Its task gets the date. The selection ends with the day.                        |
@@ -43,12 +45,14 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 | Prep is done     | A check box on the meal. Its task gets the words "prep done". "Cook" is quiet until then, but it is not locked.      |
 | Prep in notes    | The plugin gives the callout a clock and the orange of your theme.                                                   |
 | Put away         | The amount that goes into the pantry is the missing amount. The place is the place where the food item is now.       |
+| Same place       | An amount goes into the row of its place, if the use-by dates are the same. If not, it is a new row.                 |
 | New food         | A food item that is new goes to the place "Kitchen", or to the place of the settings.                                |
 | Steps            | Each item of a list in the instructions is a step. With no list, each paragraph is a step.                           |
-| Timer            | The first time in the text of a step is the time of its timer.                                                       |
+| Timer            | The first time in the text of a step is the time of its timer. "1 hour 30 minutes" is one time.                      |
 | Alarm            | A timer that ends gives a sound, again and again, until "OK" or one minute. Sound and volume are settings.           |
 | Cook screen      | The two buttons do not move. A long page scrolls inside the card. Your note is one line; a tap opens it.             |
 | Take out         | At the end of Cook Mode, the row with the first use-by date gives its food first.                                    |
+| Amount left      | A row keeps its unit if the amount left is round in it: "1.7 kg". If not, it is in g or ml: "996 g".                 |
 | Record           | The date, the rating, the note, and the photo go below the heading "Cooked" in the recipe note.                      |
 | Look             | The Larder look from the archived design pages. In the dark scheme, paper and ink change places.                     |
 | Fonts            | Decided: Bricolage Grotesque for titles, names, and numbers. A setting gives a different font.                       |
@@ -64,6 +68,7 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 | Open row         | The bar has one piece for each place. You select the place to update; its piece is last, at the green line.          |
 | Bar is full      | The green line stops when all places together have the full amount. A larger amount goes in with the form.           |
 | Not counted      | A row with no number, such as "a full bag", has no bar.                                                              |
+| Other unit       | If the full amount is "2 kg" and the rows are "3 bags", the plugin does not count the food item.                     |
 | Accent colour    | The olive of the Larder look, or the accent colour of Obsidian (from the theme). The default is olive.               |
 | Settings         | The settings screen has the look of Obsidian. The values are in the data file of the plugin, with the cart.          |
 | Recipe find      | The text finds a recipe by its title or by the name of one of its ingredients.                                       |

@@ -36,9 +36,8 @@ export const isCount = (kind: string) => kind.startsWith('count:');
 
 const round = (value: number) => String(Number(value.toFixed(2)));
 
-// "cloves" and "clove" are one word for the plugin. The rule is simple, and it is the same for
-// each side of a comparison, so an incorrect result does no damage.
-export function singular(word: string): string {
+// "2 cans" and "1 can" have the same unit. The screen shows the unit again, with `plural`.
+function singular(word: string): string {
 	if (word.length > 4 && word.endsWith('ies')) return `${word.slice(0, -3)}y`;
 	if (/(ch|sh|x|ss|o)es$/.test(word)) return word.slice(0, -2);
 	if (word.length > 2 && word.endsWith('s') && !word.endsWith('ss')) return word.slice(0, -1);

@@ -2,7 +2,7 @@
 title: Diagrams
 summary: 'When a diagram helps, which type to use, and how to write one that does not break.'
 parent: documentation-standards.md
-updated: 2026-10-03
+updated: 2026-10-11
 ---
 
 [Wiki](README.md) / [Documentation standards](documentation-standards.md) / Diagrams
@@ -19,12 +19,12 @@ The text must be complete without the diagram. An agent reads the code of the di
 
 ## Which type
 
-| The question of the reader                           | Type              | Example                                                                      |
-| ---------------------------------------------------- | ----------------- | ---------------------------------------------------------------------------- |
-| What occurs, and where does it branch?               | `flowchart`       | How the app proposes a quantity in [put away at home](shopping/put-away.md). |
-| Which states are there, and what moves between them? | `stateDiagram-v2` | [The journey of an item](shopping/item-journey.md).                          |
-| Who tells what to whom, in which sequence?           | `sequenceDiagram` | What one tap does, [in the store](shopping/in-the-store.md).                 |
-| Which tables are there, and how do they connect?     | `erDiagram`       | The [data model](shopping/data-model.md).                                    |
+| The question of the reader                           | Type              | Example                                                       |
+| ---------------------------------------------------- | ----------------- | ------------------------------------------------------------- |
+| What occurs, and where does it branch?               | `flowchart`       | The loop of the plugin, on the [wiki home](README.md).        |
+| Which states are there, and what moves between them? | `stateDiagram-v2` | A meal: in the week, selected for today, and cooked.          |
+| Who tells what to whom, in which sequence?           | `sequenceDiagram` | What one tap on "Put into the pantry" does.                   |
+| Which things are there, and how do they connect?     | `erDiagram`       | A recipe, its ingredients, and the food items that they find. |
 
 ## How to write one that does not break
 

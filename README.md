@@ -1,47 +1,32 @@
-# Svelte + TS + Vite
+# What's for Dinner
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+A plugin for Obsidian that knows what is in your pantry, so that you plan, shop, and cook with the food that you have.
 
-## Recommended IDE Setup
+Your recipes and your pantry are plain notes in your vault. The plugin has no server and no account.
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+## Where to read
 
-## Need an official Svelte framework?
+- [Wiki](docs/README.md): how the plugin works, from the full picture down to the exact rules.
+- [Build plan](PLAN.md): the slices of the first version, and the choices that are open.
+- [Roadmap](docs/roadmap.md): what is left.
 
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
+## How to run it
 
-## Technical considerations
+The repository has a vault for tests, `test-vault/`. The build puts the plugin into that vault.
 
-**Why use this over SvelteKit?**
+1. Install the packages: `npm install`.
+2. Start the build: `npm run dev`. It builds the plugin again after each change of a file.
+3. In Obsidian, select "Open folder as vault" and open `test-vault/`. If Obsidian asks, trust the vault, so that it loads the plugin.
+4. Open the kitchen with the utensils icon in the ribbon, or with the command "Open the kitchen".
 
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
+Obsidian does not load a new build by itself. After a change, use the command "Reload app without saving".
 
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
+## The commands
 
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
+| Command         | What it does                                                        |
+| --------------- | ------------------------------------------------------------------- |
+| `npm run dev`   | Builds the plugin with a source map, and again after each change.   |
+| `npm run build` | Builds the plugin for use: small, with no source map.               |
+| `npm run check` | Checks the types of the code.                                       |
 
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
-```
+The note `test-vault/Start here.md` tells the state in which the test vault starts.

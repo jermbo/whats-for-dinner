@@ -2,7 +2,7 @@
 title: Documentation standards
 summary: 'The rules for each page of this wiki: what a page is, how it is built, and where its links go.'
 parent: README.md
-updated: 2026-10-03
+updated: 2026-10-11
 ---
 
 [Wiki](README.md) / Documentation standards
@@ -19,14 +19,16 @@ The test of a page is one question: after 90 seconds, can a new reader tell what
 
 ## What a page is
 
-| Rule                  | Meaning                                                                                          |
-| --------------------- | ------------------------------------------------------------------------------------------------ |
-| One thought           | A page explains one thing completely. A part that needs more words gets its own page.            |
-| 60 to 90 seconds      | About 270 to 350 words of text.                                                                  |
-| It teaches            | It gives the problem, the mechanism, and an example. A list of rules does not teach.             |
-| It is not a copy      | It tells something that no other page tells.                                                     |
-| It describes the goal | It describes the system that we want, not the code of today. It has no status such as "planned". |
-| It comes first        | For a design that we commit to, the pages come before the code.                                  |
+| Rule                | Meaning                                                                                                    |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| One thought         | A page explains one thing completely. A part that needs more words gets its own page.                      |
+| One altitude        | A page is at one of four [altitudes](documentation-altitudes.md), from the full picture to the exact rule. |
+| 60 to 90 seconds    | About 270 to 350 words of text.                                                                            |
+| It teaches          | It gives the problem, the mechanism, and an example. A list of rules does not teach.                       |
+| It is not a copy    | It tells something that no other page tells.                                                               |
+| It tells the system | It tells what the system does, and why. It must agree with the code, but it does not copy the code.        |
+| It has no status    | It does not tell what is planned or what is done. Only the roadmap does that.                              |
+| It comes first      | For a design that we commit to, the pages come before the code.                                            |
 
 ## How a page is built
 
@@ -52,4 +54,4 @@ A diagram is there only when it tells more than the text. See [diagrams](documen
 
 ## Further reading
 
-- [Shopping](shopping/README.md): a topic that follows these rules. Use it as a model.
+- [Pantry](pantry/README.md): a topic that follows these rules. Use it as a model.

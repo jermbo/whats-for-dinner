@@ -1,14 +1,14 @@
 ---
-title: Obsidian pivot
-summary: 'The full picture of the kitchen tool as a plugin for Obsidian: the idea, the loop, and the pages.'
+title: What's for Dinner
+summary: 'The full picture of the plugin: the idea, the loop, and the way into each part of the wiki.'
 updated: 2026-10-11
 ---
 
 Wiki
 
-# Obsidian pivot
+# What's for Dinner
 
-The kitchen tool is a plugin for Obsidian. This page gives the full picture. Each part has its own page.
+What's for Dinner is a plugin for Obsidian that makes your vault a kitchen. This page gives the full picture. Each part has its own page.
 
 ## The idea
 
@@ -34,17 +34,26 @@ flowchart LR
     B --> P
 ```
 
-## The pages
-
-| Page                    | What you learn                                                                   |
-| ----------------------- | -------------------------------------------------------------------------------- |
-| [Vision](vision.md)     | The true north: the problem, the result that the plugin must give, why Obsidian. |
-| [Features](features.md) | What the plugin does for you, and why each part is worth its place.              |
-| [Roadmap](roadmap.md)   | What is left between the plugin of today and the features, in sequence.          |
-
 ## An example
 
 On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must use soon. The plugin puts the chicken curry at the top of the recipes, with "7 of 9 in the pantry". You add it to the week. The shopping list gets the two missing items: limes and ginger.
+
+## The way into the wiki
+
+Start with the page that has your question. Each page goes one step down, to more detail.
+
+| Your question                              | Page                                            |
+| ------------------------------------------ | ----------------------------------------------- |
+| Which problem does the plugin solve?       | [Vision](vision.md)                             |
+| What can you do with it?                   | [Features](features.md)                         |
+| Where is the data?                         | [Notes of the kitchen](notes-of-the-kitchen.md) |
+| How does the plugin know what you have?    | [Pantry](pantry/README.md)                      |
+| How does it select a recipe?               | [Recipes](recipes/README.md)                    |
+| How does the week work?                    | [Plan](plan/README.md)                          |
+| How does the list know what is missing?    | [Shopping](shopping/README.md)                  |
+| What occurs when you cook?                 | [Cook Mode](cook-mode/README.md)                |
+| What does a word mean?                     | [Glossary](glossary.md)                         |
+| What is left to build?                     | [Roadmap](roadmap.md)                           |
 
 ## Further reading
 

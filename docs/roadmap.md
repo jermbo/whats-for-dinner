@@ -53,4 +53,4 @@ The first version also has choices that you did not confirm, such as how the nam
 
 ## Further reading
 
-- [Obsidian pivot](README.md): the loop that each item on this page serves.
+- [What's for Dinner](README.md): the loop that each item on this page serves.

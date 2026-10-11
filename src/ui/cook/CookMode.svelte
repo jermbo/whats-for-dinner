@@ -331,8 +331,9 @@
 		font-weight: 700;
 		cursor: pointer;
 
+		/* The frame is ink in the two schemes, so the ring has the colour of the text. */
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: 2px solid currentcolor;
 		}
 	}
 
@@ -361,6 +362,11 @@
 		font-family: inherit;
 		font-size: 16px;
 		cursor: pointer;
+
+		&:focus-visible {
+			outline: 2px solid currentcolor;
+			outline-offset: 2px;
+		}
 	}
 
 	button.wfd-cook__other--rung {
