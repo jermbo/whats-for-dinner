@@ -1,11 +1,10 @@
 ---
 title: Obsidian pivot
 summary: 'The full picture of the kitchen tool as a plugin for Obsidian: the idea, the loop, and the pages.'
-parent: ../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / Obsidian pivot
+Wiki
 
 # Obsidian pivot
 
@@ -48,4 +47,5 @@ On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must
 
 ## Further reading
 
-- [Documentation standards](../documentation-standards.md): the rules for a new page in this topic.
+- [Documentation standards](documentation-standards.md): the rules for a new page in this wiki.
+- [Build a plugin](https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin): the guide from Obsidian on how to build, load, and reload a plugin.

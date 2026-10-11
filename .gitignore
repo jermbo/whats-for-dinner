@@ -10,6 +10,10 @@ _archive
 /.svelte-kit
 /build
 
+# Obsidian test vault
+test-vault/.obsidian/workspace*.json
+test-vault/.obsidian/plugins/
+
 # OS
 .DS_Store
 Thumbs.db

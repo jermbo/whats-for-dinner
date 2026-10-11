@@ -5,7 +5,7 @@ parent: README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Obsidian pivot](README.md) / Vision
+[Wiki](README.md) / Vision
 
 # Vision
 

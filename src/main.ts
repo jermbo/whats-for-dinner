@@ -1,9 +1,25 @@
-import { mount } from 'svelte'
-import './app.css'
-import App from './App.svelte'
+import { Plugin } from 'obsidian';
+import { KITCHEN_VIEW, KitchenView } from './kitchen-view.svelte';
 
-const app = mount(App, {
-  target: document.getElementById('app')!,
-})
+export default class WhatsForDinnerPlugin extends Plugin {
+	async onload() {
+		this.registerView(KITCHEN_VIEW, (leaf) => new KitchenView(leaf));
+		this.addRibbonIcon('utensils', "Open What's for Dinner", () => this.openKitchen());
+		this.addCommand({
+			id: 'open-kitchen',
+			name: 'Open the kitchen',
+			callback: () => this.openKitchen()
+		});
+	}
 
-export default app
+	// One kitchen is sufficient: a second call shows the tab that is open.
+	private async openKitchen() {
+		const { workspace } = this.app;
+		let leaf = workspace.getLeavesOfType(KITCHEN_VIEW)[0];
+		if (!leaf) {
+			leaf = workspace.getLeaf('tab');
+			await leaf.setViewState({ type: KITCHEN_VIEW, active: true });
+		}
+		await workspace.revealLeaf(leaf);
+	}
+}

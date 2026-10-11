@@ -1,0 +1,9 @@
+{
+	"id": "whats-for-dinner",
+	"name": "What's for Dinner",
+	"version": "0.0.1",
+	"minAppVersion": "1.7.2",
+	"description": "Knows what is in your pantry, so that you plan, shop, and cook with the food that you have.",
+	"author": "jermbo",
+	"isDesktopOnly": false
+}
