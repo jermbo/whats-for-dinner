@@ -1,47 +1,51 @@
 ---
-title: Project wiki
-summary: 'The start page of the project memory. It lists the topics and tells how to read the pages.'
+title: Obsidian pivot
+summary: 'The full picture of the kitchen tool as a plugin for Obsidian: the idea, the loop, and the pages.'
+parent: ../README.md
 updated: 2026-10-11
 ---
 
-Wiki
+[Wiki](../README.md) / Obsidian pivot
 
-# Project wiki
+# Obsidian pivot
 
-This wiki is the memory of the project. A person or an agent who is new can learn here how the system works, without the code.
+The kitchen tool is a plugin for Obsidian. This page gives the full picture. Each part has its own page.
 
-The pages describe the system that we want to have. The code moves to that goal, so the code can be behind a page.
+## The idea
 
-## Topics
+Your recipes are notes in your vault. The plugin adds a pantry to that vault. Because it knows what you have, it can tell you what to cook, what to buy, and what to use first.
 
-| Topic                                      | What you learn                                                                                                     |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| [Shopping](shopping/README.md)             | How food goes from the shopping list into the pantry, and how the app remembers products, photos, and prices.      |
-| [Recipes](recipes/README.md)               | How you write a recipe, cook from it one step at a time, and how the photos and notes of each cook make it better. |
-| [Design](design/README.md)                 | The look of the app: a paper kitchen label, the colours, the type, and the parts of a screen.                      |
-| [Settings](settings/README.md)             | The screen for the tasks that you do rarely: the preferences, the ingredients, and the data.                       |
-| [Code](code/README.md)                     | How the code is put together: the layers, the rule of one job for each file, and the plan of the cleanup.          |
-| [Obsidian pivot](obsidian-pivot/README.md) | The kitchen tool as a plugin for Obsidian: the vision and the features.                                            |
+## The loop
 
-## How to read it
+The plugin has one loop, and the pantry is its center.
 
-Start at a topic. The start page of a topic gives the full picture. When the text uses a word or a mechanism that has its own page, the word is a link. Follow the links that answer your question. You do not have to read the pages in a sequence.
+1. **Plan.** You choose the meals of the week from the recipes that use up your pantry.
+2. **Shop.** The list has only the items that are missing.
+3. **Cook.** You cook one step at a time.
+4. **Update.** A cooked meal takes its food out of the pantry. A shopping trip puts food in.
 
-Each page is short. You can read one in 60 to 90 seconds.
+Each turn of the loop starts with a correct pantry, so the next plan is correct too.
 
-## How to write it
+```mermaid
+flowchart LR
+    P[Pantry] --> A[Plan the week]
+    A --> B[Shop for the missing items]
+    B --> C[Cook one step at a time]
+    C --> P
+    B --> P
+```
 
-All pages follow the [documentation standards](documentation-standards.md). Read them before you write or change a page. This applies to a person and to an agent.
+## The pages
 
-## Where the files are
+| Page                    | What you learn                                                                   |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| [Vision](vision.md)     | The true north: the problem, the result that the plugin must give, why Obsidian. |
+| [Features](features.md) | What the plugin does for you, and why each part is worth its place.              |
 
-| Place           | What is there                                                           |
-| --------------- | ----------------------------------------------------------------------- |
-| `docs/`         | This start page, and the pages about the wiki itself.                   |
-| `docs/<topic>/` | One folder for each topic of the system. Its start page is `README.md`. |
+## An example
+
+On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must use soon. The plugin puts the chicken curry at the top of the recipes, with "7 of 9 in the pantry". You add it to the week. The shopping list gets the two missing items: limes and ginger.
 
 ## Further reading
 
-- [Vision](vision.md): why this project exists. A long document from before the wiki.
-- [Roadmap](roadmap.md): the sequence of the work. A long document from before the wiki.
-- [Usage flows](flows.md): how the owner uses the tool each week. A long document from before the wiki.
+- [Documentation standards](../documentation-standards.md): the rules for a new page in this topic.
