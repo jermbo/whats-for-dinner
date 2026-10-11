@@ -7,9 +7,6 @@ import type { Ingredient, IngredientGroup, Recipe } from '../recipemd/types';
 import { measure, type Measure } from '../units';
 import { nameKey } from './names';
 
-// The kitchen always has these. They are not in the pantry and not on the shopping list.
-const ALWAYS_THERE = new Set(['water']);
-
 // enough: the pantry has the amount. unknown: the pantry has the food, but the units do not
 // compare. short: the pantry has less than the amount. missing: the pantry has none.
 export type Status = 'enough' | 'unknown' | 'short' | 'missing';
@@ -54,10 +51,8 @@ function matchIngredient(ingredient: Ingredient, index: FoodIndex): IngredientMa
 	const need = ingredient.amount ? measure(ingredient.amount) : null;
 	const stocked = candidates.filter((food) => food.item.stocks.length);
 
-	if (!stocked.length && ALWAYS_THERE.has(key)) {
-		return { ingredient, candidates, food: null, status: 'enough', need };
-	}
-
+	// The plugin does not assume that a food is there. Only a row in the pantry says so, and that
+	// is the rule for water too.
 	if (!stocked.length) {
 		return { ingredient, candidates, food: candidates[0] ?? null, status: 'missing', need };
 	}

@@ -4,11 +4,13 @@
 	import type { RecipeEntry } from '../../kitchen-state.svelte';
 	import type { Ingredient } from '../../recipemd/types';
 	import { isReady } from '../../recipes/browse';
+	import { withoutPrep } from '../../recipes/prep';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
 	import IngredientRows from './IngredientRows.svelte';
+	import PrepNote from './PrepNote.svelte';
 
 	type Props = {
 		entry: RecipeEntry;
@@ -30,6 +32,9 @@
 		return text.charAt(0).toUpperCase() + text.slice(1);
 	});
 
+	// The preparation has its own box, so the description shows without the callout.
+	const description = $derived(withoutPrep(recipe.description ?? ''));
+
 	const statuses = $derived(new Map(match.ingredients.map((one) => [one.ingredient, one.status])));
 	const statusOf = (ingredient: Ingredient) => statuses.get(ingredient);
 </script>
@@ -45,13 +50,16 @@
 		>
 			<span class="wfd-recipe__name wfd-display">{recipe.title}</span>
 			<span class="wfd-recipe__line">{line}</span>
-			{#if match.useSoon.length || isReady(entry) || entry.rating}
+			{#if match.useSoon.length || isReady(entry) || entry.prep || entry.rating}
 				<span class="wfd-recipe__flags">
 					{#if match.useSoon.length}
 						<Sticker label="Uses {match.useSoon.join(' · ')}" kind="tomato" />
 					{/if}
 					{#if isReady(entry)}
 						<Sticker label="Ready" kind="olive" />
+					{/if}
+					{#if entry.prep}
+						<Sticker label="Prep" kind="dashed" />
 					{/if}
 					{#if entry.rating}
 						<span class="wfd-recipe__stars" aria-label="Rating: {entry.rating} of 5">
@@ -70,8 +78,13 @@
 
 	{#if open}
 		<div class="wfd-recipe__body" id="{uid}-body" transition:slide={{ duration }}>
-			{#if recipe.description}
-				<p class="wfd-recipe__description">{recipe.description}</p>
+			{#if description}
+				<p class="wfd-recipe__description">{description}</p>
+			{/if}
+			{#if entry.prep}
+				<div class="wfd-recipe__prep">
+					<PrepNote text={entry.prep} />
+				</div>
 			{/if}
 			<IngredientRows ingredients={recipe.ingredients} groups={recipe.groups} {statusOf} />
 			<div class="wfd-recipe__actions">
@@ -162,6 +175,10 @@
 		font-size: 15px;
 		line-height: 1.45;
 		white-space: pre-line;
+	}
+
+	.wfd-recipe__prep {
+		margin-block: 12px 4px;
 	}
 
 	.wfd-recipe__actions {

@@ -2,14 +2,21 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
-	import { inSequence, isReady, typeOf, typesOf, type Sort } from '../../recipes/browse';
+	import { inSequence, isFound, isReady, typeOf, typesOf, type Sort } from '../../recipes/browse';
 	import Chip from '../parts/Chip.svelte';
 	import Count from '../parts/Count.svelte';
+	import FindField from '../parts/FindField.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import RecipeCard from './RecipeCard.svelte';
 
-	let { kitchen, oncook }: { kitchen: Kitchen; oncook: (path: string) => void } = $props();
+	type Props = {
+		kitchen: Kitchen;
+		oncook: (path: string) => void;
+		// The type that the filter starts with, when you come from a type of the plan.
+		startType?: string | null;
+	};
+	let { kitchen, oncook, startType = null }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -21,21 +28,27 @@
 	];
 	let sort = $state<Sort>('match');
 
+	// The text that finds a recipe.
+	let find = $state('');
 	// The filters. A recipe shows only if it passes each filter that is on.
 	let ready = $state(false);
 	let soon = $state(false);
-	let type = $state<string | null>(null);
+	const firstType = () => startType;
+	let type = $state<string | null>(firstType());
 
 	const types = $derived(typesOf(kitchen.recipes));
+	// A type with no recipe has no chip, so its filter cannot be on.
+	const typeOn = $derived(type !== null && types.includes(type) ? type : null);
 	const readyCount = $derived(kitchen.recipes.filter(isReady).length);
 
 	const shown = $derived(
 		inSequence(
 			kitchen.recipes.filter(
 				(entry) =>
+					isFound(entry, find) &&
 					(!ready || isReady(entry)) &&
 					(!soon || entry.match.useSoon.length > 0) &&
-					(!type || typeOf(entry) === type)
+					(!typeOn || typeOf(entry) === typeOn)
 			),
 			sort
 		)
@@ -62,28 +75,40 @@
 	</PartHead>
 
 	<div class="wfd-recipes__bar">
-		<select class="wfd-recipes__sort" aria-label="Sequence of the recipes" bind:value={sort}>
-			{#each sorts as option}
-				<option value={option.value}>{option.label}</option>
-			{/each}
-		</select>
+		<div class="wfd-recipes__tools">
+			<FindField label="Find a recipe or ingredient" bind:value={find} />
 
-		<div class="wfd-recipes__chips" role="group" aria-label="Filters">
-			<Chip label="Ready to cook" on={ready} onclick={() => (ready = !ready)} />
-			<Chip label="Uses food soon" on={soon} onclick={() => (soon = !soon)} />
-			{#each types as option}
-				<Chip
-					label={option.charAt(0).toUpperCase() + option.slice(1)}
-					on={type === option}
-					onclick={() => (type = type === option ? null : option)}
-				/>
-			{/each}
+			<div class="wfd-recipes__filters">
+				<select class="wfd-recipes__sort" aria-label="Sequence of the recipes" bind:value={sort}>
+					{#each sorts as option}
+						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+
+				<div class="wfd-recipes__chips" role="group" aria-label="Filters">
+					<Chip label="Ready to cook" on={ready} onclick={() => (ready = !ready)} />
+					<Chip label="Uses food soon" on={soon} onclick={() => (soon = !soon)} />
+					{#each types as option}
+						<Chip
+							label={option.charAt(0).toUpperCase() + option.slice(1)}
+							on={typeOn === option}
+							onclick={() => (type = typeOn === option ? null : option)}
+						/>
+					{/each}
+				</div>
+			</div>
 		</div>
 	</div>
 
 	{#if !shown.length}
 		<p class="wfd-recipes__empty" aria-live="polite">
-			{kitchen.recipes.length ? 'No recipe passes these filters.' : 'The vault has no recipes.'}
+			{#if !kitchen.recipes.length}
+				The vault has no recipes.
+			{:else if find.trim() && !ready && !soon && !typeOn}
+				No recipe has "{find.trim()}" in its name or in its ingredients.
+			{:else}
+				No recipe passes these filters.
+			{/if}
 		</p>
 	{/if}
 
@@ -131,11 +156,30 @@
 		gap: 12px;
 	}
 
-	/* One row: the sequence stays, and the filters scroll to the side. */
+	/* The bar asks its own width: a phone gets two rows, and a wide tab gets one row. */
 	.wfd-recipes__bar {
+		container-type: inline-size;
+	}
+
+	.wfd-recipes__tools {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 6px 12px;
+		align-items: center;
+	}
+
+	/* One row: the sequence stays, and the filters scroll to the side. */
+	.wfd-recipes__filters {
 		display: flex;
 		gap: 10px;
 		align-items: center;
+		min-inline-size: 0;
+	}
+
+	@container (inline-size > 46rem) {
+		.wfd-recipes__tools {
+			grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
+		}
 	}
 
 	.wfd-recipes :global(select.wfd-recipes__sort) {

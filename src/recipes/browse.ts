@@ -1,6 +1,7 @@
 // The filters and the sequences of the recipe list.
 
 import type { RecipeEntry } from '../kitchen-state.svelte';
+import { showName } from '../match/names';
 
 export type Sort = 'match' | 'type' | 'rating' | 'name';
 
@@ -10,6 +11,13 @@ export const typeOf = (entry: RecipeEntry) => entry.recipe.tags[0]?.toLowerCase(
 // You can cook a recipe now when the pantry has each ingredient.
 export const isReady = (entry: RecipeEntry) =>
 	entry.match.ingredients.length > 0 && entry.match.inPantry === entry.match.ingredients.length;
+
+// The text that you type finds a recipe by its name or by the name of one of its ingredients.
+export function isFound({ recipe, match }: RecipeEntry, text: string): boolean {
+	const words = text.trim().toLowerCase();
+	const names = [recipe.title, ...match.ingredients.map(({ ingredient }) => ingredient.name)];
+	return !words || names.some((name) => showName(name).toLowerCase().includes(words));
+}
 
 // The types follow the meals of a day. A type that is not a meal comes after them, by name.
 const MEALS = ['breakfast', 'lunch', 'dinner', 'side', 'snack', 'dessert'];

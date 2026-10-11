@@ -1,0 +1,9 @@
+/*
+ * The callout "prep" in a recipe note: what you must do before you can cook. Obsidian shows a type
+ * that it does not know as a plain note, so the plugin gives this type its own icon and colour.
+ * This rule is for the notes of the vault, not for the kitchen, so it has no "wfd" class.
+ */
+.callout[data-callout='prep'] {
+	--callout-color: var(--color-orange-rgb);
+	--callout-icon: lucide-alarm-clock;
+}

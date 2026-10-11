@@ -29,9 +29,13 @@
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
-	function show(next: Part) {
+	// The type of meal that the recipes start with. The plan sets it when you add a meal of a type.
+	let browseType = $state<string | null>(null);
+
+	function show(next: Part, type: string | null = null) {
 		from = sequence.indexOf(next) > sequence.indexOf(part) ? 16 : -16;
 		part = next;
+		browseType = type;
 	}
 
 	// The path of the recipe that is in Cook Mode.
@@ -51,9 +55,9 @@
 				{#if part === 'pantry'}
 					<PantryPart {kitchen} />
 				{:else if part === 'recipes'}
-					<RecipesPart {kitchen} oncook={cook} />
+					<RecipesPart {kitchen} oncook={cook} startType={browseType} />
 				{:else if part === 'plan'}
-					<PlanPart {kitchen} oncook={cook} onbrowse={() => show('recipes')} />
+					<PlanPart {kitchen} oncook={cook} onbrowse={(type) => show('recipes', type)} />
 				{:else}
 					<ShopPart {kitchen} />
 				{/if}

@@ -2,6 +2,7 @@ import { Plugin } from 'obsidian';
 import { Kitchen } from './kitchen-state.svelte';
 import { KITCHEN_VIEW, KitchenView } from './kitchen-view.svelte';
 import { KitchenSettingTab } from './settings-tab';
+import './ui/callout.css';
 
 export default class WhatsForDinnerPlugin extends Plugin {
 	async onload() {

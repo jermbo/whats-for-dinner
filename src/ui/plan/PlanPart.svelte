@@ -1,20 +1,36 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { Kitchen } from '../../kitchen-state.svelte';
+	import type { Kitchen, Meal } from '../../kitchen-state.svelte';
+	import { MAIN_TYPES, ROOM, weekGroups } from '../../plan/week';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
+	import MealCard from './MealCard.svelte';
 
-	type Props = { kitchen: Kitchen; oncook: (path: string) => void; onbrowse: () => void };
+	type Props = {
+		kitchen: Kitchen;
+		oncook: (path: string) => void;
+		// Shows the recipes of one type, so that you can add a meal of that type.
+		onbrowse: (type: string) => void;
+	};
 	let { kitchen, oncook, onbrowse }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	const open = $derived(kitchen.meals.filter((meal) => !meal.cooked));
 	const cooked = $derived(kitchen.meals.filter((meal) => meal.cooked));
+
+	// The meals of today are at the top. Each other meal is in the group of its type.
+	const today = $derived(open.filter((meal) => kitchen.isToday(meal)));
+	const groups = $derived(weekGroups(open));
+	// A main type with no meal has no group. It gets a small button, so that you see its room.
+	const empty = $derived(
+		MAIN_TYPES.filter((type) => !groups.some((group) => group.type === type))
+	);
+	const nameOf = (type: string) => type.charAt(0).toUpperCase() + type.slice(1);
 
 	// The plugin proposes the recipes that use up the pantry, and that are not in the week.
 	const ideas = $derived(
@@ -33,42 +49,63 @@
 		{/snippet}
 	</PartHead>
 
-	<ul class="wfd-plan__list">
-		{#each open as { path, entry } (path)}
-			<li class="wfd-plan__meal" transition:slide={{ duration }}>
-				<div class="wfd-plan__top">
-					<h3 class="wfd-plan__name wfd-display">{entry?.recipe.title ?? path}</h3>
-					{#if entry}
-						<Count have={entry.match.inPantry} of={entry.match.ingredients.length} />
-					{/if}
-				</div>
-				<div class="wfd-plan__facts">
-					{#if entry}
-						{@const toBuy = entry.match.ingredients.length - entry.match.inPantry}
-						<span class="wfd-label">{toBuy ? `${toBuy} to buy` : 'All in the pantry'}</span>
-						{#if entry.match.useSoon.length}
-							<Sticker label="Uses {entry.match.useSoon.join(' · ')}" kind="tomato" />
-						{/if}
-					{:else}
-						<span class="wfd-label">The note of this recipe is gone</span>
-					{/if}
-				</div>
-				<div class="wfd-plan__actions">
-					<Button onclick={() => kitchen.removeFromPlan(path)}>Remove</Button>
-					{#if entry}
-						<Button kind="main" onclick={() => oncook(path)}>Cook →</Button>
-					{/if}
-				</div>
-			</li>
-		{/each}
+	{#snippet card(meal: Meal, isToday: boolean)}
+		<MealCard
+			{meal}
+			today={isToday}
+			ontoday={(on) => kitchen.setToday(meal.path, on)}
+			onprep={(done) => kitchen.setPrepDone(meal.path, done)}
+			onremove={() => kitchen.removeFromPlan(meal.path)}
+			oncook={() => oncook(meal.path)}
+		/>
+	{/snippet}
 
-		<!-- A dashed edge is an empty place in the week. -->
-		<li>
-			<button class="wfd-plan__slot" type="button" onclick={onbrowse}>
-				<span aria-hidden="true">+</span> Add a meal from Recipes
-			</button>
-		</li>
-	</ul>
+	<!-- A dashed edge is an empty place in the week. A tap shows the recipes of that type. -->
+	{#snippet slot(type: string, small: boolean)}
+		<button
+			class="wfd-plan__slot"
+			class:wfd-plan__slot--small={small}
+			type="button"
+			aria-label="Add a meal of the type {type}"
+			onclick={() => onbrowse(type)}
+		>
+			<span aria-hidden="true">+</span>
+			{nameOf(type)}
+		</button>
+	{/snippet}
+
+	{#if today.length}
+		<section class="wfd-plan__group" transition:slide={{ duration }}>
+			<GroupHead title="Today" note={String(today.length)} />
+			<ul class="wfd-plan__list">
+				{#each today as meal (meal.path)}
+					<li transition:slide={{ duration }}>{@render card(meal, true)}</li>
+				{/each}
+			</ul>
+		</section>
+	{/if}
+
+	{#each groups as group (group.type)}
+		<section class="wfd-plan__group" transition:slide={{ duration }}>
+			<GroupHead title={nameOf(group.type)} note="{group.meals.length}/{ROOM}" />
+			<ul class="wfd-plan__list">
+				{#each group.meals.filter((meal) => !kitchen.isToday(meal)) as meal (meal.path)}
+					<li transition:slide={{ duration }}>{@render card(meal, false)}</li>
+				{/each}
+				{#if group.meals.length < ROOM}
+					<li>{@render slot(group.type, false)}</li>
+				{/if}
+			</ul>
+		</section>
+	{/each}
+
+	{#if empty.length}
+		<div class="wfd-plan__more">
+			{#each empty as type (type)}
+				{@render slot(type, true)}
+			{/each}
+		</div>
+	{/if}
 
 	{#if ideas.length}
 		<GroupHead title="Ideas for your pantry" />
@@ -122,6 +159,12 @@
 		gap: 12px;
 	}
 
+	.wfd-plan__group {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 12px;
+	}
+
 	.wfd-plan__list {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
@@ -130,45 +173,6 @@
 		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-
-	.wfd-plan__meal {
-		display: grid;
-		gap: 10px;
-		align-content: space-between;
-		padding: 16px;
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
-	}
-
-	.wfd-plan__top {
-		display: flex;
-		gap: 12px;
-		align-items: start;
-		justify-content: space-between;
-	}
-
-	.wfd-plan__name {
-		margin: 0;
-		color: var(--wfd-ink);
-		font-size: 22px;
-	}
-
-	.wfd-plan__facts {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		align-items: center;
-		padding-block-end: 12px;
-		border-block-end: 2px solid var(--wfd-ink);
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-plan__actions {
-		display: grid;
-		grid-auto-columns: 1fr;
-		grid-auto-flow: column;
-		gap: 10px;
 	}
 
 	button.wfd-plan__slot {
@@ -193,6 +197,22 @@
 			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
+	}
+
+	/* The types with no meal are in one row, so that an empty week stays small. */
+	.wfd-plan__more {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	button.wfd-plan__slot--small {
+		flex: 1 1 auto;
+		inline-size: auto;
+		block-size: auto;
+		min-block-size: 48px;
+		padding-inline: 14px;
+		font-size: 15px;
 	}
 
 	.wfd-plan__ideas {

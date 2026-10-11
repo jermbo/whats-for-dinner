@@ -6,4 +6,4 @@ full: 1 l
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 485 ml |        |
+| Kitchen pantry | 500 ml |        |

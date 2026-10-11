@@ -1,5 +1,7 @@
 ---
-full: "8"
+full: 8
 ---
-| Place | Amount | Use by |
-| ----- | ------ | ------ |
+
+| Place          | Amount | Use by |
+| -------------- | ------ | ------ |
+| Kitchen pantry | 8      |        |

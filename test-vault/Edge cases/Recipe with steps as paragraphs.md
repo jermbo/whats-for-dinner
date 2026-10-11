@@ -1,6 +1,3 @@
----
-rating: 5
----
 # Boiled eggs
 
 This note tests instructions that are not a numbered list. The specification does not define a step, so the plugin must find the steps.
@@ -25,7 +22,3 @@ Move the eggs to cold water for 1 minute. Remove the shells.
 ## Tips
 
 Use eggs that are not too fresh. Their shells come off more easily.
-
-## Cooked
-
-- 2026-10-11 · ★★★★★ · This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.

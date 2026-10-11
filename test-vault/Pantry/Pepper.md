@@ -1,5 +1,3 @@
----
-full: "1"
----
-| Place | Amount | Use by |
-| ----- | ------ | ------ |
+| Place          | Amount | Use by |
+| -------------- | ------ | ------ |
+| Kitchen pantry | 1 mill |        |

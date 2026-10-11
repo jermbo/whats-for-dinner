@@ -3,12 +3,14 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import { Alarm } from '../../cook/alarm';
+	import { getOutGroups, type GetOutGroup } from '../../cook/get-out';
 	import { lastNote } from '../../cook/record';
 	import { readSteps } from '../../cook/steps';
 	import type { CookResult, Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
+	import GroupHead from '../parts/GroupHead.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import CookFinish from './CookFinish.svelte';
 
@@ -39,6 +41,10 @@
 	const ingredients = $derived(entry.match.ingredients);
 	let onCounter = $state<boolean[]>([]);
 	const gotOut = $derived(ingredients.filter((_, at) => onCounter[at]).length);
+	// The list has the groups of the recipe, each with its own count.
+	const getOut = $derived(getOutGroups(entry.recipe, ingredients));
+	const gotOf = ({ rows }: GetOutGroup) =>
+		`${rows.filter(({ at }) => onCounter[at]).length}/${rows.length}`;
 
 	// --- Timers. A timer continues when you go to a different step. ---
 
@@ -167,22 +173,33 @@
 
 			<div class="wfd-cook__main">
 				{#if page === 0}
-					<ul class="wfd-cook__list">
-						{#each ingredients as { ingredient, status }, at}
-							<li>
-								<label class="wfd-cook__item" class:wfd-cook__item--got={onCounter[at]}>
-									<input type="checkbox" bind:checked={onCounter[at]} />
-									<span class="wfd-cook__name">{showName(ingredient.name)}</span>
-									{#if status === 'missing'}
-										<Sticker label="None" kind="dashed" />
-									{:else if status === 'short'}
-										<Sticker label="Low" kind="amber" />
-									{/if}
-									<span class="wfd-cook__amount wfd-number">{ingredient.amount?.text ?? ''}</span>
-								</label>
-							</li>
+					<div class="wfd-cook__groups">
+						{#each getOut as group}
+							<section>
+								{#if group.title}
+									<GroupHead title={group.title} note={gotOf(group)} />
+								{/if}
+								<ul class="wfd-cook__list">
+									{#each group.rows as { at, match: { ingredient, status } }}
+										<li>
+											<label class="wfd-cook__item" class:wfd-cook__item--got={onCounter[at]}>
+												<input type="checkbox" bind:checked={onCounter[at]} />
+												<span class="wfd-cook__name">{showName(ingredient.name)}</span>
+												{#if status === 'missing'}
+													<Sticker label="None" kind="dashed" />
+												{:else if status === 'short'}
+													<Sticker label="Low" kind="amber" />
+												{/if}
+												<span class="wfd-cook__amount wfd-number">
+													{ingredient.amount?.text ?? ''}
+												</span>
+											</label>
+										</li>
+									{/each}
+								</ul>
+							</section>
 						{/each}
-					</ul>
+					</div>
 					{#if !steps.length}
 						<p class="wfd-cook__hint">This recipe has no steps.</p>
 					{/if}
@@ -417,6 +434,16 @@
 			linear-gradient(var(--wfd-card), var(--wfd-card)) bottom / 100% 3px no-repeat local,
 			linear-gradient(var(--wfd-ink), var(--wfd-ink)) top / 100% 2px no-repeat scroll,
 			linear-gradient(var(--wfd-ink), var(--wfd-ink)) bottom / 100% 2px no-repeat scroll;
+	}
+
+	/* The space between two groups is here, and not above the head of each group. */
+	.wfd-cook__groups {
+		display: grid;
+		gap: 20px;
+	}
+
+	.wfd-cook__groups :global(.wfd-group) {
+		margin-block-start: 0;
 	}
 
 	.wfd-cook__list {

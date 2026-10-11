@@ -6,5 +6,6 @@ brands:
 full: 500 g
 ---
 
-| Place | Amount | Use by |
-| ----- | ------ | ------ |
+| Place             | Amount | Use by |
+| ----------------- | ------ | ------ |
+| Downstairs pantry | 500 g  |        |

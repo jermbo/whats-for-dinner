@@ -12,12 +12,15 @@ import { makeStock, readFoodItem } from './pantry/food-item';
 import { fullAfter } from './pantry/level';
 import type { FoodItem, Stock } from './pantry/types';
 import { addStock, replaceStocks, showStocks } from './pantry/write';
-import { readPlan, showPlan, type PlannedMeal } from './plan/plan-note';
+import { newMeal, readPlan, showPlan, type PlannedMeal } from './plan/plan-note';
+import { hasRoom, ROOM } from './plan/week';
 import { readProperties } from './read-properties';
 import { readRecipe } from './recipemd/parse';
 import type { Recipe } from './recipemd/types';
+import { typeOf } from './recipes/browse';
+import { readPrep } from './recipes/prep';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
-import { shoppingList } from './shop/shopping-list';
+import { lowFoods, shoppingList } from './shop/shopping-list';
 import { showMeasure } from './units';
 
 export type RecipeEntry = {
@@ -25,6 +28,8 @@ export type RecipeEntry = {
 	recipe: Recipe;
 	rating: number | null;
 	match: RecipeMatch;
+	// What you must do before you can cook the recipe, or null.
+	prep: string | null;
 };
 
 // A meal of the plan. The entry is null when the note of the recipe is gone.
@@ -38,9 +43,9 @@ export type CookResult = {
 	photo: Blob | null;
 };
 
-// What the plugin keeps in its data file: the keys of the shopping rows that are in the cart, and
-// the settings.
-type Saved = { cart: string[]; settings: Settings };
+// What the plugin keeps in its data file: the keys of the shopping rows that are in the cart, if
+// the shopping list has the low food, and the settings.
+type Saved = { cart: string[]; shopLow: boolean; settings: Settings };
 type Disk = { load: () => Promise<Partial<Saved> | null>; save: (data: Saved) => Promise<void> };
 
 const share = (entry: RecipeEntry) =>
@@ -62,6 +67,8 @@ export class Kitchen {
 	foods = $state.raw<FoodNote[]>([]);
 	plan = $state.raw<PlannedMeal[]>([]);
 	cart = $state.raw<string[]>([]);
+	// The shopping list has the low food too.
+	shopLow = $state(false);
 	settings = $state.raw<Settings>(DEFAULT_SETTINGS);
 	today = $state(today());
 
@@ -80,7 +87,7 @@ export class Kitchen {
 			.flatMap(({ path, result, rating }): RecipeEntry[] => {
 				if (!result.ok) return [];
 				const match = matchRecipe(result.recipe, index, this.today, this.settings.soonDays);
-				return [{ path, recipe: result.recipe, rating, match }];
+				return [{ path, recipe: result.recipe, rating, match, prep: readPrep(result.recipe) }];
 			})
 			.sort(
 				(a, b) =>
@@ -107,14 +114,18 @@ export class Kitchen {
 		})
 	);
 
-	// The list is the meals that you did not cook, minus the pantry.
+	// The food to buy again: each food item that is below its low line, or that is out.
+	low = $derived(lowFoods(this.foods, this.settings.lowPercent));
+
+	// The list is the meals that you did not cook, minus the pantry. The low food is your choice.
 	shopping = $derived(
 		shoppingList(
 			this.meals.flatMap(({ cooked, entry }) =>
 				cooked || !entry
 					? []
 					: [{ title: entry.recipe.title, ingredients: entry.match.ingredients }]
-			)
+			),
+			this.shopLow ? this.low : []
 		)
 	);
 
@@ -137,6 +148,7 @@ export class Kitchen {
 	async loadSaved() {
 		const saved = await this.disk.load();
 		this.cart = saved?.cart ?? [];
+		this.shopLow = saved?.shopLow ?? false;
 		this.settings = { ...DEFAULT_SETTINGS, ...saved?.settings };
 	}
 
@@ -234,9 +246,37 @@ export class Kitchen {
 		return this.plan.some((meal) => meal.path === path && !meal.cooked);
 	}
 
+	// A meal is a meal of today from the moment that you select it, until the end of that day.
+	isToday(meal: PlannedMeal) {
+		return !meal.cooked && meal.day === this.today;
+	}
+
+	// The week has room for 7 meals of each type. A meal that you cooked gives its place back.
 	async addToPlan(path: string) {
+		const entry = this.recipes.find((recipe) => recipe.path === path);
+		const type = entry ? typeOf(entry) : 'other';
+		const open = this.meals.filter((meal) => !meal.cooked && meal.path !== path);
+		if (!hasRoom(open, type)) {
+			this.notify(`The week has ${ROOM} meals of the type "${type}". Cook or remove one first.`);
+			return;
+		}
 		const others = this.plan.filter((meal) => meal.path !== path);
-		await this.savePlan([...others, { path, cooked: false }]);
+		await this.savePlan([...others, newMeal(path)]);
+	}
+
+	// Selects a meal for today, or puts it back with the other meals of the week.
+	async setToday(path: string, on: boolean) {
+		await this.changeMeal(path, { day: on ? this.today : null });
+	}
+
+	async setPrepDone(path: string, prepDone: boolean) {
+		await this.changeMeal(path, { prepDone });
+	}
+
+	private async changeMeal(path: string, change: Partial<PlannedMeal>) {
+		await this.savePlan(
+			this.plan.map((meal) => (meal.path === path ? { ...meal, ...change } : meal))
+		);
 	}
 
 	async removeFromPlan(path: string) {
@@ -253,6 +293,12 @@ export class Kitchen {
 		this.cart = this.cart.includes(key)
 			? this.cart.filter((other) => other !== key)
 			: [...this.cart, key];
+		await this.save();
+	}
+
+	// Puts the low food on the shopping list, or takes it off.
+	async toggleShopLow() {
+		this.shopLow = !this.shopLow;
 		await this.save();
 	}
 
@@ -291,11 +337,7 @@ export class Kitchen {
 			await this.app.vault.process(file, (text) => addRecord(text, hasInstructions, record));
 		}
 
-		if (this.isPlanned(path)) {
-			await this.savePlan(
-				this.plan.map((meal) => (meal.path === path ? { ...meal, cooked: true } : meal))
-			);
-		}
+		if (this.isPlanned(path)) await this.changeMeal(path, { cooked: true });
 	}
 
 	private async savePhoto(photo: Blob, recipe: TFile): Promise<string> {
@@ -318,7 +360,7 @@ export class Kitchen {
 	}
 
 	private save() {
-		return this.disk.save({ cart: this.cart, settings: this.settings });
+		return this.disk.save({ cart: this.cart, shopLow: this.shopLow, settings: this.settings });
 	}
 
 	// --- The notes of the vault ---

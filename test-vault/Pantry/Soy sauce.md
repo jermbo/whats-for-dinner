@@ -1,5 +1,7 @@
 ---
-full: 30 ml
+full: 250 ml
 ---
-| Place | Amount | Use by |
-| ----- | ------ | ------ |
+
+| Place          | Amount | Use by |
+| -------------- | ------ | ------ |
+| Kitchen pantry | 150 ml |        |

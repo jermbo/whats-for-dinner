@@ -15,6 +15,8 @@ The plugin makes your vault a kitchen that knows what it has. This page tells wh
 
 You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the plugin keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
 
+The plugin does not assume that a food is there. Water is a food item too: you record it one time, with an amount such as "tap".
+
 Each food has a bar that shows how much is left of the full amount. A tick on the bar is the low line. Below the line, the bar is amber, so you see what gets low before it is out. To correct an amount, you drag the bar to what is really there.
 
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
@@ -27,13 +29,23 @@ You find a recipe by its name or by an ingredient. A filter shows only the recip
 
 ## The week has a plan before it starts
 
-At a calm moment, you choose the meals of the week. The plugin proposes recipes that use up your pantry. A meal has no fixed day, so one bad day does not break the plan.
+At a calm moment, you choose the meals of the week. You start with the dinners. Then you add breakfasts, lunches, and snacks, if you want them. The week has room for 7 meals of each type, and you do not have to fill it. The plugin proposes recipes that use up your pantry. A meal has no fixed day, so one bad day does not break the plan.
+
+## The day starts with a look at the meal
+
+On the day, you select the meal that you will cook. Some meals need preparation, such as beef that must come out of the freezer. The plugin shows the preparation, and you confirm it when it is done. If you forgot the preparation, you select a different meal of the week.
+
+You write the preparation in the recipe note, as a callout of the type "prep". A callout is a box with a colour and an icon, so the preparation stands out when you read the note.
+
+```markdown
+> [!prep] Take the ground beef out of the freezer in the morning.
+```
 
 ## The shopping list has only the missing items
 
 The list is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, one tap marks an item. At home, one action puts the full trip into the pantry.
 
-Food that is below its low line can go on the list too. Thus you buy flour before it is out, and not on the day that a recipe needs it.
+One tap puts the low food on the list too: each food that is below its low line, and each food that is out. The amount is what makes the food full again. Thus you buy flour before it is out, and not on the day that a recipe needs it.
 
 ## Cook Mode shows one step at a time
 
@@ -41,7 +53,7 @@ Before the first step, the screen lists what to get out, in the groups of the re
 
 ## The settings fit the plugin to your vault
 
-You tell the plugin which folder has your recipes and which folder is your pantry, so the other notes of your vault stay out of the kitchen. You also select the font, the accent colour, and the sound of the timer. The accent colour can come from your theme. You tell the plugin which food is always there, such as water, so that it is never on the shopping list.
+You tell the plugin which folder has your recipes and which folder is your pantry, so the other notes of your vault stay out of the kitchen. You also select the font, the accent colour, and the sound of the timer. The accent colour can come from your theme.
 
 ## Your recipes are notes that last
 
