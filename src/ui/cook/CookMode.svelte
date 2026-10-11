@@ -173,7 +173,7 @@
 									{:else if status === 'short'}
 										<Sticker label="Low" kind="amber" />
 									{/if}
-									<span class="wfd-cook__amount wfd-display">{ingredient.amount?.text ?? ''}</span>
+									<span class="wfd-cook__amount wfd-number">{ingredient.amount?.text ?? ''}</span>
 								</label>
 							</li>
 						{/each}
@@ -188,7 +188,7 @@
 						<ul class="wfd-cook__needs" aria-label="Ingredients of this step">
 							{#each step.ingredients as ingredient}
 								<li class="wfd-cook__need">
-									<span class="wfd-display">{ingredient.amount?.text ?? ''}</span>
+									<span class="wfd-number">{ingredient.amount?.text ?? ''}</span>
 									{showName(ingredient.name)}
 								</li>
 							{/each}
@@ -197,7 +197,7 @@
 
 					{#if timer || step.seconds}
 						<div class="wfd-cook__timer" class:wfd-cook__timer--rung={timer?.rung} role="timer">
-							<span class="wfd-cook__clock wfd-display">
+							<span class="wfd-cook__clock wfd-number">
 								{#if timer}
 									{timer.rung ? 'Time is up' : clock(secondsLeft(timer))}
 								{:else}
@@ -289,7 +289,7 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 		}
 	}
 
@@ -315,7 +315,7 @@
 		box-shadow: none;
 		color: #eceae2;
 		font-family: inherit;
-		font-size: 20px;
+		font-size: 16px;
 		cursor: pointer;
 	}
 
@@ -350,12 +350,13 @@
 	.wfd-cook__title {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: clamp(3.2rem, 20cqi, 8rem);
-		line-height: 0.86;
+		font-size: clamp(2.4rem, 12cqi, 4.5rem);
+		font-weight: 800;
+		line-height: 1.05;
 	}
 
 	.wfd-cook__title--count {
-		font-size: clamp(4rem, 22cqi, 8rem);
+		font-size: clamp(3rem, 15cqi, 5.5rem);
 	}
 
 	.wfd-cook__of {
@@ -382,7 +383,7 @@
 		gap: 14px;
 		align-items: center;
 		min-block-size: 58px;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 		cursor: pointer;
 		transition: color 0.2s ease-out;
 	}
@@ -393,11 +394,11 @@
 
 	.wfd-cook__name {
 		font-size: 20px;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.wfd-cook__amount {
-		font-size: 24px;
+		font-size: 18px;
 	}
 
 	.wfd-cook__hint {
@@ -410,8 +411,7 @@
 		margin: 0;
 		font-size: clamp(1.6rem, 6.5cqi, 2.75rem);
 		font-weight: 600;
-		line-height: 1.15;
-		letter-spacing: -0.01em;
+		line-height: 1.2;
 	}
 
 	.wfd-cook__needs {
@@ -428,10 +428,10 @@
 		gap: 8px;
 		align-items: baseline;
 		padding: 8px 12px;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-sticker);
 		font-size: 17px;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.wfd-cook__timer {
@@ -450,9 +450,9 @@
 	}
 
 	.wfd-cook__clock {
-		font-size: clamp(3rem, 18cqi, 6rem);
+		font-size: clamp(2.6rem, 14cqi, 4.5rem);
 		font-variant-numeric: tabular-nums;
-		line-height: 0.9;
+		line-height: 1;
 	}
 
 	.wfd-cook__note {

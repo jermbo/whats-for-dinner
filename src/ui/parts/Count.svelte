@@ -20,7 +20,7 @@
 	}
 
 	.wfd-count__numbers {
-		font-size: var(--wfd-count-size, 26px);
+		font-size: var(--wfd-count-size, 20px);
 	}
 
 	.wfd-count__of {

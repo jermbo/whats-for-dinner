@@ -151,7 +151,7 @@
 	.wfd-plan__name {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: 26px;
+		font-size: 22px;
 	}
 
 	.wfd-plan__facts {
@@ -159,8 +159,8 @@
 		flex-wrap: wrap;
 		gap: 8px;
 		align-items: center;
-		padding-block-end: 10px;
-		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		padding-block-end: 12px;
+		border-block-end: 2px solid var(--wfd-ink);
 		color: var(--wfd-ink-2);
 	}
 
@@ -179,18 +179,18 @@
 		inline-size: 100%;
 		block-size: 100%;
 		min-block-size: 72px;
-		border: 2px dashed var(--wfd-ink);
+		border: 2px dashed var(--wfd-ink-3);
 		border-radius: var(--wfd-radius-card);
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-ink-2);
 		font-family: inherit;
 		font-size: 16px;
-		font-weight: 700;
+		font-weight: 600;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 	}
@@ -208,7 +208,7 @@
 		align-items: center;
 		min-block-size: 60px;
 		padding-block: 6px;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 	}
 
 	.wfd-plan__idea-text {
@@ -220,7 +220,7 @@
 
 	.wfd-plan__idea-name {
 		font-size: 17px;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.wfd-plan__idea-name--done {

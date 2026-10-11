@@ -60,7 +60,7 @@
 		}
 
 		&:has(:focus-visible) {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 	}
@@ -93,7 +93,7 @@
 
 	/* A count that changes makes a small jump, so that you see where your tap went. */
 	.wfd-nav__count {
-		font-size: 16px;
+		font-size: 14px;
 		animation: jump 0.3s ease-out;
 	}
 

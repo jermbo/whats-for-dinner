@@ -28,12 +28,10 @@
 						<Sticker label="None" kind="dashed" />
 					{:else if status === 'short'}
 						<Sticker label="Low" kind="amber" />
-					{:else if status === 'unknown'}
-						<span class="wfd-rows__have" title="In the pantry. The amount is not checked.">✓ ?</span>
-					{:else if status === 'enough'}
-						<span class="wfd-rows__have" title="In the pantry">✓</span>
+					{:else if status}
+						<span class="wfd-rows__have" role="img" aria-label="In the pantry">✓</span>
 					{/if}
-					<span class="wfd-rows__amount wfd-display">{ingredient.amount?.text ?? ''}</span>
+					<span class="wfd-rows__amount">{ingredient.amount?.text ?? ''}</span>
 				</li>
 			{/each}
 		</ul>
@@ -61,7 +59,7 @@
 		align-items: center;
 		min-block-size: 40px;
 		padding-block: 6px;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 	}
 
 	.wfd-rows__row--none {
@@ -71,7 +69,6 @@
 
 	.wfd-rows__name {
 		font-size: 16px;
-		font-weight: 600;
 	}
 
 	.wfd-rows__mark {
@@ -79,14 +76,18 @@
 		color: var(--wfd-ink-2);
 	}
 
+	/* Food that you have is quiet. Only food that is low or missing gets a sticker. */
 	.wfd-rows__have {
-		color: var(--wfd-ink-2);
+		color: var(--wfd-ink-3);
 		font-weight: 800;
 	}
 
 	.wfd-rows__amount {
 		min-inline-size: 3ch;
-		font-size: 19px;
+		color: var(--wfd-ink-2);
+		font-size: 15px;
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
 		text-align: end;
 	}
 

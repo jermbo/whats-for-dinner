@@ -199,7 +199,7 @@
 	}
 
 	.wfd-pantry__number {
-		font-size: 30px;
+		font-size: 22px;
 	}
 
 	.wfd-pantry__bar {

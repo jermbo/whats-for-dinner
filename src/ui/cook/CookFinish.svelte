@@ -81,7 +81,7 @@
 						{/each}
 					</select>
 				{/if}
-				<span class="wfd-finish__amount wfd-display">{showMeasure(row.need)}</span>
+				<span class="wfd-finish__amount wfd-number">{showMeasure(row.need)}</span>
 			</div>
 		{/each}
 		{#if others.length}
@@ -151,9 +151,9 @@
 		inline-size: 100%;
 		margin-block-end: 4px;
 		padding: 0 0 6px;
-		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		border-block-end: 2px solid var(--wfd-ink);
 		color: var(--wfd-ink);
-		font-size: 22px;
+		font-size: 20px;
 	}
 
 	.wfd-finish__row {
@@ -163,7 +163,7 @@
 		align-items: center;
 		min-block-size: 52px;
 		padding-block: 4px;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 		color: var(--wfd-ink);
 	}
 
@@ -178,7 +178,7 @@
 
 	.wfd-finish__name {
 		font-size: 17px;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.wfd-finish__row :global(select) {
@@ -187,7 +187,7 @@
 	}
 
 	.wfd-finish__amount {
-		font-size: 22px;
+		font-size: 18px;
 	}
 
 	.wfd-finish__hint {
@@ -204,11 +204,11 @@
 		inline-size: 52px;
 		block-size: 52px;
 		padding: 0;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-quiet);
 		box-shadow: none;
-		color: var(--wfd-track);
+		color: var(--wfd-ink-3);
 		font-size: 26px;
 		line-height: 1;
 		cursor: pointer;
@@ -217,7 +217,7 @@
 			scale 0.15s ease-out;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 
@@ -227,6 +227,7 @@
 	}
 
 	button.wfd-finish__star--on {
+		border-color: var(--wfd-ink);
 		background: var(--wfd-ink);
 		color: var(--wfd-on-ink);
 	}

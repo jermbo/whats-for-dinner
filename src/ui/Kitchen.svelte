@@ -1,4 +1,5 @@
 <script lang="ts">
+	import './fonts.css';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import type { Kitchen } from '../kitchen-state.svelte';
@@ -74,6 +75,10 @@
 		--wfd-ink-2: #4a463f;
 		--wfd-ink-3: #9d998e;
 		--wfd-track: #d9d6cb;
+		/* A thin rule between rows, and the edge of a control that is not on. */
+		--wfd-line: #1d1c1a;
+		/* The surface of a control that is not on. */
+		--wfd-quiet: #ffffff;
 		--wfd-on-ink: #ffffff;
 		--wfd-olive: oklch(0.78 0.15 110);
 		--wfd-on-olive: #1d1c1a;
@@ -86,8 +91,9 @@
 		--wfd-radius-button: 8px;
 		--wfd-radius-sticker: 2px;
 
-		--wfd-display: 'Anton', 'Impact', 'HelveticaNeue-CondensedBlack', 'Arial Narrow', sans-serif;
-		--wfd-body: 'Schibsted Grotesk', var(--font-interface);
+		/* Titles, names, and numbers have their own font. All other text is the font of the system. */
+		--wfd-display: 'Bricolage Grotesque Variable', var(--font-interface);
+		--wfd-body: var(--font-interface);
 
 		background: var(--wfd-paper);
 		color: var(--wfd-ink);
@@ -96,14 +102,19 @@
 		font-weight: 500;
 	}
 
-	/* In the dark scheme of Obsidian, the paper and the ink change places. */
+	/*
+	 * In the dark scheme of Obsidian, the paper and the ink change places. Light lines on a dark
+	 * page are hard on the eyes, so the thin rules and the edges of controls are soft here.
+	 */
 	:global(.theme-dark .wfd) {
 		--wfd-paper: #1d1c1a;
 		--wfd-card: #2b2a27;
-		--wfd-ink: #eceae2;
-		--wfd-ink-2: #bdb9ad;
-		--wfd-ink-3: #7f7b71;
-		--wfd-track: #3b3a36;
+		--wfd-ink: #e6e3d9;
+		--wfd-ink-2: #b5b1a5;
+		--wfd-ink-3: #827e74;
+		--wfd-track: #45433e;
+		--wfd-line: #504e48;
+		--wfd-quiet: #383733;
 		--wfd-on-ink: #1d1c1a;
 		--wfd-tomato: oklch(0.63 0.18 30);
 	}
@@ -113,21 +124,28 @@
 		padding: 0;
 	}
 
-	/* Names, titles, and numbers. */
+	/* Names and titles: the few words that you must find at a glance. */
 	:global(.wfd-display) {
 		font-family: var(--wfd-display);
-		font-weight: 800;
-		font-synthesis: none;
-		line-height: 0.98;
-		letter-spacing: 0.01em;
-		text-transform: uppercase;
+		font-weight: 700;
+		line-height: 1.12;
+		letter-spacing: -0.02em;
+	}
+
+	/* The one number of a row. The unit stays as you wrote it: "500 g", not "500 G". */
+	:global(.wfd-number) {
+		font-family: var(--wfd-display);
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		line-height: 1.12;
+		letter-spacing: -0.02em;
 	}
 
 	/* A label names a thing. It is small, heavy, and in capitals. */
 	:global(.wfd-label) {
 		font-size: 12px;
-		font-weight: 800;
-		letter-spacing: 0.06em;
+		font-weight: 700;
+		letter-spacing: 0.05em;
 		text-transform: uppercase;
 	}
 
@@ -135,9 +153,9 @@
 	:global(.wfd :is(input[type='text'], input[type='date'], textarea, select)) {
 		min-block-size: 50px;
 		padding: 0 14px;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-button);
-		background-color: var(--wfd-card);
+		background-color: var(--wfd-quiet);
 		box-shadow: none;
 		color: var(--wfd-ink);
 		font-family: inherit;
@@ -170,7 +188,7 @@
 
 	:global(.wfd :is(input, textarea, select):focus-visible) {
 		border-color: var(--wfd-ink);
-		outline: 3px solid var(--wfd-olive);
+		outline: 2px solid var(--wfd-ink);
 		outline-offset: 2px;
 		box-shadow: none;
 	}

@@ -15,13 +15,13 @@
 		justify-content: space-between;
 		margin-block-start: 12px;
 		padding-block-end: 6px;
-		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		border-block-end: 2px solid var(--wfd-ink);
 	}
 
 	.wfd-group__title {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: 22px;
+		font-size: 19px;
 	}
 
 	.wfd-group__note {

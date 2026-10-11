@@ -25,13 +25,16 @@
 	let open = $state(false);
 
 	// "Dinner · chicken · one pot · 4 servings"
-	const line = $derived([...recipe.tags, ...recipe.yields.map((amount) => amount.text)].join(' · '));
+	const line = $derived.by(() => {
+		const text = [...recipe.tags, ...recipe.yields.map((amount) => amount.text)].join(' · ');
+		return text.charAt(0).toUpperCase() + text.slice(1);
+	});
 
 	const statuses = $derived(new Map(match.ingredients.map((one) => [one.ingredient, one.status])));
 	const statusOf = (ingredient: Ingredient) => statuses.get(ingredient);
 </script>
 
-<article class="wfd-recipe" class:wfd-recipe--week={planned}>
+<article class="wfd-recipe">
 	<div class="wfd-recipe__top">
 		<button
 			class="wfd-recipe__main"
@@ -41,7 +44,7 @@
 			onclick={() => (open = !open)}
 		>
 			<span class="wfd-recipe__name wfd-display">{recipe.title}</span>
-			<span class="wfd-recipe__line wfd-label">{line}</span>
+			<span class="wfd-recipe__line">{line}</span>
 			{#if match.useSoon.length || isReady(entry) || entry.rating}
 				<span class="wfd-recipe__flags">
 					{#if match.useSoon.length}
@@ -72,7 +75,7 @@
 			{/if}
 			<IngredientRows ingredients={recipe.ingredients} groups={recipe.groups} {statusOf} />
 			<div class="wfd-recipe__actions">
-				<Button onclick={onopen}>Open the note</Button>
+				<Button onclick={onopen}>Open note</Button>
 				<Button kind="main" onclick={oncook}>Cook →</Button>
 			</div>
 		</div>
@@ -81,15 +84,8 @@
 
 <style>
 	.wfd-recipe {
-		border: 2px solid transparent;
 		border-radius: var(--wfd-radius-card);
 		background: var(--wfd-card);
-		transition: border-color 0.2s ease-out;
-	}
-
-	/* A recipe that is in the week has an ink edge. */
-	.wfd-recipe--week {
-		border-color: var(--wfd-ink);
 	}
 
 	.wfd-recipe__top {
@@ -97,12 +93,16 @@
 		grid-template-columns: 1fr auto auto;
 		gap: 12px;
 		align-items: center;
-		padding: 12px 12px 12px 16px;
+		padding: 14px 14px 14px 16px;
 	}
 
+	/* Obsidian puts the content of each button in the center. This button starts at the left. */
 	button.wfd-recipe__main {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: 6px;
+		align-items: start;
+		justify-content: stretch;
 		justify-items: start;
 		min-inline-size: 0;
 		block-size: auto;
@@ -118,17 +118,19 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 4px;
 		}
 	}
 
 	.wfd-recipe__name {
-		font-size: 24px;
+		font-size: 21px;
 	}
 
 	.wfd-recipe__line {
 		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-weight: 500;
 		line-height: 1.4;
 	}
 
@@ -155,9 +157,10 @@
 	.wfd-recipe__description {
 		margin: 0 0 8px;
 		padding-block-start: 12px;
-		border-block-start: var(--wfd-rule-4) solid var(--wfd-ink);
+		border-block-start: 2px solid var(--wfd-ink);
 		color: var(--wfd-ink-2);
 		font-size: 15px;
+		line-height: 1.45;
 		white-space: pre-line;
 	}
 
@@ -168,9 +171,4 @@
 		margin-block-start: 16px;
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-recipe {
-			transition: none;
-		}
-	}
 </style>

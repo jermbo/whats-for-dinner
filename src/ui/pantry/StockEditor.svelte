@@ -104,7 +104,7 @@
 		<Button kind="main" type="submit" disabled={!ready}>Save</Button>
 	</div>
 	{#if onopen}
-		<Button kind="link" onclick={onopen}>Open the note</Button>
+		<Button kind="link" onclick={onopen}>Open note</Button>
 	{/if}
 </form>
 
@@ -123,13 +123,13 @@
 		gap: 12px;
 		align-items: center;
 		justify-content: space-between;
-		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		border-block-end: 2px solid var(--wfd-ink);
 	}
 
 	.wfd-editor__title {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: 26px;
+		font-size: 22px;
 	}
 
 	.wfd-editor__field {
@@ -156,26 +156,27 @@
 		block-size: auto;
 		min-block-size: 50px;
 		padding: 0 16px;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-quiet);
 		box-shadow: none;
 		color: var(--wfd-ink);
 		font-family: inherit;
 		font-size: 16px;
-		font-weight: 700;
+		font-weight: 600;
 		cursor: pointer;
 		transition:
 			background-color 0.15s ease-out,
 			color 0.15s ease-out;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-editor__place--on {
+		border-color: var(--wfd-ink);
 		background: var(--wfd-ink);
 		color: var(--wfd-on-ink);
 	}

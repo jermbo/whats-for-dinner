@@ -42,7 +42,7 @@
 		}
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 			box-shadow: none;
 		}
@@ -59,11 +59,13 @@
 	}
 
 	button.wfd-button--quiet {
-		background: var(--wfd-card);
+		border-color: var(--wfd-line);
+		background: var(--wfd-quiet);
 		color: var(--wfd-ink);
 	}
 
 	button.wfd-button--olive {
+		border-color: var(--wfd-on-olive);
 		background: var(--wfd-olive);
 		color: var(--wfd-on-olive);
 	}

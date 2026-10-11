@@ -26,12 +26,13 @@
 	.wfd-head__title {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: 44px;
-		line-height: 0.86;
+		font-size: 36px;
+		font-weight: 800;
+		line-height: 1.05;
 	}
 
 	.wfd-head__side {
-		--wfd-count-size: 30px;
+		--wfd-count-size: 22px;
 
 		display: flex;
 		gap: 14px;

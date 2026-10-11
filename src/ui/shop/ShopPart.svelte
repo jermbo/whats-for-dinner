@@ -47,12 +47,10 @@
 						<span class="wfd-shop__name">{row.name}</span>
 						<span class="wfd-shop__note">{row.recipes.join(', ')}</span>
 						{#if row.food?.item.brands.length}
-							<span class="wfd-shop__brands wfd-label">
-								Any brand · {row.food.item.brands.join(' / ')}
-							</span>
+							<span class="wfd-shop__note">Any brand: {row.food.item.brands.join(', ')}</span>
 						{/if}
 					</span>
-					<span class="wfd-shop__amount wfd-display">{row.amount}</span>
+					<span class="wfd-shop__amount wfd-number">{row.amount}</span>
 				</button>
 			</li>
 		{/each}
@@ -122,7 +120,7 @@
 		min-block-size: 64px;
 		padding: 10px 0;
 		border: 0;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
@@ -133,7 +131,7 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: -3px;
 		}
 	}
@@ -145,25 +143,20 @@
 
 	.wfd-shop__name {
 		font-size: 18px;
-		font-weight: 700;
+		font-weight: 600;
 	}
 
 	.wfd-shop__name::first-letter {
 		text-transform: uppercase;
 	}
 
-	.wfd-shop__note,
-	.wfd-shop__brands {
+	.wfd-shop__note {
 		color: var(--wfd-ink-2);
-		font-size: 13px;
-	}
-
-	.wfd-shop__brands {
-		font-size: 11px;
+		font-size: 14px;
 	}
 
 	.wfd-shop__amount {
-		font-size: 26px;
+		font-size: 18px;
 	}
 
 	.wfd-shop__got {
@@ -171,7 +164,7 @@
 		gap: 12px;
 		align-items: center;
 		justify-content: space-between;
-		border-block-end: 1px solid var(--wfd-ink-3);
+		border-block-end: 1px solid var(--wfd-line);
 	}
 
 	.wfd-shop__got-name {

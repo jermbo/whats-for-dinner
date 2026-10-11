@@ -181,7 +181,7 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 	}
@@ -196,7 +196,7 @@
 		display: grid;
 		gap: 2px;
 		padding-block: 8px;
-		border-block-end: 1px solid var(--wfd-ink-3);
+		border-block-end: 1px solid var(--wfd-line);
 		font-size: 14px;
 	}
 

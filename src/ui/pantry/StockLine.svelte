@@ -28,7 +28,7 @@
 		{#if note}<span class="wfd-line__note">{note}</span>{/if}
 	</span>
 	{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
-	<span class="wfd-line__amount wfd-display">{amount || 'None'}</span>
+	<span class="wfd-line__amount wfd-number">{amount || 'None'}</span>
 </button>
 
 <style>
@@ -42,7 +42,7 @@
 		min-block-size: 56px;
 		padding: 8px 0;
 		border: 0;
-		border-block-end: 1px solid var(--wfd-ink);
+		border-block-end: 1px solid var(--wfd-line);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
@@ -53,7 +53,7 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: -3px;
 		}
 	}
@@ -72,15 +72,15 @@
 
 	.wfd-line__name {
 		font-size: 17px;
-		font-weight: 600;
+		font-weight: 500;
 	}
 
 	.wfd-line__note {
 		color: var(--wfd-ink-2);
-		font-size: 13px;
+		font-size: 14px;
 	}
 
 	.wfd-line__amount {
-		font-size: 24px;
+		font-size: 18px;
 	}
 </style>

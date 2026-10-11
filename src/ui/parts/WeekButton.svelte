@@ -24,28 +24,31 @@
 		inline-size: 46px;
 		block-size: 46px;
 		padding: 0;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-quiet);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-ink-2);
 		font-family: inherit;
 		font-size: 24px;
 		font-weight: 800;
 		line-height: 1;
 		cursor: pointer;
-		transition: background-color 0.2s ease-out;
+		transition:
+			border-color 0.2s ease-out,
+			color 0.2s ease-out;
 
 		&:focus-visible {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 			box-shadow: none;
 		}
 	}
 
+	/* In the week: the edge and the check are ink. */
 	button.wfd-week--on {
-		background: var(--wfd-olive);
-		color: var(--wfd-on-olive);
+		border-color: var(--wfd-ink);
+		color: var(--wfd-ink);
 	}
 
 	.wfd-week__mark {

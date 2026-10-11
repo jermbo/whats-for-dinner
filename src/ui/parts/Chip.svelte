@@ -23,7 +23,7 @@
 		cursor: pointer;
 
 		&:focus-visible .wfd-chip__face {
-			outline: 3px solid var(--wfd-olive);
+			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
 	}
@@ -34,12 +34,12 @@
 		align-items: center;
 		block-size: 32px;
 		padding: 0 12px;
-		border: 2px solid var(--wfd-ink);
+		border: 2px solid var(--wfd-line);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-quiet);
 		color: var(--wfd-ink);
 		font-size: 14px;
-		font-weight: 700;
+		font-weight: 600;
 		white-space: nowrap;
 		transition:
 			background-color 0.15s ease-out,
@@ -47,6 +47,7 @@
 	}
 
 	.wfd-chip__face--on {
+		border-color: var(--wfd-ink);
 		background: var(--wfd-ink);
 		color: var(--wfd-on-ink);
 	}
