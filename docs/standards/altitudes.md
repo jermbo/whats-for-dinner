@@ -17,12 +17,14 @@ One reader wants the full picture in a minute. The format of a table is in the w
 
 ## The four altitudes
 
-| Altitude    | The question of the reader                            | Folder          | Example                                             |
-| ----------- | ----------------------------------------------------- | --------------- | --------------------------------------------------- |
-| 30,000 feet | What is this, and why is it there?                    | `docs/`         | The [wiki home](../README.md)                       |
-| 15,000 feet | What does this feature do, and how do its pieces fit? | `features/`     | [Pantry](../features/v0.1.0/pantry.md)              |
-| 5,000 feet  | How does this one mechanism work?                     | `architecture/` | [Level](../architecture/level.md)                   |
-| Ground      | What is the exact form, or the exact rule?            | `architecture/` | [Food item note](../architecture/food-item-note.md) |
+| Altitude    | The question of the reader                         | Example                                             |
+| ----------- | -------------------------------------------------- | --------------------------------------------------- |
+| 30,000 feet | What is this, and why is it there?                 | The [wiki home](../README.md)                       |
+| 15,000 feet | What does this part do, and how do its pieces fit? | [Pantry](../architecture/pantry.md)                 |
+| 5,000 feet  | How does this one mechanism work?                  | [Level](../architecture/level.md)                   |
+| Ground      | What is the exact form, or the exact rule?         | [Food item note](../architecture/food-item-note.md) |
+
+The pages at 15,000 feet and lower are in the folder `architecture/`. A user story has no altitude: it is a piece of work, not an explanation.
 
 ## A reader goes down by a link
 
@@ -38,7 +40,7 @@ But a page must agree with the code. When a rule changes in the code, its page c
 
 ## How to select the altitude of a new page
 
-- The page of a feature is at 15,000 feet.
+- A page that tells what one part of the kitchen does is at 15,000 feet.
 - A page that answers "how does it decide?" is at 5,000 feet.
 - A page that a person reads to write a note by hand, or to check a rule, is on the ground.
 

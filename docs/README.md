@@ -42,18 +42,21 @@ On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must
 
 Start with the page that has your question. Each page goes one step down, to more detail.
 
-| Your question                           | Page                                                         |
-| --------------------------------------- | ------------------------------------------------------------ |
-| Which problem does the plugin solve?    | [Vision](vision.md)                                          |
-| What can you do with it?                | [Features](features/README.md)                               |
-| Where is the data?                      | [Notes of the kitchen](architecture/notes-of-the-kitchen.md) |
-| How does the plugin know what you have? | [Pantry](features/v0.1.0/pantry.md)                          |
-| How does it select a recipe?            | [Recipes](features/v0.1.0/recipes.md)                        |
-| How does the week work?                 | [Plan](features/v0.1.0/plan.md)                              |
-| How does the list know what is missing? | [Shopping](features/v0.1.0/shopping.md)                      |
-| What occurs when you cook?              | [Cook Mode](features/v0.1.0/cook-mode.md)                    |
-| What does a word mean?                  | [Glossary](architecture/glossary.md)                         |
-| What is left to build?                  | [Roadmap](features/roadmap.md)                               |
+| Your question                             | Page                                                         |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| Which problem does the plugin solve?      | [Vision](vision.md)                                          |
+| What can you do with it?                  | [Features](features/README.md)                               |
+| Where is the data?                        | [Notes of the kitchen](architecture/notes-of-the-kitchen.md) |
+| How does the plugin know what you have?   | [Pantry](architecture/pantry.md)                             |
+| How does it select a recipe?              | [Recipes](architecture/recipes.md)                           |
+| How does the week work?                   | [Plan](architecture/plan.md)                                 |
+| How does the list know what is missing?   | [Shopping](architecture/shopping.md)                         |
+| What occurs when you cook?                | [Cook Mode](architecture/cook-mode.md)                       |
+| Which settings are there?                 | [Settings](architecture/settings.md)                         |
+| What does a word mean?                    | [Glossary](glossary.md)                                      |
+| Who uses the plugin, and in which moment? | [Personas](personas.md)                                      |
+| What is left to build?                    | [Roadmap](features/roadmap.md)                               |
+| How does an idea become code?             | [Workflow](standards/workflow.md)                            |
 
 ## Further reading
 

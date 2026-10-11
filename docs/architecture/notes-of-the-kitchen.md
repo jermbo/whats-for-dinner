@@ -23,7 +23,7 @@ Only its program can read a database. If the program stops, your data stops with
 | Food item | Each food of the pantry | The pantry folder of the settings             |
 | Plan      | The meals of the week   | The plan note of the settings: `Meal plan.md` |
 
-A [recipe](../features/v0.1.0/recipes.md) follows a public format. A [food item](food-item-note.md) and the [plan](../features/v0.1.0/plan.md) have a form of the plugin, and you can write each of them by hand.
+A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md) and the [plan](plan.md) have a form of the plugin, and you can write each of them by hand.
 
 ## Each change goes through a note
 
@@ -49,11 +49,11 @@ The chicken curry needs 500 g of chicken thighs, and the outside fridge has 500 
 
 Three things are not facts of the kitchen, so they are in the data file of the plugin:
 
-- your settings
+- your [settings](settings.md)
 - the items in your cart
 - the choice to put low food on the shopping list
 
 ## Further reading
 
-- [Glossary](glossary.md): the meaning of "food item", "row", and the other words of the kitchen.
-- [Cook Mode](../features/v0.1.0/cook-mode.md): all that the plugin writes when you finish a meal.
+- [Glossary](../glossary.md): the meaning of "food item", "row", and the other words of the kitchen.
+- [Cook Mode](cook-mode.md): all that the plugin writes when you finish a meal.

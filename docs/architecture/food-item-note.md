@@ -1,11 +1,11 @@
 ---
 title: Food item note
 summary: 'The exact form of the note of a food item: its name, its four properties, and its table.'
-parent: ../features/v0.1.0/pantry.md
+parent: pantry.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Pantry](../features/v0.1.0/pantry.md) / Food item note
+[Wiki](../README.md) / [Pantry](pantry.md) / Food item note
 
 # Food item note
 
@@ -53,11 +53,11 @@ The [level](level.md) of the food item comes from `full`, from `low`, and from t
 
 The plugin reads the first table of the note. It finds each column by its name, so the sequence of the columns is free.
 
-| Column   | Value                                                                                               |
-| -------- | --------------------------------------------------------------------------------------------------- |
-| `Place`  | Where the food is. A row with no place is not a row of the pantry.                                  |
-| `Amount` | A number and a unit: `500 g`, `1 1/2 kg`, or `6`. Text with no number, such as `tap`, is permitted. |
-| `Use by` | A date as year-month-day, or nothing.                                                               |
+| Column   | Value                                                                                                   |
+| -------- | ------------------------------------------------------------------------------------------------------- |
+| `Place`  | Where the food is. A row with no place is not a row of the pantry.                                      |
+| `Amount` | An [amount](amounts.md): `500 g`, `1 1/2 kg`, or `6`. Text with no number, such as `tap`, is permitted. |
+| `Use by` | A date as year-month-day, or nothing.                                                                   |
 
 A note with no row is a food item that is out.
 

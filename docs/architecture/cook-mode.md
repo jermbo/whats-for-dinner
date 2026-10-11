@@ -1,11 +1,11 @@
 ---
 title: Cook Mode
 summary: 'What occurs from the button "Cook" to a correct pantry: the pages of Cook Mode, the timers, and the record of the meal.'
-parent: ../../README.md
+parent: ../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../../README.md) / Cook Mode
+[Wiki](../README.md) / Cook Mode
 
 # Cook Mode
 
@@ -21,15 +21,15 @@ The two buttons do not move from page to page. The screen stays on while Cook Mo
 
 ## What a step is
 
-The format of a [recipe](recipes.md) does not define a step. So the plugin has its own rule: each item of a list in the instructions is a step. With no list, each paragraph is a step.
+The format of a [recipe](recipes.md) does not define a step. So the plugin has its own rule: each item of a list in the instructions is a [step](steps.md). With no list, each paragraph is a step.
 
 ## A step with a time has a timer
 
-The step "Cook the onion for 5 minutes" shows a timer of 5:00. The first time in the text counts. A timer continues when you go to a different step, and the top of the screen shows it there. When the time is up, the alarm rings until you tap "OK", or for one minute.
+The step "Cook the onion for 5 minutes" shows a [timer](timers.md) of 5:00. The first time in the text counts. A timer continues when you go to a different step, and the top of the screen shows it there. When the time is up, the alarm rings until you tap "OK", or for one minute.
 
 ## The end makes the pantry correct
 
-The last page lists each ingredient that the plugin can count, with its amount. You take the mark off an ingredient that you did not use. Then "Update the pantry" does four things:
+The [last page](end-of-a-meal.md) lists each ingredient that the plugin can count, with its amount. You take the mark off an ingredient that you did not use. Then "Update the pantry" does four things:
 
 - It takes each amount out of its food item in the [pantry](pantry.md). The row with the first use-by date gives its food first.
 - It writes your rating as a property of the recipe note.
@@ -44,4 +44,4 @@ The next time that you cook this recipe, each page shows the note that you wrote
 
 ## Further reading
 
-- [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): why the plugin writes notes and has no database.
+- [Notes of the kitchen](notes-of-the-kitchen.md): why the plugin writes notes and has no database.

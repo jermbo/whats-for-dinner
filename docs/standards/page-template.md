@@ -15,11 +15,11 @@ Each page has the same five parts, so that a reader always knows where to look. 
 ---
 title: Level
 summary: 'How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line.'
-parent: ../features/v0.1.0/pantry.md
+parent: pantry.md
 updated: 2026-10-11
 ---
 
-[Wiki](../README.md) / [Pantry](../features/v0.1.0/pantry.md) / Level
+[Wiki](../README.md) / [Pantry](pantry.md) / Level
 
 # Level
 
@@ -57,13 +57,15 @@ The explanation, with [a link](food-item-note.md) in the sentence where the read
 
 The folder tells the kind of a page. The links tell how the pages connect.
 
-| Folder                | Its pages                                                                                       |
-| --------------------- | ----------------------------------------------------------------------------------------------- |
-| `docs/`               | The wiki home and the vision.                                                                   |
-| `features/<version>/` | One page for each feature of that version: what you can do, and why.                            |
-| `architecture/`       | How the system works: where the data is, how a mechanism decides, and the exact form of a note. |
-| `initiatives/<slug>/` | The pages of one piece of work that is larger than one feature.                                 |
-| `standards/`          | The rules for the pages of the wiki.                                                            |
+| Folder                | Its pages                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------------ |
+| `docs/`               | The wiki home, the vision, the glossary, and the personas.                                       |
+| `architecture/`       | The system as it is: what each part does, how a mechanism decides, and the exact form of a note. |
+| `features/<version>/` | The user stories of that version.                                                                |
+| `initiatives/<slug>/` | The discussion of one piece of work before it is agreed: a glossary, a decision log, and detail. |
+| `standards/`          | The rules for the pages of the wiki, and for the flow of the work.                               |
+
+The [workflow](workflow.md) tells how a piece of work goes through these folders.
 
 - A page is one file. A subject does not get a folder of its own.
 - The hierarchy is in `parent` and in the breadcrumb, not in the folders. A parent can be in a different folder.

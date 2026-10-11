@@ -54,4 +54,4 @@ A diagram is there only when it tells more than the text. See [diagrams](diagram
 
 ## Further reading
 
-- [Pantry](../features/v0.1.0/pantry.md): a page that follows these rules. Use it as a model.
+- [Pantry](../architecture/pantry.md): a page that follows these rules. Use it as a model.

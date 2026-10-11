@@ -1,11 +1,11 @@
 ---
 title: Plan
 summary: 'How the week works: meals with no fixed day, room for each type of meal, and one note that holds the plan.'
-parent: ../../README.md
+parent: ../README.md
 updated: 2026-10-11
 ---
 
-[Wiki](../../README.md) / Plan
+[Wiki](../README.md) / Plan
 
 # Plan
 
@@ -27,11 +27,11 @@ Below the week, the plan shows three ideas. They are the recipes that are best f
 
 ## Preparation comes before the meal
 
-Some meals need work before you can cook, such as beef that must come out of the freezer. A recipe tells this in a callout of the type "prep". The meal shows the preparation, with a check box. After you confirm it, "Cook" is the main button of the meal.
+Some meals need work before you can cook, such as beef that must come out of the freezer. A recipe tells this in a callout of the type "prep", its [preparation](preparation.md). The meal shows the preparation, with a check box. After you confirm it, "Cook" is the main button of the meal.
 
 ## The plan is one note
 
-The plan is one note. A setting gives its name, which starts as `Meal plan.md`. The note has one task for each meal:
+The plan is one note, the [plan note](plan-note.md). It has one task for each meal:
 
 ```markdown
 - [ ] [[Recipes/Tacos|Tacos]] · 2026-10-11 · prep done
