@@ -5,4 +5,4 @@ aliases:
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 500 ml |        |
+| Kitchen pantry | 485 ml |        |

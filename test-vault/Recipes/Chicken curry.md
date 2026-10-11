@@ -1,3 +1,6 @@
+---
+rating: 5
+---
 # Chicken curry
 
 A mild curry with coconut milk. It is good for a day when you have little time.
@@ -27,3 +30,7 @@ A mild curry with coconut milk. It is good for a day when you have little time.
 5. Cut the chicken thighs into pieces and add them. Cook for 5 minutes.
 6. Add the coconut milk. Cook with low heat for 15 minutes.
 7. Add the juice of the lime. Serve with the rice.
+
+## Cooked
+
+- 2026-10-11 · ★★★★★ · THis is not bad

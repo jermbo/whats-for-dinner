@@ -1,3 +1,2 @@
-| Place          | Amount | Use by     |
-| -------------- | ------ | ---------- |
-| Outside fridge | 500 g  | 2026-10-13 |
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

@@ -6,4 +6,4 @@ brands:
 
 | Place             | Amount | Use by |
 | ----------------- | ------ | ------ |
-| Downstairs pantry | 2 cans |        |
+| Downstairs pantry | 1 cans |        |
