@@ -11,9 +11,9 @@ updated: 2026-10-11
 
 The plugin makes your vault a kitchen that knows what it has. This page tells what you can do with it, and why you would.
 
-## The pantry knows what you have
+## The pantry knows what you have, and where
 
-You record your food one time: a full bag of rice, 6 eggs. From then on, the plugin keeps the count. You do not look into the cupboard before you plan.
+You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the plugin keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
 
 ## The recipes that use your food come first
 

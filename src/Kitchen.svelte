@@ -1,43 +1,42 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { slide } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
+	import type { FoodNote, Note } from './note';
+	import PantryList from './PantryList.svelte';
+	import RecipeList from './RecipeList.svelte';
+	import ViewSwitch from './ViewSwitch.svelte';
 
-	let { notes }: { notes: string[] } = $props();
+	let { notes, foods }: { notes: Note[]; foods: FoodNote[] } = $props();
 
-	const uid = $props.id();
-	const count = $derived(`${notes.length} ${notes.length === 1 ? 'note' : 'notes'} in this vault`);
+	const parts = [
+		{ value: 'pantry', label: 'Pantry' },
+		{ value: 'recipes', label: 'Recipes' }
+	] as const;
+	let part = $state<(typeof parts)[number]['value']>('pantry');
+
+	// The new part comes in from the side of its option in the switch.
+	const from = $derived(part === 'pantry' ? -16 : 16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 </script>
 
-<section class="kitchen" aria-labelledby="{uid}-title">
-	<h2 class="kitchen__title" id="{uid}-title">What's for Dinner</h2>
-	<p class="kitchen__count" aria-live="polite">{count}</p>
+<div class="kitchen">
+	<ViewSwitch label="Part of the kitchen" options={parts} bind:value={part} />
 
-	<ul class="kitchen__notes">
-		{#each notes as note (note)}
-			<li class="kitchen__note" transition:slide={{ duration }}>{note}</li>
-		{/each}
-	</ul>
-</section>
+	{#key part}
+		<div in:fly={{ x: from, duration }}>
+			{#if part === 'pantry'}
+				<PantryList {foods} />
+			{:else}
+				<RecipeList {notes} />
+			{/if}
+		</div>
+	{/key}
+</div>
 
 <style>
-	.kitchen__title {
-		margin-block: 0 var(--size-4-2);
-	}
-
-	.kitchen__count {
-		margin-block: 0 var(--size-4-4);
-		color: var(--text-muted);
-	}
-
-	.kitchen__notes {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.kitchen__note {
-		padding-block: var(--size-4-3);
-		border-block-end: var(--border-width) solid var(--background-modifier-border);
+	.kitchen {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--size-4-4);
 	}
 </style>

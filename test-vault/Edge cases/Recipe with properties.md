@@ -5,7 +5,7 @@ rating: 4
 
 # Tomato soup
 
-This note tests properties above the title. Obsidian shows them as properties. The RecipeMD specification does not permit them, because the title must be the first block.
+This note tests properties above the title. The RecipeMD specification does not permit them, because the title must be the first block. The plugin permits them: it reads the recipe below the properties.
 
 *soup, vegan*
 
