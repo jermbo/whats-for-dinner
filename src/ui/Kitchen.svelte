@@ -83,6 +83,7 @@
 		--wfd-olive: oklch(0.78 0.15 110);
 		--wfd-on-olive: #1d1c1a;
 		--wfd-amber: oklch(0.75 0.15 75);
+		--wfd-on-amber: #1d1c1a;
 		--wfd-tomato: oklch(0.55 0.17 30);
 		--wfd-frame: #1d1c1a;
 

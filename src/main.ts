@@ -1,6 +1,7 @@
 import { Plugin } from 'obsidian';
 import { Kitchen } from './kitchen-state.svelte';
 import { KITCHEN_VIEW, KitchenView } from './kitchen-view.svelte';
+import { KitchenSettingTab } from './settings-tab';
 
 export default class WhatsForDinnerPlugin extends Plugin {
 	async onload() {
@@ -10,7 +11,11 @@ export default class WhatsForDinnerPlugin extends Plugin {
 			(ref) => this.registerEvent(ref)
 		);
 
+		// The settings are in the data file. The tab and the settings screen need them from the start.
+		await kitchen.loadSaved();
+
 		this.registerView(KITCHEN_VIEW, (leaf) => new KitchenView(leaf, kitchen));
+		this.addSettingTab(new KitchenSettingTab(this.app, this, kitchen));
 		this.addRibbonIcon('utensils', "Open What's for Dinner", () => this.openKitchen());
 		this.addCommand({
 			id: 'open-kitchen',

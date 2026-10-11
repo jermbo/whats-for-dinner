@@ -2,7 +2,6 @@
 // forget when you shop.
 
 import { daysBetween } from '../dates';
-import { SOON_DAYS } from '../match/match';
 import type { FoodNote } from '../note';
 import { barOf, levelOf, type Bar, type Level } from './level';
 import type { Stock } from './types';
@@ -19,9 +18,9 @@ export type StockRow = {
 };
 export type StockGroup = { title: string; rows: StockRow[] };
 
-export function stockRows(foods: FoodNote[]): StockRow[] {
+export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 	return foods.flatMap((food) => {
-		const level = levelOf(food.item);
+		const level = levelOf(food.item, lowPercent);
 		return food.item.stocks.map((stock, at) => ({
 			key: `${food.path}#${at}`,
 			food,
@@ -44,7 +43,9 @@ const byDate = (a: StockRow, b: StockRow) =>
 export const daysLeft = (stock: Stock, today: string) =>
 	stock.useBy ? daysBetween(today, stock.useBy) : null;
 
-export const isSoon = (stock: Stock, today: string) => (daysLeft(stock, today) ?? 9999) <= SOON_DAYS;
+// Food with a use-by date in `soonDays` days, or less, is food to use soon.
+export const isSoon = (stock: Stock, today: string, soonDays: number) =>
+	(daysLeft(stock, today) ?? 9999) <= soonDays;
 
 // The text that you type finds a food item by its name, its other names, or its brands.
 export function isFound(food: FoodNote, text: string): boolean {
@@ -63,11 +64,11 @@ export function byPlace(rows: StockRow[]): StockGroup[] {
 }
 
 // The food to use first is at the top.
-export function bySoon(rows: StockRow[], today: string): StockGroup[] {
+export function bySoon(rows: StockRow[], today: string, soonDays: number): StockGroup[] {
 	const dated = rows.filter((row) => row.stock.useBy).sort(byDate);
 	const groups = [
-		{ title: 'Use first', rows: dated.filter((row) => isSoon(row.stock, today)) },
-		{ title: 'Later', rows: dated.filter((row) => !isSoon(row.stock, today)) },
+		{ title: 'Use first', rows: dated.filter((row) => isSoon(row.stock, today, soonDays)) },
+		{ title: 'Later', rows: dated.filter((row) => !isSoon(row.stock, today, soonDays)) },
 		{ title: 'No date', rows: rows.filter((row) => !row.stock.useBy).sort(byFood) }
 	];
 	return groups.filter((group) => group.rows.length);

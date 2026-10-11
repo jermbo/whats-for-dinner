@@ -40,6 +40,7 @@ flowchart LR
 | ----------------------- | -------------------------------------------------------------------------------- |
 | [Vision](vision.md)     | The true north: the problem, the result that the plugin must give, why Obsidian. |
 | [Features](features.md) | What the plugin does for you, and why each part is worth its place.              |
+| [Roadmap](roadmap.md)   | What is left between the plugin of today and the features, in sequence.          |
 
 ## An example
 

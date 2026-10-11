@@ -7,9 +7,6 @@ import type { Ingredient, IngredientGroup, Recipe } from '../recipemd/types';
 import { measure, type Measure } from '../units';
 import { nameKey } from './names';
 
-// Food with a use-by date in this number of days, or less, is food to use soon.
-export const SOON_DAYS = 5;
-
 // The kitchen always has these. They are not in the pantry and not on the shopping list.
 const ALWAYS_THERE = new Set(['water']);
 
@@ -76,7 +73,13 @@ function matchIngredient(ingredient: Ingredient, index: FoodIndex): IngredientMa
 export const isInPantry = (match: IngredientMatch) =>
 	match.status === 'enough' || match.status === 'unknown';
 
-export function matchRecipe(recipe: Recipe, index: FoodIndex, today: string): RecipeMatch {
+// Food with a use-by date in `soonDays` days, or less, is food to use soon.
+export function matchRecipe(
+	recipe: Recipe,
+	index: FoodIndex,
+	today: string,
+	soonDays: number
+): RecipeMatch {
 	const ingredients = allIngredients(recipe).map((ingredient) =>
 		matchIngredient(ingredient, index)
 	);
@@ -84,7 +87,7 @@ export function matchRecipe(recipe: Recipe, index: FoodIndex, today: string): Re
 	const useSoon = new Set<string>();
 	for (const { food, status } of ingredients) {
 		const useBy = food && status !== 'missing' ? firstUseBy(food.item.stocks) : null;
-		if (food && useBy && daysBetween(today, useBy) <= SOON_DAYS) useSoon.add(food.item.name);
+		if (food && useBy && daysBetween(today, useBy) <= soonDays) useSoon.add(food.item.name);
 	}
 
 	return { ingredients, inPantry: ingredients.filter(isInPantry).length, useSoon: [...useSoon] };

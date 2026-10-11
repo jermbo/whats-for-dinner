@@ -5,13 +5,14 @@ import { measure, type Measure } from '../units';
 import { available } from './total';
 import type { FoodItem, Stock } from './types';
 
-// With no low line of your own, the line is at this part of the full amount.
-const LOW_PART = 0.25;
+// With no low line of your own, the line is at this percentage of the full amount. The settings
+// can give a different percentage.
+const LOW_PERCENT = 25;
 
 // The three values have one kind of measure, such as "mass".
 export type Level = { kind: string; has: number; full: number; low: number; isLow: boolean };
 
-export function levelOf(item: FoodItem): Level | null {
+export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null {
 	const fullSet = item.full ? measure(item.full) : null;
 	const first = item.stocks.find((stock) => stock.amount)?.amount;
 	const kind = fullSet?.kind ?? (first ? measure(first).kind : null);
@@ -23,7 +24,7 @@ export function levelOf(item: FoodItem): Level | null {
 	if (full <= 0) return null;
 
 	const lowSet = item.low ? measure(item.low) : null;
-	const low = lowSet?.kind === kind ? Math.min(lowSet.value, full) : full * LOW_PART;
+	const low = lowSet?.kind === kind ? Math.min(lowSet.value, full) : (full * lowPercent) / 100;
 	return { kind, has, full, low, isLow: has < low };
 }
 

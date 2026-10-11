@@ -6,6 +6,5 @@ brands:
 full: 4 jars
 ---
 
-| Place             | Amount | Use by |
-| ----------------- | ------ | ------ |
-| Downstairs pantry | 2 jars |        |
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

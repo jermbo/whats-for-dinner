@@ -52,14 +52,17 @@
 	// A place goes out of the pantry with its last food. Its filter goes with it.
 	const placeOn = $derived(place !== null && kitchen.places.includes(place) ? place : null);
 
-	const all = $derived(stockRows(kitchen.foods));
+	const soonDays = $derived(kitchen.settings.soonDays);
+	const lowPercent = $derived(kitchen.settings.lowPercent);
+
+	const all = $derived(stockRows(kitchen.foods, lowPercent));
 	// A food item with no row is out. It stays in view, as a reminder to buy it again.
 	const allOut = $derived(
 		kitchen.foods
 			.filter((food) => !food.item.stocks.length)
 			.sort((a, b) => a.item.name.localeCompare(b.item.name))
 	);
-	const soon = $derived(all.filter((row) => isSoon(row.stock, kitchen.today)).length);
+	const soon = $derived(all.filter((row) => isSoon(row.stock, kitchen.today, soonDays)).length);
 	// A food item in two places is low one time.
 	const low = $derived(new Set(all.filter(isLow).map((row) => row.food.path)).size);
 
@@ -70,14 +73,14 @@
 					(row) =>
 						isFound(row.food, find) &&
 						(only !== 'low' || isLow(row)) &&
-						(only !== 'soon' || isSoon(row.stock, kitchen.today)) &&
+						(only !== 'soon' || isSoon(row.stock, kitchen.today, soonDays)) &&
 						(!placeOn || row.stock.place === placeOn)
 				)
 	);
 	const groups = $derived.by(() => {
 		if (sort === 'place') return byPlace(rows);
 		if (sort === 'low') return byLow(rows);
-		return sort === 'soon' ? bySoon(rows, kitchen.today) : byName(rows);
+		return sort === 'soon' ? bySoon(rows, kitchen.today, soonDays) : byName(rows);
 	});
 	// Food that is out has no place, no level, and no date, so the other filters hide it.
 	const out = $derived(
@@ -256,7 +259,7 @@
 								<StockEditor
 									title={food.item.name}
 									places={kitchen.places}
-									low={lowOf(food, levelOf(food.item))}
+									low={lowOf(food, levelOf(food.item, lowPercent))}
 									facts={factsOf(food)}
 									onsave={(stock, _, lowText) => add(food.item.name, stock, food, lowText)}
 									oncancel={() => (open = null)}
@@ -329,7 +332,7 @@
 									amount={row.stock.amountText}
 									bar={row.bar}
 									days={daysLeft(row.stock, kitchen.today)}
-									soon={isSoon(row.stock, kitchen.today)}
+									soon={isSoon(row.stock, kitchen.today, soonDays)}
 									onclick={() => toggle(row.key)}
 								/>
 							{/if}

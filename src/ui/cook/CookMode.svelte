@@ -70,7 +70,7 @@
 	function ring(one: Timer) {
 		one.rung = true;
 		kitchen.notify(`${entry.recipe.title}, step ${one.step}: the time is up.`);
-		alarm.ring();
+		alarm.ring(kitchen.settings);
 	}
 
 	$effect(() => {
@@ -82,9 +82,10 @@
 		return () => clearInterval(tick);
 	});
 
-	// --- The screen stays on while you cook. ---
+	// --- The screen stays on while you cook, if the settings say so. ---
 
 	$effect(() => {
+		if (!kitchen.settings.keepScreenOn) return;
 		let lock: WakeLockSentinel | undefined;
 		const keepOn = async () => {
 			try {

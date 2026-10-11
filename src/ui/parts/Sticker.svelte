@@ -27,7 +27,7 @@
 	.wfd-sticker--amber {
 		border-color: var(--wfd-amber);
 		background: var(--wfd-amber);
-		color: var(--wfd-on-olive);
+		color: var(--wfd-on-amber);
 	}
 
 	.wfd-sticker--olive {

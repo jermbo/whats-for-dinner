@@ -1,3 +1,5 @@
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | 1      |        |
+---
+full: "1"
+---
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

@@ -3,6 +3,5 @@ full: "13"
 low: 4
 ---
 
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | 11     |        |
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

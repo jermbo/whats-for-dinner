@@ -2,6 +2,8 @@
 
 The plugin grows in small slices. Each slice ends with one result that you can test in the test vault, on the computer and on the phone.
 
+All eight slices are built as a first version. The work that is left is in the [roadmap](docs/roadmap.md).
+
 ## Two fixed decisions
 
 - A recipe is a note in the [RecipeMD](https://recipemd.org/specification.html) format, version 2.4.0.
@@ -26,23 +28,23 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 
 | Subject        | Choice in the first version                                                                                   |
 | -------------- | ------------------------------------------------------------------------------------------------------------- |
-| Which notes    | The notes in the folder `Pantry` are food items. All other notes are tried as recipes.                        |
+| Which notes    | Settings give the pantry folder and the recipes folder. With no recipes folder, each other note is tried.     |
 | Names          | A recipe name matches a food item by its name or by one of its other names. Singular and plural are equal.    |
 | Units          | Mass (g, kg, oz, lb) and volume (ml, l, tsp, tbsp, cup) convert. All other units compare only with themselves. |
 | No comparison  | If the pantry has the food in a unit that does not compare, the food counts as "in the pantry".               |
 | Water          | Water is always there. It is not in the pantry and not on the shopping list.                                  |
-| Use soon       | Food with a use-by date in 5 days or less is food to use soon. Its recipes go to the top.                     |
-| Plan           | The plan is the note `Meal plan.md`: one task for each meal. A done task is a cooked meal.                    |
+| Use soon       | Food with a use-by date in 5 days or less is food to use soon. The number of days is a setting.               |
+| Plan           | The plan is one note, `Meal plan.md` or the note of the settings: one task for each meal. A done task is cooked. |
 | Put away       | The amount that goes into the pantry is the missing amount. The place is the place where the food item is now. |
-| New food       | A food item that is new goes to the place "Kitchen".                                                          |
+| New food       | A food item that is new goes to the place "Kitchen", or to the place of the settings.                         |
 | Steps          | Each item of a list in the instructions is a step. With no list, each paragraph is a step.                    |
 | Timer          | The first time in the text of a step is the time of its timer.                                                |
-| Alarm          | A timer that ends gives three beeps, again and again, until you tap "OK". After one minute, it is quiet.      |
+| Alarm          | A timer that ends gives a sound, again and again, until "OK" or one minute. Sound and volume are settings.    |
 | Cook screen    | The two buttons do not move. A long page scrolls inside the card. Your note is one line; a tap opens it.      |
 | Take out       | At the end of Cook Mode, the row with the first use-by date gives its food first.                             |
 | Record         | The date, the rating, the note, and the photo go below the heading "Cooked" in the recipe note.               |
 | Look           | The Larder look from the archived design pages. In the dark scheme, paper and ink change places.              |
-| Fonts          | Decided: Bricolage Grotesque for titles, names, and numbers. The system font for all other text.              |
+| Fonts          | Decided: Bricolage Grotesque for titles, names, and numbers. A setting gives a different font.                |
 | Recipe type    | The type of a recipe is its first tag, such as "dinner".                                                      |
 | Pantry row     | One row is one food item in one place. A tap opens the row, and you change it there.                          |
 | Pantry find    | The text finds a food item by its name, its other names, or its brands.                                       |
@@ -50,11 +52,13 @@ All slices are built as a first version, so that the full loop can be tested. Ea
 | Pantry look    | Decided: levels. Each row has a bar with the amount against the full amount, and a tick at the low line.      |
 | Level          | The level counts all places of a food item. On a row, the light part is the other places, the dark this one.  |
 | Full amount    | The property `full` is the most that the pantry had of the food. The plugin writes it; you can change it.     |
-| Low line       | The property `low`. With no `low`, the line is at a quarter of the full amount.                               |
+| Low line       | The property `low`. With no `low`, the line is at 25% of the full amount. The percentage is a setting.        |
 | Set an amount  | A tap opens a row as a bar that you drag. The amount snaps to about 20 steps.                                 |
 | Open row       | The bar has one piece for each place. You select the place to update; its piece is last, at the green line.   |
 | Bar is full    | The green line stops when all places together have the full amount. A larger amount goes in with the form.    |
 | Not counted    | A row with no number, such as "a full bag", has no bar.                                                       |
+| Accent colour  | The olive of the Larder look, or the accent colour of Obsidian (from the theme). The default is olive.        |
+| Settings       | The settings screen has the look of Obsidian. The values are in the data file of the plugin, with the cart.   |
 
 ## The food item
 
