@@ -1,3 +1,6 @@
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | 10 ml  |        |
+---
+full: 50 ml
+---
+
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

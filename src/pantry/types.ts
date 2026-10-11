@@ -16,5 +16,10 @@ export type FoodItem = {
 	// Other names that a recipe can use for this food item, such as "pasta" for elbow pasta.
 	aliases: string[];
 	brands: string[];
+	// The most that the pantry had of this food, such as "2 kg". The plugin learns it, and you can
+	// change it in the note.
+	full: Amount | null;
+	// The low line: with less than this amount, the food item is low. Null: the plugin sets the line.
+	low: Amount | null;
 	stocks: Stock[];
 };

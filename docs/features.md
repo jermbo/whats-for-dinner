@@ -15,6 +15,8 @@ The plugin makes your vault a kitchen that knows what it has. This page tells wh
 
 You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the plugin keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
 
+Each food has a bar that shows how much is left of the full amount. A tick on the bar is the low line. Below the line, the bar is amber, so you see what gets low before it is out. To correct an amount, you drag the bar to what is really there.
+
 ## The recipes that use your food come first
 
 The recipe list sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". Food that spoils soon moves its recipes up, so you use the spinach before it is waste.

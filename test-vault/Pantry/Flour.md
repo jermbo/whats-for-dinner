@@ -1,3 +1,8 @@
+---
+full: 1 kg
+low: 300 g
+---
+
 | Place   | Amount | Use by |
 | ------- | ------ | ------ |
-| Kitchen | 200 g  |        |
+| Kitchen | 600 ml |        |

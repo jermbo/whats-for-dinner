@@ -1,4 +1,8 @@
-| Place          | Amount | Use by     |
-| -------------- | ------ | ---------- |
-| Kitchen fridge | 5      | 2026-10-20 |
-| Outside fridge | 6      | 2026-10-25 |
+---
+full: "13"
+low: 4
+---
+
+| Place   | Amount | Use by |
+| ------- | ------ | ------ |
+| Kitchen | 11     |        |

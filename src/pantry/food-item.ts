@@ -1,5 +1,5 @@
-// Reads the note of a food item: the brands and the other names are properties, and the table has
-// one row for each place.
+// Reads the note of a food item: the brands, the other names, the full amount, and the low line
+// are properties, and the table has one row for each place.
 
 import { parseAmount } from '../recipemd/amount';
 import { readTable } from './table';
@@ -16,6 +16,8 @@ export function readFoodItem(
 		name,
 		aliases: textList(properties.aliases),
 		brands: textList(properties.brands),
+		full: amountOf(properties.full),
+		low: amountOf(properties.low),
 		stocks: readTable(body)
 			.filter((row) => row['place'])
 			.map((row) => makeStock(row['place'], row['amount'] ?? '', row['use by'] ?? ''))
@@ -29,6 +31,11 @@ export function makeStock(place: string, amountText: string, useBy: string): Sto
 		amountText: amountText.trim(),
 		useBy: DATE.test(useBy.trim()) ? useBy.trim() : null
 	};
+}
+
+// An amount can be text, such as "2 kg", or a number, such as 12.
+function amountOf(value: unknown) {
+	return typeof value === 'string' || typeof value === 'number' ? parseAmount(String(value)) : null;
 }
 
 // A property can be one text or a list of texts.

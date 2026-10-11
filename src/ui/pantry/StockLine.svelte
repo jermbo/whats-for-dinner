@@ -1,17 +1,21 @@
 <script lang="ts">
+	import type { Bar } from '../../pantry/level';
 	import Sticker from '../parts/Sticker.svelte';
+	import LevelBar from './LevelBar.svelte';
 
 	type Props = {
 		name: string;
 		// The line below the name: the place, or the total of the food item.
 		note: string;
 		amount: string;
+		// The level of the food item. Null when the plugin cannot count the amount.
+		bar: Bar | null;
 		// The days until the use-by date. A badge shows only when the date is near.
 		days: number | null;
 		soon: boolean;
 		onclick: () => void;
 	};
-	let { name, note, amount, days, soon, onclick }: Props = $props();
+	let { name, note, amount, bar, days, soon, onclick }: Props = $props();
 
 	const badge = $derived.by(() => {
 		if (days === null || !soon) return null;
@@ -23,24 +27,29 @@
 
 <!-- One food item in one place. A tap opens it, so that you can change it. -->
 <button class="wfd-line" class:wfd-line--none={!amount} type="button" {onclick}>
-	<span class="wfd-line__text">
-		<span class="wfd-line__name">{name}</span>
-		{#if note}<span class="wfd-line__note">{note}</span>{/if}
+	<span class="wfd-line__top">
+		<span class="wfd-line__text">
+			<span class="wfd-line__name">{name}</span>
+			{#if note}<span class="wfd-line__note">{note}</span>{/if}
+		</span>
+		{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
+		<span class="wfd-line__amount wfd-number">
+			{amount || 'None'}{#if bar?.isLow}<span class="wfd-line__hidden">, low</span>{/if}
+		</span>
 	</span>
-	{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
-	<span class="wfd-line__amount wfd-number">{amount || 'None'}</span>
+	{#if bar || !amount}<LevelBar {bar} />{/if}
 </button>
 
 <style>
 	button.wfd-line {
 		display: grid;
-		grid-template-columns: 1fr auto auto;
-		gap: 12px;
-		align-items: center;
+		grid-template-columns: minmax(0, 1fr);
+		gap: 6px;
+		align-content: center;
 		inline-size: 100%;
 		block-size: auto;
 		min-block-size: 56px;
-		padding: 8px 0;
+		padding: 8px 0 10px;
 		border: 0;
 		border-block-end: 1px solid var(--wfd-line);
 		border-radius: 0;
@@ -64,6 +73,13 @@
 		color: var(--wfd-ink-2);
 	}
 
+	.wfd-line__top {
+		display: grid;
+		grid-template-columns: 1fr auto auto;
+		gap: 12px;
+		align-items: center;
+	}
+
 	.wfd-line__text {
 		display: grid;
 		gap: 2px;
@@ -81,6 +97,16 @@
 	}
 
 	.wfd-line__amount {
-		font-size: 18px;
+		font-size: 20px;
+	}
+
+	/* Text for a screen reader: the colour of the bar is not the only sign of a low level. */
+	.wfd-line__hidden {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
 	}
 </style>

@@ -31,6 +31,9 @@ const MILLILITRES: Record<string, number> = {
 	cup: 240
 };
 
+// A count is in whole things, such as cans and eggs. Mass and volume are not.
+export const isCount = (kind: string) => kind.startsWith('count:');
+
 const round = (value: number) => String(Number(value.toFixed(2)));
 
 // "cloves" and "clove" are one word for the plugin. The rule is simple, and it is the same for

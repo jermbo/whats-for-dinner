@@ -9,7 +9,8 @@ import { indexFoods, matchRecipe, type RecipeMatch } from './match/match';
 import { nameKey } from './match/names';
 import type { FoodNote, Note } from './note';
 import { makeStock, readFoodItem } from './pantry/food-item';
-import type { Stock } from './pantry/types';
+import { fullAfter } from './pantry/level';
+import type { FoodItem, Stock } from './pantry/types';
 import { addStock, replaceStocks, showStocks } from './pantry/write';
 import { readPlan, showPlan, type PlannedMeal } from './plan/plan-note';
 import { readProperties } from './read-properties';
@@ -163,7 +164,10 @@ export class Kitchen {
 
 	async setStocks(path: string, stocks: Stock[]) {
 		const file = this.fileAt(path);
-		if (file) await this.app.vault.process(file, (text) => replaceStocks(text, stocks));
+		if (!file) return;
+		const item = this.foods.find((food) => food.path === path)?.item;
+		await this.app.vault.process(file, (text) => replaceStocks(text, stocks));
+		if (item) await this.keepFull(file, item, stocks);
 	}
 
 	// Adds an amount to a food item. A food item that is new gets its own note.
@@ -175,11 +179,34 @@ export class Kitchen {
 		const file = this.fileAt(path);
 		if (file) {
 			await this.app.vault.process(file, (text) => addStock(text, stock));
+			if (food) await this.keepFull(file, food.item, [...food.item.stocks, stock]);
 			return;
 		}
 		const folder = PANTRY_FOLDER.slice(0, -1);
 		if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
-		await this.app.vault.create(path, `${showStocks([stock])}\n`);
+		const created = await this.app.vault.create(path, `${showStocks([stock])}\n`);
+		const item = { name, aliases: [], brands: [], full: null, low: null, stocks: [] };
+		await this.keepFull(created, item, [stock]);
+	}
+
+	// The low line of a food item, such as "200 g". With no text, the plugin sets the line.
+	async setLow(path: string, low: string) {
+		const file = this.fileAt(path);
+		if (!file) return;
+		await this.app.fileManager.processFrontMatter(file, (properties) => {
+			if (low.trim()) properties.low = low.trim();
+			else delete properties.low;
+		});
+	}
+
+	// The full amount is the most that the pantry had of a food item. `item` is the food item before
+	// the change, and `stocks` are its rows after the change.
+	private async keepFull(file: TFile, item: FoodItem, stocks: Stock[]) {
+		const full = fullAfter(item, stocks);
+		if (!full) return;
+		await this.app.fileManager.processFrontMatter(file, (properties) => {
+			properties.full = showMeasure(full);
+		});
 	}
 
 	// --- Plan ---

@@ -25,3 +25,9 @@ A fast meal that uses up spinach before it spoils.
 ## Cooked
 
 - 2026-10-11
+- 2026-10-11
+- 2026-10-11
+- 2026-10-11
+- 2026-10-11
+- 2026-10-11
+- 2026-10-11

@@ -33,4 +33,4 @@ A mild curry with coconut milk. It is good for a day when you have little time.
 
 ## Cooked
 
-- 2026-10-11 · ★★★★★ · THis is not bad
+- 2026-10-11 · ★★★★★ · This is not bad

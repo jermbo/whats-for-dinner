@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { onDestroy } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
+	import { Alarm } from '../../cook/alarm';
 	import { lastNote } from '../../cook/record';
 	import { readSteps } from '../../cook/steps';
 	import type { CookResult, Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
@@ -13,8 +15,12 @@
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
 	let { kitchen, entry, onclose }: Props = $props();
 
+	const uid = $props.id();
+
 	const steps = $derived(readSteps(entry.recipe));
 	const yourNote = $derived(lastNote(entry.recipe.instructions));
+	// The note shows as one line. A tap opens it, and a new page closes it.
+	let noteOpen = $state(false);
 	// Page 0 is "Get out". Then there is one page for each step. The last page is the finish.
 	const last = $derived(steps.length + 1);
 	let page = $state(0);
@@ -26,6 +32,7 @@
 	function go(to: number) {
 		from = to > page ? 24 : -24;
 		page = Math.max(0, Math.min(last, to));
+		noteOpen = false;
 	}
 
 	// The ingredients that are on the counter. You mark them before you start.
@@ -45,30 +52,25 @@
 	const clock = (seconds: number) =>
 		`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
 
+	const alarm = new Alarm();
+	onDestroy(() => alarm.close());
+
 	function start(seconds: number) {
+		// This tap is what lets the alarm make sound later.
+		alarm.ready();
 		now = Date.now();
 		timers.push({ step: page, end: now + seconds * 1000, rung: false });
 	}
+	// The alarm is quiet when no timer waits for your "OK".
 	function stop(one: Timer) {
 		timers = timers.filter((other) => other.step !== one.step);
+		if (!timers.some((other) => other.rung)) alarm.quiet();
 	}
 
 	function ring(one: Timer) {
 		one.rung = true;
 		kitchen.notify(`${entry.recipe.title}, step ${one.step}: the time is up.`);
-		navigator.vibrate?.([300, 150, 300]);
-		try {
-			const audio = new AudioContext();
-			const tone = audio.createOscillator();
-			const volume = audio.createGain();
-			volume.gain.value = 0.2;
-			tone.frequency.value = 880;
-			tone.connect(volume).connect(audio.destination);
-			tone.start();
-			tone.stop(audio.currentTime + 0.8);
-		} catch {
-			// Some devices give no sound to a page that you did not touch. The notice is sufficient.
-		}
+		alarm.ring();
 	}
 
 	$effect(() => {
@@ -101,6 +103,8 @@
 			void lock?.release();
 		};
 	});
+
+	let saving = $state(false);
 
 	async function finish(result: CookResult) {
 		await kitchen.finishCooking(entry.path, result);
@@ -212,44 +216,65 @@
 						</div>
 					{/if}
 				{:else}
-					<CookFinish {entry} ondone={finish} />
+					<CookFinish id="{uid}-finish" {entry} ondone={finish} bind:busy={saving} />
 				{/if}
 			</div>
 
 			{#if yourNote && page < last}
-				<p class="wfd-cook__note">
+				<button
+					class="wfd-cook__note"
+					class:wfd-cook__note--open={noteOpen}
+					type="button"
+					aria-expanded={noteOpen}
+					onclick={() => (noteOpen = !noteOpen)}
+				>
 					<span class="wfd-label">Your note</span>
-					{yourNote}
-				</p>
+					<span class="wfd-cook__note-text">{yourNote}</span>
+				</button>
 			{/if}
 		</div>
 	{/key}
 
+	<!-- The two buttons have the same size and the same place on each page. -->
 	<nav class="wfd-cook__nav" aria-label="Steps">
 		<Button disabled={page === 0} onclick={() => go(page - 1)}>← Back</Button>
 		{#if page < last}
 			<Button kind="olive" onclick={() => go(page + 1)}>
 				{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'} →
 			</Button>
+		{:else}
+			<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>
+				{saving ? 'One moment' : 'Update the pantry'}
+			</Button>
 		{/if}
 	</nav>
 </article>
 
 <style>
-	/* Cook Mode is a white card in a dark frame, so that the step is the only thing in view. */
+	/*
+	 * Cook Mode is a white card in a dark frame, so that the step is the only thing in view. The
+	 * frame has the height of the tab: the card takes the space that is left, and a long page
+	 * scrolls inside the card. Thus the two buttons do not move.
+	 */
 	.wfd-cook {
-		display: grid;
-		grid-template-rows: auto auto 1fr auto;
-		grid-template-columns: minmax(0, 1fr);
+		display: flex;
+		flex-direction: column;
 		gap: 12px;
-		min-block-size: 100%;
+		block-size: 100%;
 		padding: 12px 12px max(var(--safe-area-inset-bottom, 0px), 12px);
+		overflow-x: clip;
 		background: var(--wfd-frame);
 		container-type: inline-size;
 	}
 
+	/* On a tab that is too low for the card, the tab scrolls. The frame stays dark there. */
+	:global(.view-content.wfd:has(> .wfd-cook)) {
+		background: var(--wfd-frame);
+	}
+
 	.wfd-cook__bar {
 		display: flex;
+		flex: none;
 		gap: 16px;
 		align-items: center;
 	}
@@ -295,6 +320,7 @@
 
 	.wfd-cook__timers {
 		display: flex;
+		flex: none;
 		flex-wrap: wrap;
 		gap: 8px;
 		margin: 0;
@@ -325,9 +351,11 @@
 		color: #fff;
 	}
 
+	/* The title and the note keep their place. Only the work between them scrolls. */
 	.wfd-cook__card {
 		display: grid;
-		grid-template-rows: auto 1fr auto;
+		flex: 1 0 15rem;
+		grid-template-rows: auto minmax(0, 1fr) auto;
 		grid-template-columns: minmax(0, 1fr);
 		overflow: hidden;
 		border-radius: var(--wfd-radius-card);
@@ -335,22 +363,29 @@
 		color: var(--wfd-ink);
 	}
 
+	/* On a phone, the title and its count are one row, so that the list gets the height. */
 	.wfd-cook__side {
-		display: grid;
-		gap: 6px;
-		align-content: start;
-		padding: 20px 20px 0;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 16px;
+		align-items: baseline;
+		justify-content: space-between;
+		padding: 16px 20px 0;
 	}
 
 	.wfd-cook__recipe {
+		flex-basis: 100%;
 		margin: 0;
+		overflow: hidden;
 		color: var(--wfd-ink-2);
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.wfd-cook__title {
 		margin: 0;
 		color: var(--wfd-ink);
-		font-size: clamp(2.4rem, 12cqi, 4.5rem);
+		font-size: clamp(2rem, 10cqi, 4.5rem);
 		font-weight: 800;
 		line-height: 1.05;
 	}
@@ -364,11 +399,23 @@
 		font-size: 0.45em;
 	}
 
+	/*
+	 * An ink rule shows at an edge when there is more of the page past that edge. The first two
+	 * layers move with the page, and they hide the rule when the page is at its end.
+	 */
 	.wfd-cook__main {
 		display: grid;
 		gap: 18px;
 		align-content: start;
+		min-block-size: 0;
 		padding: 16px 20px 20px;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		background:
+			linear-gradient(var(--wfd-card), var(--wfd-card)) top / 100% 3px no-repeat local,
+			linear-gradient(var(--wfd-card), var(--wfd-card)) bottom / 100% 3px no-repeat local,
+			linear-gradient(var(--wfd-ink), var(--wfd-ink)) top / 100% 2px no-repeat scroll,
+			linear-gradient(var(--wfd-ink), var(--wfd-ink)) bottom / 100% 2px no-repeat scroll;
 	}
 
 	.wfd-cook__list {
@@ -455,45 +502,85 @@
 		line-height: 1;
 	}
 
-	.wfd-cook__note {
+	/* The note is one line, so that a long note does not take the card. A tap shows all of it. */
+	button.wfd-cook__note {
 		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 14px;
+		gap: 12px;
 		align-items: baseline;
-		margin: 0;
-		padding: 14px 20px;
+		justify-content: start;
+		inline-size: 100%;
+		block-size: auto;
+		max-block-size: 48px;
+		padding: 12px 20px;
+		overflow: hidden;
+		border: 0;
+		border-radius: 0;
 		background: var(--wfd-olive);
+		box-shadow: none;
 		color: var(--wfd-on-olive);
-		font-size: 18px;
+		font-family: inherit;
+		font-size: 17px;
 		font-weight: 600;
+		line-height: 24px;
+		text-align: start;
+		cursor: pointer;
+		transition: max-block-size 0.2s ease-out;
+
+		&:focus-visible {
+			outline: 2px solid var(--wfd-on-olive);
+			outline-offset: -4px;
+		}
 	}
 
-	/* The two buttons are large and stay at the lower edge, so that a knuckle can hit them. */
+	.wfd-cook__note-text {
+		min-inline-size: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	button.wfd-cook__note--open {
+		max-block-size: 14rem;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+
+		.wfd-cook__note-text {
+			overflow: visible;
+			white-space: normal;
+		}
+	}
+
+	/* The two buttons are large, so that a knuckle can hit them. */
 	.wfd-cook__nav {
-		position: sticky;
-		inset-block-end: 0;
 		display: grid;
+		flex: none;
 		grid-template-columns: 1fr 2fr;
 		gap: 12px;
-		padding-block: 4px;
-		background: var(--wfd-frame);
 	}
 
-	.wfd-cook__nav :global(button) {
-		min-block-size: 64px;
+	.wfd-cook__nav :global(button.wfd-button) {
+		block-size: 72px;
 		font-size: 19px;
 	}
 
 	/* On a wide tab, the title is at the left and the work is at the right. */
 	@container (inline-size > 46rem) {
 		.wfd-cook__card {
-			grid-template-rows: 1fr auto;
+			grid-template-rows: minmax(0, 1fr) auto;
 			grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
 		}
 
 		.wfd-cook__side {
+			display: grid;
+			gap: 6px;
+			align-content: start;
+			justify-content: stretch;
 			padding: 32px;
 			border-inline-end: 2px solid var(--wfd-ink);
+		}
+
+		.wfd-cook__recipe {
+			white-space: normal;
 		}
 
 		.wfd-cook__main {
@@ -513,7 +600,8 @@
 
 	@media (prefers-reduced-motion: reduce) {
 		.wfd-cook__piece,
-		.wfd-cook__item {
+		.wfd-cook__item,
+		button.wfd-cook__note {
 			transition: none;
 		}
 

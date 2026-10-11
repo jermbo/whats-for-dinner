@@ -1,4 +1,7 @@
-| Place          | Amount | Use by     |
-| -------------- | ------ | ---------- |
-| Kitchen fridge | 100 g  | 2026-10-13 |
-| Outside fridge | 400 g  | 2026-10-18 |
+---
+full: 500 g
+---
+
+| Place   | Amount | Use by |
+| ------- | ------ | ------ |
+| Kitchen | 100 g  |        |

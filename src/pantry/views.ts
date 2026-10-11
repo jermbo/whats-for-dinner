@@ -4,16 +4,37 @@
 import { daysBetween } from '../dates';
 import { SOON_DAYS } from '../match/match';
 import type { FoodNote } from '../note';
+import { barOf, levelOf, type Bar, type Level } from './level';
 import type { Stock } from './types';
 
-export type StockRow = { key: string; food: FoodNote; stock: Stock; at: number };
+export type StockRow = {
+	key: string;
+	food: FoodNote;
+	stock: Stock;
+	at: number;
+	// The level of the food item, and the part of it that this row shows. Null when the plugin
+	// cannot count the amount.
+	level: Level | null;
+	bar: Bar | null;
+};
 export type StockGroup = { title: string; rows: StockRow[] };
 
 export function stockRows(foods: FoodNote[]): StockRow[] {
-	return foods.flatMap((food) =>
-		food.item.stocks.map((stock, at) => ({ key: `${food.path}#${at}`, food, stock, at }))
-	);
+	return foods.flatMap((food) => {
+		const level = levelOf(food.item);
+		return food.item.stocks.map((stock, at) => ({
+			key: `${food.path}#${at}`,
+			food,
+			stock,
+			at,
+			level,
+			bar: barOf(stock, level)
+		}));
+	});
 }
+
+// A row is low when its food item is below the low line, with all places together.
+export const isLow = (row: StockRow) => row.bar?.isLow ?? false;
 
 const byFood = (a: StockRow, b: StockRow) => a.food.item.name.localeCompare(b.food.item.name);
 const byDate = (a: StockRow, b: StockRow) =>
@@ -24,6 +45,13 @@ export const daysLeft = (stock: Stock, today: string) =>
 	stock.useBy ? daysBetween(today, stock.useBy) : null;
 
 export const isSoon = (stock: Stock, today: string) => (daysLeft(stock, today) ?? 9999) <= SOON_DAYS;
+
+// The text that you type finds a food item by its name, its other names, or its brands.
+export function isFound(food: FoodNote, text: string): boolean {
+	const words = text.trim().toLowerCase();
+	const { name, aliases, brands } = food.item;
+	return !words || [name, ...aliases, ...brands].some((one) => one.toLowerCase().includes(words));
+}
 
 // One group for each place, so that you see the downstairs pantry and the outside fridge.
 export function byPlace(rows: StockRow[]): StockGroup[] {
@@ -41,6 +69,19 @@ export function bySoon(rows: StockRow[], today: string): StockGroup[] {
 		{ title: 'Use first', rows: dated.filter((row) => isSoon(row.stock, today)) },
 		{ title: 'Later', rows: dated.filter((row) => !isSoon(row.stock, today)) },
 		{ title: 'No date', rows: rows.filter((row) => !row.stock.useBy).sort(byFood) }
+	];
+	return groups.filter((group) => group.rows.length);
+}
+
+// The food that is most empty is at the top.
+export function byLow(rows: StockRow[]): StockGroup[] {
+	const filled = (row: StockRow) => (row.level ? row.level.has / row.level.full : 1);
+	const emptyFirst = (a: StockRow, b: StockRow) => filled(a) - filled(b) || byFood(a, b);
+	const counted = rows.filter((row) => row.bar).sort(emptyFirst);
+	const groups = [
+		{ title: 'Low', rows: counted.filter(isLow) },
+		{ title: 'Enough', rows: counted.filter((row) => !isLow(row)) },
+		{ title: 'Not counted', rows: rows.filter((row) => !row.bar).sort(byFood) }
 	];
 	return groups.filter((group) => group.rows.length);
 }

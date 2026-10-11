@@ -7,23 +7,42 @@
 		title: string;
 		// With a list of names, the editor asks for the name of the food item.
 		names?: string[];
+		// The name that the field starts with, such as the text that found no food.
+		startName?: string;
 		stock?: Stock;
 		// The places that the pantry has. One tap selects a place.
 		places: string[];
+		// The low line of the food item, as text. The hint is the line that the plugin sets when the
+		// field is empty. With no low line here, the editor does not ask for it.
+		low?: { text: string; hint: string };
 		// Small text below the fields, such as the brands of the food item.
 		facts?: string[];
-		onsave: (stock: Stock, name: string) => void;
+		onsave: (stock: Stock, name: string, low: string) => void;
 		oncancel: () => void;
 		onusedup?: () => void;
 		onopen?: () => void;
 	};
-	let { title, names, stock, places, facts = [], onsave, oncancel, onusedup, onopen }: Props =
-		$props();
+	let {
+		title,
+		names,
+		startName = '',
+		stock,
+		places,
+		low,
+		facts = [],
+		onsave,
+		oncancel,
+		onusedup,
+		onopen
+	}: Props = $props();
 
 	const uid = $props.id();
 	// The fields start with the row as it is. After that, they are yours.
 	const first = () => stock;
-	let name = $state('');
+	const firstName = () => startName;
+	const firstLow = () => low?.text ?? '';
+	let name = $state(firstName());
+	let lowText = $state(firstLow());
 	let amount = $state(first()?.amountText ?? '');
 	let place = $state(first()?.place ?? '');
 	let useBy = $state(first()?.useBy ?? '');
@@ -35,7 +54,7 @@
 
 	function save(event: SubmitEvent) {
 		event.preventDefault();
-		if (ready) onsave(makeStock(where, amount, useBy), name.trim());
+		if (ready) onsave(makeStock(where, amount, useBy), name.trim(), lowText.trim());
 	}
 </script>
 
@@ -91,6 +110,12 @@
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />
 		</label>
+		{#if low}
+			<label class="wfd-editor__field">
+				<span class="wfd-label">Low line</span>
+				<input type="text" placeholder={low.hint} bind:value={lowText} />
+			</label>
+		{/if}
 	</div>
 
 	{#if facts.length}

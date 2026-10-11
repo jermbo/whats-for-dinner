@@ -1,3 +1,6 @@
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | 300 ml |        |
+---
+full: 1 l
+---
+
+| Place | Amount | Use by |
+| ----- | ------ | ------ |

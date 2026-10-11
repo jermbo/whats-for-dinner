@@ -28,4 +28,4 @@ Use eggs that are not too fresh. Their shells come off more easily.
 
 ## Cooked
 
-- 2026-10-11 · ★★★★★
+- 2026-10-11 · ★★★★★ · This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.This is not bad. would recommend.

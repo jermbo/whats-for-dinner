@@ -5,10 +5,16 @@
 	import { available, takeOut } from '../../pantry/total';
 	import type { Stock } from '../../pantry/types';
 	import { showMeasure, type Measure } from '../../units';
-	import Button from '../parts/Button.svelte';
 
-	type Props = { entry: RecipeEntry; ondone: (result: CookResult) => Promise<void> };
-	let { entry, ondone }: Props = $props();
+	type Props = {
+		// The button that sends this form is in the navigation of Cook Mode. It finds the form by this.
+		id: string;
+		entry: RecipeEntry;
+		ondone: (result: CookResult) => Promise<void>;
+		// True while the notes of the vault change.
+		busy?: boolean;
+	};
+	let { id, entry, ondone, busy = $bindable(false) }: Props = $props();
 
 	const uid = $props.id();
 
@@ -40,7 +46,6 @@
 	let rating = $state<number | null>(null);
 	let note = $state('');
 	let photos = $state<FileList | null>(null);
-	let busy = $state(false);
 
 	async function done(event: SubmitEvent) {
 		event.preventDefault();
@@ -62,7 +67,7 @@
 	}
 </script>
 
-<form class="wfd-finish" onsubmit={done}>
+<form class="wfd-finish" {id} onsubmit={done}>
 	<fieldset class="wfd-finish__part">
 		<legend class="wfd-finish__legend wfd-display">Out of the pantry</legend>
 		{#if !counted.length}
@@ -124,10 +129,6 @@
 			bind:files={photos}
 		/>
 	</label>
-
-	<Button kind="main" type="submit" disabled={busy}>
-		{busy ? 'One moment' : 'Done. Update the pantry'}
-	</Button>
 </form>
 
 <style>
