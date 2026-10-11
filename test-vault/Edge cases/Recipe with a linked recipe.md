@@ -1,3 +1,6 @@
+---
+rating: 5
+---
 # Rice bowl with egg
 
 This note tests an ingredient that is a link to a different recipe. The specification permits this: the link text is the name, and the link goes to the recipe of that ingredient.
@@ -16,3 +19,7 @@ This note tests an ingredient that is a link to a different recipe. The specific
 
 1. Fry the eggs.
 2. Put the rice in two bowls. Put one egg on each bowl. Add the soy sauce.
+
+## Cooked
+
+- 2026-10-11 · ★★★★★ · awww yea

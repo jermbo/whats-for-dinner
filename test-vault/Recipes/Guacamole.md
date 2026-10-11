@@ -1,3 +1,6 @@
+---
+rating: 5
+---
 # Guacamole
 
 A fast dip for chips or tacos.
@@ -21,3 +24,7 @@ A fast dip for chips or tacos.
 3. Cut the onion into small pieces and add it.
 4. Add the juice of the lime and the salt. Mix.
 5. Put coriander leaves on top.
+
+## Cooked
+
+- 2026-10-11 · ★★★★★ · Could use a pinch more sald.

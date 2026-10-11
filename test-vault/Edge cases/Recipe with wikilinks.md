@@ -1,3 +1,6 @@
+---
+rating: 5
+---
 # Fried rice
 
 This note tests wikilinks as ingredient names. A wikilink is not a CommonMark link, so a RecipeMD tool reads the name as the text `[[Rice]]`.
@@ -19,3 +22,7 @@ This note tests wikilinks as ingredient names. A wikilink is not a CommonMark li
 2. Fry the eggs in a hot pan and break them into pieces.
 3. Add the rice and the soy sauce. Fry for 3 minutes.
 4. Cut the spring onion and put it on top.
+
+## Cooked
+
+- 2026-10-11 · ★★★★★ · Yes yes yall
