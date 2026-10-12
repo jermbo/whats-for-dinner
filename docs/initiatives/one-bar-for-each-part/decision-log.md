@@ -38,16 +38,25 @@ On a phone, the bar of the Pantry and of the Recipes is 100 px high: 50 px for t
    - a. The state "open or closed" stays in memory on a wide tab. When the tab becomes narrow, the bar is as you left it.
 8. **The filters are on together.** A line shows only when it passes each filter that is on. "Low" and "Kitchen fridge" show the low food of that fridge. The reason: each chip that you add makes the list shorter, and the Recipes keep "dinner that I can cook now". Two options were rejected: one filter at a time, and chips of one kind that add their lines. This decision changes requirement 2 of the story [Filter the pantry](../../features/v0.1.0/pantry-filter-the-pantry.md).
    - a. Two chips that cannot be true for one line put each other off: two places, two types, and "Out" with each other filter of the Pantry.
+9. **The bar of the Plan acts on the week.** The week is the meals that you did not cook. The reason: the Plan and the Recipes show the same thing, a recipe with its pantry count. So the same text rule and the same chips mean that you learn them one time.
+   - a. The find field is "Find a meal or ingredient". The text finds a meal by its title or by the name of one of its ingredients.
+   - b. The sequences are "By type", "Best for the pantry", and "A to Z". The Plan starts with "By type". In "By type", each type is a group with its room. In the other two, the meals are one list. The meals of today are at the top in each sequence.
+   - c. The filters are "Ready to cook", "Uses food soon", "Prep to do", and one chip for each type that has a meal. "Prep to do" shows the meals with a preparation that you did not confirm.
+   - d. While a text or a filter is on, the Plan shows only the week. The ideas, the cooked meals, and the "+" buttons of the types with no meal do not show. A group that passes the filter keeps its own "+" button.
 
-## Questions that have no decision
+## Choices that are not confirmed
 
-The questions are in the sequence of the grill. A question can change the questions after it.
+The build started before the grill was complete. These choices are in the code, and you can change each of them after the first test.
 
-1. What the find field, the sequence, and the filters are in the Plan.
-3. What they are in the Shop, and what the chip "Low food" becomes.
-4. The motion of the bar when it opens and closes.
+1. **The bar of the Shop acts on the rows that are not in the cart.**
+   - a. The find field is "Find an item or a meal". The text finds a row by its name, by a different name or a brand of its food item, or by a meal that needs it.
+   - b. The sequences are "A to Z" and "By meal". The Shop starts with "A to Z". In "By meal", each meal is a group, and a row that two meals need is in the two groups. The low food that no meal needs is in the group "Low food".
+   - c. The filters are "For a meal" and "Low food". They show only when the list has rows of the two kinds, because with one kind a filter hides nothing.
+2. **The switch "Low food" of the Shop is a check box, not a chip.** It is below the bar, with the text "Low food on the list". The reason: a chip is a filter, and a filter does not change the data. This switch puts rows on the list.
+3. **The second row of the bar opens in 0.2 seconds.** The button changes to ink in 0.15 seconds, and its number comes in with a small pop. With the setting for less motion, there is no motion.
+4. **The text of an empty list tells the number of filters.** With one filter it is "this filter", and with more it is "these filters". The button below it is "Remove the filters".
+5. **The placeholder of the find field can use the room of the cross.** The cross shows only when the field has text. On a narrow phone, a placeholder that is too long ends with three dots.
 
 ## Further reading
 
 - [Workflow](../../standards/workflow.md): the step of the work that this page is in.
-- [Filter the pantry](../../features/v0.1.0/pantry-filter-the-pantry.md): the story with the filter rule of the Pantry of today.

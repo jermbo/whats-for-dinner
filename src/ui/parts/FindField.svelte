@@ -65,6 +65,12 @@
 		padding-inline: 44px;
 	}
 
+	/* An empty field has no cross, so its placeholder can use that room. */
+	.wfd-find :global(input.wfd-find__field:placeholder-shown) {
+		padding-inline-end: 14px;
+		text-overflow: ellipsis;
+	}
+
 	button.wfd-find__clear {
 		position: absolute;
 		inset-block: 0;

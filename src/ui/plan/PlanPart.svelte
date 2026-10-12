@@ -2,8 +2,20 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen, Meal } from '../../kitchen-state.svelte';
-	import { MAIN_TYPES, ROOM, weekGroups } from '../../plan/week';
+	import {
+		inSequence,
+		isFound,
+		isReady,
+		needsPrep,
+		usesSoon,
+		type Only,
+		type Sort
+	} from '../../plan/browse';
+	import { hasRoom, MAIN_TYPES, ROOM, typeOfMeal, weekGroups } from '../../plan/week';
+	import type { BarState } from '../bar-state.svelte';
+	import Bar from '../parts/Bar.svelte';
 	import Button from '../parts/Button.svelte';
+	import Chip from '../parts/Chip.svelte';
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
@@ -16,21 +28,79 @@
 		oncook: (path: string) => void;
 		// Shows the recipes of one type, so that you can add a meal of that type.
 		onbrowse: (type: string) => void;
+		bar: BarState<Sort, Only>;
 	};
-	let { kitchen, oncook, onbrowse }: Props = $props();
+	let { kitchen, oncook, onbrowse, bar }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-	const open = $derived(kitchen.meals.filter((meal) => !meal.cooked));
-	const cooked = $derived(kitchen.meals.filter((meal) => meal.cooked));
 
-	// The meals of today are at the top. Each other meal is in the group of its type.
-	const today = $derived(open.filter((meal) => kitchen.isToday(meal)));
-	const groups = $derived(weekGroups(open));
-	// A main type with no meal has no group. It gets a small button, so that you see its room.
-	const empty = $derived(
-		MAIN_TYPES.filter((type) => !groups.some((group) => group.type === type))
-	);
+	const sorts: { value: Sort; label: string }[] = [
+		{ value: 'type', label: 'By type' },
+		{ value: 'match', label: 'Best for the pantry' },
+		{ value: 'name', label: 'A to Z' }
+	];
+
+	// The week is the meals that you did not cook. The bar acts on the week only.
+	const week = $derived(kitchen.meals.filter((meal) => !meal.cooked));
+	const cooked = $derived(kitchen.meals.filter((meal) => meal.cooked));
 	const nameOf = (type: string) => type.charAt(0).toUpperCase() + type.slice(1);
+
+	// The text that finds a meal.
+	const text = $derived(bar.find.trim());
+	const types = $derived(weekGroups(week).map((group) => group.type));
+	// A type with no meal has no chip, so its filter cannot be on.
+	const typeOn = $derived(bar.one !== null && types.includes(bar.one) ? bar.one : null);
+	const count = $derived(bar.only.size + (typeOn ? 1 : 0));
+	// With a text or a filter, you look for a meal of the week. Then the plan shows only the meals
+	// that pass: not the ideas, the cooked meals, or the types with no meal.
+	const narrow = $derived(Boolean(text) || count > 0);
+
+	const shown = $derived(
+		week.filter(
+			(meal) =>
+				isFound(meal, bar.find) &&
+				(!bar.only.has('ready') || isReady(meal)) &&
+				(!bar.only.has('soon') || usesSoon(meal)) &&
+				(!bar.only.has('prep') || needsPrep(meal)) &&
+				(!typeOn || typeOfMeal(meal) === typeOn)
+		)
+	);
+
+	// The meals of today are at the top, in each sequence.
+	const today = $derived(shown.filter((meal) => kitchen.isToday(meal)));
+	const later = $derived(shown.filter((meal) => !kitchen.isToday(meal)));
+
+	// The place of each recipe in the sequence "best for the pantry".
+	const rank = $derived(new Map(kitchen.recipes.map((entry, at) => [entry.path, at])));
+
+	// The sequence by type has one group for each type, with its room and a place for one more
+	// meal. Each other sequence is one list.
+	type Group = { title: string; note: string; meals: Meal[]; slot: string | null };
+	const groups = $derived.by((): Group[] => {
+		const sort = bar.sort;
+		if (sort !== 'type') {
+			const meals = inSequence(later, sort, (path) => rank.get(path));
+			const title = sorts.find((option) => option.value === sort)?.label ?? '';
+			return meals.length ? [{ title, note: String(meals.length), meals, slot: null }] : [];
+		}
+		return weekGroups(shown).map(({ type }) => {
+			const used = week.filter((meal) => typeOfMeal(meal) === type).length;
+			return {
+				title: nameOf(type),
+				note: `${used}/${ROOM}`,
+				meals: later.filter((meal) => typeOfMeal(meal) === type),
+				slot: used < ROOM ? type : null
+			};
+		});
+	});
+	// A main type with no group gets a small button, so that you see its room.
+	const more = $derived(
+		narrow
+			? []
+			: MAIN_TYPES.filter((type) =>
+					bar.sort === 'type' ? !types.includes(type) : hasRoom(week, type)
+				)
+	);
 
 	// The plugin proposes the recipes that use up the pantry, and that are not in the week.
 	const ideas = $derived(
@@ -62,6 +132,29 @@
 		{/snippet}
 	</PartHead>
 
+	<Bar
+		label="Find a meal or ingredient"
+		sequence="Sequence of the plan"
+		{sorts}
+		{count}
+		bind:find={bar.find}
+		bind:sort={bar.sort}
+		bind:open={bar.open}
+	>
+		{#snippet chips()}
+			<Chip
+				label="Ready to cook"
+				on={bar.only.has('ready')}
+				onclick={() => bar.flip('ready')}
+			/>
+			<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
+			<Chip label="Prep to do" on={bar.only.has('prep')} onclick={() => bar.flip('prep')} />
+			{#each types as option (option)}
+				<Chip label={nameOf(option)} on={typeOn === option} onclick={() => bar.pick(option)} />
+			{/each}
+		{/snippet}
+	</Bar>
+
 	{#snippet card(meal: Meal, isToday: boolean)}
 		<MealCard
 			{meal}
@@ -87,6 +180,22 @@
 		</button>
 	{/snippet}
 
+	{#if narrow && !shown.length}
+		<div class="wfd-plan__none" aria-live="polite">
+			<p class="wfd-plan__empty">
+				{#if text && !count}
+					No meal of the week has "{text}" in its name or in its ingredients.
+				{:else}
+					No meal of the week {text ? `with "${text}" ` : ''}passes
+					{count === 1 ? 'this filter' : 'these filters'}.
+				{/if}
+			</p>
+			{#if count}
+				<Button onclick={() => bar.clear()}>Remove the filters</Button>
+			{/if}
+		</div>
+	{/if}
+
 	{#if today.length}
 		<section class="wfd-plan__group" transition:slide={{ duration }}>
 			<GroupHead title="Today" note={String(today.length)} />
@@ -98,29 +207,36 @@
 		</section>
 	{/if}
 
-	{#each groups as group (group.type)}
-		<section class="wfd-plan__group" transition:slide={{ duration }}>
-			<GroupHead title={nameOf(group.type)} note="{group.meals.length}/{ROOM}" />
-			<ul class="wfd-plan__list">
-				{#each group.meals.filter((meal) => !kitchen.isToday(meal)) as meal (meal.path)}
-					<li transition:slide={{ duration }}>{@render card(meal, false)}</li>
+	<!-- A new sequence comes in as one block. A filter or a search moves only the meals that change. -->
+	{#if groups.length}
+		{#key bar.sort}
+			<div class="wfd-plan__groups" in:slide={{ duration }}>
+				{#each groups as group (group.title)}
+					<section class="wfd-plan__group" transition:slide={{ duration }}>
+						<GroupHead title={group.title} note={group.note} />
+						<ul class="wfd-plan__list">
+							{#each group.meals as meal (meal.path)}
+								<li transition:slide={{ duration }}>{@render card(meal, false)}</li>
+							{/each}
+							{#if group.slot}
+								<li>{@render slot(group.slot, false)}</li>
+							{/if}
+						</ul>
+					</section>
 				{/each}
-				{#if group.meals.length < ROOM}
-					<li>{@render slot(group.type, false)}</li>
-				{/if}
-			</ul>
-		</section>
-	{/each}
+			</div>
+		{/key}
+	{/if}
 
-	{#if empty.length}
+	{#if more.length}
 		<div class="wfd-plan__more">
-			{#each empty as type (type)}
+			{#each more as type (type)}
 				{@render slot(type, true)}
 			{/each}
 		</div>
 	{/if}
 
-	{#if ideas.length}
+	{#if ideas.length && !narrow}
 		<GroupHead title="Ideas for your pantry" />
 		<ul class="wfd-plan__ideas">
 			{#each ideas as entry (entry.path)}
@@ -142,7 +258,7 @@
 		</ul>
 	{/if}
 
-	{#if cooked.length}
+	{#if cooked.length && !narrow}
 		<GroupHead title="Cooked" note={String(cooked.length)} />
 		<ul class="wfd-plan__ideas">
 			{#each cooked as { path, entry } (path)}
@@ -180,6 +296,18 @@
 		gap: 12px;
 	}
 
+	.wfd-plan__none {
+		display: grid;
+		gap: 10px;
+		justify-items: start;
+	}
+
+	.wfd-plan__empty {
+		margin: 0;
+		color: var(--wfd-ink-2);
+	}
+
+	.wfd-plan__groups,
 	.wfd-plan__group {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);

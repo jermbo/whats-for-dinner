@@ -16,41 +16,49 @@
 		isLow,
 		isSoon,
 		stockRows,
+		type Only,
+		type Sort,
 		type StockRow
 	} from '../../pantry/views';
 	import { showMeasure } from '../../units';
+	import type { BarState } from '../bar-state.svelte';
+	import Bar from '../parts/Bar.svelte';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
-	import FindField from '../parts/FindField.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import StockEditor from './StockEditor.svelte';
 	import StockGauge from './StockGauge.svelte';
 	import StockLine from './StockLine.svelte';
 
-	let { kitchen }: { kitchen: Kitchen } = $props();
+	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
-	type Sort = 'place' | 'low' | 'soon' | 'name';
 	const sorts: { value: Sort; label: string }[] = [
 		{ value: 'place', label: 'By place' },
 		{ value: 'low', label: 'Low first' },
 		{ value: 'soon', label: 'Use first' },
 		{ value: 'name', label: 'A to Z' }
 	];
-	let sort = $state<Sort>('place');
 
 	// The text that finds a food item.
-	let find = $state('');
-	// The filters. One is on at a time: a filter that comes on puts the others off.
-	type Only = 'low' | 'soon' | 'out';
-	let only = $state<Only | null>(null);
-	let place = $state<string | null>(null);
-	const showOnly = (next: Only) => ((only = only === next ? null : next), (place = null));
-	const showPlace = (next: string) => ((place = place === next ? null : next), (only = null));
+	const text = $derived(bar.find.trim());
+	// Food that is out has no place, no level, and no date. So "Out" and each other filter put
+	// each other off.
+	function showOnly(next: Only) {
+		const on = !bar.only.has(next);
+		if (next === 'out' || bar.only.has('out')) bar.clear();
+		if (on) bar.only.add(next);
+		else bar.only.delete(next);
+	}
+	function showPlace(next: string) {
+		bar.only.delete('out');
+		bar.pick(next);
+	}
 	// A place goes out of the pantry with its last food. Its filter goes with it.
-	const placeOn = $derived(place !== null && kitchen.places.includes(place) ? place : null);
+	const placeOn = $derived(bar.one !== null && kitchen.places.includes(bar.one) ? bar.one : null);
+	const count = $derived(bar.only.size + (placeOn ? 1 : 0));
 
 	const soonDays = $derived(kitchen.settings.soonDays);
 	const lowPercent = $derived(kitchen.settings.lowPercent);
@@ -66,27 +74,28 @@
 	// A food item in two places is low one time.
 	const low = $derived(new Set(all.filter(isLow).map((row) => row.food.path)).size);
 
+	// A row shows only if it passes the text and each filter that is on.
 	const rows = $derived(
-		only === 'out'
+		bar.only.has('out')
 			? []
 			: all.filter(
 					(row) =>
-						isFound(row.food, find) &&
-						(only !== 'low' || isLow(row)) &&
-						(only !== 'soon' || isSoon(row.stock, kitchen.today, soonDays)) &&
+						isFound(row.food, bar.find) &&
+						(!bar.only.has('low') || isLow(row)) &&
+						(!bar.only.has('soon') || isSoon(row.stock, kitchen.today, soonDays)) &&
 						(!placeOn || row.stock.place === placeOn)
 				)
 	);
 	const groups = $derived.by(() => {
-		if (sort === 'place') return byPlace(rows);
-		if (sort === 'low') return byLow(rows);
-		return sort === 'soon' ? bySoon(rows, kitchen.today, soonDays) : byName(rows);
+		if (bar.sort === 'place') return byPlace(rows);
+		if (bar.sort === 'low') return byLow(rows);
+		return bar.sort === 'soon' ? bySoon(rows, kitchen.today, soonDays) : byName(rows);
 	});
 	// Food that is out has no place, no level, and no date, so the other filters hide it.
 	const out = $derived(
-		only === 'low' || only === 'soon' || placeOn
+		bar.only.has('low') || bar.only.has('soon') || placeOn
 			? []
-			: allOut.filter((food) => isFound(food, find))
+			: allOut.filter((food) => isFound(food, bar.find))
 	);
 
 	// The row that is open: the key of a row, the path of a food item that is out, or "new".
@@ -115,7 +124,7 @@
 
 	// In the view by place, the line below the name tells where more of the food is.
 	function noteOf({ food, stock }: StockRow) {
-		if (sort !== 'place') return stock.place;
+		if (bar.sort !== 'place') return stock.place;
 		const places = placesOf(food);
 		return places > 1 ? `${totalOf(food.item.stocks)} in ${places} places` : '';
 	}
@@ -123,7 +132,9 @@
 	// The count of a group, with the count of its rows that are low.
 	function countOf(group: { rows: StockRow[] }) {
 		const lowRows = group.rows.filter(isLow).length;
-		return lowRows && sort !== 'low' ? `${group.rows.length} · ${lowRows} low` : `${group.rows.length}`;
+		return lowRows && bar.sort !== 'low'
+			? `${group.rows.length} · ${lowRows} low`
+			: `${group.rows.length}`;
 	}
 
 	// The low line for the form: your own text, and the line of the plugin as a hint.
@@ -186,29 +197,24 @@
 		{/snippet}
 	</PartHead>
 
-	<div class="wfd-pantry__bar">
-		<div class="wfd-pantry__tools">
-			<div class="wfd-pantry__find">
-				<FindField label="Find food" bind:value={find} />
-			</div>
-
-			<div class="wfd-pantry__filters">
-				<select class="wfd-pantry__sort" aria-label="Sequence of the pantry" bind:value={sort}>
-					{#each sorts as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
-
-				<div class="wfd-pantry__chips" role="group" aria-label="Filters">
-					<Chip label="Low" on={only === 'low'} onclick={() => showOnly('low')} />
-					<Chip label="Use soon" on={only === 'soon'} onclick={() => showOnly('soon')} />
-					<Chip label="Out" on={only === 'out'} onclick={() => showOnly('out')} />
-					{#each kitchen.places as option (option)}
-						<Chip label={option} on={placeOn === option} onclick={() => showPlace(option)} />
-					{/each}
-				</div>
-			</div>
-
+	<Bar
+		label="Find food"
+		sequence="Sequence of the pantry"
+		{sorts}
+		{count}
+		bind:find={bar.find}
+		bind:sort={bar.sort}
+		bind:open={bar.open}
+	>
+		{#snippet chips()}
+			<Chip label="Low" on={bar.only.has('low')} onclick={() => showOnly('low')} />
+			<Chip label="Use soon" on={bar.only.has('soon')} onclick={() => showOnly('soon')} />
+			<Chip label="Out" on={bar.only.has('out')} onclick={() => showOnly('out')} />
+			{#each kitchen.places as option (option)}
+				<Chip label={option} on={placeOn === option} onclick={() => showPlace(option)} />
+			{/each}
+		{/snippet}
+		{#snippet end()}
 			<Button
 				kind="main"
 				aria-label="Add food"
@@ -216,8 +222,8 @@
 			>
 				<span class="wfd-pantry__plus" aria-hidden="true">+</span>
 			</Button>
-		</div>
-	</div>
+		{/snippet}
+	</Bar>
 
 	{#if open === 'new'}
 		<div transition:slide={{ duration }}>
@@ -236,13 +242,18 @@
 		<p class="wfd-pantry__empty">The pantry is empty. Add your first food with the plus button.</p>
 	{:else if !rows.length && !out.length}
 		<div class="wfd-pantry__none" aria-live="polite">
-			{#if find.trim()}
-				<p class="wfd-pantry__empty">No food has the name "{find.trim()}".</p>
+			{#if text && !count}
+				<p class="wfd-pantry__empty">No food has the name "{text}".</p>
 				{#if open !== 'new'}
-					<Button onclick={() => startNew(find.trim())}>Add it to the pantry</Button>
+					<Button onclick={() => startNew(text)}>Add it to the pantry</Button>
 				{/if}
 			{:else}
-				<p class="wfd-pantry__empty">No food passes this filter.</p>
+				<!-- A filter can hide the food that the text names, so the text is not the cause here. -->
+				<p class="wfd-pantry__empty">
+					No food {text ? `with the name "${text}" ` : ''}passes
+					{count === 1 ? 'this filter' : 'these filters'}.
+				</p>
+				<Button onclick={() => bar.clear()}>Remove the filters</Button>
 			{/if}
 		</div>
 	{/if}
@@ -284,10 +295,10 @@
 	{/snippet}
 
 	<!-- A new sequence comes in as one block. A filter or a search moves only the rows that change. -->
-	{#key sort}
+	{#key bar.sort}
 		<div class="wfd-pantry__groups" in:slide={{ duration }}>
 			<!-- In the sequence "Low first", the food that is out is the most empty, so it is first. -->
-			{#if sort === 'low'}{@render outGroup()}{/if}
+			{#if bar.sort === 'low'}{@render outGroup()}{/if}
 
 			{#each groups as group (group.title)}
 				<section class="wfd-pantry__group" transition:slide={{ duration }}>
@@ -341,7 +352,7 @@
 				</section>
 			{/each}
 
-			{#if sort !== 'low'}{@render outGroup()}{/if}
+			{#if bar.sort !== 'low'}{@render outGroup()}{/if}
 		</div>
 	{/key}
 </section>
@@ -361,59 +372,6 @@
 
 	.wfd-pantry__number {
 		font-size: 22px;
-	}
-
-	/* The bar asks its own width: a phone gets two rows, and a wide tab gets one row. */
-	.wfd-pantry__bar {
-		container-type: inline-size;
-	}
-
-	.wfd-pantry__tools {
-		display: grid;
-		grid-template:
-			'find add' auto
-			'filters filters' auto / minmax(0, 1fr) auto;
-		gap: 6px 12px;
-		align-items: center;
-	}
-
-	.wfd-pantry__find {
-		grid-area: find;
-	}
-
-	.wfd-pantry__tools > :global(button.wfd-button) {
-		grid-area: add;
-	}
-
-	/* One row: the sequence stays, and the filters scroll to the side. */
-	.wfd-pantry__filters {
-		display: flex;
-		grid-area: filters;
-		gap: 10px;
-		align-items: center;
-		min-inline-size: 0;
-	}
-
-	.wfd-pantry :global(select.wfd-pantry__sort) {
-		flex: none;
-		min-block-size: 36px;
-		padding-inline: 10px 28px;
-		font-size: 14px;
-		font-weight: 700;
-	}
-
-	.wfd-pantry__chips {
-		display: flex;
-		gap: 8px;
-		min-inline-size: 0;
-		overflow-x: auto;
-		scrollbar-width: none;
-	}
-
-	@container (inline-size > 46rem) {
-		.wfd-pantry__tools {
-			grid-template: 'find filters add' auto / minmax(12rem, 18rem) minmax(0, 1fr) auto;
-		}
 	}
 
 	.wfd-pantry__plus {

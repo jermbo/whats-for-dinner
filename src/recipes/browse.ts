@@ -4,6 +4,7 @@ import type { RecipeEntry } from '../kitchen-state.svelte';
 import { showName } from '../match/names';
 
 export type Sort = 'match' | 'type' | 'rating' | 'name';
+export type Only = 'ready' | 'soon';
 
 // The type of a recipe is its first tag: "dinner" in "dinner, chicken, one pot".
 export const typeOf = (entry: RecipeEntry) => entry.recipe.tags[0]?.toLowerCase() ?? 'other';

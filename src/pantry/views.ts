@@ -18,6 +18,9 @@ export type StockRow = {
 };
 export type StockGroup = { title: string; rows: StockRow[] };
 
+export type Sort = 'place' | 'low' | 'soon' | 'name';
+export type Only = 'low' | 'soon' | 'out';
+
 export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 	return foods.flatMap((food) => {
 		const level = levelOf(food.item, lowPercent);

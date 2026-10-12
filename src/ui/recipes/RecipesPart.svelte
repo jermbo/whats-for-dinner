@@ -2,10 +2,20 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
-	import { inSequence, isFound, isReady, typeOf, typesOf, type Sort } from '../../recipes/browse';
+	import {
+		inSequence,
+		isFound,
+		isReady,
+		typeOf,
+		typesOf,
+		type Only,
+		type Sort
+	} from '../../recipes/browse';
+	import type { BarState } from '../bar-state.svelte';
+	import Bar from '../parts/Bar.svelte';
+	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import Count from '../parts/Count.svelte';
-	import FindField from '../parts/FindField.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import RecipeCard from './RecipeCard.svelte';
@@ -13,10 +23,9 @@
 	type Props = {
 		kitchen: Kitchen;
 		oncook: (path: string) => void;
-		// The type that the filter starts with, when you come from a type of the plan.
-		startType?: string | null;
+		bar: BarState<Sort, Only>;
 	};
-	let { kitchen, oncook, startType = null }: Props = $props();
+	let { kitchen, oncook, bar }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -26,37 +35,32 @@
 		{ value: 'rating', label: 'Best rating' },
 		{ value: 'name', label: 'A to Z' }
 	];
-	let sort = $state<Sort>('match');
 
 	// The text that finds a recipe.
-	let find = $state('');
-	// The filters. A recipe shows only if it passes each filter that is on.
-	let ready = $state(false);
-	let soon = $state(false);
-	const firstType = () => startType;
-	let type = $state<string | null>(firstType());
-
+	const text = $derived(bar.find.trim());
 	const types = $derived(typesOf(kitchen.recipes));
 	// A type with no recipe has no chip, so its filter cannot be on.
-	const typeOn = $derived(type !== null && types.includes(type) ? type : null);
+	const typeOn = $derived(bar.one !== null && types.includes(bar.one) ? bar.one : null);
+	const count = $derived(bar.only.size + (typeOn ? 1 : 0));
 	const readyCount = $derived(kitchen.recipes.filter(isReady).length);
 
+	// A recipe shows only if it passes the text and each filter that is on.
 	const shown = $derived(
 		inSequence(
 			kitchen.recipes.filter(
 				(entry) =>
-					isFound(entry, find) &&
-					(!ready || isReady(entry)) &&
-					(!soon || entry.match.useSoon.length > 0) &&
+					isFound(entry, bar.find) &&
+					(!bar.only.has('ready') || isReady(entry)) &&
+					(!bar.only.has('soon') || entry.match.useSoon.length > 0) &&
 					(!typeOn || typeOf(entry) === typeOn)
 			),
-			sort
+			bar.sort
 		)
 	);
 
 	// The sequence by type has one group for each type. Each other sequence is one group.
 	const groups = $derived.by((): { title: string; entries: RecipeEntry[] }[] => {
-		if (sort !== 'type') return [{ title: '', entries: shown }];
+		if (bar.sort !== 'type') return [{ title: '', entries: shown }];
 		return typesOf(shown).map((title) => ({
 			title,
 			entries: shown.filter((entry) => typeOf(entry) === title)
@@ -74,42 +78,48 @@
 		{/snippet}
 	</PartHead>
 
-	<div class="wfd-recipes__bar">
-		<div class="wfd-recipes__tools">
-			<FindField label="Find a recipe or ingredient" bind:value={find} />
-
-			<div class="wfd-recipes__filters">
-				<select class="wfd-recipes__sort" aria-label="Sequence of the recipes" bind:value={sort}>
-					{#each sorts as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
-
-				<div class="wfd-recipes__chips" role="group" aria-label="Filters">
-					<Chip label="Ready to cook" on={ready} onclick={() => (ready = !ready)} />
-					<Chip label="Uses food soon" on={soon} onclick={() => (soon = !soon)} />
-					{#each types as option}
-						<Chip
-							label={option.charAt(0).toUpperCase() + option.slice(1)}
-							on={typeOn === option}
-							onclick={() => (type = typeOn === option ? null : option)}
-						/>
-					{/each}
-				</div>
-			</div>
-		</div>
-	</div>
+	<Bar
+		label="Find a recipe or ingredient"
+		sequence="Sequence of the recipes"
+		{sorts}
+		{count}
+		bind:find={bar.find}
+		bind:sort={bar.sort}
+		bind:open={bar.open}
+	>
+		{#snippet chips()}
+			<Chip
+				label="Ready to cook"
+				on={bar.only.has('ready')}
+				onclick={() => bar.flip('ready')}
+			/>
+			<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
+			{#each types as option (option)}
+				<Chip
+					label={option.charAt(0).toUpperCase() + option.slice(1)}
+					on={typeOn === option}
+					onclick={() => bar.pick(option)}
+				/>
+			{/each}
+		{/snippet}
+	</Bar>
 
 	{#if !shown.length}
-		<p class="wfd-recipes__empty" aria-live="polite">
-			{#if !kitchen.recipes.length}
-				The vault has no recipes.
-			{:else if find.trim() && !ready && !soon && !typeOn}
-				No recipe has "{find.trim()}" in its name or in its ingredients.
-			{:else}
-				No recipe passes these filters.
+		<div class="wfd-recipes__none" aria-live="polite">
+			<p class="wfd-recipes__empty">
+				{#if !kitchen.recipes.length}
+					The vault has no recipes.
+				{:else if text && !count}
+					No recipe has "{text}" in its name or in its ingredients.
+				{:else}
+					No recipe {text ? `with "${text}" ` : ''}passes
+					{count === 1 ? 'this filter' : 'these filters'}.
+				{/if}
+			</p>
+			{#if count && kitchen.recipes.length}
+				<Button onclick={() => bar.clear()}>Remove the filters</Button>
 			{/if}
-		</p>
+		</div>
 	{/if}
 
 	{#each groups as group (group.title)}
@@ -156,46 +166,10 @@
 		gap: 12px;
 	}
 
-	/* The bar asks its own width: a phone gets two rows, and a wide tab gets one row. */
-	.wfd-recipes__bar {
-		container-type: inline-size;
-	}
-
-	.wfd-recipes__tools {
+	.wfd-recipes__none {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
-		gap: 6px 12px;
-		align-items: center;
-	}
-
-	/* One row: the sequence stays, and the filters scroll to the side. */
-	.wfd-recipes__filters {
-		display: flex;
 		gap: 10px;
-		align-items: center;
-		min-inline-size: 0;
-	}
-
-	@container (inline-size > 46rem) {
-		.wfd-recipes__tools {
-			grid-template-columns: minmax(12rem, 18rem) minmax(0, 1fr);
-		}
-	}
-
-	.wfd-recipes :global(select.wfd-recipes__sort) {
-		flex: none;
-		min-block-size: 36px;
-		padding-inline: 10px 28px;
-		font-size: 14px;
-		font-weight: 700;
-	}
-
-	.wfd-recipes__chips {
-		display: flex;
-		gap: 8px;
-		min-inline-size: 0;
-		overflow-x: auto;
-		scrollbar-width: none;
+		justify-items: start;
 	}
 
 	.wfd-recipes__empty {

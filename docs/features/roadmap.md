@@ -17,6 +17,7 @@ The phone is where you use the plugin, and a function with no test there is not 
 
 | Test                          | It is done when                                                                                 |
 | ----------------------------- | ----------------------------------------------------------------------------------------------- |
+| The bar of each part          | One tap opens the sequence and the filters. "Low" and "Freezer" work together.                  |
 | Find a recipe                 | "curry" shows the chicken curry, and "spinach" shows each recipe that has spinach.              |
 | Groups in "Get out"           | The pancakes show "Dry" and "Wet", each with its count of food on the counter.                  |
 | Low food on the shopping list | One tap on "Low food" puts the low food on the list. Put away makes each of them full again.    |

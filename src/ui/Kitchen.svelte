@@ -3,6 +3,11 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import type { Kitchen } from '../kitchen-state.svelte';
+	import type { Only as PantryOnly, Sort as PantrySort } from '../pantry/views';
+	import type { Only as PlanOnly, Sort as PlanSort } from '../plan/browse';
+	import type { Only as RecipeOnly, Sort as RecipeSort } from '../recipes/browse';
+	import type { Only as ShopOnly, Sort as ShopSort } from '../shop/browse';
+	import { BarState } from './bar-state.svelte';
 	import CookMode from './cook/CookMode.svelte';
 	import PantryPart from './pantry/PantryPart.svelte';
 	import Nav from './parts/Nav.svelte';
@@ -29,13 +34,28 @@
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
-	// The type of meal that the recipes start with. The plan sets it when you add a meal of a type.
-	let browseType = $state<string | null>(null);
+	// The bar of each part, with the sequence that the part starts with. A part forgets its bar
+	// when it goes off the screen, so the bars are here: they stay while the kitchen is open.
+	const bars = {
+		pantry: new BarState<PantrySort, PantryOnly>('place'),
+		recipes: new BarState<RecipeSort, RecipeOnly>('match'),
+		plan: new BarState<PlanSort, PlanOnly>('type'),
+		shop: new BarState<ShopSort, ShopOnly>('name')
+	};
 
-	function show(next: Part, type: string | null = null) {
+	function show(next: Part) {
 		from = sequence.indexOf(next) > sequence.indexOf(part) ? 16 : -16;
 		part = next;
-		browseType = type;
+	}
+
+	// The plan asks for the recipes of one type, to add a meal of that type. Only that filter is
+	// on, and the open bar shows why the list is short.
+	function browse(type: string) {
+		bars.recipes.clear();
+		bars.recipes.find = '';
+		bars.recipes.one = type;
+		bars.recipes.open = true;
+		show('recipes');
 	}
 
 	// The path of the recipe that is in Cook Mode.
@@ -53,13 +73,13 @@
 		{#key part}
 			<div in:fly={{ x: from, duration }}>
 				{#if part === 'pantry'}
-					<PantryPart {kitchen} />
+					<PantryPart {kitchen} bar={bars.pantry} />
 				{:else if part === 'recipes'}
-					<RecipesPart {kitchen} oncook={cook} startType={browseType} />
+					<RecipesPart {kitchen} oncook={cook} bar={bars.recipes} />
 				{:else if part === 'plan'}
-					<PlanPart {kitchen} oncook={cook} onbrowse={(type) => show('recipes', type)} />
+					<PlanPart {kitchen} oncook={cook} onbrowse={browse} bar={bars.plan} />
 				{:else}
-					<ShopPart {kitchen} />
+					<ShopPart {kitchen} bar={bars.shop} />
 				{/if}
 			</div>
 		{/key}
