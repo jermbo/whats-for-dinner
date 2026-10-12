@@ -1,46 +1,64 @@
 ---
-title: Project wiki
-summary: 'The start page of the project memory. It lists the topics and tells how to read the pages.'
-updated: 2026-10-04
+title: What's for Dinner
+summary: 'The full picture of the plugin: the idea, the loop, and the way into each part of the wiki.'
+updated: 2026-10-11
 ---
 
 Wiki
 
-# Project wiki
+# What's for Dinner
 
-This wiki is the memory of the project. A person or an agent who is new can learn here how the system works, without the code.
+What's for Dinner is a plugin for Obsidian that makes your vault a kitchen. This page gives the full picture. Each part has its own page.
 
-The pages describe the system that we want to have. The code moves to that goal, so the code can be behind a page.
+## The idea
 
-## Topics
+Your recipes are notes in your vault. The plugin adds a pantry to that vault. Because it knows what you have, it can tell you what to cook, what to buy, and what to use first.
 
-| Topic                          | What you learn                                                                                                     |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
-| [Shopping](shopping/README.md) | How food goes from the shopping list into the pantry, and how the app remembers products, photos, and prices.      |
-| [Recipes](recipes/README.md)   | How you write a recipe, cook from it one step at a time, and how the photos and notes of each cook make it better. |
-| [Design](design/README.md)     | The look of the app: a paper kitchen label, the colours, the type, and the parts of a screen.                      |
-| [Settings](settings/README.md) | The screen for the tasks that you do rarely: the preferences, the ingredients, and the data.                       |
-| [Code](code/README.md)         | How the code is put together: the layers, the rule of one job for each file, and the plan of the cleanup.          |
+## The loop
 
-## How to read it
+The plugin has one loop, and the pantry is its center.
 
-Start at a topic. The start page of a topic gives the full picture. When the text uses a word or a mechanism that has its own page, the word is a link. Follow the links that answer your question. You do not have to read the pages in a sequence.
+1. **Plan.** You choose the meals of the week from the recipes that use up your pantry.
+2. **Shop.** The list has only the items that are missing.
+3. **Cook.** You cook one step at a time.
+4. **Update.** A cooked meal takes its food out of the pantry. A shopping trip puts food in.
 
-Each page is short. You can read one in 60 to 90 seconds.
+Each turn of the loop starts with a correct pantry, so the next plan is correct too.
 
-## How to write it
+```mermaid
+flowchart LR
+    P[Pantry] --> A[Plan the week]
+    A --> B[Shop for the missing items]
+    B --> C[Cook one step at a time]
+    C --> P
+    B --> P
+```
 
-All pages follow the [documentation standards](documentation-standards.md). Read them before you write or change a page. This applies to a person and to an agent.
+## An example
 
-## Where the files are
+On Sunday, the pantry has rice, a can of coconut milk, and chicken that you must use soon. The plugin puts the chicken curry at the top of the recipes, with "7 of 9 in the pantry". You add it to the week. The shopping list gets the two missing items: limes and ginger.
 
-| Place           | What is there                                                           |
-| --------------- | ----------------------------------------------------------------------- |
-| `docs/`         | This start page, and the pages about the wiki itself.                   |
-| `docs/<topic>/` | One folder for each topic of the system. Its start page is `README.md`. |
+## The way into the wiki
+
+Start with the page that has your question. Each page goes one step down, to more detail.
+
+| Your question                             | Page                                                         |
+| ----------------------------------------- | ------------------------------------------------------------ |
+| Which problem does the plugin solve?      | [Vision](vision.md)                                          |
+| What can you do with it?                  | [Features](features/README.md)                               |
+| Where is the data?                        | [Notes of the kitchen](architecture/notes-of-the-kitchen.md) |
+| How does the plugin know what you have?   | [Pantry](architecture/pantry.md)                             |
+| How does it select a recipe?              | [Recipes](architecture/recipes.md)                           |
+| How does the week work?                   | [Plan](architecture/plan.md)                                 |
+| How does the list know what is missing?   | [Shopping](architecture/shopping.md)                         |
+| What occurs when you cook?                | [Cook Mode](architecture/cook-mode.md)                       |
+| Which settings are there?                 | [Settings](architecture/settings.md)                         |
+| What does a word mean?                    | [Glossary](glossary.md)                                      |
+| Who uses the plugin, and in which moment? | [Personas](personas.md)                                      |
+| What is left to build?                    | [Roadmap](features/roadmap.md)                               |
+| How does an idea become code?             | [Workflow](standards/workflow.md)                            |
 
 ## Further reading
 
-- [Vision](vision.md): why this project exists. A long document from before the wiki.
-- [Roadmap](roadmap.md): the sequence of the work. A long document from before the wiki.
-- [Usage flows](flows.md): how the owner uses the tool each week. A long document from before the wiki.
+- [Documentation standards](standards/documentation-standards.md): the rules for a new page in this wiki.
+- [Build a plugin](https://docs.obsidian.md/Plugins/Getting+started/Build+a+plugin): the guide from Obsidian on how to build, load, and reload a plugin.
