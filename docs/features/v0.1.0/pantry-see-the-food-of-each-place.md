@@ -1,11 +1,10 @@
 ---
 title: See the food of each place
-summary: 'The keeper sees each food in the group of its place, with its amount.'
+summary: "The keeper sees each food in the group of its place, with its amount."
 parent: pantry-stories.md
 persona: Keeper
 depends-on: []
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / See the food of each place

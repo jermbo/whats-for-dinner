@@ -1,8 +1,7 @@
 ---
 title: Amount bar
-summary: 'How you correct an amount in the pantry with one drag: the bar of an open row, its pieces, and the steps that it snaps to.'
+summary: "How you correct an amount in the pantry with one drag: the bar of an open row, its pieces, and the steps that it snaps to."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Amount bar

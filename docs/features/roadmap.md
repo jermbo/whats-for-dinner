@@ -1,8 +1,7 @@
 ---
 title: Roadmap
-summary: 'What is left between the plugin of today and the features page, in the sequence of the work.'
+summary: "What is left between the plugin of today and the features page, in the sequence of the work."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Roadmap

@@ -1,11 +1,15 @@
 ---
 title: Find a food item
-summary: 'The shopper types a name, a brand, or a different name of a food, and sees at once if the pantry has it.'
+summary: "The shopper types a name, a brand, or a different name of a food, and sees at once if the pantry has it."
 parent: pantry-stories.md
 persona: Shopper
-depends-on: [pantry-see-the-food-of-each-place.md, pantry-add-food.md, pantry-see-the-food-that-is-out.md]
+depends-on:
+  [
+    pantry-see-the-food-of-each-place.md,
+    pantry-add-food.md,
+    pantry-see-the-food-that-is-out.md,
+  ]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / Find a food item

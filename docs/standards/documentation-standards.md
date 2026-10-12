@@ -1,8 +1,7 @@
 ---
 title: Documentation standards
-summary: 'The rules for each page of this wiki: what a page is, how it is built, and where its links go.'
+summary: "The rules for each page of this wiki: what a page is, how it is built, and where its links go."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Documentation standards

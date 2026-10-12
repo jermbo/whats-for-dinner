@@ -1,8 +1,7 @@
 ---
 title: Notes of the kitchen
-summary: 'Where the plugin keeps its data: three kinds of notes in your vault, and the path that each change takes.'
+summary: "Where the plugin keeps its data: three kinds of notes in your vault, and the path that each change takes."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Notes of the kitchen

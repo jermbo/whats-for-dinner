@@ -1,8 +1,7 @@
 ---
 title: Pantry
-summary: 'How the plugin knows what you have: one note for each food item, one row for each place, and one level for each food.'
+summary: "How the plugin knows what you have: one note for each food item, one row for each place, and one level for each food."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Pantry

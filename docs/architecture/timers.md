@@ -1,8 +1,7 @@
 ---
 title: Timers
-summary: 'How a step of a recipe gets its timer, why a timer continues when you go to a different step, and how the alarm gets your attention.'
+summary: "How a step of a recipe gets its timer, why a timer continues when you go to a different step, and how the alarm gets your attention."
 parent: cook-mode.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Cook Mode](cook-mode.md) / Timers

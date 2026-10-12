@@ -1,11 +1,15 @@
 ---
 title: Select the sequence of the pantry
-summary: 'The planner puts the food that needs attention at the top: the most empty, the first date, or the name.'
+summary: "The planner puts the food that needs attention at the top: the most empty, the first date, or the name."
 parent: pantry-stories.md
 persona: Planner
-depends-on: [pantry-see-the-level.md, pantry-see-the-food-to-use-soon.md, pantry-see-the-food-that-is-out.md]
+depends-on:
+  [
+    pantry-see-the-level.md,
+    pantry-see-the-food-to-use-soon.md,
+    pantry-see-the-food-that-is-out.md,
+  ]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / Select the sequence of the pantry

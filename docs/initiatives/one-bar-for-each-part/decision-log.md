@@ -1,8 +1,7 @@
 ---
-title: 'Decision log: one bar for each part'
-summary: 'The options and the decisions for one bar to find, to set the sequence, and to filter, in each of the four parts.'
+title: "Decision log: one bar for each part"
+summary: "The options and the decisions for one bar to find, to set the sequence, and to filter, in each of the four parts."
 parent: ../../README.md
-updated: 2026-10-12
 ---
 
 [Wiki](../../README.md) / Decision log: one bar for each part
@@ -13,12 +12,12 @@ Each part of the kitchen shows a list. You find, sort, and filter that list with
 
 ## The four parts are different today
 
-| Part    | Find field                 | Sequence | Filters                                                             |
-| ------- | -------------------------- | -------- | ------------------------------------------------------------------- |
-| Pantry  | Name, other names, brands  | 4        | Low, Use soon, Out, and one for each place. One is on at a time.    |
-| Recipes | Title, ingredients         | 4        | Ready to cook, Uses food soon, and one for each type. They combine. |
-| Plan    | None                       | None     | None                                                                |
-| Shop    | None                       | None     | None. The chip "Low food" adds rows to the list.                    |
+| Part    | Find field                | Sequence | Filters                                                             |
+| ------- | ------------------------- | -------- | ------------------------------------------------------------------- |
+| Pantry  | Name, other names, brands | 4        | Low, Use soon, Out, and one for each place. One is on at a time.    |
+| Recipes | Title, ingredients        | 4        | Ready to cook, Uses food soon, and one for each type. They combine. |
+| Plan    | None                      | None     | None                                                                |
+| Shop    | None                      | None     | None. The chip "Low food" adds rows to the list.                    |
 
 On a phone, the bar of the Pantry and of the Recipes is 100 px high: 50 px for the field, 44 px for the row of chips, and 6 px between them.
 

@@ -1,7 +1,6 @@
 ---
 title: What's for Dinner
-summary: 'The full picture of the plugin: the idea, the loop, and the way into each part of the wiki.'
-updated: 2026-10-11
+summary: "The full picture of the plugin: the idea, the loop, and the way into each part of the wiki."
 ---
 
 Wiki
@@ -57,6 +56,7 @@ Start with the page that has your question. Each page goes one step down, to mor
 | Who uses the plugin, and in which moment? | [Personas](personas.md)                                      |
 | What is left to build?                    | [Roadmap](features/roadmap.md)                               |
 | How does an idea become code?             | [Workflow](standards/workflow.md)                            |
+| How is the code written?                  | [Code standards](standards/code-standards.md)                |
 
 ## Further reading
 

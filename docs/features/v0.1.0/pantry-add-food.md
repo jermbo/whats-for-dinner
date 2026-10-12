@@ -1,11 +1,10 @@
 ---
 title: Add food
-summary: 'The keeper records a food with its amount, its place, and its use-by date.'
+summary: "The keeper records a food with its amount, its place, and its use-by date."
 parent: pantry-stories.md
 persona: Keeper
 depends-on: [pantry-see-the-food-of-each-place.md]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / Add food

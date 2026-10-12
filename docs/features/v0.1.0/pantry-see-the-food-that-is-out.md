@@ -1,11 +1,10 @@
 ---
 title: See the food that is out
-summary: 'The keeper still sees a food item that has no row, and can add it again with one tap.'
+summary: "The keeper still sees a food item that has no row, and can add it again with one tap."
 parent: pantry-stories.md
 persona: Keeper
 depends-on: [pantry-see-the-food-of-each-place.md, pantry-add-food.md]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / See the food that is out

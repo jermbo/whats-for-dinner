@@ -1,8 +1,7 @@
 ---
 title: Low food
-summary: 'How food that gets low goes on the shopping list before a recipe needs it, and how the plugin sets the amount to buy.'
+summary: "How food that gets low goes on the shopping list before a recipe needs it, and how the plugin sets the amount to buy."
 parent: shopping.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Shopping](shopping.md) / Low food

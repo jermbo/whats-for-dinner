@@ -1,8 +1,7 @@
 ---
 title: Features
-summary: 'What the plugin does for you, from the pantry to the plate, and why each part is worth its place.'
+summary: "What the plugin does for you, from the pantry to the plate, and why each part is worth its place."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Features

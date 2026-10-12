@@ -1,8 +1,7 @@
 ---
 title: Vision
-summary: 'The true north of the plugin: the problem, the result that the plugin must give, and why it is in Obsidian.'
+summary: "The true north of the plugin: the problem, the result that the plugin must give, and why it is in Obsidian."
 parent: README.md
-updated: 2026-10-11
 ---
 
 [Wiki](README.md) / Vision

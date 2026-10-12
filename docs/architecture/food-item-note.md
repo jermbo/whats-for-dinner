@@ -1,8 +1,7 @@
 ---
 title: Food item note
-summary: 'The exact form of the note of a food item: its name, its four properties, and its table.'
+summary: "The exact form of the note of a food item: its name, its four properties, and its table."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Food item note

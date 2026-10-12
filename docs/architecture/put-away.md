@@ -1,8 +1,7 @@
 ---
 title: Put away
-summary: 'How one action puts a shopping trip into the pantry: which place gets the food, which amount, and when a row gets larger.'
+summary: "How one action puts a shopping trip into the pantry: which place gets the food, which amount, and when a row gets larger."
 parent: shopping.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Shopping](shopping.md) / Put away

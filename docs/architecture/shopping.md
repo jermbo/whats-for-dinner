@@ -1,8 +1,7 @@
 ---
 title: Shopping
-summary: 'How the list knows what is missing: the plan minus the pantry, plus the low food if you want it.'
+summary: "How the list knows what is missing: the plan minus the pantry, plus the low food if you want it."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Shopping

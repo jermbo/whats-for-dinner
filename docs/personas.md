@@ -1,8 +1,7 @@
 ---
 title: Personas
-summary: 'The one cook of the plugin in five moments, each with its own limits. A user story names one of them.'
+summary: "The one cook of the plugin in five moments, each with its own limits. A user story names one of them."
 parent: README.md
-updated: 2026-10-11
 ---
 
 [Wiki](README.md) / Personas

@@ -1,8 +1,7 @@
 ---
 title: Settings
-summary: 'Each setting of the plugin, with the value that it starts with and what it changes.'
+summary: "Each setting of the plugin, with the value that it starts with and what it changes."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Settings

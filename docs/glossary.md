@@ -1,8 +1,7 @@
 ---
 title: Glossary
-summary: 'The words of the kitchen, each with one meaning, as the wiki and the plugin use them.'
+summary: "The words of the kitchen, each with one meaning, as the wiki and the plugin use them."
 parent: README.md
-updated: 2026-10-11
 ---
 
 [Wiki](README.md) / Glossary

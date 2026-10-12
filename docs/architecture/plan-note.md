@@ -1,8 +1,7 @@
 ---
 title: Plan note
-summary: 'The exact form of the note that holds the plan: one task for each meal, what the plugin reads in a task, and what it changes.'
+summary: "The exact form of the note that holds the plan: one task for each meal, what the plugin reads in a task, and what it changes."
 parent: plan.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Plan](plan.md) / Plan note

@@ -1,8 +1,7 @@
 ---
 title: Use soon
-summary: 'How a use-by date on one row moves through the plugin: a badge in the pantry, a recipe at the top, and the first food out.'
+summary: "How a use-by date on one row moves through the plugin: a badge in the pantry, a recipe at the top, and the first food out."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Use soon

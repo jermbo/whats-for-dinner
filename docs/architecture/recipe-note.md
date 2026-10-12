@@ -1,8 +1,7 @@
 ---
 title: Recipe note
-summary: 'The exact form of a recipe note: the parts of the RecipeMD format, what the plugin permits more, and why a note is not a recipe.'
+summary: "The exact form of a recipe note: the parts of the RecipeMD format, what the plugin permits more, and why a note is not a recipe."
 parent: recipes.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Recipes](recipes.md) / Recipe note
@@ -18,14 +17,14 @@ A recipe is a note in the [RecipeMD](https://recipemd.org/specification.html) fo
 
 A mild curry with coconut milk.
 
-*dinner, chicken, one pot*
+_dinner, chicken, one pot_
 
 **4 servings**
 
 ---
 
-- *500 g* chicken thighs
-- *1 can* coconut milk
+- _500 g_ chicken thighs
+- _1 can_ coconut milk
 - salt
 
 ---

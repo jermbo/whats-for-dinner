@@ -1,8 +1,7 @@
 ---
 title: Level
-summary: 'How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line.'
+summary: "How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Level
