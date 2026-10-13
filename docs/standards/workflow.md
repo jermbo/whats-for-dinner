@@ -45,4 +45,5 @@ flowchart LR
 ## Further reading
 
 - [Page template](page-template.md): the form of a page, and the folders of the wiki.
+- [Pull request](pull-request.md): the form of the message that puts a branch into the plugin.
 - [Pantry stories](../features/v0.1.0/pantry-stories.md): the user stories of one feature, as a model.

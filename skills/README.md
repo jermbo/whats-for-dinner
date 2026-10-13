@@ -21,4 +21,4 @@ This folder is the source. The folder `.claude/skills/` has one link for each sk
 
 ## Credit
 
-The idea and the names of these skills come from the [skills of Matt Pocock](https://github.com/mattpocock/skills), which have the MIT licence. The text is written new for this repository. The views of a summary in `pr` come, through his skill, from the skill `show-me` of Dex Horthy.
+The idea and the names of these skills come from the [skills of Matt Pocock](https://github.com/mattpocock/skills), which have the MIT licence. The text is written new for this repository.
