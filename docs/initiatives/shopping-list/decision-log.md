@@ -110,7 +110,7 @@ Four parts of the request are not in the pages, the code, or the design images o
    - a. The link is made when the item gets on the list, not when you put it away. So you see which note an item is before you shop.
    - b. An item is in the pantry when its link goes to a note of the pantry folder.
    - c. You can change the name of a note later. When you do this in Obsidian, Obsidian changes each link to the note. A new name that you give outside Obsidian does not change the links.
-   - d. The plugin writes a link with the path when two notes have one name, as the plan note does.
+   - d. The plugin writes a link with the path of the note and the name of the item, as the plan note does. So two notes with one name do not get mixed.
 21. **An item that is not in the pantry is a link with no note.** Obsidian shows a link to a note that does not exist, and it makes the note when you click the link. The plugin makes no note for such an item. The reason: the link is as exact with no note as with a note, and the vault does not get a note with no content for each item that you bought one time. An option that was rejected: the plugin makes a note for each item at once.
    - a. The link has the path of a folder that a setting names. So a click makes the note in that folder, and not in the place that Obsidian uses for new notes. This is an assumption about Obsidian, and it needs a test.
    - b. On the screen of put away, one tap puts such an item into the pantry. The plugin then makes its note in the pantry folder.
@@ -133,7 +133,7 @@ Four parts of the request are not in the pages, the code, or the design images o
 
 You can change each of these after the first test.
 
-1. **The time of "Sometimes" is 3 weeks.** The 2 months of "Seldom" are from the owner.
+1. **The time of "Sometimes" is 21 days.** The time of "Seldom" is 60 days: the 2 months are from the owner. A time is over when the purchase date is that number of days ago, or more.
 2. **The time of a kind is a fixed value, not a setting.** It becomes a setting when it is wrong for your kitchen.
 3. **A use-by date is near with the same number of days as "Use soon".** It starts as 5 days. A date that is past is near too.
 4. **A staple with no purchase date needs a look.** The plugin cannot tell that its time is not over.
@@ -147,7 +147,7 @@ You can change each of these after the first test.
 12. **The price of a row is what you paid for its full amount.** It is not the price of one unit, and it has no currency.
 13. **A task with no link is an item of your own.** Its text is its name, and it is not in the pantry.
 14. **The total of a receipt is on the screen, not in the note.** A total in the note is a copy, and it is wrong after you correct a price by hand.
-15. **Put away proposes the amount of the last receipt of the item.** With no receipt, it proposes what makes the food item full. With no full amount, it proposes what the meals need.
+15. **Put away proposes the amount of the last receipt of the item.** With no receipt, it proposes the larger of two amounts: what makes the food item full, and what the meals need. With none of the two, it proposes 1.
 16. **Put away proposes the place of the last receipt of the item.** With no receipt, it proposes the place of the first row of the food item. With no row, it proposes the setting "Place for new food".
 17. **Put away proposes a use-by date with the same number of days as the last time.** Eggs that had 3 weeks on the last receipt get 3 weeks from today. With no receipt, the date is empty.
 18. **A suggestion that you skip is gone until the trip ends.** At the next trip, the plugin asks again, if the food item still needs a look.
@@ -155,6 +155,12 @@ You can change each of these after the first test.
 20. **You label a staple in the form of the food item, in the Pantry.** The property is `staple`, and its value is `often`, `sometimes`, or `seldom`.
 21. **Food that a recipe needs and that the pantry does not know has a link into the pantry folder.** Put away makes its note there, as it does today.
 22. **The data file has no cart and no choice for the low food.** The values of today are not kept.
+23. **The plugin keeps the suggestions that you skipped in the data file.** Put away takes them out.
+24. **A suggestion shows one reason.** With more than one reason, the sequence is: "Out", "Low", "Past its date", the use-by date, the purchase date. A staple of the kind "Often" with no other reason shows "Often".
+25. **A suggestion of food that a meal needs has the amount that the meals need.**
+26. **An item of your own has no amount on the list.**
+27. **The filter "Low food" of the Shop part gets the name "Your choices".** It shows each row of a choice.
+28. **The texts of the new controls are in the stories.** They are "Suggestions", "Add", "Skip", "Remove", "Add an item", "Add as new", "Put away", "Not bought", "Put into the pantry", "Into the pantry", and "Store".
 
 ## What this work does not include
 
