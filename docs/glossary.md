@@ -47,13 +47,13 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 
 ## The store and the stove
 
-| Word     | Meaning                                                                                                                |
-| -------- | ---------------------------------------------------------------------------------------------------------------------- |
-| List     | The [shopping](architecture/shopping.md) list: the food that the week needs and that is missing.                       |
-| Cart     | The rows of the list that you marked in the store.                                                                     |
-| Put away | The [action](architecture/put-away.md) that adds the cart to the pantry.                                               |
-| Step     | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                    |
-| Record   | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo. |
+| Word     | Meaning                                                                                                                                  |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| List     | The [shopping](architecture/shopping.md) list: the food that the week needs and that is missing. "Grocery list" is a second name for it. |
+| Cart     | The rows of the list that you marked in the store.                                                                                       |
+| Put away | The [action](architecture/put-away.md) that adds the cart to the pantry.                                                                 |
+| Step     | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                      |
+| Record   | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                   |
 
 ## Further reading
 
