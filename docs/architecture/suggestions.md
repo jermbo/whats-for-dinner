@@ -40,11 +40,15 @@ Potatoes are "Sometimes", and you bought them on 12 October. On 19 October they 
 - **"Skip"** takes the suggestion away until put away ends the trip. At the next trip, the plugin asks again, if the staple still needs a look.
 - **"Remove"** on the row of a choice takes its task out of the note. The staple is a suggestion again.
 
-A staple that has a task in the shopping note is not a suggestion.
+A food item that has a task in the shopping note is not a suggestion.
+
+## Food of a meal can need a look too
+
+Food that is not a staple is a suggestion in one case: a meal of the week needs it, and the pantry has it [past its date](past-its-date.md). You accept it or you skip it in the same way.
 
 ## A skip is not in a note
 
-The staples that you skipped are in the data file of the plugin, because a skip is not a fact of the kitchen. [Put away](put-away.md) takes them out of that file.
+The suggestions that you skipped are in the data file of the plugin, because a skip is not a fact of the kitchen. [Put away](put-away.md) takes them out of that file.
 
 ## Further reading
 

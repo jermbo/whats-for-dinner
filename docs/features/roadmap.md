@@ -29,6 +29,11 @@ The phone is where you use the plugin, and a function with no test there is not 
 | Suggestions                   | The Shop part shows each staple that needs a look, with its reason. "Add" puts it on the list.  |
 | An item of your own           | "Add as new" puts "Batteries" on the list, and the vault gets no note. A click makes the note.  |
 | The receipt of a trip         | Put away gives the note "Next trip" the name of the day, with one row for each item.            |
+| Food past its date            | Chicken thighs with a date before today are a suggestion. "Add" puts 500 g on the list.         |
+| The facts at put away         | The screen has 20 items, and one hand is sufficient. A price that you type is in the receipt.   |
+| The last receipt              | The eggs start with the amount, the place, the price, and the days of their last receipt.       |
+| The store of a trip           | One tap on a store, and the receipt has the property `store`.                                   |
+| A new item into the pantry    | "Into the pantry" on a new item makes its food item note, and the receipt links to it.          |
 
 ## The pantry bar has two limits
 

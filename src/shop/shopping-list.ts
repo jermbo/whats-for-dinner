@@ -15,7 +15,7 @@ export type ShoppingRow = {
 	name: string;
 	// What to buy, as text: "20 g", "1 can + 200 ml", or no text when the row has no amount.
 	amount: string;
-	// What to buy, as quantities. Put away adds these to the pantry.
+	// What to buy, as quantities. Put away proposes these for the pantry.
 	buy: Measure[];
 	food: FoodNote | null;
 	// The titles of the recipes that need this row.
@@ -24,26 +24,30 @@ export type ShoppingRow = {
 	choice: boolean;
 };
 
-type Need = {
+// What the meals need of one item, with no regard to the pantry.
+export type Need = {
+	key: string;
 	name: string;
 	food: FoodNote | null;
+	// One sum for each kind of measure. An ingredient with no amount adds nothing.
 	sums: Map<string, number>;
-	recipes: Set<string>;
+	recipes: string[];
 };
 
-export function shoppingList(
+export function needsOf(
 	meals: { title: string; ingredients: IngredientMatch[] }[],
 	pantryFolder: string
-) {
+): Need[] {
 	const needs = new Map<string, Need>();
-	const needOf = (key: string, name: string, food: FoodNote | null) => {
-		const need = needs.get(key) ?? {
+	const needOf = (id: string, name: string, food: FoodNote | null) => {
+		const need = needs.get(id) ?? {
+			key: food?.path ?? notePathIn(pantryFolder, name),
 			name,
 			food,
 			sums: new Map<string, number>(),
-			recipes: new Set<string>()
+			recipes: []
 		};
-		needs.set(key, need);
+		needs.set(id, need);
 		return need;
 	};
 
@@ -53,28 +57,32 @@ export function shoppingList(
 				? needOf(food.path, food.item.name, food)
 				: needOf(nameKey(ingredient.name), showName(ingredient.name), null);
 			if (need) addTo(entry.sums, need);
-			entry.recipes.add(title);
+			if (!entry.recipes.includes(title)) entry.recipes.push(title);
 		}
 	}
+	return [...needs.values()];
+}
 
+export function shoppingList(needs: Need[]): ShoppingRow[] {
 	const rows: ShoppingRow[] = [];
-	for (const { name, food, sums, recipes } of needs.values()) {
-		const stocks = food?.item.stocks ?? [];
-		const short = new Map<string, number>();
+	for (const need of needs) {
+		const stocks = need.food?.item.stocks ?? [];
+		const short: Measure[] = [];
 
-		for (const [kind, value] of sums) {
+		for (const [kind, value] of need.sums) {
 			const has = available(stocks, kind);
 			// The pantry has the food in a unit that does not compare: the plugin does not ask for more.
 			if (has === 0 && stocks.length) continue;
-			if (value > has) short.set(kind, value - has);
+			if (value > has) short.push({ kind, value: value - has });
 		}
 
-		const buy = [...short].map(([kind, value]) => ({ kind, value }));
-		if (buy.length || !stocks.length) {
-			const amount = buy.map(showMeasure).join(' + ');
-			const key = food?.path ?? notePathIn(pantryFolder, name);
-			rows.push({ key, name, amount, buy, food, recipes: [...recipes], choice: false });
-		}
+		if (short.length || !stocks.length) rows.push(rowFor(need, short));
 	}
 	return rows.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// The row of a need, with what to buy of it.
+export function rowFor({ key, name, food, recipes }: Need, buy: Measure[]): ShoppingRow {
+	const amount = buy.map(showMeasure).join(' + ');
+	return { key, name, amount, buy, food, recipes, choice: false };
 }

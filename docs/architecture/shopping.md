@@ -20,7 +20,7 @@ The plugin adds and compares [amounts](amounts.md) only if their units compare. 
 
 ## Your choices are on the list too
 
-Some food you want always, plan or no plan. You label it as a [staple](staples.md), and the Shop part suggests it when it needs a look. One tap accepts a suggestion.
+Some food you want always, plan or no plan. You label it as a [staple](staples.md), and the Shop part suggests it when it needs a look. One tap accepts a suggestion. Food of a meal that is [past its date](past-its-date.md) is a suggestion too.
 
 Somebody asks you for batteries on a Tuesday. You type the name into the field "Add an item", and the item is on the list of the next trip. The field proposes the notes that the name finds.
 
@@ -38,13 +38,13 @@ A tap on a row puts the item in the cart. A row shows the meals that need the it
 
 "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
 
-## At home, one action
+## At home, one screen
 
-"Put into the pantry" is the action [put away](put-away.md). It adds each item of the cart to its food item. The amount goes to the place where that food item is now. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
+[Put away](put-away.md) shows each item of the cart with its facts: the amount, the place, the use-by date, and the price. The plugin proposes them, and you correct what is different. Then one button adds each item to its food item. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
 
-A food that the pantry does not know gets a new note, in the place for new food of the settings. After this action, the cart is empty, and the list has only what you did not buy.
+A food that the pantry does not know gets a new note. After the button, the cart is empty, and the list has only what you did not buy.
 
-The shopping note becomes the [receipt](receipt.md) of that day. A choice that you did not buy goes into the note of the next trip.
+The shopping note becomes the [receipt](receipt.md) of that day, with the price of each item. A choice that you did not buy goes into the note of the next trip.
 
 ## Further reading
 

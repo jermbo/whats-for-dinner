@@ -13,7 +13,13 @@
 	import AddItem from './AddItem.svelte';
 	import SuggestionList from './SuggestionList.svelte';
 
-	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
+	type Props = {
+		kitchen: Kitchen;
+		bar: BarState<Sort, Only>;
+		// Opens the screen of put away.
+		onputaway: () => void;
+	};
+	let { kitchen, bar, onputaway }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	const needed = $derived(kitchen.list);
@@ -212,8 +218,8 @@
 			{/each}
 		</ul>
 
-		<Button kind="olive" onclick={() => kitchen.putAway()}>
-			Put {inCart.length} into the pantry <span aria-hidden="true">→</span>
+		<Button kind="main" onclick={onputaway}>
+			Put away <span aria-hidden="true">→</span>
 		</Button>
 	{/if}
 </section>

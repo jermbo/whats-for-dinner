@@ -40,7 +40,7 @@ A row that the plugin calculates from the meals is not in the note. It gets its 
 
 A name can find the wrong food item, or no food item. A link is exact, and Obsidian keeps it correct when the note gets a new name.
 
-An item is in the pantry when its link goes to a note of the pantry folder. Only such an item goes into the pantry at [put away](put-away.md). The soap and the batteries change nothing there.
+An item is in the pantry when its link goes to a note of the pantry folder. Such an item goes into the pantry at [put away](put-away.md). The soap and the batteries change nothing there, unless you put "Into the pantry" on for them.
 
 The plugin follows a link as Obsidian does. So `[[Lime]]`, with no folder, is the note `Pantry/Lime`.
 

@@ -2,9 +2,10 @@
 title: Put an item of your own into the pantry
 summary: "The keeper puts an item that the pantry does not have into the pantry, with one tap on the screen of put away."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: [shop-add-an-item-of-your-own.md, shop-give-the-facts-of-each-item.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Put an item of your own into the pantry
@@ -58,6 +59,7 @@ Each criterion starts with the test vault on 2026-10-13. The vault has no note `
 
 ## Architecture
 
+- [Put away](../../architecture/put-away.md): the line of an item that is not in the pantry.
 - [Food item note](../../architecture/food-item-note.md): the note that the button makes.
 - [Settings](../../architecture/settings.md): the place for new food.
 - [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): decision 21, why an item has no note before this tap. It is a page of the initiative.

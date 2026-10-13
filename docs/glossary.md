@@ -20,18 +20,23 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 
 ## The pantry
 
-| Word          | Meaning                                                                                                                                                                            |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| List          | The items to buy at the next trip. The plugin [calculates](architecture/shopping.md) it, and the Shop part shows it. "Shopping list" and "grocery list" are two more names for it. |
-| Trip          | One visit to a store. It can be on any day. It is open from your first action until put away ends it, and one trip is open at a time.                                              |
-| Shopping note | The [note](architecture/shopping-note.md) of one trip. It starts with your first action for that trip. You do not shop from it.                                                    |
-| Suggestion    | A staple that [needs a look](architecture/suggestions.md), with the reason. You accept it or you skip it. It is a row of the list only after you accept it.                        |
-| Choice        | An item that is on the list because you put it there: a suggestion that you accepted, or an item of your own.                                                                      |
-| Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                   |
-| Put away      | The [action](architecture/put-away.md) that adds the cart to the pantry.                                                                                                           |
-| Receipt       | The [shopping note](architecture/receipt.md) of a trip that is complete: each item that you bought. Its name is the day of the trip.                                               |
-| Step          | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                                                                |
-| Record        | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                                                             |
+| Word          | Meaning                                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Food item     | One food of the [pantry](architecture/pantry.md), as one note. Rice is a food item.                                       |
+| Other name    | A name that a recipe can use for a food item, such as "pasta" for elbow pasta.                                            |
+| Place         | Where food is, such as "Downstairs pantry". You give the places their names.                                              |
+| Row           | One food item in one place: one row of the table in its note.                                                             |
+| Amount        | A number and a unit, such as "500 g". See [amounts](architecture/amounts.md). Some amounts have no number, such as "tap". |
+| Full amount   | The most that the pantry had of a food item.                                                                              |
+| Low line      | The amount below which a food item is low.                                                                                |
+| Level         | What you have of a food item, against its full amount and its low line. See [level](architecture/level.md).               |
+| Low           | Below the low line, with all places together.                                                                             |
+| Out           | With no row. The food item is still a note.                                                                               |
+| Use soon      | With a [use-by date](architecture/use-soon.md) in 5 days or less. The number of days is a setting.                        |
+| Past its date | With a use-by date before today. The date of today is not past.                                                           |
+| Staple        | A food item that you always want, plan or no plan. Its note has the label [staple](architecture/staples.md).              |
+| Kind          | How often you buy a staple: "Often", "Sometimes", or "Seldom". It tells when the plugin asks about the staple again.      |
+| Purchase date | The day on which you put a food item away the last time.                                                                  |
 
 ## The recipes and the week
 
@@ -46,16 +51,23 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 
 ## The store and the stove
 
-| Word          | Meaning                                                                                                                                                                                         |
-| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| List          | The items to buy at the next trip. The plugin [calculates](architecture/shopping.md) it, and the Shop part shows it. "Shopping list" and "grocery list" are two more names for it.              |
-| Trip          | One visit to a store. It can be on any day. It is open from your first action until put away ends it, and one trip is open at a time.                                                           |
-| Shopping note | The [note](architecture/shopping-note.md) of one trip. It starts with your first action for that trip. You do not shop from it.                                                                 |
-| Choice        | An item that is on the list because you put it there, such as an item of your own that you type into the shopping note.                                                                         |
-| Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                                |
-| Put away      | The [action](architecture/put-away.md) that adds the cart to the pantry.                                                                                                                        |
-| Step          | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                                                                             |
-| Record        | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                                                                          |
+| Word          | Meaning                                                                                                                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| List          | The items to buy at the next trip. The plugin [calculates](architecture/shopping.md) it, and the Shop part shows it. "Shopping list" and "grocery list" are two more names for it. |
+| Item          | One thing to buy. It is food of the pantry, or an item of your own, such as batteries.                                                                                             |
+| Trip          | One visit to a store. It can be on any day. It is open from your first action until put away ends it, and one trip is open at a time.                                              |
+| Shopping note | The [note](architecture/shopping-note.md) of one trip. It starts with your first action for that trip. You do not shop from it.                                                    |
+| Suggestion    | A food item that [needs a look](architecture/suggestions.md), with the reason: a staple, or food of a meal that is past its date. You accept it or you skip it.                    |
+| Choice        | An item that is on the list because you put it there: a suggestion that you accepted, or an item of your own.                                                                      |
+| Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                   |
+| Put away      | The [screen and its button](architecture/put-away.md) that add the cart to the pantry, and that end the trip.                                                                      |
+| Fact          | One of the five things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, and the mark "On sale".         |
+| Price         | What you paid for the full amount of an item. It has no currency, and it is only in a receipt.                                                                                     |
+| Store         | Where you made a trip. A receipt can have one store.                                                                                                                               |
+| Receipt       | The [shopping note](architecture/receipt.md) of a trip that is complete: each item that you bought. Its name is the day of the trip.                                               |
+| Last receipt  | The newest receipt with a row for an item. Put away starts from it.                                                                                                                |
+| Step          | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                                                                |
+| Record        | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                                                             |
 
 ## Further reading
 

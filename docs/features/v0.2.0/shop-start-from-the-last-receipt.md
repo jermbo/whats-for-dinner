@@ -2,9 +2,10 @@
 title: Start from the facts of the last receipt
 summary: "The screen of put away starts each item with the amount, the place, the price, and the days of its last receipt."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: [shop-give-the-facts-of-each-item.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Start from the facts of the last receipt
@@ -76,6 +77,6 @@ The note `Shopping/2026-10-04` has the property `date: 2026-10-04` and this tabl
 
 ## Architecture
 
-- [Put away](../../architecture/put-away.md): why the plugin answers the questions of a new item itself.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the form of a receipt. It is a page of the initiative.
+- [Facts of an item](../../architecture/put-away-facts.md): what each fact starts as, with and with no last receipt.
+- [Receipt](../../architecture/receipt.md): the form of a receipt, and what the plugin reads in it.
 - [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): decision 13, why the prices are only in the receipts. It is a page of the initiative.

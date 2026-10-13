@@ -21,7 +21,7 @@ Your vault has more than recipes. These settings keep the other notes out of the
 | Meal plan note     | `Meal plan.md`   | The note with the meals of the week.                                                   |
 | Shopping folder    | `Shopping`       | The note of each shopping trip is in this folder.                                      |
 | Items folder       | `Shopping/Items` | An item of your own that no note has links to a note of this folder.                   |
-| Place for new food | `Kitchen`        | The place of food from a shopping trip, if the pantry does not know the food.          |
+| Place for new food | `Kitchen`        | The place that put away proposes for food that has no row in the pantry.               |
 
 With no recipes folder, the plugin does not try a note of the pantry folder, of the shopping folder, or of the items folder.
 

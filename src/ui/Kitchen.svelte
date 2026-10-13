@@ -13,6 +13,8 @@
 	import Nav from './parts/Nav.svelte';
 	import PlanPart from './plan/PlanPart.svelte';
 	import RecipesPart from './recipes/RecipesPart.svelte';
+	import { PutAwayDraft } from './shop/put-away-draft.svelte';
+	import PutAway from './shop/PutAway.svelte';
 	import ShopPart from './shop/ShopPart.svelte';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
@@ -61,10 +63,22 @@
 	let cooking = $state<string | null>(null);
 	const cooked = $derived(kitchen.recipes.find((entry) => entry.path === cooking));
 	const cook = (path: string) => (cooking = path);
+
+	// The screen of put away is open. What you gave there stays while the kitchen is open, so the
+	// draft is here.
+	let puttingAway = $state(false);
+	const draft = new PutAwayDraft();
+	// With no item in the cart, the screen has no line. It closes, and it does not open again when
+	// the cart gets its next item.
+	$effect(() => {
+		if (!kitchen.cart.length) puttingAway = false;
+	});
 </script>
 
 {#if cooked}
 	<CookMode {kitchen} entry={cooked} onclose={() => (cooking = null)} />
+{:else if puttingAway}
+	<PutAway {kitchen} {draft} onclose={() => (puttingAway = false)} />
 {:else}
 	<div class="wfd-kitchen">
 		<Nav label="Part of the kitchen" {options} value={part} onchange={show} />
@@ -78,7 +92,7 @@
 				{:else if part === 'plan'}
 					<PlanPart {kitchen} oncook={cook} onbrowse={browse} bar={bars.plan} />
 				{:else}
-					<ShopPart {kitchen} bar={bars.shop} />
+					<ShopPart {kitchen} bar={bars.shop} onputaway={() => (puttingAway = true)} />
 				{/if}
 			</div>
 		{/key}

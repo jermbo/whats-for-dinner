@@ -1,6 +1,6 @@
 ---
 title: Use soon
-summary: "How a use-by date on one row moves through the plugin: a badge in the pantry, a recipe at the top, and the first food out."
+summary: "How a use-by date on one row moves through the plugin: a badge in the pantry, a recipe at the top, the first food out, and a suggestion when the date is past."
 parent: pantry.md
 ---
 
@@ -39,6 +39,10 @@ Here the first date of a food item counts. A recipe that [finds](match.md) the s
 ## What Cook Mode does
 
 At the end of a meal, the row with the first date gives its food first. The omelette takes its spinach from the kitchen fridge. A row with no date is the last to give.
+
+## What the Shop part shows
+
+A date that is near changes nothing on the list, because the meal uses the food. A date that is past is different. Food that a meal needs and that is [past its date](past-its-date.md) is a suggestion, so that you look at it before the day of the meal.
 
 ## Further reading
 

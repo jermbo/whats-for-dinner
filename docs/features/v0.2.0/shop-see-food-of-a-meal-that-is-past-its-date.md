@@ -2,9 +2,10 @@
 title: See food of a meal that is past its date
 summary: "The planner gets a suggestion for food that a meal needs, when the pantry has it past its use-by date."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Planner
 depends-on: [shop-see-the-staples-that-need-a-look.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / See food of a meal that is past its date
@@ -52,6 +53,8 @@ Each criterion starts with the test vault, with no open note. The chicken curry 
 
 ## Architecture
 
+- [Food past its date](../../architecture/past-its-date.md): the rule of the suggestion, and the amount of its row.
+- [Suggestions](../../architecture/suggestions.md): what "Add" and "Skip" do.
 - [Use soon](../../architecture/use-soon.md): the use-by date of a row, and the badge "Past its date" of the pantry.
 - [Shopping](../../architecture/shopping.md): how the list counts what the pantry has.
 - [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): decision 8, with the reason. It is a page of the initiative.

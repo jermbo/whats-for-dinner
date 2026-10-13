@@ -2,9 +2,10 @@
 title: Record the store of a trip
 summary: "The keeper selects the store of a trip with one tap, and the receipt has it."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: [shop-give-the-facts-of-each-item.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Record the store of a trip
@@ -51,6 +52,6 @@ Each criterion starts with the test vault on 2026-10-13, with lime in the cart. 
 
 ## Architecture
 
-- [Put away](../../architecture/put-away.md): the action that this story adds a fact to.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the properties of a receipt. It is a page of the initiative.
+- [Put away](../../architecture/put-away.md): the screen that this story adds a fact to.
+- [Receipt](../../architecture/receipt.md): the properties of a receipt.
 - [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): decision 23, why the store is a fact of the trip. It is a page of the initiative.

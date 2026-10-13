@@ -6,12 +6,14 @@
 // The note is yours. A change of the cart changes only the lines of the tasks, and each change
 // starts from the text of the note, so the other text stays.
 
-export type TripTask = {
-	// The note of the item as the link has it, such as "Pantry/Lime". Null: the task has no link.
+// An item as a shopping note names it: by a link, or by text.
+export type Item = {
+	// The note of the item as the link has it, such as "Pantry/Lime". Null: the item has no link.
 	link: string | null;
 	name: string;
-	inCart: boolean;
 };
+
+export type TripTask = Item & { inCart: boolean };
 
 const TASK = /^(\s*[-*]\s+\[)([ xX])(\]\s+)(.+)$/;
 const LINK = /\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/;
@@ -28,10 +30,16 @@ export function readTask(line: string): TripTask | null {
 	if (!match) return null;
 
 	const [, , mark, , text] = match;
+	const item = readItem(text);
+	return item && { ...item, inCart: mark !== ' ' };
+}
+
+// The item that a text names. Null: the text has no name in it. A row of a receipt names its item
+// in the same way.
+export function readItem(text: string): Item | null {
 	const link = LINK.exec(text);
 	const name = (link ? link[2] || nameOf(link[1]) : text).trim();
-	if (!name) return null;
-	return { link: link ? link[1].trim() : null, name, inCart: mark !== ' ' };
+	return name ? { link: link ? link[1].trim() : null, name } : null;
 }
 
 // The link tells which item a task has. A task with no link has only its name.

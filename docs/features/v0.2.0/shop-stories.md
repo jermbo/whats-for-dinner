@@ -48,7 +48,7 @@ Story 3 reads the property that story 2 writes. Story 2 does not stop story 3, b
 
 ## What the test vault needs
 
-The criteria of the stories use the notes of the test vault. Four things are not in the vault today, and the story that needs each of them tells its exact form.
+The criteria of the stories use the notes of the test vault. The vault has four things for them, and the story that needs each of them tells its exact form.
 
 | The vault needs                                               | For story |
 | ------------------------------------------------------------- | --------- |
@@ -63,7 +63,9 @@ Each story has the form that the [user story](../../standards/user-story.md) pag
 
 ## The status of a story
 
-The metadata of a story has its status. Stories 1, 2, 3, 5, and 6 have the status `built`: the code is there, and nobody recorded a test on the phone. The other stories have the status `ready`.
+The metadata of a story has its status. Each of the ten stories has the status `built`: the code is there, and nobody recorded a test on the phone.
+
+The stories use one test vault, and two of them do not agree in it. Story 7 tells milk with no receipt, and story 8 gives milk a receipt. So the check list of the test vault tests story 7 with food that has no receipt.
 
 ## Further reading
 

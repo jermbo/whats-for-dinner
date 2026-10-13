@@ -1,15 +1,35 @@
 // The receipt of a trip is its shopping note after put away: a table in the place of the tasks,
-// with one row for each item of the cart. Thus the vault has one note for each trip to the store.
-// Your own text stays.
+// with one row for each item of the cart. Thus the vault has one note for each trip to the store,
+// with what you bought and what you paid. Your own text stays.
 
+import { amountOf, type Facts } from './facts';
+import { showPrice } from './price';
 import { isSameItem, readTask, type TripTask } from './shopping-note';
 
-// What put away did with one item of the cart. An item that is not in the pantry has no amount
-// and no place.
-export type Purchase = { item: TripTask; amount: string; place: string };
+// What you bought of one item: the cells of its row.
+export type Purchase = {
+	// The task of the item in the open note.
+	task: TripTask;
+	// The note that the row links to: the note of the task, or the food item note that an item of
+	// your own went into.
+	link: string | null;
+	// An item that did not go into the pantry has no amount, no place, and no use-by date.
+	amount: string;
+	place: string;
+	useBy: string;
+	// The price with 2 decimals, or no text when it is missing.
+	price: string;
+	onSale: boolean;
+};
 
-// The plugin leaves "Price", "Sale", and "Use by" empty. You can type a value into them.
 const COLUMNS = ['Item', 'Amount', 'Price', 'Sale', 'Place', 'Use by'];
+
+export function purchaseOf(task: TripTask, facts: Facts, link: string | null): Purchase {
+	const paid = { price: showPrice(facts.price), onSale: facts.onSale };
+	if (!facts.intoPantry) return { task, link, amount: '', place: '', useBy: '', ...paid };
+	const place = facts.place.trim();
+	return { task, link, amount: amountOf(facts), place, useBy: facts.useBy, ...paid };
+}
 
 // The receipt has the name of the day of put away. A second receipt of one day gets a number:
 // "2026-10-18 2".
@@ -27,8 +47,8 @@ export function receiptOf(text: string, purchases: Purchase[]): string {
 	if (first === -1) return text;
 
 	const rows = cartTasks(lines).map((task) => {
-		const purchase = purchases.find(({ item }) => isSameItem(item, task));
-		return [showItem(task), purchase?.amount ?? '', '', '', purchase?.place ?? '', ''];
+		const purchase = purchases.find((purchase) => isSameItem(purchase.task, task));
+		return purchase ? cellsOf(purchase) : [showItem(task.link, task.name), '', '', '', '', ''];
 	});
 	const ownText = (some: string[]) => some.filter((line) => readTask(line) === null);
 	return [...ownText(lines.slice(0, first)), showTable(rows), ...ownText(lines.slice(first))].join(
@@ -51,19 +71,28 @@ function cartTasks(lines: string[]): TripTask[] {
 	return tasks.filter((task, at) => tasks.findIndex((other) => isSameItem(other, task)) === at);
 }
 
-// In a table, a pipe is the edge of a cell. So the pipe of a link gets a backslash, as Obsidian
-// writes it.
-const showItem = ({ link, name }: TripTask) =>
-	(link ? `[[${link}|${name}]]` : name).replaceAll('|', '\\|');
+const cellsOf = ({ task, link, amount, price, onSale, place, useBy }: Purchase) => [
+	showItem(link, task.name),
+	amount,
+	price,
+	onSale ? 'yes' : '',
+	place,
+	useBy
+];
 
+const showItem = (link: string | null, name: string) => (link ? `[[${link}|${name}]]` : name);
+
+// In a table, a pipe is the edge of a cell. So the pipe of a link gets a backslash, as Obsidian
+// writes it, and a pipe that you typed gets one too.
 function showTable(rows: string[][]): string {
+	const safe = rows.map((row) => row.map((cell) => cell.replaceAll('|', '\\|')));
 	const widths = COLUMNS.map((column, at) =>
-		Math.max(column.length, ...rows.map((row) => row[at].length))
+		Math.max(column.length, ...safe.map((row) => row[at].length))
 	);
 	const line = (cells: string[]) =>
 		`| ${cells.map((cell, at) => cell.padEnd(widths[at])).join(' | ')} |`;
 
-	return [line(COLUMNS), line(widths.map((width) => '-'.repeat(width))), ...rows.map(line)].join(
+	return [line(COLUMNS), line(widths.map((width) => '-'.repeat(width))), ...safe.map(line)].join(
 		'\n'
 	);
 }

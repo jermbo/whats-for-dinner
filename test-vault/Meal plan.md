@@ -1,9 +1,8 @@
 - [ ] [[Recipes/Spinach omelette|Spinach omelette]]
-- [ ] [[Recipes/Chicken curry|Chicken curry]]
 - [ ] [[Edge cases/Recipe with no steps|Trail mix]]
 - [ ] [[Recipes/Pancakes|Pancakes]]
-- [ ] [[Recipes/Tacos|Tacos]]
+- [ ] [[Recipes/Tacos|Tacos]] · 2026-10-13
 - [ ] [[Edge cases/Recipe with a linked recipe|Rice bowl with egg]]
-- [ ] [[Edge cases/Recipe with preparation|Overnight oats]]
+- [ ] [[Edge cases/Recipe with preparation|Overnight oats]] · 2026-10-13
 - [ ] [[Recipes/Guacamole|Guacamole]]
 - [ ] [[Edge cases/Recipe with a new food|Quinoa bowl]]

@@ -1,17 +1,26 @@
 # Check list: shopping list
 
-This list tests the five stories of the shopping list that are built: 1, 2, 3, 5, and 6. Do the parts in sequence. Each part starts from the state that the part before it leaves.
+This list tests the ten stories of the shopping list. Do the parts in sequence. Each part starts from the state that the part before it leaves.
 
 Each line has one action and what you must see. The text in brackets is the story and its criterion.
 
-A date shows in the form of your device: "4 Oct" or "Oct 4". The reasons of part 2 are for 13 to 15 October 2026. From 16 October, fresh coriander has "Past its date". From 20 October, eggs have "Use by 25 Oct".
+## The day of your test
+
+`<today>` is the day of your test, as year-month-day, such as `2026-10-13`. A date shows in the form of your device: "4 Oct" or "Oct 4".
+
+The texts of this list are for 13 October 2026. On a later day, three things are different:
+
+- From 14 October, part 2 has 2 more suggestions: chicken thighs and spinach, with "Past its date". Part 3 tests them.
+- From 16 October, fresh coriander has "Past its date". From 20 October, eggs have "Use by 25 Oct".
+- A use-by date that the plugin proposes is later by the same number of days.
 
 ## Before you start
 
+- [ ] Run `git add test-vault`. Then you can do the test again: see the last part.
 - [ ] Run `npm run build`. Then restart Obsidian, or put the plugin off and on.
-- [ ] The vault has no folder `Shopping`.
-- [ ] The plan has 9 meals, with "Guacamole" and "Quinoa bowl".
-- [ ] The settings of the plugin have "Shopping folder" with `Shopping`, and "Items folder" with `Shopping/Items`.
+- [ ] The folder `Shopping` has two notes: `2026-09-28` and `2026-10-04`. It has no note `Next trip`.
+- [ ] The plan has 9 meals, with "Chicken curry", "Guacamole", and "Quinoa bowl".
+- [ ] The settings of the plugin have "Shopping folder" with `Shopping`, "Items folder" with `Shopping/Items`, and "Place for new food" with `Kitchen`.
 
 ## 1. Label a staple
 
@@ -48,8 +57,8 @@ In the Shop part. This is story 3.
 | Salt            | Bought 2 months ago | 1 box · Bought 10 Aug                     |
 
 - [ ] The group has no line for sugar, and no line for ginger. (AC 1 a, 1 b)
-- [ ] The list has no row "Ginger". (AC 24 a)
-- [ ] The list has the row "Avocados" with "4", not "2". A staple on the list fills.
+- [ ] The list has 6 rows: "Avocados 4", "Coconut milk 0.5 cans", "Lime 1", "Peanuts 70 g", "Quinoa 200 g", and "Raisins 80 g". It has no row "Ginger". (AC 24 a)
+- [ ] The row "Avocados" has "4", not "2". A staple on the list fills.
 - [ ] Tap "Add" on flour. The vault has the note `Shopping/Next trip`, with the line `- [ ] [[Pantry/Flour|Flour]]`. (AC 16)
 - [ ] The list has the row "Flour" with "800 g" and with "Remove". The group has no line for flour. (AC 16 a, 16 b)
 - [ ] Tap "Add" on salt. The list has the row "Salt" with no amount. (AC 18)
@@ -60,7 +69,28 @@ In the Shop part. This is story 3.
 - [ ] Tap "Your choices". The list shows "Eggs" and "Flour", and it does not show "Lime". Put the filter off. (AC 26, 26 a)
 - [ ] Select the sequence "By meal". The last group is "Your choices". Select "A to Z" again.
 
-## 3. An item of your own
+## 3. Food past its date
+
+In the Shop part, with the notes `Chicken thighs`, `Spinach`, and `Meal plan` open next to it. This is story 4.
+
+The chicken curry needs 500 g of chicken thighs, and the pantry has 500 g. The spinach omelette needs 100 g of spinach, and the pantry has 500 g.
+
+- [ ] The list has no row "Chicken thighs". (AC 6)
+- [ ] In the note `Chicken thighs`, set the date of the row to `<today>`. The group "Suggestions" has no line for chicken thighs. (AC 2)
+- [ ] Set the date to `2026-10-01`. The group has the line "Chicken thighs", with "Past its date" and the facts "500 g · Use by 1 Oct". (AC 1, 1 a)
+- [ ] The list still has no row "Chicken thighs". (AC 6)
+- [ ] In the note `Meal plan`, change the task of the chicken curry to `- [x]`. The line of chicken thighs is gone. (AC 4)
+- [ ] Change the task back to `- [ ]`. The line is there again.
+- [ ] Tap "Add" on chicken thighs. The note `Shopping/Next trip` has the line `- [ ] [[Pantry/Chicken thighs|Chicken thighs]]`. (AC 7)
+- [ ] The list has the row "Chicken thighs" with "500 g" and with "Remove". The group has no line for chicken thighs. (AC 7 a, 5)
+- [ ] In the note `Spinach`, set the date of the row "Kitchen fridge" to `2026-10-01`. The group has the line "Spinach", with "Past its date". (AC 3)
+- [ ] Tap "Add" on spinach. The list has the row "Spinach" with "100 g". (AC 8)
+- [ ] Tap "Remove" on the row "Spinach". Spinach is a suggestion again.
+- [ ] Tap "Skip" on spinach. The line is gone, and the note has no task for spinach. (AC 9, 9 a)
+
+The group "Suggestions" has 4 lines now: avocados, fresh coriander, oats, and rice.
+
+## 4. An item of your own
 
 In the Shop part. This is story 5.
 
@@ -81,10 +111,11 @@ The note `Shopping/Next trip` has this text now:
 ```markdown
 - [ ] [[Pantry/Flour|Flour]]
 - [ ] [[Pantry/Eggs|Eggs]]
+- [ ] [[Pantry/Chicken thighs|Chicken thighs]]
 - [ ] [[Shopping/Items/Batteries|Batteries]]
 ```
 
-## 4. The cart in the note
+## 5. The cart in the note
 
 In the Shop part, with the note `Shopping/Next trip` open next to it. This is story 1.
 
@@ -101,7 +132,7 @@ In the Shop part, with the note `Shopping/Next trip` open next to it. This is st
 - [ ] In the Plan part, tap "Remove" on the guacamole. In the Shop part, "Avocados" is still in the cart. (AC 11)
 - [ ] Put the guacamole in the week again, in the Recipes part.
 - [ ] Restart Obsidian. The cart has the same 4 items. (AC 12)
-- [ ] Salt is still not a suggestion. (Story 3: AC 21)
+- [ ] Salt and spinach are still not suggestions. (Story 3: AC 21)
 
 The note has this text now:
 
@@ -110,6 +141,7 @@ Mum comes on Friday.
 
 - [ ] [[Pantry/Flour|Flour]]
 - [ ] [[Pantry/Eggs|Eggs]]
+- [ ] [[Pantry/Chicken thighs|Chicken thighs]]
 - [ ] [[Shopping/Items/Batteries|Batteries]]
 - [x] [[Pantry/Quinoa|Quinoa]]
 - [x] [[Lime]]
@@ -117,74 +149,191 @@ Mum comes on Friday.
 - [x] [[Pantry/Avocados|Avocados]]
 ```
 
-## 5. Put away and the receipt
+## 6. The screen of put away
 
-This is story 6. "Today" is the day of your test, such as `2026-10-13`.
+In the Shop part. This is story 7, with the start of each fact from stories 8, 9, and 10.
 
-- [ ] The button says "Put 4 into the pantry". Tap it. The message says "3 items are in the pantry.".
-- [ ] The vault has the note `Shopping/2026-10-13`, with the name of today. (AC 1)
-- [ ] The note has the property `date`, with today. (AC 1 a)
-- [ ] The note has the line "Mum comes on Friday.", and it has no task. (AC 1 b, 1 c)
-- [ ] The note has this table, with 4 rows. The cells "Price", "Sale", and "Use by" are empty. (AC 2, 2 a, 2 b, 2 c)
+Eggs and milk have a last receipt in the folder `Shopping`. The other items have none.
+
+- [ ] Tap the rows "Eggs" and "Batteries". The cart has 6 items.
+- [ ] Tap "+", type "mil", and tap "Milk". Tap "+" again. Tap the row "Milk". The cart has 7 items.
+- [ ] The button below the cart says "Put away". Tap it. The screen "Put away" comes in from below. It has 7 lines. (AC 1)
+- [ ] The note `Milk` still has one row: 450 ml in "Kitchen". (AC 1 a)
+- [ ] Each line has the text and the price of this table. (AC 2, 2 a, 3, 3 b, 16. Story 8: AC 1, 1 a to 1 c, 2, 2 a, 2 b, 3, 3 a, 3 b)
+
+| Line      | Text                                 | Price |
+| --------- | ------------------------------------ | ----- |
+| Avocados  | 4 · Kitchen · No date                | Empty |
+| Batteries | Not in the pantry                    | Empty |
+| Eggs      | 12 · Outside fridge · Use by 3 Nov   | 3.49  |
+| Lime      | 2 · Kitchen pantry · No date         | Empty |
+| Milk      | 1 l · Kitchen · Use by 20 Oct        | 1.29  |
+| Quinoa    | 200 g · Kitchen · No date            | Empty |
+| Soap      | Not in the pantry                    | Empty |
+
+- [ ] The date of eggs is 21 days after today. The date of milk is 7 days after today. These are the days of the last receipt. (Story 8: AC 1 c, 2 b)
+- [ ] "On sale" is off on each line. The last receipt of eggs has "yes". (AC 4 b. Story 8: AC 1 d)
+- [ ] "Batteries" and "Soap" have "Into the pantry", and it is off. No other line has it. (Story 10: AC 1, 1 a, 1 b, 2)
+- [ ] The head says "2/7 with a price". The text above the two buttons is "5 prices are missing". (AC 5. Story 8: AC 4)
+- [ ] "Store" has the options "Market A" and "Market B", and the field "A new store". No option is on. (Story 9: AC 1, 1 a)
+- [ ] Type "0.5" in the price of lime. The text is "4 prices are missing". (AC 6)
+- [ ] Tap "On sale" on lime. It is on.
+- [ ] Type "abc" in the price of avocados. The field has a red edge, and the text is still "4 prices are missing".
+- [ ] Change the price of avocados to "3,2". The red edge is gone, and the text is "3 prices are missing".
+- [ ] Tap the line "Milk". It opens with "How much" (1 l), "Use by", "Where", and "Not bought". "Where" has each place of the pantry, and "Kitchen" is on. (AC 3 c, 3 d)
+- [ ] Tap "Kitchen fridge". Only "Kitchen fridge" is on, and the line says "1 l · Kitchen fridge · Use by 20 Oct".
+- [ ] Tap the line "Avocados". The line of milk closes. Type "Garage" in "A new place". No option is on, and the line says "4 · Garage · No date".
+- [ ] Tap "Back". The Shop part shows, and the cart has 7 items. The notes `Milk` and `Avocados` did not change. (AC 15, 15 a)
+- [ ] Tap "Put away" again. Each fact that you gave is still there: the two prices, "On sale", "Kitchen fridge", and "Garage".
+- [ ] Open the line "Quinoa", and tap "Not bought". The line goes out, and the screen has 6 lines. The note has no task for quinoa. (AC 13, 13 a)
+- [ ] Open the line "Eggs", and tap "Not bought". The screen has 5 lines. The note has the line `- [ ] [[Pantry/Eggs|Eggs]]`. (AC 14)
+- [ ] Tap "Into the pantry" on soap. It is on. The line opens and says "1 · Kitchen · No date". (Story 10: AC 3, 3 a, 3 b)
+- [ ] Type "2" in "How much" of soap, and "1.99" in its price. The text is "1 price is missing".
+- [ ] Type "6.99" in the price of batteries. No text about prices shows, and the head says "5/5 with a price". (AC 7)
+- [ ] Tap "Market B". It is on. Tap it again. No option is on. (Story 9: AC 2, 3)
+- [ ] Tap "Market A". It is on. Type "Market C" in "A new store". "Market A" is not on. (Story 9: AC 6)
+
+## 7. The button, the receipt, and the pantry
+
+This is the end of story 7, with stories 6, 9, and 10.
+
+- [ ] Tap "Put into the pantry". The screen closes, and the message says "4 items are in the pantry.". (AC 8)
+- [ ] The vault has the note `Shopping/<today>`. It has no task. (Story 6: AC 1, 1 c)
+- [ ] The note has this text, with your day in `date` and in the row of milk. (AC 8 b to 8 e, 10, 10 a, 17, 17 a. Story 6: AC 1 a, 1 b. Story 9: AC 5, 6. Story 10: AC 5, 7 a, 8 a)
 
 ```markdown
-| Item                          | Amount | Price | Sale | Place          | Use by |
-| ----------------------------- | ------ | ----- | ---- | -------------- | ------ |
-| [[Pantry/Quinoa\|Quinoa]]     | 200 g  |       |      | Kitchen        |        |
-| [[Lime\|Lime]]                | 1      |       |      | Kitchen pantry |        |
-| Soap                          |        |       |      |                |        |
-| [[Pantry/Avocados\|Avocados]] | 4      |       |      | Kitchen        |        |
+---
+date: 2026-10-13
+store: Market C
+---
+Mum comes on Friday.
+
+| Item                                    | Amount | Price | Sale | Place          | Use by     |
+| --------------------------------------- | ------ | ----- | ---- | -------------- | ---------- |
+| [[Shopping/Items/Batteries\|Batteries]] |        | 6.99  |      |                |            |
+| [[Lime\|Lime]]                          | 2      | 0.50  | yes  | Kitchen pantry |            |
+| [[Pantry/Soap\|Soap]]                   | 2      | 1.99  |      | Kitchen        |            |
+| [[Pantry/Avocados\|Avocados]]           | 4      | 3.20  |      | Garage         |            |
+| [[Pantry/Milk\|Milk]]                   | 1 l    | 1.29  |      | Kitchen fridge | 2026-10-20 |
 ```
 
-- [ ] The vault has a new note `Shopping/Next trip`. It has 3 tasks with no mark: flour, eggs, and batteries. (AC 3, 3 a, 3 b)
-- [ ] The note `Lime` has the rows "2" and "1" in "Kitchen pantry", and `bought` with today. (AC 5)
-- [ ] The note `Avocados` has the row "4" in "Kitchen", and `bought` with today. (AC 5 a)
-- [ ] The vault has the new note `Pantry/Quinoa`, with "200 g" in "Kitchen", and `bought` with today.
-- [ ] The vault has no note for the soap. The pantry did not change for it. (Story 5: AC 10)
-- [ ] In the Shop part, salt is a suggestion again. Avocados are not a suggestion. (Story 3: AC 22)
-- [ ] The Shop part has no button of put away, because the cart is empty. (AC 7)
-- [ ] In the note `Shopping/Next trip`, click the link "Batteries". Obsidian makes the note in the folder `Shopping/Items`.
-- [ ] Tap "+", and type "bat". The field proposes "Batteries". (Story 5: AC 7)
-- [ ] Tap the rows "Flour", "Eggs", and "Batteries". Tap "Put 3 into the pantry". The message says "2 items are in the pantry.".
-- [ ] The vault has the note `Shopping/2026-10-13 2`, with the name of today and "2". It has 3 rows, and the row of the batteries has no amount and no place. (AC 6)
-- [ ] The vault has no note `Shopping/Next trip`, because each task had a mark. (AC 4)
-- [ ] The note `Flour` has "1000 g" in "Kitchen pantry". The note `Eggs` has a second row with "6" in "Outside fridge", with no date.
-- [ ] Eggs are a suggestion again, with "Often". The plugin asks about such a staple at each trip.
-- [ ] In the Recipes part, open "notes are not recipes". The list has no note of the folder `Shopping`.
+- [ ] The vault has a new note `Shopping/Next trip`. It has 3 tasks with no mark: flour, eggs, and chicken thighs. (Story 6: AC 3, 3 a)
+- [ ] The note `Lime` has the rows "3" and "1" in "Kitchen pantry", and `bought` with today. (Story 6: AC 5)
+- [ ] The note `Avocados` has the row "4" in "Garage", and `bought` with today. (AC 12. Story 6: AC 5 a)
+- [ ] The note `Milk` has two rows: "450 ml" in "Kitchen", and "1 l" in "Kitchen fridge" with its date. (AC 8, 8 a)
+- [ ] The vault has the new note `Pantry/Soap`, with the row "2" in "Kitchen", and `bought` with today. (Story 10: AC 4, 4 a, 4 b, 8)
+- [ ] The Pantry part shows soap in "Kitchen", and avocados in "Garage". (Story 10: AC 6)
+- [ ] The vault has no note `Pantry/Batteries`, no note `Shopping/Items/Batteries`, and no note `Pantry/Quinoa`. (Story 5: AC 10, 10 a. Story 10: AC 7)
+- [ ] In the Shop part, salt and spinach are suggestions again. Avocados are not a suggestion. (Story 3: AC 22)
+- [ ] The Shop part has no button "Put away", because the cart is empty. (Story 6: AC 7)
+- [ ] The list has the row "Quinoa 200 g" again.
 
-## 6. The settings and the data file
+## 8. The second trip
 
-- [ ] Tap the row "Peanuts". The vault has a new note `Shopping/Next trip`, and peanuts are in the cart.
+This is story 8, with the second receipt of one day.
+
+- [ ] In the note `Shopping/<today>`, click the link "Batteries". Obsidian makes the note in the folder `Shopping/Items`.
+- [ ] In the Shop part, tap "+", and type "bat". The field proposes "Batteries". Tap it. (Story 5: AC 7)
+- [ ] Type "lim", and tap "Lime". Tap "+" again.
+- [ ] Tap the rows "Batteries", "Chicken thighs", "Eggs", "Flour", and "Lime". Tap "Put away". The screen has 5 lines.
+- [ ] Each line has the text and the price of this table. Lime, batteries, and eggs start from a receipt. (AC 2, 2 a, 3, 3 a)
+
+| Line           | Text                                 | Price |
+| -------------- | ------------------------------------ | ----- |
+| Batteries      | Not in the pantry                    | 6.99  |
+| Chicken thighs | 500 g · Outside fridge · No date     | Empty |
+| Eggs           | 12 · Outside fridge · Use by 3 Nov   | 3.49  |
+| Flour          | 800 g · Kitchen pantry · No date     | Empty |
+| Lime           | 2 · Kitchen pantry · No date         | 0.50  |
+
+- [ ] "On sale" of lime is off. Its last receipt has "yes". (AC 1 d)
+- [ ] The text is "2 prices are missing".
+- [ ] "Store" has 3 options, in this sequence: "Market A", "Market B", "Market C". No option is on. (Story 9: AC 8, 8 a)
+- [ ] Tap "Market B". Tap "Put into the pantry". The message says "4 items are in the pantry.". (Story 7: AC 11. Story 9: AC 2)
+- [ ] The vault has the note `Shopping/<today> 2`. It has `store: Market B` and 5 rows. The cells "Price" of flour and of chicken thighs are empty. (Story 6: AC 6. Story 7: AC 11 a. Story 9: AC 4)
+- [ ] The vault has no note `Shopping/Next trip`, because each task had a mark. (Story 6: AC 4)
+- [ ] The note `Flour` has one row: "1000 g" in "Kitchen pantry". (Story 7: AC 9)
+- [ ] The note `Eggs` has two rows in "Outside fridge": "6" with the date 2026-10-25, and "12" with the new date.
+- [ ] The note `Chicken thighs` has two rows in "Outside fridge": "500 g" with the date 2026-10-01, and "500 g" with no date.
+- [ ] Eggs are a suggestion again, with "Often". Chicken thighs are a suggestion again, with "Past its date": the old row is still in the pantry.
+- [ ] In the note `Shopping/<today> 2`, change the price of eggs to "3.59", and remove the date of the row of eggs.
+- [ ] In the note `Shopping/2026-09-28`, change the property to `store: Farm shop`.
+- [ ] Tap "Add" on eggs, tap the row "Eggs", and tap "Put away". The line says "12 · Outside fridge · No date", and its price is "3.59". (AC 5, 8, 8 a)
+- [ ] "Store" has the options "Farm shop", "Market B", and "Market C". (Story 9: AC 9)
+- [ ] In the note `Shopping/<today> 2`, remove the line `date` of the properties. The price of eggs on the screen is still "3.59". (AC 6)
+- [ ] Tap "Back". Tap "Undo" on eggs, and then "Remove" on the row "Eggs".
+
+## 9. The settings and the data file
+
+- [ ] Tap the row "Peanuts". The note `Shopping/Next trip` has the task of peanuts, and peanuts are in the cart.
 - [ ] In the settings, change "Shopping folder" to `Lists`. After a moment, the cart is empty. (Story 1: AC 15)
 - [ ] Tap the row "Raisins". The vault has the note `Lists/Next trip`. (Story 1: AC 14)
+- [ ] Tap "Put away". "Store" has no option, because the folder `Lists` has no receipt. Tap "Back".
 - [ ] Set "Shopping folder" back to `Shopping`. Peanuts are in the cart again. Tap "Undo" on peanuts.
 - [ ] Change "Items folder" to `Things`. Tap "+", type "tape", and tap "Add as new". The note has the line `- [ ] [[Things/Tape|Tape]]`. (Story 5: AC 11)
 - [ ] Tap "Remove" on the row "Tape", and set "Items folder" back to `Shopping/Items`.
+- [ ] Remove the text of "Place for new food". Tap the row "Quinoa", and tap "Put away". The line says "200 g · Kitchen · No date". Tap "Back", and tap "Undo" on quinoa. Set the setting back to `Kitchen`.
 - [ ] Open the file `.obsidian/plugins/whats-for-dinner/data.json`. It has `skipped` and `settings`. It has no `cart` and no `shopLow`. (Story 1: AC 16)
 
-## 7. On the phone
+## 10. On the phone
 
 - [ ] Tap a row on the phone. After Obsidian Sync, the computer shows the item in the cart.
 - [ ] Type a task into the note on the computer. After Obsidian Sync, the phone shows the item on the list.
-- [ ] You can do each action with one thumb: "Add", "Skip", a row, "Remove", "Undo", and the button of put away.
-- [ ] Each change has a motion: a suggestion goes out, a row goes to the cart, and the field "Add an item" opens.
+- [ ] You can do each action with one thumb: "Add", "Skip", a row, "Remove", "Undo", "Put away", a line, "On sale", "Not bought", and the two buttons of the screen.
+- [ ] Put 20 items in the cart, and tap "Put away". The lines scroll, and the two buttons keep their place.
+- [ ] Tap the price of a line. The phone shows the keyboard with numbers. With the keyboard open, you see the line that you type in.
+- [ ] Each change has a motion: a suggestion goes out, a row goes to the cart, the field "Add an item" opens, the screen of put away comes in, a line opens, and a line goes out.
 - [ ] Put a food item in the cart. Then give its note a new name in Obsidian. The item is still in the cart, with its amount.
-- [ ] The group "Suggestions" with 7 lines does not hide the list for too long. Tell if the list must come first.
+- [ ] Give the note `Eggs` a new name in Obsidian. Each receipt still links to it, and the line of eggs still starts with the price of the last receipt.
+- [ ] The group "Suggestions" does not hide the list for too long. Tell if the list must come first.
+
+## 11. Try to break it
+
+Each line tells what the plugin does with an entry that is not usual.
+
+- [ ] A price that is not a number, such as "abc" or "1.2.3": the field has a red edge, the price counts as missing, and the cell of the receipt is empty.
+- [ ] A price with a comma, such as "1,5": the receipt has "1.50".
+- [ ] An amount with no text: the line says "1", and 1 goes into the pantry.
+- [ ] An amount with a plus, such as "1 l + 2 cartons": the food item gets two rows, and the receipt has the text as you typed it.
+- [ ] An amount with no number, such as "a bag": the food item gets a new row with that text.
+- [ ] A new place with no text: the place of the option counts.
+- [ ] A new store with the name of an option: the receipt has that store one time, and the next trip has one option.
+- [ ] Two fast taps on "Put into the pantry": the food goes into the pantry one time, and the vault gets one receipt.
+- [ ] "Not bought" on each line: the screen closes with the last line.
+- [ ] A change of the note `Next trip` by hand while the screen is open: a new task with a mark is a new line, and a task that loses its mark goes off the screen.
+- [ ] A task with no link that has the name of a food item, such as `- [x] milk`, with "Into the pantry" on: the food goes into the note `Milk`, and the plugin makes no second note.
+- [ ] A use-by date in the past: the food goes into the pantry, and the Pantry part shows "Past its date".
+
+One limit is known. A place with the character `|` breaks the table of the food item note. The form of the Pantry part has the same limit.
 
 ## What this list does not have
 
-These criteria of story 3 need a different day, or a different amount in a note. A script showed that each of them is true.
+These criteria need a different day, a different amount in a note, or a vault with no receipt. A script showed that each of them is true.
 
-| Criterion | How you can see it                                                                    |
-| --------- | ------------------------------------------------------------------------------------- |
-| AC 5      | On 16 October, or later, fresh coriander has "Past its date".                         |
-| AC 7, 11  | Give rice 2.3 kg. With `bought` 21 days before today, it has "Bought 3 weeks ago".    |
-| AC 10     | Give rice 2.3 kg. With `bought` 20 days before today, it is not a suggestion.         |
-| AC 12, 13 | Salt with `bought` 59 days before today is not a suggestion. With 60 days, it is one. |
-| AC 19     | Put a meal that needs 1.2 kg of flour in the plan. The row "Flour" has "1 kg".        |
+| Criterion               | How you can see it                                                                                |
+| ----------------------- | ------------------------------------------------------------------------------------------------- |
+| Story 3: AC 5           | On 16 October, or later, fresh coriander has "Past its date".                                     |
+| Story 3: AC 7, 11       | Give rice 2.3 kg. With `bought` 21 days before today, it has "Bought 3 weeks ago".                |
+| Story 3: AC 10          | Give rice 2.3 kg. With `bought` 20 days before today, it is not a suggestion.                     |
+| Story 3: AC 12, 13      | Salt with `bought` 59 days before today is not a suggestion. With 60 days, it is one.             |
+| Story 3: AC 19          | Put a meal that needs 1.2 kg of flour in the plan. The row "Flour" has "1 kg".                    |
+| Story 7: AC 2 b, 4, 9   | Move the two receipts out of the folder `Shopping`. Milk then starts with "550 ml" and no price.  |
+| Story 8: AC 7           | In a receipt, put the column "Price" before the column "Amount". The facts of eggs are the same.  |
+
+Story 6 tells a receipt with empty cells and with the amount of the list row. Story 7 changed that: the receipt has the facts that you gave, and lime starts with "2".
 
 ## To do the test again
 
-The test changes these notes: `Lime`, `Avocados`, `Flour`, and `Eggs` in the pantry, and possibly `Butter`, `Salt`, and the meal plan. It makes the note `Pantry/Quinoa`, and the folders `Shopping`, `Lists`, and `Things`.
+The test changes notes of the pantry, the meal plan, and the receipt `2026-09-28`. It makes the notes `Pantry/Soap` and `Shopping/Items/Batteries`, the receipts of today, and the folders `Lists` and `Things`.
 
-If you stage the test vault before you start, with `git add test-vault`, then `git restore test-vault` brings each note back, and this list has no marks again. You delete the new note and the new folders by hand.
+If you did `git add test-vault` before the test, these two commands bring the vault back. The second command deletes each file of the test vault that is new after `git add`.
+
+```bash
+git restore test-vault
+```
+
+```bash
+git clean -fd test-vault
+```
+
+The data file of the plugin is not in git. To put each suggestion back, put the cart away one time, or remove `skipped` from the file.

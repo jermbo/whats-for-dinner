@@ -2,9 +2,10 @@
 title: Give the facts of each item at put away
 summary: "The keeper sees each item of the cart with its amount, place, use-by date, and price, corrects them, and puts all away with one button."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: [shop-get-a-receipt-for-each-trip.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Give the facts of each item at put away
@@ -90,7 +91,8 @@ Each criterion starts with the test vault on 2026-10-13, with the guacamole in t
 
 ## Architecture
 
-- [Put away](../../architecture/put-away.md): the three decisions that the plugin makes for each item today, and when a row gets larger.
+- [Put away](../../architecture/put-away.md): the screen, and the button that ends the trip.
+- [Facts of an item](../../architecture/put-away-facts.md): what each fact starts as, and when a row gets larger.
 - [Amounts](../../architecture/amounts.md): which units compare.
 - [Food item note](../../architecture/food-item-note.md): the table that the button writes.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the columns of the receipt. It is a page of the initiative.
+- [Receipt](../../architecture/receipt.md): the columns of the receipt.

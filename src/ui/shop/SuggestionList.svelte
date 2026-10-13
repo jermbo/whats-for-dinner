@@ -24,7 +24,7 @@
 	}
 </script>
 
-<!-- The staples that need a look. You accept or skip each line, and then the group is gone. -->
+<!-- The food items that need a look. You accept or skip each line, and then the group is gone. -->
 <section class="wfd-suggest" aria-label="Suggestions">
 	<GroupHead title="Suggestions" note={String(suggestions.length)} />
 	<ul class="wfd-suggest__list">

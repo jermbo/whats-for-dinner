@@ -42,11 +42,17 @@ You write the preparation in the recipe note, as a callout of the type "prep". A
 
 ## The shopping list has only the missing items
 
-The [list](../architecture/shopping.md) is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, one tap marks an item. At home, one action puts the full trip into the pantry.
+The [list](../architecture/shopping.md) is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, one tap marks an item.
 
-Some food you want always, plan or no plan: bread, eggs, salt. You label such food as a [staple](../architecture/staples.md), and you tell how often you buy it. The plugin then suggests it when it needs a look: it is low, its date is near, or its time is over. One tap puts it on the list, and one tap skips it.
+Some food you want always, plan or no plan: bread, eggs, salt. You label such food as a [staple](../architecture/staples.md), and you tell how often you buy it. The plugin then suggests it when it needs a look: it is low, its date is near, or its time is over. One tap puts it on the list, and one tap skips it. Food that a meal needs gets a suggestion too, when the pantry has it [past its date](../architecture/past-its-date.md).
 
-You add an item of your own on any day, such as batteries. The cart is a note of your vault, so your phone and your computer show the same cart. When you put the cart away, that note becomes the [receipt](../architecture/receipt.md) of the trip.
+You add an item of your own on any day, such as batteries. The cart is a note of your vault, so your phone and your computer show the same cart.
+
+## The trip goes into the pantry, with its prices
+
+At home, [put away](../architecture/put-away.md) shows each item of the cart with its amount, its place, its use-by date, and its price. The plugin proposes what you bought the last time, so the usual item needs no entry. One button puts the full trip into the pantry.
+
+The note of the trip becomes its [receipt](../architecture/receipt.md): what you bought, in which store, and what you paid. Thus the vault has the price of each item over time.
 
 ## Cook Mode shows one step at a time
 
