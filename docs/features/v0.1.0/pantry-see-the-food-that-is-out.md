@@ -51,4 +51,4 @@ Each criterion starts with the test vault in the state in which it starts. Milk 
 ## Architecture
 
 - [Pantry](../../architecture/pantry.md): why a food item that is out stays a note.
-- [Low food](../../architecture/low-food.md): how food that is out gets on the shopping list.
+- [Staples](../../architecture/staples.md): how food that is out gets on the shopping list.

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { makeStock } from '../../pantry/food-item';
+	import { KINDS, showKind, type Kind } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
 	import Button from '../parts/Button.svelte';
 
@@ -15,9 +16,12 @@
 		// The low line of the food item, as text. The hint is the line that the plugin sets when the
 		// field is empty. With no low line here, the editor does not ask for it.
 		low?: { text: string; hint: string };
+		// The kind of the food item, or null when it is not a staple. With no value here, the editor
+		// does not ask for it.
+		staple?: Kind | null;
 		// Small text below the fields, such as the brands of the food item.
 		facts?: string[];
-		onsave: (stock: Stock, name: string, low: string) => void;
+		onsave: (stock: Stock, name: string, labels: { low: string; staple: Kind | null }) => void;
 		oncancel: () => void;
 		onusedup?: () => void;
 		onopen?: () => void;
@@ -29,6 +33,7 @@
 		stock,
 		places,
 		low,
+		staple,
 		facts = [],
 		onsave,
 		oncancel,
@@ -41,20 +46,28 @@
 	const first = () => stock;
 	const firstName = () => startName;
 	const firstLow = () => low?.text ?? '';
+	const firstKind = () => staple ?? null;
 	let name = $state(firstName());
 	let lowText = $state(firstLow());
+	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
 	let place = $state(first()?.place ?? '');
 	let useBy = $state(first()?.useBy ?? '');
 	// A place that the pantry does not have yet.
 	let newPlace = $state('');
 
+	const kinds = [
+		{ value: null, label: 'Not a staple' },
+		...KINDS.map((value) => ({ value, label: showKind(value) }))
+	];
+
 	const where = $derived(newPlace.trim() || place);
 	const ready = $derived(Boolean(where) && (!names || Boolean(name.trim())));
 
 	function save(event: SubmitEvent) {
 		event.preventDefault();
-		if (ready) onsave(makeStock(where, amount, useBy), name.trim(), lowText.trim());
+		if (!ready) return;
+		onsave(makeStock(where, amount, useBy), name.trim(), { low: lowText.trim(), staple: kind });
 	}
 </script>
 
@@ -79,11 +92,11 @@
 
 	<fieldset class="wfd-editor__field">
 		<legend class="wfd-label">Where</legend>
-		<div class="wfd-editor__places">
+		<div class="wfd-editor__options">
 			{#each places as option}
 				<button
-					class="wfd-editor__place"
-					class:wfd-editor__place--on={!newPlace.trim() && place === option}
+					class="wfd-editor__option"
+					class:wfd-editor__option--on={!newPlace.trim() && place === option}
 					type="button"
 					aria-pressed={!newPlace.trim() && place === option}
 					onclick={() => ((place = option), (newPlace = ''))}
@@ -117,6 +130,26 @@
 			</label>
 		{/if}
 	</div>
+
+	{#if staple !== undefined}
+		<!-- How often you buy the food. The plugin asks about a staple when it needs a look. -->
+		<fieldset class="wfd-editor__field">
+			<legend class="wfd-label">Staple</legend>
+			<div class="wfd-editor__options">
+				{#each kinds as option (option.label)}
+					<button
+						class="wfd-editor__option"
+						class:wfd-editor__option--on={kind === option.value}
+						type="button"
+						aria-pressed={kind === option.value}
+						onclick={() => (kind = option.value)}
+					>
+						{option.label}
+					</button>
+				{/each}
+			</div>
+		</fieldset>
+	{/if}
 
 	{#if facts.length}
 		<p class="wfd-editor__facts">{facts.join(' · ')}</p>
@@ -171,13 +204,13 @@
 		inline-size: 100%;
 	}
 
-	.wfd-editor__places {
+	.wfd-editor__options {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
 	}
 
-	button.wfd-editor__place {
+	button.wfd-editor__option {
 		block-size: auto;
 		min-block-size: 50px;
 		padding: 0 16px;
@@ -200,13 +233,13 @@
 		}
 	}
 
-	button.wfd-editor__place--on {
+	button.wfd-editor__option--on {
 		border-color: var(--wfd-ink);
 		background: var(--wfd-ink);
 		color: var(--wfd-on-ink);
 	}
 
-	.wfd-editor__places :global(input.wfd-editor__new) {
+	.wfd-editor__options :global(input.wfd-editor__new) {
 		flex: 1 1 10rem;
 		inline-size: auto;
 		border-style: dashed;
@@ -232,7 +265,7 @@
 	}
 
 	@media (prefers-reduced-motion: reduce) {
-		button.wfd-editor__place {
+		button.wfd-editor__option {
 			transition: none;
 		}
 	}

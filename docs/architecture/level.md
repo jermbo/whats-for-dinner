@@ -45,4 +45,4 @@ A food item with no level is never low.
 
 ## Further reading
 
-- [Shopping](shopping.md): how a food item that is low gets on the list.
+- [Staples](staples.md): how a food item that is low gets on the list.

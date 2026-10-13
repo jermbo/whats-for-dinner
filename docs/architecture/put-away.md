@@ -18,8 +18,8 @@ The usual questions for a new item are: what is it, how much, and where does it 
 
 | Question  | The answer of the plugin                                                                        |
 | --------- | ----------------------------------------------------------------------------------------------- |
-| What?     | The food item of the list row. A food that the pantry does not know gets a new note.            |
-| How much? | The amount of the list row: what was missing. A row with no amount goes in as 1.                |
+| What?     | The note of the link of the item. If the note is not there, the plugin makes it.                |
+| How much? | The amount of the list row. An item with no amount goes in as 1.                                |
 | Where?    | The place where the food item is now. If it has no row, the place for new food of the settings. |
 
 The plugin assumes that you bought what the list said. If you bought a different amount, correct the row with its [bar](amount-bar.md).
@@ -32,17 +32,23 @@ There is one exception. If the row has a use-by date, the new food gets its own 
 
 The row keeps its unit. The [amounts](amounts.md) page tells what occurs when the sum is not round in that unit.
 
+## An item that is not in the pantry
+
+The cart can have an item that is not food of the pantry, such as batteries that you typed into the [shopping note](shopping-note.md). Its task has no link to a note of the pantry folder. The pantry does not change. Its row of the [receipt](receipt.md) has no amount and no place.
+
 ## What changes after the action
 
 - The [level](level.md) of each food item goes up. If you have more than the full amount, the plugin writes the new full amount.
-- The cart is empty.
+- Each food item that got food has the day of put away as its purchase date.
+- The cart is empty: the shopping note becomes the receipt of the trip.
 - The list has only the items that you did not put in the cart.
+- A [suggestion](suggestions.md) that you skipped shows again, if its staple still needs a look.
 
 ## An item that you did not find
 
-An item that is not in the cart stays on the list. The pantry still does not have it, so the list still asks for it.
+An item that is not in the cart stays on the list. The pantry still does not have it, so the list still asks for it. A choice that you did not buy goes into the note of the next trip.
 
 ## Further reading
 
-- [Low food](low-food.md): why the list can have food that no meal needs.
+- [Staples](staples.md): why the list can have food that no meal needs.
 - [Food item note](food-item-note.md): the note that a new food item gets.

@@ -10,13 +10,16 @@
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
-	import Sticker from '../parts/Sticker.svelte';
+	import AddItem from './AddItem.svelte';
+	import SuggestionList from './SuggestionList.svelte';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-	const needed = $derived(kitchen.shopping.filter((row) => !kitchen.cart.includes(row.key)));
-	const inCart = $derived(kitchen.shopping.filter((row) => kitchen.cart.includes(row.key)));
+	const needed = $derived(kitchen.list);
+	const inCart = $derived(kitchen.cart);
+	// Each item of the trip: to buy, or in the cart.
+	const all = $derived([...needed, ...inCart]);
 
 	const sorts: { value: Sort; label: string }[] = [
 		{ value: 'name', label: 'A to Z' },
@@ -26,10 +29,8 @@
 	// The text that finds a row.
 	const text = $derived(bar.find.trim());
 	// With rows of one kind only, a filter hides nothing. So the filters are there only when the
-	// list has rows for a meal and rows of low food.
-	const mixed = $derived(
-		kitchen.shopping.some(isForMeal) && kitchen.shopping.some((row) => row.low)
-	);
+	// list has rows for a meal and rows of a choice.
+	const mixed = $derived(needed.some(isForMeal) && needed.some((row) => row.choice));
 	const only = (kind: Only) => mixed && bar.only.has(kind);
 	const count = $derived(mixed ? bar.only.size : 0);
 
@@ -37,11 +38,16 @@
 	const shown = $derived(
 		needed.filter(
 			(row) =>
-				isFound(row, bar.find) && (!only('meal') || isForMeal(row)) && (!only('low') || row.low)
+				isFound(row, bar.find) &&
+				(!only('meal') || isForMeal(row)) &&
+				(!only('choice') || row.choice)
 		)
 	);
 	// The sequence by meal has one group for each meal. The sequence by name is one list.
 	const groups = $derived(bar.sort === 'meal' ? byMeal(shown) : [{ title: '', rows: shown }]);
+
+	// The field "Add an item" is open.
+	let adding = $state(false);
 
 	// A piece of the bar gets its width when its row comes on the list, and gives it back after.
 	const grow = (_: Element, { duration }: { duration: number }) => ({
@@ -53,8 +59,8 @@
 <section class="wfd-shop" aria-label="Shopping list">
 	<PartHead title="Shop">
 		{#snippet side()}
-			{#if kitchen.shopping.length}
-				<Count have={inCart.length} of={kitchen.shopping.length} label="in the cart" />
+			{#if all.length}
+				<Count have={inCart.length} of={all.length} label="in the cart" />
 			{/if}
 		{/snippet}
 	</PartHead>
@@ -71,15 +77,40 @@
 		{#snippet chips()}
 			{#if mixed}
 				<Chip label="For a meal" on={bar.only.has('meal')} onclick={() => bar.flip('meal')} />
-				<Chip label="Low food" on={bar.only.has('low')} onclick={() => bar.flip('low')} />
+				<Chip
+					label="Your choices"
+					on={bar.only.has('choice')}
+					onclick={() => bar.flip('choice')}
+				/>
 			{/if}
+		{/snippet}
+		{#snippet end()}
+			<Button
+				kind="main"
+				aria-label="Add an item"
+				aria-expanded={adding}
+				onclick={() => (adding = !adding)}
+			>
+				<span class="wfd-shop__plus" aria-hidden="true">+</span>
+			</Button>
 		{/snippet}
 	</Bar>
 
-	{#if kitchen.shopping.length}
-		<!-- One piece for each item. A piece is ink when its item is in the cart. -->
+	{#if adding}
+		<div transition:slide={{ duration }}>
+			<AddItem
+				foods={kitchen.foods}
+				itemNotes={kitchen.itemNotes}
+				onadd={(path) => kitchen.addChoice(path)}
+				onaddnew={(name) => kitchen.addNewItem(name)}
+			/>
+		</div>
+	{/if}
+
+	{#if all.length}
+		<!-- One piece for each item, and one piece of ink for each item of the cart. -->
 		<div class="wfd-shop__pieces" aria-hidden="true">
-			{#each kitchen.shopping as row, at (row.key)}
+			{#each all, at}
 				<span
 					class="wfd-shop__piece"
 					class:wfd-shop__piece--done={at < inCart.length}
@@ -95,19 +126,14 @@
 		</p>
 	{/if}
 
-	{#if kitchen.low.length || kitchen.shopLow}
-		<!--
-			Low food is your choice. The check box puts all of it on the list, or takes it off. It is
-			not a chip, because a chip only hides rows.
-		-->
-		<label class="wfd-shop__low">
-			<input
-				type="checkbox"
-				checked={kitchen.shopLow}
-				onchange={() => kitchen.toggleShopLow()}
+	{#if kitchen.suggestions.length}
+		<div transition:slide={{ duration }}>
+			<SuggestionList
+				suggestions={kitchen.suggestions}
+				onadd={(path) => kitchen.addChoice(path)}
+				onskip={(path) => kitchen.skip(path)}
 			/>
-			Low food on the list{kitchen.low.length ? ` · ${kitchen.low.length}` : ''}
-		</label>
+		</div>
 	{/if}
 
 	{#if needed.length && !shown.length}
@@ -136,21 +162,16 @@
 					{/if}
 					<ul class="wfd-shop__list">
 						{#each group.rows as row (row.key)}
-							<li transition:slide={{ duration }}>
+							<li class="wfd-shop__item" transition:slide={{ duration }}>
 								<!-- One tap on the row puts the item in the cart. -->
 								<button
 									class="wfd-shop__row"
 									type="button"
-									onclick={() => kitchen.toggleCart(row.key)}
+									onclick={() => kitchen.putInCart(row.key)}
 								>
 									<span class="wfd-shop__text">
 										<span class="wfd-shop__top">
 											<span class="wfd-shop__name">{row.name}</span>
-											{#if row.low && row.food?.item.stocks.length}
-												<Sticker label="Low" kind="amber" />
-											{:else if row.low}
-												<Sticker label="Out" kind="dashed" />
-											{/if}
 										</span>
 										{#if row.recipes.length}
 											<span class="wfd-shop__note">{row.recipes.join(', ')}</span>
@@ -163,6 +184,15 @@
 									</span>
 									<span class="wfd-shop__amount wfd-number">{row.amount}</span>
 								</button>
+								{#if row.choice}
+									<Button
+										kind="link"
+										aria-label="Remove {row.name}"
+										onclick={() => kitchen.removeChoice(row.key)}
+									>
+										Remove
+									</Button>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -177,7 +207,7 @@
 			{#each inCart as row (row.key)}
 				<li class="wfd-shop__got" transition:slide={{ duration }}>
 					<span class="wfd-shop__got-name">{[row.name, row.amount].filter(Boolean).join(' ')}</span>
-					<Button kind="link" onclick={() => kitchen.toggleCart(row.key)}>Undo</Button>
+					<Button kind="link" onclick={() => kitchen.takeOutOfCart(row.key)}>Undo</Button>
 				</li>
 			{/each}
 		</ul>
@@ -225,6 +255,20 @@
 		list-style: none;
 	}
 
+	.wfd-shop__plus {
+		font-size: 26px;
+		line-height: 1;
+	}
+
+	/* The row is the button. "Remove" is next to it, because a button cannot be in a button. */
+	.wfd-shop__item {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 14px;
+		align-items: center;
+		border-block-end: 1px solid var(--wfd-line);
+	}
+
 	button.wfd-shop__row {
 		display: grid;
 		grid-template-columns: 1fr auto;
@@ -235,7 +279,6 @@
 		min-block-size: 64px;
 		padding: 10px 0;
 		border: 0;
-		border-block-end: 1px solid var(--wfd-line);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
@@ -249,17 +292,6 @@
 			outline: 2px solid var(--wfd-ink);
 			outline-offset: -3px;
 		}
-	}
-
-	/* The row of the check box is 44 px high, for the thumb. */
-	.wfd-shop__low {
-		display: flex;
-		gap: 10px;
-		align-items: center;
-		justify-self: start;
-		min-block-size: 44px;
-		font-weight: 600;
-		cursor: pointer;
 	}
 
 	.wfd-shop__none {

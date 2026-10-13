@@ -5,12 +5,17 @@ import type { AlarmOptions } from './cook/alarm';
 
 export type Settings = AlarmOptions & {
 	// Only the notes in this folder are recipes. With no folder, the plugin tries each note that is
-	// not in the pantry.
+	// not in the pantry folder, the shopping folder, or the items folder.
 	recipesFolder: string;
 	// Each note in this folder is a food item.
 	pantryFolder: string;
 	// The note with the plan of the week.
 	planNote: string;
+	// The note of each shopping trip is in this folder.
+	shoppingFolder: string;
+	// An item of your own that no note has links to a note of this folder. The plugin makes no note
+	// there.
+	itemsFolder: string;
 	// The place of food that is new in the pantry, until you change it.
 	newPlace: string;
 
@@ -34,6 +39,8 @@ export const DEFAULT_SETTINGS: Settings = {
 	recipesFolder: '',
 	pantryFolder: 'Pantry',
 	planNote: 'Meal plan.md',
+	shoppingFolder: 'Shopping',
+	itemsFolder: 'Shopping/Items',
 	newPlace: 'Kitchen',
 	font: 'bricolage',
 	fontName: '',

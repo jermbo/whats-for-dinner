@@ -2,9 +2,10 @@
 title: Label a staple
 summary: "The keeper labels a food item as a staple, and selects how often it is bought."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: []
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Label a staple
@@ -55,4 +56,4 @@ Nothing of this version. The form is the form of [Change a row](../v0.1.0/pantry
 ## Architecture
 
 - [Food item note](../../architecture/food-item-note.md): the properties of the note, and what the plugin changes in it.
-- [Low food](../../architecture/low-food.md): why you want some food always, plan or no plan.
+- [Staples](../../architecture/staples.md): why you want some food always, and what the kind tells.

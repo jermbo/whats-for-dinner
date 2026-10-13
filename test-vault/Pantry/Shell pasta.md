@@ -8,4 +8,4 @@ full: 500 g
 
 | Place             | Amount | Use by |
 | ----------------- | ------ | ------ |
-| Downstairs pantry | 500 g  |        |
+| Downstairs pantry | 75 g   |        |

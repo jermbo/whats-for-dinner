@@ -19,12 +19,16 @@ The phone is where you use the plugin, and a function with no test there is not 
 | The bar of each part          | One tap opens the sequence and the filters. "Low" and "Freezer" work together.                  |
 | Find a recipe                 | "curry" shows the chicken curry, and "spinach" shows each recipe that has spinach.              |
 | Groups in "Get out"           | The pancakes show "Dry" and "Wet", each with its count of food on the counter.                  |
-| Low food on the shopping list | One tap on "Low food" puts the low food on the list. Put away makes each of them full again.    |
 | No food is always there       | A recipe finds water because the pantry has a row for water. With no row, water is on the list. |
 | Plan by type                  | The plan has "Dinner 2/7" and "Breakfast 1/7". "+ Lunch" shows only the recipes for lunch.      |
 | The meal of today             | "Today" moves the tacos to the top. "Not today" moves them back.                                |
 | Preparation                   | The tacos show their preparation. After "Prep is done", the box is olive.                       |
 | Preparation in the note       | The note of the tacos shows the callout with a clock and a colour.                              |
+| The cart in the shopping note | A tap on a row puts a task into the note "Next trip". After Obsidian Sync, the computer has it. |
+| A staple                      | The form of eggs shows the kind. "Often" and "Save" write `staple: often` into the note.        |
+| Suggestions                   | The Shop part shows each staple that needs a look, with its reason. "Add" puts it on the list.  |
+| An item of your own           | "Add as new" puts "Batteries" on the list, and the vault gets no note. A click makes the note.  |
+| The receipt of a trip         | Put away gives the note "Next trip" the name of the day, with one row for each item.            |
 
 ## The pantry bar has two limits
 
@@ -43,9 +47,8 @@ The plugin has a fixed value for each of these. A value becomes a setting when i
 | The heading of the cook record       | "Cooked"                                                         |
 | The units that the plugin shows      | g, kg, ml, and l                                                 |
 
-## Five ideas have no decision
+## Four ideas have no decision
 
-- **Your own item on the shopping list.** The list comes from the plan and from the low food. You cannot add an item of your own, such as soap.
 - **A drag on a closed row.** The first design sets an amount with no tap to open the row.
 - **Preparation from the pantry.** Food in a place with the name "Freezer" needs time before you can cook it. The plugin does not tell you this: only the callout of a recipe is a preparation.
 - **Groups by store.** You go to more than one store, and one store can be cheaper for some items. The list does not tell you which item to buy in which store, and it has no group for each store.

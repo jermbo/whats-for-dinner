@@ -9,7 +9,9 @@ import { indexFoods, matchRecipe, type RecipeMatch } from './match/match';
 import { nameKey } from './match/names';
 import type { FoodNote, Note } from './note';
 import { makeStock, readFoodItem } from './pantry/food-item';
+import { notePathIn } from './note-path';
 import { fullAfter } from './pantry/level';
+import type { Kind } from './pantry/staple';
 import type { FoodItem, Stock } from './pantry/types';
 import { addStock, replaceStocks, showStocks } from './pantry/write';
 import {
@@ -27,7 +29,20 @@ import type { Recipe } from './recipemd/types';
 import { typeOf } from './recipes/browse';
 import { readPrep } from './recipes/prep';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
-import { lowFoods, shoppingList } from './shop/shopping-list';
+import { leftOf, receiptOf, receiptPath, type Purchase } from './shop/receipt';
+import { shoppingList, type ShoppingRow } from './shop/shopping-list';
+import {
+	addChoice,
+	openNotePath,
+	putInCart,
+	readTrip,
+	removeTasks,
+	taskOf,
+	unmark,
+	type TripTask
+} from './shop/shopping-note';
+import { suggestionsOf } from './shop/suggestions';
+import { cartOf, isPantryItem, itemsOf, listOf, type TripItem } from './shop/trip';
 import { showMeasure } from './units';
 
 export type RecipeEntry = {
@@ -50,9 +65,10 @@ export type CookResult = {
 	photo: Blob | null;
 };
 
-// What the plugin keeps in its data file: the keys of the shopping rows that are in the cart, if
-// the shopping list has the low food, and the settings.
-type Saved = { cart: string[]; shopLow: boolean; settings: Settings };
+// What the plugin keeps in its data file: the paths of the staples that you skipped for this
+// trip, and the settings. The cart is not here. It is in the note of the trip, which Obsidian
+// moves to your other device.
+type Saved = { skipped: string[]; settings: Settings };
 type Disk = { load: () => Promise<Partial<Saved> | null>; save: (data: Saved) => Promise<void> };
 
 const share = (entry: RecipeEntry) =>
@@ -63,19 +79,16 @@ function ratingOf(properties: Record<string, unknown>): number | null {
 	return rating >= 1 && rating <= 5 ? Math.round(rating) : null;
 }
 
-// A name that is safe as the name of a note, with a capital first letter.
-function noteName(name: string): string {
-	const clean = name.replace(/[\\/:*?"<>|#^[\]]/g, ' ').replace(/\s+/g, ' ').trim();
-	return clean.charAt(0).toUpperCase() + clean.slice(1);
-}
-
 export class Kitchen {
 	notes = $state.raw<Note[]>([]);
 	foods = $state.raw<FoodNote[]>([]);
 	plan = $state.raw<PlannedMeal[]>([]);
-	cart = $state.raw<string[]>([]);
-	// The shopping list has the low food too.
-	shopLow = $state(false);
+	// The items of the open note of the trip.
+	trip = $state.raw<TripItem[]>([]);
+	// The paths of the notes of the items folder. The field "Add an item" proposes them.
+	itemNotes = $state.raw<string[]>([]);
+	// The paths of the staples that you skipped for this trip.
+	private skipped = $state.raw<string[]>([]);
 	settings = $state.raw<Settings>(DEFAULT_SETTINGS);
 	today = $state(today());
 
@@ -84,8 +97,11 @@ export class Kitchen {
 	private where = $derived({
 		recipes: folderPath(this.settings.recipesFolder),
 		pantry: folderPath(this.settings.pantryFolder) || DEFAULT_SETTINGS.pantryFolder,
-		plan: notePath(this.settings.planNote) || DEFAULT_SETTINGS.planNote
+		plan: notePath(this.settings.planNote) || DEFAULT_SETTINGS.planNote,
+		shopping: folderPath(this.settings.shoppingFolder) || DEFAULT_SETTINGS.shoppingFolder,
+		items: folderPath(this.settings.itemsFolder) || DEFAULT_SETTINGS.itemsFolder
 	});
+	private openNote = $derived(openNotePath(this.where.shopping));
 
 	// The recipes that use up the pantry come first, and food to use soon moves its recipes up.
 	recipes = $derived.by(() => {
@@ -121,18 +137,32 @@ export class Kitchen {
 		})
 	);
 
-	// The food to buy again: each food item that is below its low line, or that is out.
-	low = $derived(lowFoods(this.foods, this.settings.lowPercent));
-
-	// The list is the meals that you did not cook, minus the pantry. The low food is your choice.
-	shopping = $derived(
+	// The rows that the plugin calculates: the meals that you did not cook, minus the pantry.
+	private shopping = $derived(
 		shoppingList(
 			this.meals.flatMap(({ cooked, entry }) =>
 				cooked || !entry
 					? []
 					: [{ title: entry.recipe.title, ingredients: entry.match.ingredients }]
 			),
-			this.shopLow ? this.low : []
+			this.where.pantry
+		)
+	);
+
+	list = $derived(listOf(this.shopping, this.trip, this.foods));
+	cart = $derived(cartOf(this.shopping, this.trip, this.foods));
+
+	// The staples that need a look. A staple that is in the open note, or that you skipped, is not
+	// one of them.
+	suggestions = $derived(
+		suggestionsOf(
+			this.foods,
+			{
+				today: this.today,
+				soonDays: this.settings.soonDays,
+				lowPercent: this.settings.lowPercent
+			},
+			new Set([...this.skipped, ...this.trip.map((item) => item.key)])
 		)
 	);
 
@@ -144,6 +174,8 @@ export class Kitchen {
 	private notesByPath = new Map<string, Note>();
 	private foodsByPath = new Map<string, FoodNote>();
 	private planNow: PlannedMeal[] = [];
+	private tripNow: TripTask[] = [];
+	private itemPaths = new Set<string>();
 
 	constructor(app: App, disk: Disk, register: (ref: EventRef) => void) {
 		this.app = app;
@@ -154,15 +186,20 @@ export class Kitchen {
 	// Reads the data file of the plugin. The settings screen needs it before the kitchen starts.
 	async loadSaved() {
 		const saved = await this.disk.load();
-		this.cart = saved?.cart ?? [];
-		this.shopLow = saved?.shopLow ?? false;
+		this.skipped = saved?.skipped ?? [];
 		this.settings = { ...DEFAULT_SETTINGS, ...saved?.settings };
 	}
 
 	// Changes settings and saves them. With a new folder or plan note, the kitchen reads the vault
 	// again.
 	async changeSettings(change: Partial<Settings>) {
-		const places = ['recipesFolder', 'pantryFolder', 'planNote'] as const;
+		const places = [
+			'recipesFolder',
+			'pantryFolder',
+			'planNote',
+			'shoppingFolder',
+			'itemsFolder'
+		] as const;
 		const moved = places.some((key) => key in change && change[key] !== this.settings[key]);
 		this.settings = { ...this.settings, ...change };
 		await this.save();
@@ -212,19 +249,22 @@ export class Kitchen {
 	async addStock(name: string, stock: Stock) {
 		const key = nameKey(name);
 		const food = this.foods.find(({ item }) => nameKey(item.name) === key);
-		const folder = this.where.pantry;
-		const path = food?.path ?? `${folder}/${noteName(name)}.md`;
+		await this.addStockTo(food?.path ?? notePathIn(this.where.pantry, name), stock);
+	}
 
+	// Adds an amount to the food item of a note. If the note is not there, the plugin makes it.
+	private async addStockTo(path: string, stock: Stock) {
 		const file = this.fileAt(path);
+		const food = this.foods.find((food) => food.path === path);
 		if (file) {
 			await this.app.vault.process(file, (text) => addStock(text, stock));
 			if (food) await this.keepFull(file, food.item, [...food.item.stocks, stock]);
 			return;
 		}
-		if (!this.app.vault.getAbstractFileByPath(folder)) await this.app.vault.createFolder(folder);
+		await this.makeFolderOf(path);
 		const created = await this.app.vault.create(path, `${showStocks([stock])}\n`);
-		const item = { name, aliases: [], brands: [], full: null, low: null, stocks: [] };
-		await this.keepFull(created, item, [stock]);
+		// Before this change, the food item had no property and no row.
+		await this.keepFull(created, readFoodItem(created.basename, {}, ''), [stock]);
 	}
 
 	// The low line of a food item, such as "200 g". With no text, the plugin sets the line.
@@ -234,6 +274,16 @@ export class Kitchen {
 		await this.app.fileManager.processFrontMatter(file, (properties) => {
 			if (low.trim()) properties.low = low.trim();
 			else delete properties.low;
+		});
+	}
+
+	// Labels a food item as a staple, with its kind. Null takes the label off.
+	async setStaple(path: string, kind: Kind | null) {
+		const file = this.fileAt(path);
+		if (!file) return;
+		await this.app.fileManager.processFrontMatter(file, (properties) => {
+			if (kind) properties.staple = kind;
+			else delete properties.staple;
 		});
 	}
 
@@ -291,31 +341,104 @@ export class Kitchen {
 
 	// --- Shop ---
 
-	async toggleCart(key: string) {
-		this.cart = this.cart.includes(key)
-			? this.cart.filter((other) => other !== key)
-			: [...this.cart, key];
+	// A tap on a row of the list. A choice has its task already. A row that the plugin calculates
+	// gets its task now.
+	async putInCart(key: string) {
+		const row = this.shopping.find((row) => row.key === key);
+		const task = this.trip.find((item) => item.key === key) ?? (row && taskOf(row.key));
+		if (task) await this.writeTrip((text) => putInCart(text, task));
+	}
+
+	// "Undo" puts the item back on the list. If the plugin calculates a row for the item, the list
+	// has it with no task, so the task goes out. If not, the task stays with no mark, as a choice.
+	async takeOutOfCart(key: string) {
+		const item = this.trip.find((item) => item.key === key);
+		if (!item) return;
+		const calculated = this.shopping.some((row) => row.key === key);
+		await this.writeTrip((text) => (calculated ? removeTasks(text, [item]) : unmark(text, item)));
+	}
+
+	// Puts the note of an item on the list, as a choice: a suggestion that you accept, a note that
+	// the field "Add an item" proposes, or a new item. An item that is in the note stays as it is.
+	async addChoice(path: string) {
+		if (this.trip.some((item) => item.key === path)) return;
+		await this.writeTrip((text) => addChoice(text, taskOf(path)));
+	}
+
+	// An item that no note has links into the items folder. The plugin makes no note for it.
+	async addNewItem(name: string) {
+		await this.addChoice(notePathIn(this.where.items, name));
+	}
+
+	// Takes a choice off the list. A staple is a suggestion again.
+	async removeChoice(key: string) {
+		const item = this.trip.find((item) => item.key === key);
+		if (item) await this.writeTrip((text) => removeTasks(text, [item]));
+	}
+
+	// The suggestion stays away until put away ends the trip.
+	async skip(path: string) {
+		this.skipped = [...this.skipped, path];
 		await this.save();
 	}
 
-	// Puts the low food on the shopping list, or takes it off.
-	async toggleShopLow() {
-		this.shopLow = !this.shopLow;
-		await this.save();
-	}
-
-	// Puts each row of the cart into the pantry, in the place where that food item is now.
+	// Ends the trip: each item of the cart goes into the pantry, and the open note becomes the
+	// receipt of today.
 	async putAway() {
-		const rows = this.shopping.filter((row) => this.cart.includes(row.key));
-		for (const row of rows) {
-			const place = row.food?.item.stocks[0]?.place ?? this.settings.newPlace;
-			// A row with no amount, such as salt, goes in as one.
-			const amounts = row.buy.length ? row.buy.map(showMeasure) : ['1'];
-			for (const amount of amounts) await this.addStock(row.name, makeStock(place, amount, ''));
+		const inCart = this.trip.filter((item) => item.inCart);
+		// The rows of this moment. The list changes with each item that goes into the pantry.
+		const rows = this.cart;
+		const purchases: Purchase[] = [];
+		for (const item of inCart) {
+			purchases.push(await this.buy(item, rows.find((row) => row.key === item.key)));
 		}
-		this.cart = [];
+		await this.endTrip(purchases);
+
+		this.skipped = [];
 		await this.save();
-		this.notify(`${rows.length} ${rows.length === 1 ? 'item is' : 'items are'} in the pantry.`);
+		const count = purchases.filter(({ place }) => place).length;
+		if (count) this.notify(`${count} ${count === 1 ? 'item is' : 'items are'} in the pantry.`);
+	}
+
+	// Puts one item of the cart into the pantry, in the place where that food item is now. An item
+	// that is not in the pantry, such as batteries, changes nothing there.
+	private async buy(item: TripItem, row: ShoppingRow | undefined): Promise<Purchase> {
+		if (!isPantryItem(item, this.where.pantry)) return { item, amount: '', place: '' };
+
+		const place = row?.food?.item.stocks[0]?.place ?? this.settings.newPlace;
+		// An item with no amount, such as salt, goes in as one.
+		const amounts = row?.buy.length ? row.buy.map(showMeasure) : ['1'];
+		for (const amount of amounts) await this.addStockTo(item.key, makeStock(place, amount, ''));
+
+		const file = this.fileAt(item.key);
+		if (file) {
+			await this.app.fileManager.processFrontMatter(file, (properties) => {
+				properties.bought = this.today;
+			});
+		}
+		return { item, amount: amounts.join(' + '), place };
+	}
+
+	// The open note becomes the receipt: it gets the day as its property and as its name. Each task
+	// with no mark starts the note of the next trip.
+	private endTrip(purchases: Purchase[]) {
+		return this.inTurn(async () => {
+			const file = this.fileAt(this.openNote);
+			if (!file) return;
+
+			let left = '';
+			await this.app.vault.process(file, (text) => {
+				left = leftOf(text);
+				return receiptOf(text, purchases);
+			});
+			await this.app.fileManager.processFrontMatter(file, (properties) => {
+				properties.date = this.today;
+			});
+			const isTaken = (path: string) => this.app.vault.getAbstractFileByPath(path) !== null;
+			const path = receiptPath(this.where.shopping, this.today, isTaken);
+			await this.app.fileManager.renameFile(file, path);
+			if (left) await this.app.vault.create(this.openNote, left);
+		});
 	}
 
 	// --- Cook ---
@@ -359,8 +482,29 @@ export class Kitchen {
 		else await this.app.vault.create(this.where.plan, change(''));
 	}
 
+	// One change of the open note at a time. Thus two fast taps make the note one time, and the
+	// second tap finds the task of the first.
+	private tripChanges: Promise<void> = Promise.resolve();
+
+	private inTurn(change: () => Promise<void>) {
+		this.tripChanges = this.tripChanges.then(change, change);
+		return this.tripChanges;
+	}
+
+	private writeTrip(change: (text: string) => string) {
+		return this.inTurn(async () => {
+			const file = this.fileAt(this.openNote);
+			if (file) {
+				await this.app.vault.process(file, change);
+				return;
+			}
+			await this.makeFolderOf(this.openNote);
+			await this.app.vault.create(this.openNote, change(''));
+		});
+	}
+
 	private save() {
-		return this.disk.save({ cart: this.cart, shopLow: this.shopLow, settings: this.settings });
+		return this.disk.save({ skipped: this.skipped, settings: this.settings });
 	}
 
 	// --- The notes of the vault ---
@@ -370,11 +514,27 @@ export class Kitchen {
 		return file instanceof TFile ? file : null;
 	}
 
-	// What a note is for the kitchen, from its path. Null: the kitchen does not read the note.
-	private kindOf(path: string): 'plan' | 'food' | 'recipe' | null {
-		const { plan, pantry, recipes } = this.where;
+	private async makeFolderOf(path: string) {
+		const folder = path.slice(0, path.lastIndexOf('/'));
+		if (folder && !this.app.vault.getAbstractFileByPath(folder)) {
+			await this.app.vault.createFolder(folder);
+		}
+	}
+
+	// The note that a link of the open note goes to, as Obsidian finds it: "Lime" is the note
+	// "Pantry/Lime.md". A link to a note that is not there keeps its own path.
+	private pathOf = (link: string) =>
+		this.app.metadataCache.getFirstLinkpathDest(link, this.openNote)?.path ?? notePath(link);
+
+	// What a note is for the kitchen, from its path. Null: the kitchen does not read the note. A
+	// receipt is such a note: it is in the shopping folder, and it is not the open note.
+	private kindOf(path: string): 'plan' | 'trip' | 'food' | 'item' | 'recipe' | null {
+		const { plan, pantry, shopping, items, recipes } = this.where;
 		if (path === plan) return 'plan';
+		if (path === this.openNote) return 'trip';
 		if (path.startsWith(`${pantry}/`)) return 'food';
+		if (path.startsWith(`${items}/`)) return 'item';
+		if (path.startsWith(`${shopping}/`)) return null;
 		return !recipes || path.startsWith(`${recipes}/`) ? 'recipe' : null;
 	}
 
@@ -389,6 +549,10 @@ export class Kitchen {
 
 		if (kind === 'plan') {
 			this.planNow = readPlan(text);
+		} else if (kind === 'trip') {
+			this.tripNow = readTrip(text);
+		} else if (kind === 'item') {
+			this.itemPaths.add(path);
 		} else if (kind === 'food') {
 			const item = readFoodItem(file.basename, properties, body);
 			this.foodsByPath.set(path, { path, item });
@@ -401,6 +565,8 @@ export class Kitchen {
 		this.notesByPath.clear();
 		this.foodsByPath.clear();
 		this.planNow = [];
+		this.tripNow = [];
+		this.itemPaths.clear();
 		await Promise.all(this.app.vault.getMarkdownFiles().map((file) => this.read(file)));
 		this.show();
 	}
@@ -415,6 +581,8 @@ export class Kitchen {
 
 	private forget(path: string) {
 		if (path === this.where.plan) this.planNow = [];
+		if (path === this.openNote) this.tripNow = [];
+		this.itemPaths.delete(path);
 		this.notesByPath.delete(path);
 		this.foodsByPath.delete(path);
 		this.show();
@@ -424,6 +592,9 @@ export class Kitchen {
 		this.notes = [...this.notesByPath.values()];
 		this.foods = [...this.foodsByPath.values()];
 		this.plan = this.planNow;
+		// A link can go to a different note after a change of the vault, so the paths are new each time.
+		this.trip = itemsOf(this.tripNow, this.pathOf);
+		this.itemNotes = [...this.itemPaths];
 		this.today = today();
 	}
 }

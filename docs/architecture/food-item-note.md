@@ -1,6 +1,6 @@
 ---
 title: Food item note
-summary: "The exact form of the note of a food item: its name, its four properties, and its table."
+summary: "The exact form of the note of a food item: its name, its properties, and its table."
 parent: pantry.md
 ---
 
@@ -23,6 +23,8 @@ brands:
   - Store brand
 full: 2 kg
 low: 500 g
+staple: seldom
+bought: 2026-10-04
 ---
 
 | Place             | Amount | Use by     |
@@ -45,8 +47,12 @@ Each property is optional.
 | `brands`  | The brands that you buy. One text, or a list.           | The shopping list shows no brand.              |
 | `full`    | The full amount, such as `2 kg` or `12`.                | It is the amount that you have now.            |
 | `low`     | The low line, such as `500 g`.                          | The line is a percentage of the full amount.   |
+| `staple`  | How often you buy it: `often`, `sometimes`, `seldom`.   | The food item is not a [staple](staples.md).   |
+| `bought`  | The purchase date, as year-month-day.                   | The food item has no purchase date.            |
 
 The [level](level.md) of the food item comes from `full`, from `low`, and from the table.
+
+In `staple`, capital and small letters are the same. A different value counts as no staple. The purchase date is the day on which you put the food away the last time.
 
 ## The table
 
@@ -62,7 +68,7 @@ A note with no row is a food item that is out.
 
 ## What the plugin changes
 
-The plugin writes three things: the table, `full`, and `low`. All text outside the table stays, so you can write your own text in the note.
+The plugin writes five things: the table, `full`, `low`, `staple`, and `bought`. All text outside the table stays, so you can write your own text in the note.
 
 The plugin writes the table again with the three columns of this page. A column of your own does not stay.
 

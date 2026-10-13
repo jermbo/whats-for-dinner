@@ -4,6 +4,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { FoodNote } from '../../note';
 	import { levelOf, type Level } from '../../pantry/level';
+	import type { Kind } from '../../pantry/staple';
 	import { totalOf } from '../../pantry/total';
 	import type { Stock } from '../../pantry/types';
 	import {
@@ -143,21 +144,25 @@
 		hint: level ? showMeasure({ kind: level.kind, value: level.low }) : '200 g'
 	});
 
-	// The low line is written only when you changed it. The writes go one after the other.
-	async function keepLow(food: FoodNote, lowText: string | undefined) {
-		if (lowText !== undefined && lowText !== (food.item.low?.text ?? '')) {
-			await kitchen.setLow(food.path, lowText);
-		}
+	// What the form tells about the food item, and not about one row.
+	type Labels = { low: string; staple: Kind | null };
+
+	// The low line and the kind are written only when you changed them. The writes go one after the
+	// other.
+	async function keepLabels(food: FoodNote, labels: Labels | undefined) {
+		if (!labels) return;
+		if (labels.low !== (food.item.low?.text ?? '')) await kitchen.setLow(food.path, labels.low);
+		if (labels.staple !== food.item.staple) await kitchen.setStaple(food.path, labels.staple);
 	}
 
 	// Changes one row of a food item, or removes it.
-	async function change(food: FoodNote, at: number, stock: Stock | null, lowText?: string) {
+	async function change(food: FoodNote, at: number, stock: Stock | null, labels?: Labels) {
 		open = null;
 		const stocks = food.item.stocks.flatMap((old, index) =>
 			index !== at ? [old] : stock ? [stock] : []
 		);
 		await kitchen.setStocks(food.path, stocks);
-		await keepLow(food, lowText);
+		await keepLabels(food, labels);
 	}
 
 	// Writes all rows of a food item, after a change of the bar.
@@ -166,10 +171,10 @@
 		await kitchen.setStocks(food.path, stocks);
 	}
 
-	async function add(name: string, stock: Stock, food?: FoodNote, lowText?: string) {
+	async function add(name: string, stock: Stock, food?: FoodNote, labels?: Labels) {
 		open = null;
 		await kitchen.addStock(name, stock);
-		if (food) await keepLow(food, lowText);
+		if (food) await keepLabels(food, labels);
 	}
 </script>
 
@@ -271,8 +276,9 @@
 									title={food.item.name}
 									places={kitchen.places}
 									low={lowOf(food, levelOf(food.item, lowPercent))}
+									staple={food.item.staple}
 									facts={factsOf(food)}
-									onsave={(stock, _, lowText) => add(food.item.name, stock, food, lowText)}
+									onsave={(stock, _, labels) => add(food.item.name, stock, food, labels)}
 									oncancel={() => (open = null)}
 									onopen={() => kitchen.open(food.path)}
 								/>
@@ -327,8 +333,9 @@
 												stock={row.food.item.stocks[at] ?? row.stock}
 												places={kitchen.places}
 												low={lowOf(row.food, row.level)}
+												staple={row.food.item.staple}
 												facts={factsOf(row.food)}
-												onsave={(stock, _, lowText) => change(row.food, at, stock, lowText)}
+												onsave={(stock, _, labels) => change(row.food, at, stock, labels)}
 												onusedup={() => change(row.food, at, null)}
 												oncancel={() => (open = null)}
 												onopen={() => kitchen.open(row.food.path)}

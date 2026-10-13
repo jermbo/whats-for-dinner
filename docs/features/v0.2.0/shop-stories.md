@@ -14,7 +14,7 @@ The Shop part is where you make the list, mark what you take, and put the food a
 
 The list has more than the food of the meals: you add an item on any day, and the plugin suggests the staples that need a look. Each trip has a note. When you put the food away, you give the amount, the place, the use-by date, and the price of each item, and the note becomes the receipt.
 
-The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed, and each line of it names its decision. The [glossary](../../initiatives/shopping-list/glossary.md) of the initiative has the words of these stories, such as "choice", "suggestion", and "receipt".
+The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed, and each line of it names its decision. The wiki [glossary](../../glossary.md) has the words of these stories, such as "choice", "suggestion", and "receipt".
 
 ## The stories
 
@@ -63,7 +63,7 @@ Each story has the form that the [user story](../../standards/user-story.md) pag
 
 ## The status of a story
 
-The metadata of a story has its status. All stories of this page have the status `ready`.
+The metadata of a story has its status. Stories 1, 2, 3, 5, and 6 have the status `built`: the code is there, and nobody recorded a test on the phone. The other stories have the status `ready`.
 
 ## Further reading
 

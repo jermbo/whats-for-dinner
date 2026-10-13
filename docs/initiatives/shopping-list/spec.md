@@ -80,7 +80,7 @@ Architecture pages that change:
 
 - [Shopping](../../architecture/shopping.md): the sources of the list, the cart, and the trip.
 - [Put away](../../architecture/put-away.md): the screen, the facts, and the end of the trip.
-- [Low food](../../architecture/low-food.md): the staples and the suggestions replace the check box.
+- [Low food](../../architecture/staples.md): the staples and the suggestions replace the check box.
 - [Food item note](../../architecture/food-item-note.md): the properties `staple` and `bought`.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): a fourth kind of note, and a data file with no cart.
 - [Settings](../../architecture/settings.md): two folders.

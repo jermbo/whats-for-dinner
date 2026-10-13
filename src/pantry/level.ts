@@ -30,6 +30,14 @@ export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null 
 	return { kind, has, full, low, isLow: has < low };
 }
 
+// What makes a food item full again: the full amount less what the pantry has. Null: the food
+// item is full, or the plugin cannot count it.
+export function fillOf(item: FoodItem): Measure | null {
+	const level = levelOf(item);
+	if (!level || level.has >= level.full) return null;
+	return { kind: level.kind, value: level.full - level.has };
+}
+
 // The parts of the bar of one row, each as a part of the full amount: the food in this place, the
 // food in the other places, and the low line.
 export type Bar = { here: number; others: number; low: number; isLow: boolean };

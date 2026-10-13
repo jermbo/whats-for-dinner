@@ -2,9 +2,10 @@
 title: See the staples that need a look
 summary: "The planner sees each staple that needs a look, with its reason, and accepts it or skips it."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Planner
 depends-on: [shop-keep-the-cart-in-the-shopping-note.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / See the staples that need a look
@@ -113,7 +114,9 @@ Ginger is low, with 20 g of 100 g, and it is not a staple.
 
 ## Architecture
 
-- [Low food](../../architecture/low-food.md): the check box that this story replaces, and the amount that makes a food item full.
+- [Suggestions](../../architecture/suggestions.md): the rule, the reasons, and what "Add", "Skip", and "Remove" do.
+- [Staples](../../architecture/staples.md): the kinds, and the amount that makes a staple full.
+- [Shopping note](../../architecture/shopping-note.md): the task that "Add" writes.
 - [Level](../../architecture/level.md): how the plugin decides that a food item is low.
 - [Use soon](../../architecture/use-soon.md): the days of the setting "Use soon".
 - [Food item note](../../architecture/food-item-note.md): the properties of the note.

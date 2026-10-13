@@ -1,5 +1,7 @@
 ---
 full: 1 bunch
+staple: sometimes
+bought: 2026-10-10
 ---
 
 | Place          | Amount  | Use by     |

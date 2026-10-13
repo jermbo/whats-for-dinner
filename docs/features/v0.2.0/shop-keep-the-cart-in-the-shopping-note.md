@@ -2,9 +2,10 @@
 title: Keep the cart in the shopping note
 summary: "The shopper taps a row, and the item is a task of the open note of the trip."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Shopper
 depends-on: []
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Keep the cart in the shopping note
@@ -78,6 +79,8 @@ Nothing. This story can start now.
 
 ## Architecture
 
-- [Shopping](../../architecture/shopping.md): how the list knows what is missing, and what a tap in the store does today.
+- [Shopping](../../architecture/shopping.md): how the list knows what to buy, and what a tap in the store does.
+- [Shopping note](../../architecture/shopping-note.md): the form of the open note, and what the plugin changes in it.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): why each change goes through a note.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the form of the open note. It is a page of the initiative.
+- [Put away](../../architecture/put-away.md): what goes into the pantry, and what goes out of the open note.
+- [Settings](../../architecture/settings.md): the shopping folder.

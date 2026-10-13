@@ -21,12 +21,11 @@
 	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop'];
 
 	const toCook = $derived(kitchen.meals.filter((meal) => !meal.cooked).length);
-	const toBuy = $derived(kitchen.shopping.filter((row) => !kitchen.cart.includes(row.key)).length);
 	const options = $derived([
 		{ value: 'pantry' as const, label: 'Pantry' },
 		{ value: 'recipes' as const, label: 'Recipes' },
 		{ value: 'plan' as const, label: 'Plan', count: toCook },
-		{ value: 'shop' as const, label: 'Shop', count: toBuy }
+		{ value: 'shop' as const, label: 'Shop', count: kitchen.list.length }
 	]);
 
 	let part = $state<Part>('pantry');

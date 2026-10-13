@@ -2,9 +2,10 @@
 title: Get a receipt for each trip
 summary: "The keeper puts the cart away, and the open note becomes the receipt of that day."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Keeper
 depends-on: [shop-keep-the-cart-in-the-shopping-note.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Get a receipt for each trip
@@ -68,6 +69,6 @@ Mum comes on Friday.
 
 ## Architecture
 
-- [Put away](../../architecture/put-away.md): which place gets the food, and which amount, today.
+- [Put away](../../architecture/put-away.md): which place gets the food, and which amount.
 - [Food item note](../../architecture/food-item-note.md): the note that gets the row and the purchase date.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the form of the receipt. It is a page of the initiative.
+- [Receipt](../../architecture/receipt.md): the form of the receipt.

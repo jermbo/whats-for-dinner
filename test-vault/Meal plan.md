@@ -5,3 +5,5 @@
 - [ ] [[Recipes/Tacos|Tacos]]
 - [ ] [[Edge cases/Recipe with a linked recipe|Rice bowl with egg]]
 - [ ] [[Edge cases/Recipe with preparation|Overnight oats]]
+- [ ] [[Recipes/Guacamole|Guacamole]]
+- [ ] [[Edge cases/Recipe with a new food|Quinoa bowl]]

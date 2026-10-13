@@ -2,9 +2,10 @@
 title: Add an item of your own
 summary: "The planner adds an item to the list on any day, as a link to the note of that item."
 parent: shop-stories.md
+updated: 2026-10-13
 persona: Planner
 depends-on: [shop-keep-the-cart-in-the-shopping-note.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / Add an item of your own
@@ -65,7 +66,7 @@ Each criterion starts with the test vault, with no open note and no note in the 
 
 ## Architecture
 
-- [Shopping](../../architecture/shopping.md): what the list has today.
+- [Shopping](../../architecture/shopping.md): what the list has, and where a choice is.
 - [Settings](../../architecture/settings.md): the folders of the plugin.
-- [Shopping note](../../initiatives/shopping-list/shopping-note.md): the form of a task and of its link. It is a page of the initiative.
+- [Shopping note](../../architecture/shopping-note.md): the form of a task and of its link.
 - [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): decisions 15 and 20 to 22. It is a page of the initiative.

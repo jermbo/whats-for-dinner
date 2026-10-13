@@ -14,12 +14,16 @@ The plugin has a fixed value for most of its rules. A value is a setting only wh
 
 Your vault has more than recipes. These settings keep the other notes out of the kitchen.
 
-| Setting            | Starts as      | What it does                                                                           |
-| ------------------ | -------------- | -------------------------------------------------------------------------------------- |
-| Recipes folder     | Empty          | Only the notes in this folder are recipes. With no folder, the plugin tries each note. |
-| Pantry folder      | `Pantry`       | Each note in this folder is a food item.                                               |
-| Meal plan note     | `Meal plan.md` | The note with the meals of the week.                                                   |
-| Place for new food | `Kitchen`      | The place of food from a shopping trip, if the pantry does not know the food.          |
+| Setting            | Starts as        | What it does                                                                           |
+| ------------------ | ---------------- | -------------------------------------------------------------------------------------- |
+| Recipes folder     | Empty            | Only the notes in this folder are recipes. With no folder, the plugin tries each note. |
+| Pantry folder      | `Pantry`         | Each note in this folder is a food item.                                               |
+| Meal plan note     | `Meal plan.md`   | The note with the meals of the week.                                                   |
+| Shopping folder    | `Shopping`       | The note of each shopping trip is in this folder.                                      |
+| Items folder       | `Shopping/Items` | An item of your own that no note has links to a note of this folder.                   |
+| Place for new food | `Kitchen`        | The place of food from a shopping trip, if the pantry does not know the food.          |
+
+With no recipes folder, the plugin does not try a note of the pantry folder, of the shopping folder, or of the items folder.
 
 When you change a folder or the plan note, the kitchen reads the vault again.
 
@@ -52,7 +56,7 @@ The button "Test" plays the sound, so that you can select it before you cook.
 
 ## Where the settings are
 
-The settings are in the data file of the plugin, with your cart. They are not a note, because they tell about the plugin and not about your kitchen.
+The settings are in the data file of the plugin. They are not a note, because they tell about the plugin and not about your kitchen.
 
 ## Further reading
 
