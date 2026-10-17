@@ -1,10 +1,11 @@
 // The rows that the plugin calculates: the plan minus the pantry. Two meals that need onions make
-// one row.
+// one row. A low staple that a meal needs is a row too.
 
 import type { IngredientMatch } from '../match/match';
 import { nameKey, showName } from '../match/names';
 import type { FoodNote } from '../note';
 import { notePathIn } from '../note-path';
+import { levelOf } from '../pantry/level';
 import { available } from '../pantry/total';
 import { addTo, showMeasure, type Measure } from '../units';
 
@@ -21,7 +22,7 @@ export type ShoppingRow = {
 	// The titles of the recipes that need this row.
 	recipes: string[];
 	// The row is on the list because you put it there: its item has a task with no mark.
-	choice: boolean;
+	extra: boolean;
 };
 
 // What the meals need of one item, with no regard to the pantry.
@@ -63,7 +64,7 @@ export function needsOf(
 	return [...needs.values()];
 }
 
-export function shoppingList(needs: Need[]): ShoppingRow[] {
+export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
 	const rows: ShoppingRow[] = [];
 	for (const need of needs) {
 		const stocks = need.food?.item.stocks ?? [];
@@ -76,13 +77,21 @@ export function shoppingList(needs: Need[]): ShoppingRow[] {
 			if (value > has) short.push({ kind, value: value - has });
 		}
 
-		if (short.length || !stocks.length) rows.push(rowFor(need, short));
+		if (short.length || !stocks.length || isLowStaple(need.food, lowPercent)) {
+			rows.push(rowFor(need, short));
+		}
 	}
 	return rows.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// The meal uses what is left of a low staple, so you need more of it, also when the pantry has
+// enough for the meal. The list fills the row of a staple.
+function isLowStaple(food: FoodNote | null, lowPercent: number): boolean {
+	return Boolean(food?.item.staple && levelOf(food.item, lowPercent)?.isLow);
 }
 
 // The row of a need, with what to buy of it.
 export function rowFor({ key, name, food, recipes }: Need, buy: Measure[]): ShoppingRow {
 	const amount = buy.map(showMeasure).join(' + ');
-	return { key, name, amount, buy, food, recipes, choice: false };
+	return { key, name, amount, buy, food, recipes, extra: false };
 }

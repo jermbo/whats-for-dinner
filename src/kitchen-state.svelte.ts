@@ -36,7 +36,7 @@ import { readReceipt, type Receipt } from './shop/read-receipt';
 import { leftOf, purchaseOf, receiptOf, receiptPath, type Purchase } from './shop/receipt';
 import { needsOf, shoppingList } from './shop/shopping-list';
 import {
-	addChoice,
+	addExtra,
 	openNotePath,
 	putInCart,
 	readTrip,
@@ -160,7 +160,7 @@ export class Kitchen {
 
 	// The rows that the plugin calculates from those needs.
 	private calculated = $derived({
-		missing: shoppingList(this.needs),
+		missing: shoppingList(this.needs, this.settings.lowPercent),
 		past: pastDateRows(this.needs, this.today)
 	});
 
@@ -181,8 +181,8 @@ export class Kitchen {
 		});
 	});
 
-	// The food items that need a look. A food item that is in the open note, or that you skipped,
-	// is not one of them.
+	// The food items that need a look. A food item that is on the list already, or that you
+	// skipped, is not one of them.
 	suggestions = $derived(
 		suggestionsOf(
 			this.foods,
@@ -193,7 +193,11 @@ export class Kitchen {
 			},
 			{
 				past: new Set(this.calculated.past.map((row) => row.key)),
-				hidden: new Set([...this.skipped, ...this.trip.map((item) => item.key)])
+				hidden: new Set([
+					...this.skipped,
+					...this.trip.map((item) => item.key),
+					...this.calculated.missing.map((row) => row.key)
+				])
 			}
 		)
 	);
@@ -380,7 +384,7 @@ export class Kitchen {
 
 	// --- Shop ---
 
-	// A tap on a row of the list. A choice has its task already. A row that the plugin calculates
+	// A tap on a row of the list. An extra has its task already. A row that the plugin calculates
 	// gets its task now.
 	async putInCart(key: string) {
 		const row = this.calculated.missing.find((row) => row.key === key);
@@ -389,7 +393,7 @@ export class Kitchen {
 	}
 
 	// "Undo" puts the item back on the list. If the plugin calculates a row for the item, the list
-	// has it with no task, so the task goes out. If not, the task stays with no mark, as a choice.
+	// has it with no task, so the task goes out. If not, the task stays with no mark, as an extra.
 	async takeOutOfCart(key: string) {
 		const item = this.trip.find((item) => item.key === key);
 		if (!item) return;
@@ -397,20 +401,20 @@ export class Kitchen {
 		await this.writeTrip((text) => (onList ? removeTasks(text, [item]) : unmark(text, item)));
 	}
 
-	// Puts the note of an item on the list, as a choice: a suggestion that you accept, a note that
+	// Puts the note of an item on the list, as an extra: a suggestion that you accept, a note that
 	// the field "Add an item" proposes, or a new item. An item that is in the note stays as it is.
-	async addChoice(path: string) {
+	async addExtra(path: string) {
 		if (this.trip.some((item) => item.key === path)) return;
-		await this.writeTrip((text) => addChoice(text, taskOf(path)));
+		await this.writeTrip((text) => addExtra(text, taskOf(path)));
 	}
 
 	// An item that no note has links into the items folder. The plugin makes no note for it.
 	async addNewItem(name: string) {
-		await this.addChoice(notePathIn(this.where.items, name));
+		await this.addExtra(notePathIn(this.where.items, name));
 	}
 
-	// Takes a choice off the list. A staple is a suggestion again.
-	async removeChoice(key: string) {
+	// Takes an extra off the list. A staple is a suggestion again.
+	async removeExtra(key: string) {
 		const item = this.trip.find((item) => item.key === key);
 		if (item) await this.writeTrip((text) => removeTasks(text, [item]));
 	}

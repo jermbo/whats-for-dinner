@@ -1,6 +1,6 @@
 ---
 title: Shopping
-summary: "How the list knows what to buy: the plan minus the pantry, and your choices in the note of the trip."
+summary: "How the list knows what to buy, and how a trip goes through three stages: the extras, the store, and put away."
 parent: ../README.md
 ---
 
@@ -8,7 +8,7 @@ parent: ../README.md
 
 # Shopping
 
-With no list, you buy what you have and you forget what you need. This page tells how the plugin makes a list of the missing items only, where it keeps the cart, and how the shopping trip gets into the pantry.
+With no list, you buy what you have and you forget what you need. This page tells how the plugin makes a list of the missing items only, where it keeps the cart, and how a trip goes through three stages into the pantry.
 
 ## The list is the plan minus the pantry
 
@@ -18,33 +18,47 @@ One meal needs 1 onion and a second meal needs 2. The pantry has 1 onion. The li
 
 The plugin adds and compares [amounts](amounts.md) only if their units compare. The pantry can have the food in a different unit, such as "1 bag" for an ingredient of 20 g. Then the plugin does not ask for more.
 
-## Your choices are on the list too
+## A low staple that a meal needs is on the list
 
-Some food you want always, plan or no plan. You label it as a [staple](staples.md), and the Shop part suggests it when it needs a look. One tap accepts a suggestion. Food of a meal that is [past its date](past-its-date.md) is a suggestion too.
+A [staple](staples.md) is food that you always want. When a meal needs a staple that is [low](level.md) or out, the meal uses what is left. So the plugin puts the staple on the list with no action from you, also when the pantry has enough for the meal. The row asks for the larger of two amounts: what the meals need, and what makes the staple full.
+
+The boiled eggs need 4 eggs. The pantry has 2, the low line is 4, and the full amount is 30. The list has one row: "Eggs, 28", for the boiled eggs.
+
+## Your extras are on the list too
+
+Some food you want always, plan or no plan. When a staple needs a look, and no meal puts it on the list, the Shop part suggests it. One tap accepts a suggestion. Food of a meal that is [past its date](past-its-date.md) is a suggestion too.
 
 Somebody asks you for batteries on a Tuesday. You type the name into the field "Add an item", and the item is on the list of the next trip. The field proposes the notes that the name finds.
 
-A suggestion that you accepted and an item of your own are choices: items that are on the list because you put them there.
+A suggestion that you accepted and an item of your own are extras: items that are on the list because you put them there.
+
+## A trip has three stages
+
+A trip has three moments: you decide the extras, you shop, and you put the food away. The Shop part has one stage for each, in a strip at the top: "1 Extras", "2 Shop", and "3 Put away". An item goes from a suggestion to the list, from the list to the cart, and from the cart to the pantry. Each stage moves it one place, and the count of a stage tells how many items wait there.
+
+The stage Extras starts with one line, such as "Your meals: 6 items on the list". The meals need no action from you, so the stage shows only the [suggestions](suggestions.md) and the field "Add an item".
+
+You can open a stage at any time. When Obsidian starts, the Shop part opens on the stage that has work: "Extras" when a suggestion needs a look and the cart is empty, and "Shop" in each other case.
 
 ## A trip has one note
 
-A trip is one visit to a store. It has one [shopping note](shopping-note.md), which the plugin makes with your first action. A task with no mark in that note is a choice. A task with a mark is an item of the cart.
+A trip is one visit to a store. It has one [shopping note](shopping-note.md), which the plugin makes with your first action. A task with no mark in that note is an extra. A task with a mark is an item of the cart.
 
 The cart is in a note, because Obsidian moves a note from one device to the other. Thus the phone and the computer show the same cart.
 
 ## In the store, one tap
 
-A tap on a row puts the item in the cart. A row shows the meals that need the item, and the brands that you buy. Thus you can take the brand that is on sale.
+The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra", and the brands that you buy. Thus you can take the brand that is on sale.
 
-"Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
+The cart is one closed line under the list: "In the cart", with the number of its items. You open it to see the items, and "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
 
-## At home, one screen
+## At home, one stage
 
-[Put away](put-away.md) shows each item of the cart with its facts: the amount, the place, the use-by date, and the price. The plugin proposes them, and you correct what is different. Then one button adds each item to its food item. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
+[Put away](put-away.md) is the third stage. It shows each item of the cart with its facts: the amount, the place, the use-by date, and the price. The plugin proposes them, and you correct what is different. Then one button adds each item to its food item. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
 
 A food that the pantry does not know gets a new note. After the button, the cart is empty, and the list has only what you did not buy.
 
-The shopping note becomes the [receipt](receipt.md) of that day, with the price of each item. A choice that you did not buy goes into the note of the next trip.
+The shopping note becomes the [receipt](receipt.md) of that day, with the price of each item. An extra that you did not buy goes into the note of the next trip.
 
 ## Further reading
 

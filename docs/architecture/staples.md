@@ -32,6 +32,8 @@ The three kinds are steps of one question: "how often do you buy it?". The plugi
 
 A staple is not on the list at each trip. When it needs a look, the Shop part shows it as a [suggestion](suggestions.md), with the reason. You accept it or you skip it. Thus you look at the food before you buy it.
 
+A staple that is low or out, and that a meal of the week needs, is not a suggestion. The meal uses what is left, so the staple is on the list with no action from you, as the [shopping](shopping.md) page tells.
+
 Food that is low and that is not a staple gets no suggestion. It is on the list when a meal needs it, and the Pantry shows it as low.
 
 ## A staple on the list fills

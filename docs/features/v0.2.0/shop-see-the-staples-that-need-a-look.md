@@ -2,7 +2,7 @@
 title: See the staples that need a look
 summary: "The planner sees each staple that needs a look, with its reason, and accepts it or skips it."
 parent: shop-stories.md
-updated: 2026-10-13
+updated: 2026-10-17
 persona: Planner
 depends-on: [shop-keep-the-cart-in-the-shopping-note.md]
 status: built
@@ -54,7 +54,7 @@ As the [planner](../../personas.md), I want the Shop part to suggest each staple
 
 ## Acceptance criteria
 
-Each criterion starts with the test vault on 2026-10-13, with no open note. The test vault needs these properties:
+Each criterion starts with the test vault on 2026-10-13, with no open note and no meal in the plan. A criterion that needs a meal gives it, because food that a meal puts on the list is not a suggestion. The test vault needs these properties:
 
 | Note              | `staple`    | `bought`     | What the vault has                        |
 | ----------------- | ----------- | ------------ | ----------------------------------------- |

@@ -1,6 +1,6 @@
 ---
 title: Put away
-summary: "How one screen puts a shopping trip into the pantry: lines that the plugin fills in, groups by place, corrections with one tap, and the button that ends the trip."
+summary: "How the stage Put away puts a shopping trip into the pantry: lines that the plugin fills in, groups by place, corrections with one tap, and the button that ends the trip."
 parent: shopping.md
 ---
 
@@ -8,7 +8,7 @@ parent: shopping.md
 
 # Put away
 
-After the store, you have bags on the counter and no time. If the pantry needs one entry for each item, you do not make them, and the pantry is wrong the next day. This page tells how one screen puts the full trip into the pantry, and records what you paid.
+After the store, you have bags on the counter and no time. If the pantry needs one entry for each item, you do not make them, and the pantry is wrong the next day. This page tells how one stage of the Shop part puts the full trip into the pantry, and records what you paid.
 
 ## The plugin fills in, and you check
 
@@ -34,7 +34,7 @@ Eggs usually cost 3.99. Today they are 3.49. You tap "Sale" and type 3.49.
 
 ## One button ends the trip
 
-"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the screen only tells how many prices are missing. "Back" closes the screen with no change, and what you gave stays while the kitchen is open.
+"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the screen only tells how many prices are missing. Put away is the third stage of the [Shop part](shopping.md). You can open a different stage at any time, and what you gave stays while the kitchen is open. With an empty cart, the stage says "The cart is empty."
 
 ## An item that is not in the pantry
 
@@ -45,7 +45,7 @@ Batteries are not food, so their line has only the price and "Sale", in the last
 - The [level](level.md) of each food item goes up. If you have more than the full amount, the plugin writes the new full amount.
 - Each food item that got food has the day of put away as its purchase date.
 - The shopping note becomes the receipt of the trip, so the cart is empty.
-- A choice that you did not buy goes into the note of the next trip.
+- An extra that you did not buy goes into the note of the next trip.
 - A [suggestion](suggestions.md) that you skipped shows again, if its food item still needs a look.
 
 ## Further reading

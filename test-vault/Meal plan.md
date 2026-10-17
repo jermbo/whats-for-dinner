@@ -1,3 +1,1 @@
-- [ ] [[Edge cases/Recipe with wikilinks|Fried rice]] · 2026-10-14
-- [ ] [[Recipes/Spinach omelette|Spinach omelette]]
-- [ ] [[Recipes/Chicken curry|Chicken curry]]
+- [ ] [[Edge cases/Recipe with steps as paragraphs|Boiled eggs]]

@@ -142,6 +142,46 @@ The first test showed a screen of put away with a field and a chip on each line.
 31. **Each line has the chip "Sale", and you tap it when the item was on sale.** The tap marks the sale and opens the price with the keyboard for numbers, because a sale always has its own price. The field is empty, and it shows the regular price as a hint: "3.99 regular". The reason: one tap on the line of the item, with no step to open the line. An option that was rejected: "On sale" in the open line. The line has no control then, but a sale needs one more tap.
 32. **The place of the last receipt is a safe start, and the screen makes the place easy to check.** The reason: the place is the fact that you check most, because you put the food away with your own hands. This decision confirms choice 16 of the list below.
 
+## Decisions after the second test
+
+The second test showed the Shop part as one long screen: the suggestions, the list, the cart, and the button of put away, one under the other. You could not see which items were suggestions, which were on the list, and which were ready to put away. These decisions give each moment of a trip its own stage.
+
+33. **The Shop part has three stages, and each stage has one job.** In "Extras", you decide what the plugin cannot decide. In "Shop", you take the items of the list into the cart. In "Put away", you check the facts and put the cart into the pantry. An item goes from a suggestion to the list, from the list to the cart, and from the cart to the pantry. Each stage moves it one place. The reason: one stage shows one state of an item, so you always know where an item is. An option that was rejected: the one screen of the first build, with a heading for each group. This decision changes the pages [shopping](../../architecture/shopping.md) and [put away](../../architecture/put-away.md).
+   - a. A strip at the top of the Shop part shows the three stages: "1 Extras", "2 Shop", and "3 Put away". Each stage has a count: the suggestions, the rows of the list, and the items of the cart.
+   - b. One tap on the strip opens a stage, at any time. The reason: in the store you can remember an item of your own, and at home you can go back to a suggestion. An option that was rejected: a stage that opens only after the stage before it.
+   - c. Each stage has one main button at the bottom. "Go shopping" opens the stage Shop. "Put away" opens the stage Put away. "Put into the pantry" ends the trip.
+   - d. The screen of put away is the third stage. It does not open over the Shop part, so it has no "Back".
+   - e. Motion connects the stages. When an item goes to a different stage, the count of that stage changes.
+   - f. The word "step" is for a recipe, so the pages use "stage". The strip shows only the number and the name.
+   - g. An example: on Thursday you open the Shop part. The strip shows "1 Extras 6", "2 Shop 2", and "3 Put away 0". You add flour and you skip salt, so it shows "1 Extras 4" and "2 Shop 3". In the store you tick the 3 rows, and it shows "2 Shop 0" and "3 Put away 3".
+34. **The meals fill the list with no action from you, so the first stage has only the extras.** Its name is "Extras". It has the suggestions and the field "Add an item". One line at the top tells what the meals put on the list, such as "Your meals: 2 items on the list". The reason: the plan already tells what the meals need, so the plugin does not ask about it. The name tells that the meals are not in this stage. An option that was rejected: the name "Choose", which does not tell that the meals are done.
+   - a. A tap on the line of the meals opens the stage Shop.
+   - b. This decision agrees with decision 14 b. The meals fill the list first, and then you look at the staples.
+35. **The word "extra" replaces the word "choice".** An extra is an item that is on the list because you put it there: a suggestion that you accepted, or an item of your own. The reason: the first stage has the name "Extras", and one thing has one word. This decision changes the row "Choice" of the wiki [glossary](../../glossary.md).
+   - a. In the stage Shop, the row of an extra has the sticker "Extra". The row of a meal shows its meals, as before.
+   - b. The filter "Your choices", and the group "Your choices" of the sequence "By meal", get the name "Extras".
+36. **A staple that a meal of the week needs, and that is low or out, is on the list with no action from you. Food that a meal puts on the list is not a suggestion.** The reason: the meal uses the staple, so you need more of it, and the stage Extras must not ask about an item that the stage Shop already has. Two options were rejected. With the suggestion "Low" next to the row of the meal, one item shows in two stages. With only the second sentence, which was the first form of this decision, the row asks only for what the meals need, and a low staple that the pantry has enough of for the meal stays a suggestion. This decision changes the pages [shopping](../../architecture/shopping.md) and [suggestions](../../architecture/suggestions.md).
+   - a. The row has the larger of two amounts: what the meals need, and what makes the staple full. It is the amount that "Add" gives a staple (choice 19).
+   - b. The row shows its meals. It has no sticker "Low", because it is not an extra.
+   - c. A low staple that no meal needs stays a suggestion. You decide it in the stage Extras.
+   - d. When no meal needs the food any more, it is a suggestion again, if it still needs a look.
+   - e. An example: eggs are a staple, with the low line 4 and the full amount 30. The pantry has 2 eggs, and the boiled eggs need 4. The list has the row "Eggs" with "28", for the boiled eggs, and the stage Extras has no line for eggs. With the pancakes, which need 1 egg, the row is the same: the pantry has enough for the meal, but the eggs are low.
+   - f. A second example: avocados are a staple with the full amount 4, and the pantry has none. With the guacamole in the plan, the list has the row "Avocados" with "4". With no guacamole, avocados are a suggestion with the reason "Out".
+37. **The stage Shop shows each row with a box to tick, and the cart as one closed line.** A tap on a row ticks its box, and the row goes into the line "In the cart". A tap on that line opens it, and each item in it has "Undo". The reason: a row with no box did not tell that a tap puts the item in the cart. The items of the cart also had a line through the name, which reads as "gone", not as "ready to put away". An option that was rejected: the cart as an open group under the list, with a line through each name.
+   - a. The list has the heading "To get", with the number of its rows.
+   - b. The bar of the list, with the field to find, the sequence, and the filters, is only in the stage Shop.
+38. **The Shop part opens on the stage that has work.** That is the stage Extras when a suggestion needs a look and the cart is empty, and the stage Shop in each other case. The reason: with no suggestion, the first stage has nothing for you to do. When the cart has items, you are in the store, or you are back from it.
+
+## Decisions after the third test
+
+The third test put oats away with the amount "1". The receipt of 14 October had that amount, so put away proposed it again. But the note of the oats counts in grams. A "1" does not add to grams, so the oats stayed low after the trip.
+
+39. **Put away proposes an amount in the unit of the food item.** It takes the newest amount of the receipts that is in that unit. With none, it takes the amount of the row on the list, then the full amount of the food item, and then "1". The reason: you buy the same bag each time, so an earlier purchase is the best guess. But an amount in a different unit does not add to the level, and the food stays low after put away. An option that was rejected: the amount of the newest receipt in each case. One bad amount then comes back at each trip. This decision changes choice 15.
+   - a. "How much" offers only the amounts in the unit of the food item.
+   - b. A food item that the pantry cannot count, and an item that is not in the pantry, take the newest amount, as before.
+   - c. A new bag size needs one correction at put away. The next trip proposes the new amount, because it is the newest.
+   - d. An example: the receipts of oats have "1" on 14 and 17 October, and the note counts oats in grams. The pantry has 7.5 g of 50 g. Put away proposes "42.5 g", the amount of the row on the list. With 50 g in the pantry and oats as an extra, the row has no amount, so put away proposes "50 g", the full amount.
+
 ## Choices that are not confirmed
 
 You can change each of these after the first test.
@@ -160,7 +200,7 @@ You can change each of these after the first test.
 12. **The price of a row is what you paid for its full amount.** It is not the price of one unit, and it has no currency.
 13. **A task with no link is an item of your own.** Its text is its name, and it is not in the pantry.
 14. **The total of a receipt is on the screen, not in the note.** A total in the note is a copy, and it is wrong after you correct a price by hand.
-15. **Put away proposes the amount of the last receipt of the item.** With no receipt, it proposes the larger of two amounts: what makes the food item full, and what the meals need. With none of the two, it proposes 1.
+15. **Put away proposes the amount of the last receipt of the item.** With no receipt, it proposes the larger of two amounts: what makes the food item full, and what the meals need. With none of the two, it proposes 1. Decision 39 changes this: the amount must be in the unit of the food item.
 16. **Put away proposes the place of the last receipt of the item.** With no receipt, it proposes the place of the first row of the food item. With no row, it proposes the setting "Place for new food".
 17. **Put away proposes a use-by date with the same number of days as the last time.** Eggs that had 3 weeks on the last receipt get 3 weeks from today. With no receipt, the date is empty.
 18. **A suggestion that you skip is gone until the trip ends.** At the next trip, the plugin asks again, if the food item still needs a look.
@@ -180,6 +220,17 @@ You can change each of these after the first test.
 32. **A second tap on "Sale" puts the sale off.** If you typed no price, the regular price comes back. A price that you typed before the first tap stays.
 33. **A line says "no place yet" when its place comes from the setting "Place for new food".** It is the only place that the plugin guesses, so it is the one that needs your look.
 34. **No store is on when the screen opens.** The reason: you go to three stores in turn (decision 23), so the store of the last trip is often wrong.
+35. **The field "Add an item" is only in the stage Extras.** In the store, you open the stage Extras to add an item.
+36. **The field "Add an item" is above the suggestions.** The keyboard of a phone hides a field at the lower edge of the tab.
+37. **The group of the suggestions keeps the name "Suggestions".**
+38. **The stage Extras with no suggestion says "No food needs a look."** The field "Add an item" stays.
+39. **The button "Put away" of the stage Shop shows only when the cart has items.** Its text has the number of the items, such as "Put away 3".
+40. **The stage Put away with an empty cart says "The cart is empty."** It has no button "Put into the pantry".
+41. **The stage Shop with no row says "Each item is in the cart." or "Nothing to get."** The first text is for a cart with items, and the second for an empty cart.
+42. **The Shop part keeps the stage that you opened when you go to a different part and back.** Decision 38 selects the stage when Obsidian starts, and after "Put into the pantry".
+43. **A staple that a meal needs, and that is not low, keeps its other reasons, such as "Often".** It is a suggestion when the pantry has enough of it for the meals.
+44. **Decision 36 holds for food that is past its date too.** A hard case: the curry needs 500 g of chicken thighs, and the pantry has 200 g that is past its date. The list asks for 300 g, and no suggestion tells that the 200 g is old.
+45. **Each motion takes 0.2 s, and with less motion there is none.** The ink line of the strip slides to the stage that opens. "Add" slides the line of a suggestion out. A tick fills the box, and then the row slides into the line "In the cart".
 
 ## What this work does not include
 

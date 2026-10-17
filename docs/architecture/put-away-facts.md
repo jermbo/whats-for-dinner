@@ -28,13 +28,13 @@ You usually buy the same box of eggs, for about the same price, and you put it i
 
 | Fact        | From the receipts                                    | With no receipt, or with an empty cell                                 |
 | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| Amount      | The amount of the last row.                          | The larger of two amounts: the list row, and what makes the food full. |
+| Amount      | The newest amount in the unit of the food item.      | The larger of two amounts: the list row, and what makes the food full. |
 | Place       | The place of the last row.                           | The place of the first row of the food item.                           |
 | Use-by date | Today, plus the days that the food had then.         | Empty.                                                                 |
 | Price       | The regular price: the newest row with no sale mark. | Empty.                                                                 |
 | "Sale"      | Off.                                                 | Off.                                                                   |
 
-An item with no list row and no level starts with the amount 1. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
+An amount must be in the unit of the food item: the unit of its full amount, or of its first row. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the full amount of the food item, and then with 1. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
 
 ## A sale price is never the start
 

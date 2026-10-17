@@ -1,8 +1,8 @@
 import { SvelteMap } from 'svelte/reactivity';
 import type { CartItem, Facts } from '../../shop/facts';
 
-// What you gave on the screen of put away, before the button writes it. The kitchen keeps it while
-// its tab is open, so that "Back" does not lose a price that you typed.
+// What you gave in the stage Put away, before the button writes it. The kitchen keeps it while its
+// tab is open, so that a different stage or part does not lose a price that you typed.
 export class PutAwayDraft {
 	// The facts that you changed, by the key of the item.
 	private changes = new SvelteMap<string, Partial<Facts>>();

@@ -25,7 +25,7 @@ The food item does not have to be a staple. As for a staple, a food item with a 
 
 ## "Add" replaces the food
 
-You look at the food. If it is good, you tap "Skip". If it is not, you tap "Add", and the food item is a choice on the list. You replace the food, so its row has all that the meals need, with no regard to the pantry.
+You look at the food. If it is good, you tap "Skip". If it is not, you tap "Add", and the food item is an extra on the list. You replace the food, so its row has all that the meals need, with no regard to the pantry.
 
 A staple that is past its date [fills](staples.md), if that is more than the meals need.
 

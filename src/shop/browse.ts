@@ -3,7 +3,7 @@
 import type { ShoppingRow } from './shopping-list';
 
 export type Sort = 'name' | 'meal';
-export type Only = 'meal' | 'choice';
+export type Only = 'meal' | 'extra';
 export type ShopGroup = { title: string; rows: ShoppingRow[] };
 
 export const isForMeal = (row: ShoppingRow) => row.recipes.length > 0;
@@ -18,7 +18,7 @@ export function isFound(row: ShoppingRow, text: string): boolean {
 }
 
 // One group for each meal, so that you see what a meal needs. A row that two meals need is in
-// the two groups. Your choices have their own group, and a choice that a meal needs is in the two.
+// the two groups. Extras have their own group, and an extra that a meal needs is in the two.
 export function byMeal(rows: ShoppingRow[]): ShopGroup[] {
 	const titles = [...new Set(rows.flatMap((row) => row.recipes))].sort((a, b) =>
 		a.localeCompare(b)
@@ -27,6 +27,6 @@ export function byMeal(rows: ShoppingRow[]): ShopGroup[] {
 		title,
 		rows: rows.filter((row) => row.recipes.includes(title))
 	}));
-	const choices = rows.filter((row) => row.choice);
-	return choices.length ? [...groups, { title: 'Your choices', rows: choices }] : groups;
+	const extras = rows.filter((row) => row.extra);
+	return extras.length ? [...groups, { title: 'Extras', rows: extras }] : groups;
 }

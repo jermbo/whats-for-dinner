@@ -1,5 +1,5 @@
 // A trip has two sources: the rows that the plugin calculates from the meals, and the open note,
-// which has the cart and your choices. This file joins the two into the list and the cart.
+// which has the cart and your extras. This file joins the two into the list and the cart.
 
 import type { FoodNote } from '../note';
 import { fillOf } from '../pantry/level';
@@ -37,7 +37,7 @@ export function itemsOf(tasks: TripTask[], pathOf: (link: string) => string): Tr
 export const isPantryItem = (item: TripItem, pantryFolder: string) =>
 	item.link !== null && item.key.startsWith(`${pantryFolder}/`);
 
-// The list has the rows that the plugin calculates, and your choices. An item of the cart is off
+// The list has the rows that the plugin calculates, and your extras. An item of the cart is off
 // the list.
 export function listOf(
 	calculated: Calculated,
@@ -45,10 +45,10 @@ export function listOf(
 	foods: FoodNote[]
 ): ShoppingRow[] {
 	const inNote = new Set(items.map((item) => item.key));
-	const choices = items
+	const extras = items
 		.filter((item) => !item.inCart)
-		.map((item) => ({ ...rowOf(item, calculated, foods), choice: true }));
-	return [...calculated.missing.filter((row) => !inNote.has(row.key)), ...choices]
+		.map((item) => ({ ...rowOf(item, calculated, foods), extra: true }));
+	return [...calculated.missing.filter((row) => !inNote.has(row.key)), ...extras]
 		.map(asStaple)
 		.sort(byName);
 }
@@ -84,7 +84,7 @@ function rowOf(item: TripItem, { missing, past }: Calculated, foods: FoodNote[])
 	if (row) return row;
 
 	const food = foods.find((food) => food.path === item.key) ?? null;
-	const none = { amount: '', buy: [], recipes: [], choice: false };
+	const none = { amount: '', buy: [], recipes: [], extra: false };
 	return { key: item.key, name: item.name, food, ...none };
 }
 

@@ -36,11 +36,11 @@ Potatoes are "Sometimes", and you bought them on 12 October. On 19 October they 
 
 ## You accept or you skip
 
-- **"Add"** puts the staple on the list. It is a choice now: a task with no mark in the [shopping note](shopping-note.md).
+- **"Add"** puts the staple on the list. It is an extra now: a task with no mark in the [shopping note](shopping-note.md).
 - **"Skip"** takes the suggestion away until put away ends the trip. At the next trip, the plugin asks again, if the staple still needs a look.
-- **"Remove"** on the row of a choice takes its task out of the note. The staple is a suggestion again.
+- **"Remove"** on the row of an extra takes its task out of the note. The staple is a suggestion again.
 
-A food item that has a task in the shopping note is not a suggestion.
+A food item that has a task in the shopping note is not a suggestion. Food that a meal puts on the list is not a suggestion either: the list has it already. A low staple that a meal needs is such food. With the boiled eggs in the plan and 2 eggs in the pantry, the list has "Eggs, 28", and the eggs are not a suggestion "Low".
 
 ## Food of a meal can need a look too
 

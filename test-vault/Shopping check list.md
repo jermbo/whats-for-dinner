@@ -1,8 +1,112 @@
 # Check list: shopping list
 
-This list tests the ten stories of the shopping list. Do the parts in sequence. Each part starts from the state that the part before it leaves.
+This list tests the thirteen stories of the shopping list. Part A tests stories 11, 12, and 13: the three stages and the low staple of a meal. Part B tests the amount that put away proposes. Part A starts from the vault of the morning of 17 October, and part B from the vault after the clean-up of that day. Parts 1 to 11 test stories 1 to 10, from the vault of 13 October. Do the parts of each group in sequence. Each part starts from the state that the part before it leaves.
 
 Each line has one action and what you must see. The text in brackets is the story and its criterion.
+
+## A. The three stages
+
+In the Shop part, with the notes `Meal plan` and `Shopping/Next trip` open next to it. This is stories 11, 12, and 13.
+
+The values are for 17 October 2026, with the setting "Low line" at 20 %. A script ran the rules of the plugin on the vault for them.
+
+### Before you start
+
+- [ ] The plan has one meal: `- [ ] [[Edge cases/Recipe with steps as paragraphs|Boiled eggs]]`. The boiled eggs need 4 eggs.
+- [ ] The note `Shopping/Next trip` is empty, and the data file of the plugin has `"skipped": []`.
+- [ ] The note `Eggs` has `staple: often`, `full: "30"`, `low: 4`, and one row of 2 eggs.
+- [ ] The watch build made `main.js` again. Put the plugin off and on, or restart Obsidian.
+
+### The strip and the stage Extras
+
+- [ ] Open the Shop part. Under the title, the strip has "1 Extras" with "3", "2 Shop" with "1", and "3 Put away" with "0". The stage Extras is open, with the ink line under it. (Story 11: AC 1, 10)
+- [ ] The first line of the stage is "Your meals: 1 item on the list". (Story 12: AC 1)
+- [ ] The field "Add an item" is below that line, and it does not have the cursor. (Story 12: AC 14)
+- [ ] The group "Suggestions" has 3 lines: "Avocados" with "Out", "Oats" with "Low", and "Rice" with "Low". It has no line for eggs. (Story 12: AC 7)
+- [ ] The button "Go shopping" is at the lower edge of the tab.
+- [ ] Tap the line "Your meals". The stage Shop comes in from the right, and the ink line slides under "2 Shop". (Story 12: AC 4. Story 11: requirement 2 b)
+- [ ] The list has the heading "To get" with "1", and one row: "Eggs" with "28". The row shows "Boiled eggs" under the name, it has no sticker, and its box has no tick. (Story 12: AC 7 a to 7 c. Story 13: AC 2)
+- [ ] The stage has no line "In the cart", and no button "Put away". (Story 11: AC 6)
+- [ ] Tap "1 Extras" in the strip. The stage comes in from the left. (Story 11: AC 3, 3 a)
+
+### The low staple of a meal
+
+- [ ] In the note `Meal plan`, change the line to `- [ ] [[Recipes/Pancakes|Pancakes]]`. The pancakes need 1 egg, and the pantry has 2. In the stage Shop, the row "Eggs" still has "28", with "Pancakes" under the name. The group "Suggestions" has no line for eggs. (Story 12: AC 8, 8 a)
+- [ ] Remove the line from the note `Meal plan`. The list has no row "Eggs", and the group "Suggestions" has "Eggs" with "Low". (Story 12: AC 5 a, 10)
+- [ ] Put the line of the boiled eggs back. Eggs go out of the group, and the list has "Eggs 28" again. The strip has "3", "1", and "0" again.
+
+### Extras go on the list
+
+- [ ] In the stage Extras, tap "Add" on oats. The line slides out. "1 Extras" has "2", and "2 Shop" has "2", each with a small jump. The note `Shopping/Next trip` has `- [ ] [[Pantry/Oats|Oats]]`. (Story 11: AC 9, 9 a. Story 12: requirement 5)
+- [ ] Tap "Skip" on rice. "1 Extras" has "1".
+- [ ] Type "batteries" in the field, and tap "Add as new". "2 Shop" has "3".
+- [ ] Tap "Go shopping". "To get" has "3": "Batteries", "Eggs", and "Oats". (Story 11: AC 5)
+- [ ] "Batteries" and "Oats" have the sticker "Extra" and "Remove". "Oats" has "42.5 g", and "Batteries" has no amount. "Eggs" has no sticker. (Story 13: AC 3, 3 a)
+- [ ] Open the bar. The filters are "For a meal" and "Extras". Tap "Extras". The list shows "Batteries" and "Oats" only. Put the filter off. (Story 13: AC 9)
+- [ ] Select the sequence "By meal". The groups are "Boiled eggs" with "Eggs", and last "Extras" with "Batteries" and "Oats". Select "A to Z" again. (Story 13: AC 10)
+
+### The box and the cart
+
+- [ ] Tap the row "Eggs". The box gets a tick, and then the row slides out. "To get" has "2", the line "In the cart" has "1", and "3 Put away" has "1". The note has `- [x] [[Pantry/Eggs|Eggs]]`. (Story 13: AC 4, 4 a, 4 b. Story 11: AC 2)
+- [ ] The line "In the cart" is closed. The button at the lower edge says "Put away 1". (Story 13: AC 5. Story 11: AC 7)
+- [ ] Tap the line "In the cart". It opens, with "Eggs", a tick, "28", and "Undo". The name has no line through it. Tap the line again, and it closes. (Story 13: AC 6, 6 a, 7)
+- [ ] Open the line, and tap "Undo" on eggs. Eggs are on the list again, with no tick, and the line "In the cart" goes. The note has no task for eggs. (Story 13: AC 8, 8 a)
+- [ ] Tap the rows "Batteries", "Eggs", and "Oats". The stage says "Each item is in the cart.". The strip has "2 Shop" with "0", and "3 Put away" with "3". (Story 13: AC 11)
+- [ ] Open the Pantry part, and then the Shop part. The stage Shop is still open. (Story 11: requirement 7)
+
+### The stage Put away
+
+- [ ] Tap "Put away 3". The stage Put away opens, with 3 lines. It has no "Back", and its button "Put into the pantry" is at the lower edge of the tab. (Story 11: AC 8, 8 a)
+- [ ] Type a price for oats. Tap "2 Shop", and then "3 Put away". The price is still there.
+- [ ] Tap "Put into the pantry". The lines go, and the Shop part opens the stage Extras. "Your meals" says "nothing to buy". The group "Suggestions" has avocados, eggs, and rice: eggs are not low now, and the plan does not put them on the list. (Story 11: AC 14)
+- [ ] Tap "3 Put away". The stage says "The cart is empty.", and it has no button. (Story 11: AC 4, 4 a)
+
+### The stage that opens
+
+- [ ] Restart Obsidian, and open the Shop part. The stage Extras is open, because suggestions need a look and the cart is empty. (Story 11: AC 10)
+- [ ] Skip each suggestion. Restart Obsidian, and open the Shop part. The stage Shop is open. (Story 11: AC 11)
+
+### On the phone
+
+- [ ] Put 20 items on the list. The list scrolls, and the main button of the stage keeps its size and its place at the lower edge.
+- [ ] Tap into the field "Add an item". The keyboard does not hide the field.
+- [ ] Each change has a motion: the ink line of the strip, a stage that comes in from the side of its number, a count that jumps, a tick, a row that goes to the cart, the line "In the cart" that opens, and a suggestion that goes out.
+
+## B. The amount at put away
+
+In the Shop part, with the note `Oats` and the receipt `Shopping/2026-10-17` open next to it. This is story 8, requirements 3 a, 5 c, and 7.
+
+The note `Oats` counts in grams: `full: 50 g`, with one row of 50 g. The receipt of 17 October has oats with "42.5 g" and rice with "4.25 kg". The note `Rice` has 5 kg of 5 kg.
+
+The dates are for a test on 17 October. On a later day, give the row of oats the date 30 days after the day of your test, so that put away adds to it.
+
+- [ ] In the receipt `Shopping/2026-10-17`, change the amount of oats to "1". This is the amount of the third test.
+- [ ] In the note `Oats`, change the row to `| Kitchen | 7.5 g | 2026-11-16 |`. In the stage Extras, oats are a suggestion with "Low".
+- [ ] Tap "Add" on oats. In the stage Shop, the row "Oats" has "42.5 g".
+- [ ] Tap the row "Oats", and tap "Put away 1". The line of oats says "42.5 g", not "1". (Story 8: AC 16)
+- [ ] Tap the line of oats. "How much" has the option "42.5 g", and no option "1". (Story 8: AC 16 a)
+- [ ] Tap "Put into the pantry". The note `Oats` has one row: "50 g", with the date 2026-11-16. The new receipt of today has oats with "42.5 g".
+- [ ] In the receipt `Shopping/2026-10-17`, set the amount of oats back to "42.5 g".
+- [ ] In the stage Extras, type "rice" in the field, and tap "Rice". Tap "Go shopping", tap the row "Rice", and tap "Put away 1". The line of rice says "4.25 kg", the amount of the newest receipt. (Story 8: requirement 3 a)
+- [ ] In the receipt `Shopping/2026-10-17`, change the amount of rice to "1". The line of rice says "5 kg" now: the receipt has no amount in grams, the pantry is full, and so the line takes the full amount. (Story 8: requirement 7 b)
+- [ ] Set the amount of rice back to "4.25 kg". Tap "2 Shop", open the line "In the cart", and tap "Undo" on rice. Tap "Remove" on the row "Rice".
+
+## The old parts with the new screen
+
+Parts 1 to 11 tell the one screen of the first build. Use this table to read them.
+
+| The old parts say                                | Do this now                                                                       |
+| ------------------------------------------------ | --------------------------------------------------------------------------------- |
+| The group "Suggestions" is above the list        | The suggestions are in the stage Extras, and the list is in the stage Shop.       |
+| Tap "+" in the bar                               | Open the stage Extras. The field "Add an item" is always there.                   |
+| "Your choices"                                   | "Extras"                                                                          |
+| The cart has …                                   | The line "In the cart" has the number. Tap it to see the items.                   |
+| Tap "Put away", and the screen comes in          | Tap "Put away" with the number in the stage Shop, or "3 Put away" in the strip.   |
+| Tap "Back"                                       | Tap "2 Shop" in the strip.                                                        |
+| The head says "2/7 with a price"                 | The head is gone. The lower edge says how many prices are missing.                |
+| The screen closes after "Put into the pantry"    | The Shop part opens the stage that has work.                                      |
+
+A low staple that a meal needs is a row of the list now, not a suggestion. So in part 2, a staple that a meal of the 9 meals needs, and that is low, is a row with the amount that makes it full.
 
 ## The day of your test
 

@@ -26,8 +26,8 @@ type When = { today: string; soonDays: number; lowPercent: number };
 type Trip = {
 	// The food that a meal needs, and that is past its use-by date.
 	past: Set<string>;
-	// The food items that do not show: a food item with a task in the open note is on the list
-	// already, and a suggestion that you skipped stays away until the trip ends.
+	// The food items that do not show: a food item that a meal or a task of the open note puts on
+	// the list is on it already, and a suggestion that you skipped stays away until the trip ends.
 	hidden: Set<string>;
 };
 

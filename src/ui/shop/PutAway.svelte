@@ -1,20 +1,24 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { crossfade, fly, slide } from 'svelte/transition';
+	import { crossfade, slide } from 'svelte/transition';
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { CartItem, Facts } from '../../shop/facts';
 	import { readPrice } from '../../shop/price';
 	import Button from '../parts/Button.svelte';
-	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
-	import PartHead from '../parts/PartHead.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import type { PutAwayDraft } from './put-away-draft.svelte';
 	import PutAwayLine from './PutAwayLine.svelte';
+	import StageFoot from './StageFoot.svelte';
 
-	type Props = { kitchen: Kitchen; draft: PutAwayDraft; onclose: () => void };
-	let { kitchen, draft, onclose }: Props = $props();
+	type Props = {
+		kitchen: Kitchen;
+		draft: PutAwayDraft;
+		// The cart is in the pantry, and the trip is at its end.
+		ondone: () => void;
+	};
+	let { kitchen, draft, ondone }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -85,23 +89,27 @@
 		kitchen.takeOutOfCart(key);
 	}
 
-	// The screen closes at once, and the Shop part shows the cart while it goes into the pantry.
+	// The lines go one by one while the items go into the pantry. The stage does not say that the
+	// cart is empty in that time, because the trip is not at its end yet.
+	let busy = $state(false);
+
 	async function putAll() {
 		const given = new Map(lines.map(({ item, facts }) => [item.key, facts]));
-		onclose();
-		await kitchen.putAway(given, draft.store);
-		draft.clear();
+		busy = true;
+		try {
+			await kitchen.putAway(given, draft.store);
+			draft.clear();
+		} finally {
+			busy = false;
+		}
+		ondone();
 	}
 </script>
 
-<section class="wfd-away" aria-label="Put away" in:fly={{ y: 24, duration }}>
-	<div class="wfd-away__page">
-		<PartHead title="Put away">
-			{#snippet side()}
-				<Count have={lines.length - missing} of={lines.length} label="with a price" />
-			{/snippet}
-		</PartHead>
-
+<section class="wfd-away" aria-label="Put away">
+	{#if !lines.length && !busy}
+		<p class="wfd-away__empty">The cart is empty.</p>
+	{:else}
 		<!--
 			The receipt of the trip, before it is a note: one line for each item of the cart, in groups
 			by place.
@@ -148,45 +156,32 @@
 				</section>
 			{/each}
 		</div>
-	</div>
 
-	<footer class="wfd-away__foot">
-		<div aria-live="polite">
-			{#if missing}
-				<p class="wfd-away__missing" transition:slide={{ duration }}>
-					{missing === 1 ? '1 price is missing' : `${missing} prices are missing`}
-				</p>
-			{/if}
-		</div>
-		<div class="wfd-away__actions">
-			<Button onclick={onclose}>Back</Button>
-			<Button kind="olive" onclick={putAll}>
+		<StageFoot>
+			<div aria-live="polite">
+				{#if missing}
+					<p class="wfd-away__missing" transition:slide={{ duration }}>
+						{missing === 1 ? '1 price is missing' : `${missing} prices are missing`}
+					</p>
+				{/if}
+			</div>
+			<Button kind="olive" disabled={busy} onclick={putAll}>
 				Put into the pantry <span aria-hidden="true">→</span>
 			</Button>
-		</div>
-	</footer>
+		</StageFoot>
+	{/if}
 </section>
 
 <style>
-	/*
-	 * The screen has the height of the tab. The receipt scrolls, and the two buttons keep their
-	 * place below it, also with 20 items in the cart.
-	 */
 	.wfd-away {
-		display: flex;
-		flex-direction: column;
-		block-size: 100%;
-	}
-
-	.wfd-away__page {
 		display: grid;
-		flex: 1;
 		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
-		align-content: start;
-		min-block-size: 0;
-		padding: 12px 14px 16px;
-		overflow-y: auto;
+	}
+
+	.wfd-away__empty {
+		margin: 0;
+		color: var(--wfd-ink-2);
 	}
 
 	/* Paper with sharp corners, as the receipt of a store. */
@@ -229,26 +224,10 @@
 		border-block-end: 1px dotted var(--wfd-ink-3);
 	}
 
-	.wfd-away__foot {
-		display: grid;
-		flex: none;
-		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-		padding: 10px 14px max(var(--safe-area-inset-bottom, 0px), 12px);
-		border-block-start: 2px solid var(--wfd-ink);
-		background: var(--wfd-paper);
-	}
-
 	.wfd-away__missing {
 		margin: 0;
 		color: var(--wfd-ink-2);
 		font-size: 14px;
 		font-weight: 600;
-	}
-
-	.wfd-away__actions {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		gap: 12px;
 	}
 </style>

@@ -1,5 +1,5 @@
 // The shopping note of a trip has one task for each item: "- [x] [[Pantry/Lime|Lime]]". A task
-// with a mark is an item of the cart. A task with no mark is a choice: an item that is on the list
+// with a mark is an item of the cart. A task with no mark is an extra: an item that is on the list
 // because you put it there. A task with no link, such as "- [ ] Batteries", has its text as the
 // name of its item.
 //
@@ -61,7 +61,7 @@ export function putInCart(text: string, item: TripTask): string {
 }
 
 // An item that has a task gets no second task.
-export function addChoice(text: string, item: TripTask): string {
+export function addExtra(text: string, item: TripTask): string {
 	const lines = linesOf(text);
 	return lines.some((line) => isTaskOf(line, item)) ? text : addTask(lines, item, ' ');
 }

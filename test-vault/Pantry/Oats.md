@@ -1,9 +1,8 @@
 ---
 full: 50 g
 staple: sometimes
-bought: 2026-10-14
+bought: 2026-10-17
 ---
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | 7.5 g  |        |
-| Kitchen | 1      |        |
+| Place   | Amount | Use by     |
+| ------- | ------ | ---------- |
+| Kitchen | 50 g   | 2026-11-16 |

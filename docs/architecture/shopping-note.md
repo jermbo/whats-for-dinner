@@ -29,7 +29,7 @@ The plugin reads each line that is a task. All other lines are your own text.
 
 | Part of the line  | Meaning                                                            |
 | ----------------- | ------------------------------------------------------------------ |
-| `[ ]`             | The item is to buy. It is a choice, and the list has a row for it. |
+| `[ ]`             | The item is to buy. It is an extra, and the list has a row for it. |
 | `[x]`             | The item is in the cart.                                           |
 | The link          | The note of the item, with the name that the list shows.           |
 | Text with no link | An item with that text as its name. Thus you can type a line fast. |
@@ -53,9 +53,9 @@ An item of your own that no note has, such as the batteries, links into the item
 The plugin changes only the lines of the tasks. It changes the mark of a line, and the other text of the line stays as you wrote it.
 
 - **A tap on a row of the list** gives the task of the item a mark. An item with no task gets a new line, after the last task. With no task in the note, the line goes at the end.
-- **"Undo"** takes the mark off, and the item is a choice. But if a meal puts the item on the list, the task goes out of the note.
+- **"Undo"** takes the mark off, and the item is an extra. But if a meal puts the item on the list, the task goes out of the note.
 - **"Add" on a suggestion, and the field "Add an item",** add a task with no mark. An item that has a task gets no second task.
-- **"Remove"** takes the task of a choice out of the note.
+- **"Remove"** takes the task of an extra out of the note.
 - **Put away** changes the note into the [receipt](receipt.md) of the trip. Each task with no mark goes into a new note "Next trip".
 
 Each change starts from the text that the note has at that moment. So two taps, one directly after the other, do not lose an item.

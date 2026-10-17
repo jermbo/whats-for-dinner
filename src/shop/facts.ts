@@ -4,7 +4,10 @@
 
 import { addDays, daysBetween } from '../dates';
 import { makeStock } from '../pantry/food-item';
-import type { Stock } from '../pantry/types';
+import { levelOf } from '../pantry/level';
+import type { FoodItem, Stock } from '../pantry/types';
+import { parseAmount } from '../recipemd/amount';
+import { measure } from '../units';
 import type { LastRow } from './last-receipt';
 import { showPrice } from './price';
 import type { ShoppingRow } from './shopping-list';
@@ -53,11 +56,12 @@ type Now = { today: string; newPlace: string };
 export function cartItemOf(known: Known, now: Now): CartItem {
 	const { row, last } = known;
 	const start = startFactsOf(known, now);
+	const fits = (amount: string) => countsFor(row.food?.item ?? null, amount);
 	return {
 		key: row.key,
 		name: row.name,
 		start,
-		amounts: [...new Set([start.amount, ...(last?.amounts ?? [])])].slice(0, 3),
+		amounts: [...new Set([start.amount, ...(last?.amounts ?? []).filter(fits)])].slice(0, 3),
 		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place
 	};
 }
@@ -67,9 +71,11 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 // that no line needs an entry before the button. A sale ends, so "Sale" starts off, and the
 // price is the regular price.
 function startFactsOf({ row, inPantry, last }: Known, { today, newPlace }: Now): Facts {
+	const item = row.food?.item ?? null;
+	const bought = last?.amounts.find((amount) => countsFor(item, amount));
 	return {
 		intoPantry: inPantry,
-		amount: last?.amount || withFill(row).amount || '1',
+		amount: bought || withFill(row).amount || item?.full?.text || '1',
 		place: last?.place || row.food?.item.stocks[0]?.place || newPlace,
 		useBy: last ? useByAfter(last, today) : '',
 		price: showPrice(last?.regular ?? ''),
@@ -83,6 +89,18 @@ function useByAfter({ day, useBy }: LastRow, today: string): string {
 	const days = daysBetween(day, useBy);
 	// A date before the day of the trip is an error in the receipt. It gives no date.
 	return days < 0 ? '' : addDays(today, days);
+}
+
+// An amount in a different unit does not add to the level: "1" bag of oats does not add to grams,
+// so the oats stay low after the trip. A food item that the pantry cannot count, and an item that
+// is not in the pantry, take each amount.
+function countsFor(item: FoodItem | null, text: string): boolean {
+	const kind = item ? levelOf(item)?.kind : undefined;
+	if (kind === undefined) return true;
+	return text.split('+').some((part) => {
+		const amount = parseAmount(part.trim());
+		return amount !== null && measure(amount).kind === kind;
+	});
 }
 
 // The amount that goes into the pantry and into the receipt.

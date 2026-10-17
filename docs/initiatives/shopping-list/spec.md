@@ -60,6 +60,13 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - d. A choice that the keeper did not buy goes into the note of the next trip (decision 18)
 7. The plugin makes each note in a folder that a setting names (decision 22)
    - a. The settings get a folder for the shopping notes, and a folder for the items that are not in the pantry (decision 22 a)
+8. The Shop part has three stages: "Extras", "Shop", and "Put away" (decision 33)
+   - a. A strip at the top opens each stage, and shows its count (decision 33 a and b)
+   - b. The stage Extras has the suggestions, the field "Add an item", and a line for the meals (decision 34)
+   - c. The word "extra" replaces "choice" (decision 35)
+   - d. A low staple that a meal needs is on the list with no action, and food that a meal puts on the list is not a suggestion (decision 36)
+   - e. The stage Shop has a box to tick on each row, and the cart as one closed line (decision 37)
+   - f. The Shop part opens on the stage that has work (decision 38)
 
 ## Out of scope
 

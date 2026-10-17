@@ -45,14 +45,12 @@
 -->
 <div class="wfd-add">
 	<div class="wfd-add__tools">
-		<!-- svelte-ignore a11y_autofocus -->
 		<input
 			type="text"
 			autocomplete="off"
 			spellcheck="false"
 			aria-label="Add an item"
 			placeholder="Add an item"
-			autofocus
 			bind:this={field}
 			bind:value={text}
 		/>
