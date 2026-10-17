@@ -1,6 +1,6 @@
 ---
 title: Facts of an item
-summary: "The five facts that you give for an item at put away: what the plugin proposes for each one, and where each one goes."
+summary: "The five facts of an item at put away: what the plugin fills in for each one, why a sale price is never the start, and where each fact goes."
 parent: put-away.md
 ---
 
@@ -8,7 +8,7 @@ parent: put-away.md
 
 # Facts of an item
 
-At [put away](put-away.md), you have the bag and the paper receipt in your hand. It is the only moment in which you know what you bought and what you paid. This page tells which facts the plugin asks for, and how it keeps the entry small.
+At [put away](put-away.md), you have the bag and the paper receipt in your hand. It is the only moment in which you know what you bought and what you paid. This page tells which facts the plugin fills in, and how it keeps your work to a check.
 
 ## Five facts, and two places for them
 
@@ -18,27 +18,29 @@ At [put away](put-away.md), you have the bag and the paper receipt in your hand.
 | Place       | The row of the food item, and the receipt.                 |
 | Use-by date | The row of the food item, and the receipt.                 |
 | Price       | The receipt only. It is what you paid for the full amount. |
-| "On sale"   | The receipt only.                                          |
+| "Sale"      | The receipt only, as `yes` in the column "Sale".           |
 
 The pantry has the state of now, and the [receipt](receipt.md) has the history. So a price is in no food item note.
 
-## The plugin proposes, and you correct
+## The plugin fills in, and you correct
 
 You usually buy the same box of eggs, for about the same price, and you put it in the same place. So each fact starts from the last receipt of the item: the newest receipt with a row that links to its note.
 
-| Fact        | From the last receipt                        | With no receipt, or with an empty cell                                 |
-| ----------- | -------------------------------------------- | ---------------------------------------------------------------------- |
-| Amount      | The amount of the row.                       | The larger of two amounts: the list row, and what makes the food full. |
-| Place       | The place of the row.                        | The place of the first row of the food item.                           |
-| Use-by date | Today, plus the days that the food had then. | Empty.                                                                 |
-| Price       | The price of the row.                        | Empty.                                                                 |
-| "On sale"   | Off.                                         | Off.                                                                   |
+| Fact        | From the receipts                                    | With no receipt, or with an empty cell                                 |
+| ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
+| Amount      | The amount of the last row.                          | The larger of two amounts: the list row, and what makes the food full. |
+| Place       | The place of the last row.                           | The place of the first row of the food item.                           |
+| Use-by date | Today, plus the days that the food had then.         | Empty.                                                                 |
+| Price       | The regular price: the newest row with no sale mark. | Empty.                                                                 |
+| "Sale"      | Off.                                                 | Off.                                                                   |
 
-An item with no list row and no level starts with the amount 1. A food item with no row starts in the place for new food of the [settings](settings.md). "On sale" starts off each time, because a sale ends.
+An item with no list row and no level starts with the amount 1. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
 
-## An example
+## A sale price is never the start
 
-You bought 12 eggs on 4 October for 3.49, with the use-by date 25 October. That is 21 days. On 13 October, the line of the eggs starts with 12, "Outside fridge", 3.49, and the date 3 November.
+A sale ends. If the plugin proposed the price of a sale, a quick check puts the sale price into the next receipt, and the history shows a price that you did not pay. So "Sale" starts off each time, and the price skips each row with a sale mark.
+
+You bought 12 eggs on 28 September for 3.99, and 12 on 4 October for 3.49, on sale, with the use-by date 25 October. That is 21 days. On 13 October, the line of the eggs starts with 12, "Outside fridge", 3.99, and the date 3 November. Eggs that you bought only on sale start with no price.
 
 ## One row for one place
 
@@ -48,9 +50,7 @@ If not, the food gets a new row. Milk with a new date is a second row, because t
 
 ## A price is a number
 
-A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price.
-
-If you remove the text of an amount, the item goes in as 1.
+A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price. If you remove the text of an amount, the item goes in as 1.
 
 ## Further reading
 

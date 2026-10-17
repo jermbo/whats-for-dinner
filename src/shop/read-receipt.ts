@@ -12,6 +12,8 @@ export type ReceiptRow = Item & {
 	place: string;
 	// The use-by date as year-month-day. Text that is not a date counts as no text.
 	useBy: string;
+	// The cell "Sale" has "yes". A sale ends, so the next put away does not start from its price.
+	onSale: boolean;
 };
 
 export type Receipt = {
@@ -46,7 +48,8 @@ export function readReceipt(
 				amount: cells['amount'] ?? '',
 				price: cells['price'] ?? '',
 				place: cells['place'] ?? '',
-				useBy: DATE.test(useBy) ? useBy : ''
+				useBy: DATE.test(useBy) ? useBy : '',
+				onSale: (cells['sale'] ?? '').trim().toLowerCase() === 'yes'
 			}
 		];
 	});

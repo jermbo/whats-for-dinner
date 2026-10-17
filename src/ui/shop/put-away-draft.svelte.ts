@@ -14,6 +14,11 @@ export class PutAwayDraft {
 		return { ...start, ...this.changes.get(key) };
 	}
 
+	// A fact that you gave yourself is not a guess of the plugin any more, also with the same value.
+	changed(key: string, fact: keyof Facts): boolean {
+		return this.changes.get(key)?.[fact] !== undefined;
+	}
+
 	change(key: string, change: Partial<Facts>) {
 		this.changes.set(key, { ...this.changes.get(key), ...change });
 	}

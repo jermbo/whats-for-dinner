@@ -153,43 +153,52 @@ Mum comes on Friday.
 
 In the Shop part. This is story 7, with the start of each fact from stories 8, 9, and 10.
 
-Eggs and milk have a last receipt in the folder `Shopping`. The other items have none.
+Eggs and milk have a last receipt in the folder `Shopping`. The other items have none. The bracket "AC" without a story is story 7.
 
 - [ ] Tap the rows "Eggs" and "Batteries". The cart has 6 items.
 - [ ] Tap "+", type "mil", and tap "Milk". Tap "+" again. Tap the row "Milk". The cart has 7 items.
-- [ ] The button below the cart says "Put away". Tap it. The screen "Put away" comes in from below. It has 7 lines. (AC 1)
+- [ ] The button below the cart says "Put away". Tap it. The screen "Put away" comes in from below. It has 7 lines, and no line is open. (AC 1)
 - [ ] The note `Milk` still has one row: 450 ml in "Kitchen". (AC 1 a)
-- [ ] Each line has the text and the price of this table. (AC 2, 2 a, 3, 3 b, 16. Story 8: AC 1, 1 a to 1 c, 2, 2 a, 2 b, 3, 3 a, 3 b)
+- [ ] The screen has 4 groups, with the lines of this table, in this sequence. A line has no field. (AC 2, 2 a, 3, 4, 4 b, 26, 26 a. Story 8: AC 1, 1 a to 1 c, 2, 2 a, 2 b, 3, 3 a, 3 b. Story 10: AC 1, 1 a)
 
-| Line      | Text                                 | Price |
-| --------- | ------------------------------------ | ----- |
-| Avocados  | 4 · Kitchen · No date                | Empty |
-| Batteries | Not in the pantry                    | Empty |
-| Eggs      | 12 · Outside fridge · Use by 3 Nov   | 3.49  |
-| Lime      | 2 · Kitchen pantry · No date         | Empty |
-| Milk      | 1 l · Kitchen · Use by 20 Oct        | 1.29  |
-| Quinoa    | 200 g · Kitchen · No date            | Empty |
-| Soap      | Not in the pantry                    | Empty |
+| Group             | Line      | Amount | Text                       | Price |
+| ----------------- | --------- | ------ | -------------------------- | ----- |
+| Kitchen           | Avocados  | 4      | No date · no place yet     | –     |
+| Kitchen           | Milk      | 1 l    | Use by 20 Oct              | 1.29  |
+| Kitchen           | Quinoa    | 200 g  | No date · no place yet     | –     |
+| Kitchen pantry    | Lime      | 2      | No date                    | –     |
+| Outside fridge    | Eggs      | 12     | Use by 3 Nov               | 3.99  |
+| Not in the pantry | Batteries |        |                            | –     |
+| Not in the pantry | Soap      |        |                            | –     |
 
+- [ ] The title of each group has the number of its lines: "Kitchen" has 3. (AC 3)
 - [ ] The date of eggs is 21 days after today. The date of milk is 7 days after today. These are the days of the last receipt. (Story 8: AC 1 c, 2 b)
-- [ ] "On sale" is off on each line. The last receipt of eggs has "yes". (AC 4 b. Story 8: AC 1 d)
-- [ ] "Batteries" and "Soap" have "Into the pantry", and it is off. No other line has it. (Story 10: AC 1, 1 a, 1 b, 2)
-- [ ] The head says "2/7 with a price". The text above the two buttons is "5 prices are missing". (AC 5. Story 8: AC 4)
+- [ ] The price of eggs is 3.99, from 28 September. The receipt of 4 October has 3.49, but with "yes" in "Sale". (Story 8: AC 1 b)
+- [ ] Each line has the chip "Sale", and it is off. (AC 4 a. Story 8: AC 1 d)
+- [ ] The head says "2/7 with a price". The text above the two buttons is "5 prices are missing". (AC 7. Story 8: AC 4)
 - [ ] "Store" has the options "Market A" and "Market B", and the field "A new store". No option is on. (Story 9: AC 1, 1 a)
-- [ ] Type "0.5" in the price of lime. The text is "4 prices are missing". (AC 6)
-- [ ] Tap "On sale" on lime. It is on.
-- [ ] Type "abc" in the price of avocados. The field has a red edge, and the text is still "4 prices are missing".
-- [ ] Change the price of avocados to "3,2". The red edge is gone, and the text is "3 prices are missing".
-- [ ] Tap the line "Milk". It opens with "How much" (1 l), "Use by", "Where", and "Not bought". "Where" has each place of the pantry, and "Kitchen" is on. (AC 3 c, 3 d)
-- [ ] Tap "Kitchen fridge". Only "Kitchen fridge" is on, and the line says "1 l · Kitchen fridge · Use by 20 Oct".
-- [ ] Tap the line "Avocados". The line of milk closes. Type "Garage" in "A new place". No option is on, and the line says "4 · Garage · No date".
-- [ ] Tap "Back". The Shop part shows, and the cart has 7 items. The notes `Milk` and `Avocados` did not change. (AC 15, 15 a)
-- [ ] Tap "Put away" again. Each fact that you gave is still there: the two prices, "On sale", "Kitchen fridge", and "Garage".
-- [ ] Open the line "Quinoa", and tap "Not bought". The line goes out, and the screen has 6 lines. The note has no task for quinoa. (AC 13, 13 a)
-- [ ] Open the line "Eggs", and tap "Not bought". The screen has 5 lines. The note has the line `- [ ] [[Pantry/Eggs|Eggs]]`. (AC 14)
-- [ ] Tap "Into the pantry" on soap. It is on. The line opens and says "1 · Kitchen · No date". (Story 10: AC 3, 3 a, 3 b)
-- [ ] Type "2" in "How much" of soap, and "1.99" in its price. The text is "1 price is missing".
-- [ ] Type "6.99" in the price of batteries. No text about prices shows, and the head says "5/5 with a price". (AC 7)
+- [ ] Tap "Sale" on lime. It is on. The line opens, and the cursor is in the price. The field is empty, with the hint "Price". (AC 16, 16 a, 16 b)
+- [ ] Type "0.5". The line says "0.50", and the text is "4 prices are missing". (AC 8)
+- [ ] Tap "Sale" on eggs. The line of lime closes, and the line of eggs opens. The price field of eggs is empty, with the hint "3.99 regular". The text is "5 prices are missing". (Story 8: AC 14, 14 a)
+- [ ] Tap "Sale" on eggs again. It is off, and the price is "3.99" again. The text is "4 prices are missing". (Story 8: AC 15)
+- [ ] Tap "Sale" on lime again, and then a third time. "Sale" of lime is on, and its price is still "0.5". (AC 17, 17 a)
+- [ ] Tap the line "Avocados". Type "abc" in the price. The field has a red edge, the line shows "abc" in red, and the text is still "4 prices are missing".
+- [ ] Change the price of avocados to "3,2". The red edge is gone, the line says "3.20", and the text is "3 prices are missing".
+- [ ] Tap "Kitchen" in "Where" of avocados. The line has no "no place yet". (AC 6)
+- [ ] Tap the line "Milk". The line of avocados closes. The line of milk shows the price, "How much", "Use by", "Where", and "Not bought". "How much" has "1 l", and it is on. "Where" has each place of the pantry, and "Kitchen" is on. (AC 10, 10 a, 11, 11 a)
+- [ ] Tap "Kitchen fridge". Only "Kitchen fridge" is on. Milk is still in the group "Kitchen". (AC 12)
+- [ ] Tap the line of milk to close it. Milk moves into a new group, "Kitchen fridge". The group "Kitchen" has 2 lines. (AC 13, 13 a)
+- [ ] Tap the line "Lime", and tap "1 week" in "Use by". The line says "Use by 20 Oct". Tap "No date". The line says "No date". (AC 14, 15)
+- [ ] Tap the line "Avocados". Type "Garage" in "A new place". No option is on, and avocados stay in the group "Kitchen". Tap the line to close it. Avocados move into a new group, "Garage".
+- [ ] Tap "Back". The Shop part shows, and the cart has 7 items. The notes `Milk` and `Avocados` did not change. (AC 25, 25 a)
+- [ ] Tap "Put away" again. Each fact that you gave is still there: the two prices, "Sale" of lime, "Kitchen fridge", and "Garage".
+- [ ] Open the line "Quinoa", and tap "Not bought". The line goes out, and the screen has 6 lines. The note has no task for quinoa. (AC 23, 23 a)
+- [ ] Open the line "Eggs", and tap "Not bought". The screen has 5 lines, and the group "Outside fridge" goes out. The note has the line `- [ ] [[Pantry/Eggs|Eggs]]`. (AC 24)
+- [ ] Tap the line "Soap". It has "Into the pantry", and it is off. (Story 10: AC 2, 2 a)
+- [ ] Tap "Into the pantry". It is on. The line shows "1" in "How much", "Kitchen" in "Where", and an empty date. The line says "no place yet". (Story 10: AC 4, 4 a to 4 c)
+- [ ] Type "2" in "Another amount", and "1.99" in the price. The text is "1 price is missing".
+- [ ] Tap the line of soap to close it. Soap moves from "Not in the pantry" into the group "Kitchen". (Story 10: AC 5)
+- [ ] Tap the line "Batteries", and type "6.99" in the price. No text about prices shows, and the head says "5/5 with a price". (AC 9)
 - [ ] Tap "Market B". It is on. Tap it again. No option is on. (Story 9: AC 2, 3)
 - [ ] Tap "Market A". It is on. Type "Market C" in "A new store". "Market A" is not on. (Story 9: AC 6)
 
@@ -197,9 +206,9 @@ Eggs and milk have a last receipt in the folder `Shopping`. The other items have
 
 This is the end of story 7, with stories 6, 9, and 10.
 
-- [ ] Tap "Put into the pantry". The screen closes, and the message says "4 items are in the pantry.". (AC 8)
+- [ ] Tap "Put into the pantry". The screen closes, and the message says "4 items are in the pantry.". (AC 18)
 - [ ] The vault has the note `Shopping/<today>`. It has no task. (Story 6: AC 1, 1 c)
-- [ ] The note has this text, with your day in `date` and in the row of milk. (AC 8 b to 8 e, 10, 10 a, 17, 17 a. Story 6: AC 1 a, 1 b. Story 9: AC 5, 6. Story 10: AC 5, 7 a, 8 a)
+- [ ] The note has this text, with your day in `date` and in the row of milk. (AC 18 b, 18 c, 20, 20 a, 27, 27 a. Story 6: AC 1 a, 1 b. Story 9: AC 5, 6. Story 10: AC 7, 9 a, 10 a)
 
 ```markdown
 ---
@@ -219,11 +228,11 @@ Mum comes on Friday.
 
 - [ ] The vault has a new note `Shopping/Next trip`. It has 3 tasks with no mark: flour, eggs, and chicken thighs. (Story 6: AC 3, 3 a)
 - [ ] The note `Lime` has the rows "3" and "1" in "Kitchen pantry", and `bought` with today. (Story 6: AC 5)
-- [ ] The note `Avocados` has the row "4" in "Garage", and `bought` with today. (AC 12. Story 6: AC 5 a)
-- [ ] The note `Milk` has two rows: "450 ml" in "Kitchen", and "1 l" in "Kitchen fridge" with its date. (AC 8, 8 a)
-- [ ] The vault has the new note `Pantry/Soap`, with the row "2" in "Kitchen", and `bought` with today. (Story 10: AC 4, 4 a, 4 b, 8)
-- [ ] The Pantry part shows soap in "Kitchen", and avocados in "Garage". (Story 10: AC 6)
-- [ ] The vault has no note `Pantry/Batteries`, no note `Shopping/Items/Batteries`, and no note `Pantry/Quinoa`. (Story 5: AC 10, 10 a. Story 10: AC 7)
+- [ ] The note `Avocados` has the row "4" in "Garage", and `bought` with today. (AC 22. Story 6: AC 5 a)
+- [ ] The note `Milk` has two rows: "450 ml" in "Kitchen", and "1 l" in "Kitchen fridge" with its date. (AC 18, 18 a)
+- [ ] The vault has the new note `Pantry/Soap`, with the row "2" in "Kitchen", and `bought` with today. (Story 10: AC 6, 6 a, 6 b, 10)
+- [ ] The Pantry part shows soap in "Kitchen", and avocados in "Garage". (Story 10: AC 8)
+- [ ] The vault has no note `Pantry/Batteries`, no note `Shopping/Items/Batteries`, and no note `Pantry/Quinoa`. (Story 5: AC 10, 10 a. Story 10: AC 9)
 - [ ] In the Shop part, salt and spinach are suggestions again. Avocados are not a suggestion. (Story 3: AC 22)
 - [ ] The Shop part has no button "Put away", because the cart is empty. (Story 6: AC 7)
 - [ ] The list has the row "Quinoa 200 g" again.
@@ -236,31 +245,31 @@ This is story 8, with the second receipt of one day.
 - [ ] In the Shop part, tap "+", and type "bat". The field proposes "Batteries". Tap it. (Story 5: AC 7)
 - [ ] Type "lim", and tap "Lime". Tap "+" again.
 - [ ] Tap the rows "Batteries", "Chicken thighs", "Eggs", "Flour", and "Lime". Tap "Put away". The screen has 5 lines.
-- [ ] Each line has the text and the price of this table. Lime, batteries, and eggs start from a receipt. (AC 2, 2 a, 3, 3 a)
+- [ ] The screen has 3 groups, with the lines of this table, in this sequence. Lime, batteries, and eggs start from a receipt. (Story 8: AC 1, 2, 3)
 
-| Line           | Text                                 | Price |
-| -------------- | ------------------------------------ | ----- |
-| Batteries      | Not in the pantry                    | 6.99  |
-| Chicken thighs | 500 g · Outside fridge · No date     | Empty |
-| Eggs           | 12 · Outside fridge · Use by 3 Nov   | 3.49  |
-| Flour          | 800 g · Kitchen pantry · No date     | Empty |
-| Lime           | 2 · Kitchen pantry · No date         | 0.50  |
+| Group             | Line           | Amount | Text         | Price |
+| ----------------- | -------------- | ------ | ------------ | ----- |
+| Kitchen pantry    | Flour          | 800 g  | No date      | –     |
+| Kitchen pantry    | Lime           | 2      | No date      | –     |
+| Outside fridge    | Chicken thighs | 500 g  | No date      | –     |
+| Outside fridge    | Eggs           | 12     | Use by 3 Nov | 3.99  |
+| Not in the pantry | Batteries      |        |              | 6.99  |
 
-- [ ] "On sale" of lime is off. Its last receipt has "yes". (AC 1 d)
-- [ ] The text is "2 prices are missing".
+- [ ] Lime has no price, and "Sale" is off. Its only receipt has 0.50, with "yes" in "Sale". (Story 8: AC 1 d, 12)
+- [ ] The text is "3 prices are missing".
 - [ ] "Store" has 3 options, in this sequence: "Market A", "Market B", "Market C". No option is on. (Story 9: AC 8, 8 a)
-- [ ] Tap "Market B". Tap "Put into the pantry". The message says "4 items are in the pantry.". (Story 7: AC 11. Story 9: AC 2)
-- [ ] The vault has the note `Shopping/<today> 2`. It has `store: Market B` and 5 rows. The cells "Price" of flour and of chicken thighs are empty. (Story 6: AC 6. Story 7: AC 11 a. Story 9: AC 4)
+- [ ] Tap "Market B". Tap "Put into the pantry". The message says "4 items are in the pantry.". (Story 7: AC 21. Story 9: AC 2)
+- [ ] The vault has the note `Shopping/<today> 2`. It has `store: Market B` and 5 rows. The cells "Price" of chicken thighs, flour, and lime are empty. (Story 6: AC 6. Story 7: AC 21 a. Story 9: AC 4)
 - [ ] The vault has no note `Shopping/Next trip`, because each task had a mark. (Story 6: AC 4)
-- [ ] The note `Flour` has one row: "1000 g" in "Kitchen pantry". (Story 7: AC 9)
+- [ ] The note `Flour` has one row: "1000 g" in "Kitchen pantry". (Story 7: AC 19)
 - [ ] The note `Eggs` has two rows in "Outside fridge": "6" with the date 2026-10-25, and "12" with the new date.
 - [ ] The note `Chicken thighs` has two rows in "Outside fridge": "500 g" with the date 2026-10-01, and "500 g" with no date.
 - [ ] Eggs are a suggestion again, with "Often". Chicken thighs are a suggestion again, with "Past its date": the old row is still in the pantry.
 - [ ] In the note `Shopping/<today> 2`, change the price of eggs to "3.59", and remove the date of the row of eggs.
 - [ ] In the note `Shopping/2026-09-28`, change the property to `store: Farm shop`.
-- [ ] Tap "Add" on eggs, tap the row "Eggs", and tap "Put away". The line says "12 · Outside fridge · No date", and its price is "3.59". (AC 5, 8, 8 a)
+- [ ] Tap "Add" on eggs, tap the row "Eggs", and tap "Put away". Eggs are in the group "Outside fridge". The line says "12", "No date", and "3.59". (Story 8: AC 5, 10, 10 a)
 - [ ] "Store" has the options "Farm shop", "Market B", and "Market C". (Story 9: AC 9)
-- [ ] In the note `Shopping/<today> 2`, remove the line `date` of the properties. The price of eggs on the screen is still "3.59". (AC 6)
+- [ ] In the note `Shopping/<today> 2`, remove the line `date` of the properties. The price of eggs on the screen is still "3.59". (Story 8: AC 8)
 - [ ] Tap "Back". Tap "Undo" on eggs, and then "Remove" on the row "Eggs".
 
 ## 9. The settings and the data file
@@ -272,31 +281,35 @@ This is story 8, with the second receipt of one day.
 - [ ] Set "Shopping folder" back to `Shopping`. Peanuts are in the cart again. Tap "Undo" on peanuts.
 - [ ] Change "Items folder" to `Things`. Tap "+", type "tape", and tap "Add as new". The note has the line `- [ ] [[Things/Tape|Tape]]`. (Story 5: AC 11)
 - [ ] Tap "Remove" on the row "Tape", and set "Items folder" back to `Shopping/Items`.
-- [ ] Remove the text of "Place for new food". Tap the row "Quinoa", and tap "Put away". The line says "200 g · Kitchen · No date". Tap "Back", and tap "Undo" on quinoa. Set the setting back to `Kitchen`.
+- [ ] Remove the text of "Place for new food". Tap the row "Quinoa", and tap "Put away". Quinoa is in the group "Kitchen". The line says "200 g", "No date", and "no place yet". Tap "Back", and tap "Undo" on quinoa. Set the setting back to `Kitchen`.
 - [ ] Open the file `.obsidian/plugins/whats-for-dinner/data.json`. It has `skipped` and `settings`. It has no `cart` and no `shopLow`. (Story 1: AC 16)
 
 ## 10. On the phone
 
 - [ ] Tap a row on the phone. After Obsidian Sync, the computer shows the item in the cart.
 - [ ] Type a task into the note on the computer. After Obsidian Sync, the phone shows the item on the list.
-- [ ] You can do each action with one thumb: "Add", "Skip", a row, "Remove", "Undo", "Put away", a line, "On sale", "Not bought", and the two buttons of the screen.
+- [ ] You can do each action with one thumb: "Add", "Skip", a row, "Remove", "Undo", "Put away", a line, "Sale", the options of an open line, "Not bought", and the two buttons of the screen.
 - [ ] Put 20 items in the cart, and tap "Put away". The lines scroll, and the two buttons keep their place.
-- [ ] Tap the price of a line. The phone shows the keyboard with numbers. With the keyboard open, you see the line that you type in.
-- [ ] Each change has a motion: a suggestion goes out, a row goes to the cart, the field "Add an item" opens, the screen of put away comes in, a line opens, and a line goes out.
+- [ ] Tap "Sale" on a line. The phone shows the keyboard with numbers at once, with the cursor in the price. With the keyboard open, you see the line that you type in.
+- [ ] Each change has a motion: a suggestion goes out, a row goes to the cart, the field "Add an item" opens, the screen of put away comes in, a line opens, a line moves into the group of its new place, a new group comes in, and a line goes out.
 - [ ] Put a food item in the cart. Then give its note a new name in Obsidian. The item is still in the cart, with its amount.
-- [ ] Give the note `Eggs` a new name in Obsidian. Each receipt still links to it, and the line of eggs still starts with the price of the last receipt.
+- [ ] Give the note `Eggs` a new name in Obsidian. Each receipt still links to it, and the line of eggs still starts with its regular price.
 - [ ] The group "Suggestions" does not hide the list for too long. Tell if the list must come first.
+- [ ] At the counter, you can check a trip of 10 items with no tap on a line. Tell which fact you still had to open.
 
 ## 11. Try to break it
 
 Each line tells what the plugin does with an entry that is not usual.
 
-- [ ] A price that is not a number, such as "abc" or "1.2.3": the field has a red edge, the price counts as missing, and the cell of the receipt is empty.
+- [ ] A price that is not a number, such as "abc" or "1.2.3": the field has a red edge, the line shows the text in red, the price counts as missing, and the cell of the receipt is empty.
+- [ ] "Sale" on a line with a price that you typed: the price stays.
+- [ ] "Sale" on an item with no regular price: the hint is "Price", and a second tap leaves the price empty.
 - [ ] A price with a comma, such as "1,5": the receipt has "1.50".
 - [ ] An amount with no text: the line says "1", and 1 goes into the pantry.
 - [ ] An amount with a plus, such as "1 l + 2 cartons": the food item gets two rows, and the receipt has the text as you typed it.
 - [ ] An amount with no number, such as "a bag": the food item gets a new row with that text.
 - [ ] A new place with no text: the place of the option counts.
+- [ ] A new place with spaces only: the line stays in the group of its place.
 - [ ] A new store with the name of an option: the receipt has that store one time, and the next trip has one option.
 - [ ] Two fast taps on "Put into the pantry": the food goes into the pantry one time, and the vault gets one receipt.
 - [ ] "Not bought" on each line: the screen closes with the last line.
@@ -317,8 +330,10 @@ These criteria need a different day, a different amount in a note, or a vault wi
 | Story 3: AC 10          | Give rice 2.3 kg. With `bought` 20 days before today, it is not a suggestion.                     |
 | Story 3: AC 12, 13      | Salt with `bought` 59 days before today is not a suggestion. With 60 days, it is one.             |
 | Story 3: AC 19          | Put a meal that needs 1.2 kg of flour in the plan. The row "Flour" has "1 kg".                    |
-| Story 7: AC 2 b, 4, 9   | Move the two receipts out of the folder `Shopping`. Milk then starts with "550 ml" and no price.  |
-| Story 8: AC 7           | In a receipt, put the column "Price" before the column "Amount". The facts of eggs are the same.  |
+| Story 7: AC 2 b, 4, 19  | Move the two receipts out of the folder `Shopping`. Milk then starts with "550 ml" and no price.  |
+| Story 8: AC 6, 7        | In `Shopping/2026-10-04`, remove "yes" of eggs: eggs start with 3.49. With "Yes", they get 3.99.  |
+| Story 8: AC 9           | In a receipt, put the column "Price" before the column "Amount". The facts of eggs are the same.  |
+| Story 8: AC 13          | In `Shopping/2026-09-28`, give eggs the amount "6". "How much" of eggs has "12" and "6".          |
 
 Story 6 tells a receipt with empty cells and with the amount of the list row. Story 7 changed that: the receipt has the facts that you gave, and lime starts with "2".
 

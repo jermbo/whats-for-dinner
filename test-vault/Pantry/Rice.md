@@ -4,10 +4,10 @@ brands:
 full: 5 kg
 low: 1 kg
 staple: sometimes
-bought: 2026-09-20
+bought: 2026-10-14
 ---
 
-| Place             | Amount  | Use by     |
-| ----------------- | ------- | ---------- |
-| Kitchen pantry    | 500 g   |            |
-| Downstairs pantry | 0.25 kg | 2027-06-01 |
+| Place          | Amount | Use by |
+| -------------- | ------ | ------ |
+| Kitchen pantry | 750 g  |        |
+| Kitchen pantry | 1      |        |

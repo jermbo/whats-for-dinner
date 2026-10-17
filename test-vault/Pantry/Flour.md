@@ -7,4 +7,4 @@ bought: 2026-09-30
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 200 g  |        |
+| Kitchen pantry | 300 g  |        |

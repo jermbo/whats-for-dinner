@@ -10,4 +10,4 @@ full: 2 kg
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 2000 g |        |
+| Kitchen pantry | 300 g  |        |

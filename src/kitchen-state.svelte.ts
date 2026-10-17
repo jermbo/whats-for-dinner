@@ -29,7 +29,7 @@ import type { Recipe } from './recipemd/types';
 import { typeOf } from './recipes/browse';
 import { readPrep } from './recipes/prep';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
-import { startFactsOf, stocksOf, type CartItem, type Facts } from './shop/facts';
+import { cartItemOf, stocksOf, type CartItem, type Facts } from './shop/facts';
 import { lastRows } from './shop/last-receipt';
 import { pastDateRows } from './shop/past-date';
 import { readReceipt, type Receipt } from './shop/read-receipt';
@@ -177,8 +177,7 @@ export class Kitchen {
 		return this.cart.map((row): CartItem => {
 			const item = this.trip.find((item) => item.key === row.key);
 			const inPantry = item !== undefined && isPantryItem(item, this.where.pantry);
-			const known = { row, inPantry, last: last.get(row.key) ?? null };
-			return { key: row.key, name: row.name, start: startFactsOf(known, now) };
+			return cartItemOf({ row, inPantry, last: last.get(row.key) ?? null }, now);
 		});
 	});
 

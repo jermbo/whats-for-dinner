@@ -1,10 +1,16 @@
 <script lang="ts">
-	type Props = { label: string; on: boolean; onclick: () => void };
-	let { label, on, onclick }: Props = $props();
+	type Props = {
+		label: string;
+		on: boolean;
+		// What a screen reader says when the label alone is not clear, such as "Sale: eggs".
+		name?: string;
+		onclick: () => void;
+	};
+	let { label, on, name, onclick }: Props = $props();
 </script>
 
 <!-- A filter. The face is 32 px high, and the button around it is 44 px, for the thumb. -->
-<button class="wfd-chip" type="button" aria-pressed={on} {onclick}>
+<button class="wfd-chip" type="button" aria-pressed={on} aria-label={name} {onclick}>
 	<span class="wfd-chip__face" class:wfd-chip__face--on={on}>
 		{#if on}<span aria-hidden="true">✓</span>{/if}
 		{label}

@@ -1,6 +1,6 @@
 ---
 title: Put away
-summary: "How one screen puts a shopping trip into the pantry: a line for each item, the button that ends the trip, and what changes after it."
+summary: "How one screen puts a shopping trip into the pantry: lines that the plugin fills in, groups by place, corrections with one tap, and the button that ends the trip."
 parent: shopping.md
 ---
 
@@ -10,25 +10,35 @@ parent: shopping.md
 
 After the store, you have bags on the counter and no time. If the pantry needs one entry for each item, you do not make them, and the pantry is wrong the next day. This page tells how one screen puts the full trip into the pantry, and records what you paid.
 
-## One line for each item of the cart
+## The plugin fills in, and you check
 
 "Put away" in the Shop part opens the screen. The pantry does not change at that moment.
 
-Each line shows the [facts](put-away-facts.md) of its item: the amount, the place, the use-by date, the price, and the mark "On sale". The plugin proposes each fact that it knows, so most lines need only a look. The price has its field on the line, and a tap on the line opens the other facts.
+Each line already has the [facts](put-away-facts.md) of its item: the amount, the use-by date, and the price. So a line is text to read, not a form to fill. You check it, and you correct only what is wrong.
+
+The lines are in one group for each place, from A to Z. You put the food away one place at a time, so you check the fridge with the fridge in front of you. The plugin guesses a place only for food with no row and no receipt. Such a line says "no place yet".
+
+## One tap corrects a fact
+
+A tap on a line opens it. Each fact has options: the amounts that you bought before, "3 days" to "1 month" for the use-by date, and the places of the pantry. A field takes a value that no option has.
+
+The open line stays in its group while you correct it, so it does not move under your thumb. When it closes, it goes into the group of its place.
 
 "Not bought" takes an item out of the cart, for a wrong tap in the store. The screen also has the store of the trip, which the [receipt](receipt.md) gets.
 
+## A sale is one tap
+
+A sale ends, so the plugin never proposes a sale price. Each line has the chip "Sale". A tap opens the line with the cursor in the price, and the field shows the regular price as a hint.
+
+Eggs usually cost 3.99. Today they are 3.49. You tap "Sale" and type 3.49.
+
 ## One button ends the trip
 
-"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the screen only tells how many prices are missing.
-
-"Back" closes the screen with no change. What you gave stays on the screen while the kitchen is open.
+"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the screen only tells how many prices are missing. "Back" closes the screen with no change, and what you gave stays while the kitchen is open.
 
 ## An item that is not in the pantry
 
-Batteries are not food, so their line has only the price and "On sale". The pantry does not change.
-
-Quinoa that you buy for the first time is different. You put "Into the pantry" on, and the line gets an amount, a place, and a use-by date. The button then makes the [food item note](food-item-note.md), and the receipt links to it.
+Batteries are not food, so their line has only the price and "Sale", in the last group. The pantry does not change. For quinoa that you buy for the first time, you open its line and put "Into the pantry" on. The button then makes the [food item note](food-item-note.md).
 
 ## What changes after the button
 

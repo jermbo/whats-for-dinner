@@ -1,0 +1,5 @@
+- [ ] [[Pantry/Avocados|Avocados]]
+- [ ] [[Pantry/Chicken thighs|Chicken thighs]]
+- [ ] [[Pantry/Eggs|Eggs]]
+- [ ] [[Pantry/Oats|Oats]]
+- [ ] [[Pantry/Rice|Rice]]

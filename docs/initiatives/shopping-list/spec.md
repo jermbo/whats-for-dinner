@@ -45,11 +45,14 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - f. Food that a meal needs is a suggestion when its row is past its use-by date (decision 8)
 5. The screen of put away shows each item of the cart with its facts (decisions 11 and 17)
    - a. The facts are the amount, the place, the use-by date, the price, and the mark "on sale" (decision 11)
-   - b. The plugin proposes the amount, the place, the days until the use-by date, and the price of the last receipt of the item (decision 13 b, and not confirmed)
-   - c. The screen tells how many prices are missing, and no empty fact stops the button (decision 19)
-   - d. The keeper takes an item out of the cart (not confirmed)
-   - e. The keeper selects the store of the trip, or types a new one (decision 23)
-   - f. An item that is not in the pantry has only a price. One tap puts it into the pantry (decision 21 b)
+   - b. The plugin proposes the amount, the place, and the days until the use-by date of the last receipt of the item (decision 32, and not confirmed)
+   - c. The plugin proposes the price of the newest receipt on which the item was not on sale (decisions 13 b and 30)
+   - d. The screen opens with each fact filled in, and the keeper only checks it (decision 28)
+   - e. The keeper marks a sale with one tap on the chip "Sale" of the line, and types the price of the sale (decision 31)
+   - f. The screen tells how many prices are missing, and no empty fact stops the button (decision 19)
+   - g. The keeper takes an item out of the cart (not confirmed)
+   - h. The keeper selects the store of the trip, or types a new one (decision 23)
+   - i. An item that is not in the pantry has only a price. One tap puts it into the pantry (decision 21 b)
 6. The button of put away ends the trip, in one step (decision 17)
    - a. The amount adds to the row of the place in the food item note, with the use-by date (decision 11 a and b)
    - b. The food item note gets the purchase date (decisions 9 and 11)
@@ -73,6 +76,7 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
 11. A list in groups by store (decision 23 a)
 12. A view of the prices over time
 13. The first fill of the pantry, and the setup of a vault (decision 27)
+14. A reader of the paper receipt, and AI of any kind (decision 29)
 
 ## What changes in the system
 
@@ -108,7 +112,7 @@ Rules that are worth an automatic test, each with the place where a test sees th
 1. **The suggestions.** Food item notes, the meals of the plan, and a day go in. The suggestions come out, each with its reason.
 2. **The open note.** The text of the note goes in. The cart and the choices come out.
 3. **The end of a trip.** The text of the open note and the facts of each item go in. The text of the receipt and of the new open note come out.
-4. **The last receipt.** The texts of the receipts go in. The last price, amount, place, and days of an item come out.
+4. **The last receipt.** The texts of the receipts go in. The regular price, the last amount, place, and days of an item come out.
 5. **The pantry.** The text of a food item note and one purchase go in. The new text of the note comes out, with the row and the property `bought`.
 
 ## Further reading

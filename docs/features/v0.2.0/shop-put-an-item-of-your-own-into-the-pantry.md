@@ -2,7 +2,7 @@
 title: Put an item of your own into the pantry
 summary: "The keeper puts an item that the pantry does not have into the pantry, with one tap on the screen of put away."
 parent: shop-stories.md
-updated: 2026-10-13
+updated: 2026-10-14
 persona: Keeper
 depends-on: [shop-add-an-item-of-your-own.md, shop-give-the-facts-of-each-item.md]
 status: built
@@ -16,12 +16,13 @@ As the [keeper](../../personas.md), I want one tap on the screen of put away to 
 
 ## Requirements
 
-1. On the screen of put away, an item that is not in the pantry has the switch "Into the pantry"
+1. On the screen of put away, the open line of an item that is not in the pantry has the switch "Into the pantry"
    - a. The switch starts off
 2. With the switch on, the item shows its amount, its place, and its use-by date
    - a. The amount starts as "1"
-   - b. The place starts as the setting "Place for new food"
+   - b. The place starts as the setting "Place for new food", so the line has "no place yet"
    - c. The use-by date starts empty
+   - d. When the line closes, the item goes from the group "Not in the pantry" into the group of its place
 3. With the switch on, the button of put away makes the food item note
    - a. The note is in the pantry folder, with the name of the item
    - b. The note has one row, with the place, the amount, and the use-by date
@@ -34,23 +35,26 @@ As the [keeper](../../personas.md), I want one tap on the screen of put away to 
 
 Each criterion starts with the test vault on 2026-10-13. The vault has no note `Quinoa`. The open note has the line `- [x] [[Shopping/Items/Quinoa|Quinoa]]`, so "Quinoa" is in the cart.
 
-1. GIVEN "Quinoa" is in the cart WHEN the keeper opens the screen of put away THEN "Quinoa" has the switch "Into the pantry"
+1. GIVEN "Quinoa" is in the cart WHEN the keeper opens the screen of put away THEN "Quinoa" is in the group "Not in the pantry"
+   - a. AND its line shows only its name, its price, and "Sale"
+2. GIVEN the screen of put away shows "Quinoa" WHEN the keeper taps the line of "Quinoa" THEN the line has the switch "Into the pantry"
    - a. AND the switch is off
-   - b. AND "Quinoa" shows only its price and "On sale"
-2. GIVEN eggs are in the cart WHEN the keeper opens the screen of put away THEN eggs have no switch "Into the pantry"
-3. GIVEN the switch of "Quinoa" is off WHEN the keeper taps the switch THEN "Quinoa" shows the amount "1"
+3. GIVEN eggs are in the cart WHEN the keeper taps the line of eggs THEN the line has no switch "Into the pantry"
+4. GIVEN the switch of "Quinoa" is off WHEN the keeper taps the switch THEN "Quinoa" shows the amount "1"
    - a. AND the place "Kitchen"
    - b. AND an empty use-by date
-4. GIVEN the switch is on, with the amount "500 g", the place "Kitchen pantry", and the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the vault has the note `Pantry/Quinoa`
+   - c. AND "no place yet"
+5. GIVEN the switch of "Quinoa" is on WHEN the keeper taps the line of "Quinoa" to close it THEN "Quinoa" is in the group "Kitchen"
+6. GIVEN the switch is on, with the amount "500 g", the place "Kitchen pantry", and the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the vault has the note `Pantry/Quinoa`
    - a. AND the note has one row: "Kitchen pantry" with "500 g"
    - b. AND the note has `bought: 2026-10-13`
-5. GIVEN the switch is on, with the amount "500 g", the place "Kitchen pantry", and the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the row of the receipt has the item `[[Pantry/Quinoa\|Quinoa]]`
+7. GIVEN the switch is on, with the amount "500 g", the place "Kitchen pantry", and the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the row of the receipt has the item `[[Pantry/Quinoa\|Quinoa]]`
    - a. AND the row has "500 g", "2.99", and "Kitchen pantry"
-6. GIVEN the keeper put "Quinoa" into the pantry WHEN the keeper opens the Pantry part THEN the pantry shows quinoa in "Kitchen pantry"
-7. GIVEN the switch is off, with the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the vault has no note `Pantry/Quinoa`
+8. GIVEN the keeper put "Quinoa" into the pantry WHEN the keeper opens the Pantry part THEN the pantry shows quinoa in "Kitchen pantry"
+9. GIVEN the switch is off, with the price "2.99" WHEN the keeper taps "Put into the pantry" THEN the vault has no note `Pantry/Quinoa`
    - a. AND the row of the receipt has the item `[[Shopping/Items/Quinoa\|Quinoa]]` and the price "2.99"
-8. GIVEN the open note has the line `- [x] Quinoa`, with no link WHEN the keeper taps the switch and taps "Put into the pantry" THEN the vault has the note `Pantry/Quinoa`
-   - a. AND the row of the receipt has the item `[[Pantry/Quinoa\|Quinoa]]`
+10. GIVEN the open note has the line `- [x] Quinoa`, with no link WHEN the keeper taps the switch and taps "Put into the pantry" THEN the vault has the note `Pantry/Quinoa`
+    - a. AND the row of the receipt has the item `[[Pantry/Quinoa\|Quinoa]]`
 
 ## Depends on
 

@@ -61,11 +61,12 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Choice        | An item that is on the list because you put it there: a suggestion that you accepted, or an item of your own.                                                                      |
 | Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                   |
 | Put away      | The [screen and its button](architecture/put-away.md) that add the cart to the pantry, and that end the trip.                                                                      |
-| Fact          | One of the five things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, and the mark "On sale".         |
+| Fact          | One of the five things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, and the mark "Sale".            |
 | Price         | What you paid for the full amount of an item. It has no currency, and it is only in a receipt.                                                                                     |
 | Store         | Where you made a trip. A receipt can have one store.                                                                                                                               |
 | Receipt       | The [shopping note](architecture/receipt.md) of a trip that is complete: each item that you bought. Its name is the day of the trip.                                               |
 | Last receipt  | The newest receipt with a row for an item. Put away starts from it.                                                                                                                |
+| Regular price | The price of the newest receipt row of an item that has no sale mark. Put away proposes it, because a sale ends.                                                                   |
 | Step          | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                                                                |
 | Record        | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                                                             |
 

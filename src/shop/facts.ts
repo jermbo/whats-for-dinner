@@ -24,7 +24,17 @@ export type Facts = {
 };
 
 // An item of the cart on the screen of put away, with the facts that it starts with.
-export type CartItem = { key: string; name: string; start: Facts };
+export type CartItem = {
+	key: string;
+	name: string;
+	start: Facts;
+	// The amounts that one tap selects: the amount that the item starts with, and what you bought
+	// before.
+	amounts: string[];
+	// The place comes from the setting "Place for new food", because the item has no row and no
+	// receipt. It is the only place that the plugin guesses, so it needs your look.
+	placeIsGuess: boolean;
+};
 
 // What the plugin knows about an item of the cart, before you give its facts.
 export type Known = {
@@ -39,16 +49,30 @@ export type Known = {
 // The day, and the place of a food item that has no row.
 type Now = { today: string; newPlace: string };
 
+// The screen of put away opens with each fact filled in, so that you only check the line.
+export function cartItemOf(known: Known, now: Now): CartItem {
+	const { row, last } = known;
+	const start = startFactsOf(known, now);
+	return {
+		key: row.key,
+		name: row.name,
+		start,
+		amounts: [...new Set([start.amount, ...(last?.amounts ?? [])])].slice(0, 3),
+		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place
+	};
+}
+
 // A fact of the last receipt comes first: you usually buy the same amount, for about the same
 // price, and you put it in the same place. An item always starts with an amount and a place, so
-// that no line needs an entry before the button. "On sale" starts off, because a sale ends.
-export function startFactsOf({ row, inPantry, last }: Known, { today, newPlace }: Now): Facts {
+// that no line needs an entry before the button. A sale ends, so "Sale" starts off, and the
+// price is the regular price.
+function startFactsOf({ row, inPantry, last }: Known, { today, newPlace }: Now): Facts {
 	return {
 		intoPantry: inPantry,
 		amount: last?.amount || withFill(row).amount || '1',
 		place: last?.place || row.food?.item.stocks[0]?.place || newPlace,
 		useBy: last ? useByAfter(last, today) : '',
-		price: showPrice(last?.price ?? ''),
+		price: showPrice(last?.regular ?? ''),
 		onSale: false
 	};
 }

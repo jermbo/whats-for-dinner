@@ -12,7 +12,7 @@ The Shop part is where you make the list, mark what you take, and put the food a
 
 ## The goal of the feature
 
-The list has more than the food of the meals: you add an item on any day, and the plugin suggests the staples that need a look. Each trip has a note. When you put the food away, you give the amount, the place, the use-by date, and the price of each item, and the note becomes the receipt.
+The list has more than the food of the meals: you add an item on any day, and the plugin suggests the staples that need a look. Each trip has a note. When you put the food away, the plugin fills in the amount, the place, the use-by date, and the price of each item. You check them, and the note becomes the receipt.
 
 The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed, and each line of it names its decision. The wiki [glossary](../../glossary.md) has the words of these stories, such as "choice", "suggestion", and "receipt".
 
