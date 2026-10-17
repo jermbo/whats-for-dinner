@@ -49,12 +49,12 @@ A heading between the ingredients starts a group, such as "Dry" and "Wet". So if
 
 ## What the plugin permits more
 
-- **Properties.** The note can have properties above the title. The plugin keeps your rating there.
+- **Properties.** The note can have properties above the title. The plugin reads the recipe below them, but it never writes a property.
 - **A link as a name.** An ingredient can be a link to its food item: `*300 g* [[Pantry/Rice|rice]]`.
 - **Preparation.** A callout of the type "prep" tells what you must do [before you cook](preparation.md).
-- **The record.** The heading "Cooked" at the end of the note has one line for [each meal that you cooked](end-of-a-meal.md).
+- **The record.** The heading "Cooked" at the end of the note has one line for [each meal that you cooked](end-of-a-meal.md). The stars of the newest line with stars are the rating of the recipe.
 
-A link, a callout, and a heading are plain Markdown, so the note stays a correct recipe. The properties are the one exception: the RecipeMD format does not have them.
+A link, a callout, and a heading are plain Markdown, so the note stays a correct recipe. Properties are the one exception: the RecipeMD format does not have them. Thus the plugin reads them, but it does not add them.
 
 ## Why a note is not a recipe
 

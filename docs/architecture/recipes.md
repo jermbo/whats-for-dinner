@@ -42,7 +42,7 @@ You can select a different sequence, such as by rating. A filter shows only the 
 
 ## What the plugin adds to a recipe note
 
-The plugin does not change your recipe. It adds two things after a meal: your rating, as a property, and a record of the meal at the end of the note. [Cook Mode](cook-mode.md) writes them.
+The plugin does not change your recipe. After a meal, it adds a record at the end of the note: the date, your rating, your note, and the photo. [Cook Mode](cook-mode.md) writes it.
 
 A recipe can also tell its [preparation](preparation.md): the work that it needs before the day of the meal.
 

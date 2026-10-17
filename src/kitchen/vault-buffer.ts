@@ -11,7 +11,6 @@ import { readReceipt, type Receipt } from '../shop/read-receipt';
 import { lineOf, type ReceiptLine } from '../shop/receipt';
 import { readTrip, type TripTask } from '../shop/shopping-note';
 import { itemsOf } from '../shop/trip';
-import { ratingOf } from './recipes-view';
 import { noteKind, type KitchenWhere, type NoteKind } from './note-kind';
 
 export type ActiveReceipt = { path: string; lines: ReceiptLine[] };
@@ -86,11 +85,7 @@ export class VaultBuffer {
 			const item = readFoodItem(basename, properties, body);
 			this.foodsByPath.set(path, { path, item });
 		} else if (kind === 'recipe') {
-			this.notesByPath.set(path, {
-				path,
-				result: readRecipe(text),
-				rating: ratingOf(properties)
-			});
+			this.notesByPath.set(path, { path, result: readRecipe(text) });
 		}
 	}
 

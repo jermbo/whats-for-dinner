@@ -31,11 +31,6 @@ export async function finishCooking(host: CookActionsHost, path: string, result:
 	if (file && entry) {
 		const photo = result.photo ? await savePhoto(host, result.photo, file) : null;
 		const { rating, note } = result;
-		if (rating) {
-			await host.app.fileManager.processFrontMatter(file, (properties) => {
-				properties.rating = rating;
-			});
-		}
 		const hasInstructions = entry.recipe.instructions !== null;
 		const record = { date: host.today, rating, note, photo };
 		await host.app.vault.process(file, (text) => addRecord(text, hasInstructions, record));
