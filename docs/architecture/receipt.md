@@ -46,7 +46,7 @@ A second receipt of one day gets a number: `2026-10-18 2`.
 
 ## One row is one item of the cart
 
-Each row has the [facts](put-away-facts.md) that you gave for its item.
+Each row has the [facts](put-away-facts.md) that you gave for its item. The rows have the order in which you took the items in the store, so the list of the next trip in that store can follow it.
 
 | Column   | Value                                               | With no value                        |
 | -------- | --------------------------------------------------- | ------------------------------------ |

@@ -13,6 +13,10 @@ A shopping trip has one note. You can read it and change it with no plugin. This
 ## A complete note
 
 ```markdown
+---
+store: Market A
+---
+
 Mum comes on Friday.
 
 - [ ] Soap
@@ -36,6 +40,8 @@ The plugin reads each line that is a task. All other lines are your own text.
 
 A row that the plugin calculates from the meals is not in the note. It gets its task when you put it in the cart. If two tasks have the same item, the plugin reads the first.
 
+The property `store` is the store of the trip. You select it in the stage Shop, and put away gives it to the receipt. With no `store`, the trip has no store.
+
 ## The link tells which item it is
 
 A name can find the wrong food item, or no food item. A link is exact, and Obsidian keeps it correct when the note gets a new name.
@@ -52,9 +58,10 @@ An item of your own that no note has, such as the batteries, links into the item
 
 The plugin changes only the lines of the tasks. It changes the mark of a line, and the other text of the line stays as you wrote it.
 
-- **A tap on a row of the list** gives the task of the item a mark. An item with no task gets a new line, after the last task. With no task in the note, the line goes at the end.
+- **A tap on a row of the list** gives the task of the item a mark, and moves it after the last task. So the tasks with a mark are in the order of your taps, and the receipt keeps that order. An item with no task gets a new line, after the last task. With no task in the note, the line goes at the end.
+- **"Add to cart" in the stage Shop** adds a task with a mark, after the last task.
 - **"Undo"** takes the mark off, and the item is an extra. But if a meal puts the item on the list, the task goes out of the note.
-- **"Add" on a suggestion, and the field "Add an item",** add a task with no mark. An item that has a task gets no second task.
+- **"Add" on a suggestion, the field "Add an item", and "Add to the list" in the Pantry part** add a task with no mark. An item that has a task gets no second task.
 - **"Remove"** takes the task of an extra out of the note.
 - **Put away** changes the note into the [receipt](receipt.md) of the trip. Each task with no mark goes into a new note "Next trip".
 

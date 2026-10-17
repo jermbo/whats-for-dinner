@@ -3,15 +3,20 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
-	import { byMeal, isForMeal, isFound, type Only, type Sort } from '../../shop/browse';
+	import { byMeal, byStore, isForMeal, isFound, type Only, type Sort } from '../../shop/browse';
+	import { readPrice, showPrice } from '../../shop/price';
+	import { proposalsFor } from '../../shop/proposals';
+	import type { ShoppingRow } from '../../shop/shopping-list';
 	import type { BarState } from '../bar-state.svelte';
 	import Bar from '../parts/Bar.svelte';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import Sticker from '../parts/Sticker.svelte';
+	import AddToCart from './AddToCart.svelte';
 	import CartLine from './CartLine.svelte';
 	import StageFoot from './StageFoot.svelte';
+	import TripStore from './TripStore.svelte';
 
 	type Props = {
 		kitchen: Kitchen;
@@ -27,10 +32,13 @@
 	// Each item of the trip: to get, or in the cart.
 	const all = $derived([...needed, ...inCart]);
 
-	const sorts: { value: Sort; label: string }[] = [
+	// A store that has a receipt has its order, so the list can follow it.
+	const hasOrder = $derived(kitchen.storeOrder.size > 0);
+	const sorts = $derived<{ value: Sort; label: string }[]>([
 		{ value: 'name', label: 'A to Z' },
-		{ value: 'meal', label: 'By meal' }
-	];
+		{ value: 'meal', label: 'By meal' },
+		...(hasOrder ? [{ value: 'store' as const, label: 'Store order' }] : [])
+	]);
 
 	// The text that finds a row.
 	const text = $derived(bar.find.trim());
@@ -48,8 +56,20 @@
 				(!only('extra') || row.extra)
 		)
 	);
-	// The sequence by meal has one group for each meal. The sequence by name is one list.
-	const groups = $derived(bar.sort === 'meal' ? byMeal(shown) : [{ title: '', rows: shown }]);
+	// The sequence by meal has one group for each meal. The sequences by name and by store are one
+	// list. With no order of a store, "Store order" is A to Z.
+	const groups = $derived.by(() => {
+		if (bar.sort === 'meal') return byMeal(shown);
+		const rows = bar.sort === 'store' && hasOrder ? byStore(shown, kitchen.storeOrder) : shown;
+		return [{ title: '', rows }];
+	});
+
+	// When you select a store with an order, the list follows it at once.
+	function pickStore(store: string) {
+		kitchen.setTripStore(store);
+		if (kitchen.storeOrder.size) bar.sort = 'store';
+		else if (bar.sort === 'store') bar.sort = 'name';
+	}
 
 	// The rows that you ticked, and that are not in the cart yet. You see the tick before the row
 	// goes, so that you know that your tap counted.
@@ -67,6 +87,51 @@
 		for (const key of ticked) if (!needed.some((row) => row.key === key)) ticked.delete(key);
 	});
 
+	// The text found no row, so it can add an item that is not on the list. With a filter on, the
+	// text can be a row that the filter hides, so it adds nothing.
+	const proposals = $derived(
+		text && !shown.length && !count
+			? proposalsFor(text, kitchen.foods, kitchen.itemNotes).filter(
+					({ path }) => !all.some((row) => row.key === path)
+				)
+			: []
+	);
+	const canAdd = $derived(Boolean(text) && !shown.length && !count);
+
+	function take(add: () => Promise<void>) {
+		bar.find = '';
+		void add();
+	}
+
+	// What an item usually costs. The total is "about", because the price is for the amount of the
+	// receipt.
+	const priceOf = (row: ShoppingRow) => readPrice(kitchen.regularOf(row.key));
+	const sumOf = (rows: ShoppingRow[]) => rows.reduce((sum, row) => sum + (priceOf(row) ?? 0), 0);
+	const priced = $derived(all.some((row) => priceOf(row) !== null));
+
+	// --- The screen stays on in the store, if the settings say so. ---
+
+	$effect(() => {
+		if (!kitchen.settings.keepScreenOn) return;
+		let lock: WakeLockSentinel | undefined;
+		const keepOn = async () => {
+			try {
+				lock = await navigator.wakeLock?.request('screen');
+			} catch {
+				// The device can refuse, for example when the battery is low.
+			}
+		};
+		// The device releases the lock when the app is not in view.
+		const again = () => document.visibilityState === 'visible' && void keepOn();
+
+		void keepOn();
+		document.addEventListener('visibilitychange', again);
+		return () => {
+			document.removeEventListener('visibilitychange', again);
+			void lock?.release();
+		};
+	});
+
 	// A piece of the bar gets its width when its row comes on the list, and gives it back after.
 	const grow = (_: Element, { duration }: { duration: number }) => ({
 		duration,
@@ -75,6 +140,8 @@
 </script>
 
 <section class="wfd-shop" aria-label="Shop">
+	<TripStore store={kitchen.tripStore} stores={kitchen.stores} onchange={pickStore} />
+
 	<Bar
 		label="Find an item or a meal"
 		sequence="Sequence of the list"
@@ -107,17 +174,20 @@
 
 	<GroupHead title="To get" note={String(needed.length)} />
 
-	{#if !needed.length}
+	{#if canAdd}
+		<AddToCart
+			{text}
+			{proposals}
+			onadd={(path) => take(() => kitchen.addToCart(path))}
+			onaddnew={(name) => take(() => kitchen.addNewToCart(name))}
+		/>
+	{:else if !needed.length}
 		<p class="wfd-shop__empty">{inCart.length ? 'Each item is in the cart.' : 'Nothing to get.'}</p>
 	{:else if !shown.length}
 		<div class="wfd-shop__none" aria-live="polite">
 			<p class="wfd-shop__empty">
-				{#if text && !count}
-					No item of the list has "{text}" in its name or in its meals.
-				{:else}
-					No item {text ? `with "${text}" ` : ''}passes
-					{count === 1 ? 'this filter' : 'these filters'}.
-				{/if}
+				No item {text ? `with "${text}" ` : ''}passes
+				{count === 1 ? 'this filter' : 'these filters'}.
 			</p>
 			{#if count}
 				<Button onclick={() => bar.clear()}>Remove the filters</Button>
@@ -162,7 +232,12 @@
 											</span>
 										{/if}
 									</span>
-									<span class="wfd-shop__amount wfd-number">{row.amount}</span>
+									<span class="wfd-shop__cost">
+										<span class="wfd-shop__amount wfd-number">{row.amount}</span>
+										{#if priceOf(row) !== null}
+											<span class="wfd-shop__price">{showPrice(kitchen.regularOf(row.key))}</span>
+										{/if}
+									</span>
 								</button>
 								{#if row.extra}
 									<Button
@@ -183,13 +258,27 @@
 
 	{#if inCart.length}
 		<div transition:slide={{ duration }}>
-			<CartLine cart={inCart} onundo={(key) => kitchen.takeOutOfCart(key)} />
+			<CartLine
+				cart={inCart}
+				priceOf={(key) => showPrice(kitchen.regularOf(key))}
+				onundo={(key) => kitchen.takeOutOfCart(key)}
+			/>
 		</div>
+	{/if}
 
+	{#if inCart.length || priced}
 		<StageFoot>
-			<Button kind="main" onclick={onputaway}>
-				Put away {inCart.length} <span aria-hidden="true">→</span>
-			</Button>
+			{#if priced}
+				<p class="wfd-shop__totals">
+					About <strong class="wfd-number">{sumOf(inCart).toFixed(2)}</strong> in the cart ·
+					<strong class="wfd-number">{sumOf(all).toFixed(2)}</strong> in all
+				</p>
+			{/if}
+			{#if inCart.length}
+				<Button kind="main" onclick={onputaway}>
+					Put away {inCart.length} <span aria-hidden="true">→</span>
+				</Button>
+			{/if}
 		</StageFoot>
 	{/if}
 </section>
@@ -326,8 +415,33 @@
 		font-size: 14px;
 	}
 
+	.wfd-shop__cost {
+		display: grid;
+		justify-items: end;
+		gap: 2px;
+	}
+
 	.wfd-shop__amount {
 		font-size: 18px;
+	}
+
+	.wfd-shop__price {
+		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.wfd-shop__totals {
+		margin: 0;
+		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-weight: 600;
+		text-align: end;
+
+		& strong {
+			color: var(--wfd-ink);
+			font-size: 16px;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

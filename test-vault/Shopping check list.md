@@ -1,6 +1,6 @@
 # Check list: shopping list
 
-This list tests the thirteen stories of the shopping list. Part A tests stories 11, 12, and 13: the three stages and the low staple of a meal. Part B tests the amount that put away proposes. Part A starts from the vault of the morning of 17 October, and part B from the vault after the clean-up of that day. Parts 1 to 11 test stories 1 to 10, from the vault of 13 October. Do the parts of each group in sequence. Each part starts from the state that the part before it leaves.
+This list tests the thirteen stories of the shopping list. Part A tests stories 11, 12, and 13: the three stages and the low staple of a meal. Part B tests the amount that put away proposes. Part C tests stories 14 to 23: all food that needs a look, the trip in the store, and the store. Part A starts from the vault of the morning of 17 October, and parts B and C from the vault after the clean-up of that day. Parts 1 to 11 test stories 1 to 10, from the vault of 13 October. Do the parts of each group in sequence. Each part starts from the state that the part before it leaves.
 
 Each line has one action and what you must see. The text in brackets is the story and its criterion.
 
@@ -90,6 +90,88 @@ The dates are for a test on 17 October. On a later day, give the row of oats the
 - [ ] In the stage Extras, type "rice" in the field, and tap "Rice". Tap "Go shopping", tap the row "Rice", and tap "Put away 1". The line of rice says "4.25 kg", the amount of the newest receipt. (Story 8: requirement 3 a)
 - [ ] In the receipt `Shopping/2026-10-17`, change the amount of rice to "1". The line of rice says "5 kg" now: the receipt has no amount in grams, the pantry is full, and so the line takes the full amount. (Story 8: requirement 7 b)
 - [ ] Set the amount of rice back to "4.25 kg". Tap "2 Shop", open the line "In the cart", and tap "Undo" on rice. Tap "Remove" on the row "Rice".
+
+## C. Everything that is low, the store, and its order
+
+In the Shop part and the Pantry part, with the notes `Shopping/Next trip`, `Milk`, and `Dark chocolate` open next to them. This is stories 14 to 23. A script ran the rules of the plugin on the vault for these values.
+
+The values are for 17 October 2026, with the setting "Low line" at 20 %. A date shows in the form of your device.
+
+### Before you start
+
+- [ ] Run `git add test-vault`. Then you can do the test again.
+- [ ] The plan has one meal: the boiled eggs.
+- [ ] If the note `Shopping/Next trip` is there, delete it.
+- [ ] In the data file of the plugin, set `"skipped": []`. Then put the plugin off and on.
+- [ ] The setting "Keep the screen on" is on.
+- [ ] The pantry is as after the clean-up: eggs have 2 and 12, milk has 150 ml, and butter has 40 g.
+
+### All food that needs a look
+
+- [ ] Open the Shop part. The stage Extras is open, and the strip has "1 Extras" with "14". (Story 14: AC 8)
+- [ ] The group "Out" has "Curry paste" and "Taco seasoning". (Story 14: AC 1)
+- [ ] The group "Low" has 11 lines: "Baking powder", "Butter", "Cheese", "Coconut milk", "Dark chocolate", "Elbow pasta", "Milk", "Peanuts", "Raisins", "Shell pasta", and "Spring onion". (Story 14: AC 2, 2 a)
+- [ ] The group "Time to check" has "Eggs" with "Often". There is no group "Use-by date". (Story 14: AC 5)
+- [ ] The line "Milk" shows "150 ml of 1 l". The line "Butter" shows "40 g of 250 g" and the use-by date 20 Nov. (Story 14: AC 3, 4, 4 a)
+
+### Skip and never ask
+
+- [ ] Tap "Skip" on curry paste. The stage says "Curry paste is skipped for this trip.", with "Never ask" and "Undo". The group "Out" has only "Taco seasoning". (Story 15: AC 1, 1 a, 1 b)
+- [ ] Tap "Undo". The group "Out" has "Curry paste" again. (Story 15: AC 2)
+- [ ] Tap "Skip" on dark chocolate, and then "Never ask". The note `Dark chocolate` has `suggest: never`. The group "Low" has 10 lines. (Story 15: AC 3)
+- [ ] In the Pantry part, tap the row of dark chocolate, and then "Place, date, and low line". The options are "Never ask", "Not a staple", "Often", "Sometimes", and "Seldom". "Never ask" is on. (Story 15: AC 5)
+- [ ] Tap "Not a staple", and tap "Save". The note has no `suggest`. In the stage Extras, the group "Low" has dark chocolate again. (Story 15: AC 6, 6 a)
+
+### Add to the list from the Pantry
+
+- [ ] In the Pantry part, tap the row of milk. Below the bar, the open row has "Add to the list". (Story 17: AC 1)
+- [ ] Tap "Add to the list". The row shows "On the list". The note `Shopping/Next trip` has `- [ ] [[Pantry/Milk|Milk]]`. (Story 17: AC 2, 2 a)
+
+### The amount that you usually buy, and the prices
+
+- [ ] In the stage Extras, tap "Add" on eggs. Type "rice" into "Add an item", and tap "Rice".
+- [ ] Tap "Go shopping". "To get" has 3 rows. (Story 17: AC 2 b. Story 19: AC 4, 6. Story 20: AC 1)
+
+| Row  | Amount  | Price | Sticker |
+| ---- | ------- | ----- | ------- |
+| Eggs | 12      | 3.49  | Extra   |
+| Milk | 1 l     | 1.29  | Extra   |
+| Rice | 4.25 kg | 5.99  | Extra   |
+
+- [ ] Above the lower edge, the line says "About 0.00 in the cart · 10.77 in all". (Story 20: AC 3)
+
+### Find or add in the store
+
+- [ ] Type "milk" into the field to find. The stage shows the row "Milk", and no "Add to cart". (Story 18: AC 4, 4 a)
+- [ ] Type "chee". The stage says '"chee" is not on the list.', with "Cheese" and "Add to cart". (Story 18: AC 1)
+- [ ] Tap "Add to cart". The note has `- [x] [[Pantry/Cheese|Cheese]]`, the line "In the cart" has "1", and the field is empty. (Story 18: AC 2, 2 a, 2 b)
+- [ ] Type "batteries", and tap "Add as new". The note has `- [x] [[Shopping/Items/Batteries|Batteries]]`. (Story 18: AC 3)
+
+### The store and its order
+
+- [ ] The stage has "Store", with "Market A" and "Market B", and none is on. Tap "Market A". The note `Shopping/Next trip` has `store: Market A`. (Story 22: AC 1, 2)
+- [ ] Tap "Done". The stage shows one line: "Store Market A", with "Change".
+- [ ] Open the bar. The sequences are "A to Z", "By meal", and "Store order", and "Store order" is on. The rows are "Eggs", "Milk", and "Rice": the receipt of Market A has eggs. (Story 23: AC 3)
+- [ ] Tap the rows "Rice", "Milk", and "Eggs", in this order. The tasks with a mark at the end of the note are rice, milk, and eggs, in this order. (Story 23: AC 1)
+- [ ] The line says "About 10.77 in the cart · 10.77 in all". (Story 20: AC 4)
+
+### On the phone
+
+- [ ] In the stage Shop, do not touch the phone for 60 s. The screen stays on. (Story 21: AC 1)
+- [ ] In the stage Extras, do not touch the phone for 60 s. The screen locks. (Story 21: AC 2)
+
+### Put away, with the store and the total
+
+- [ ] Tap "Put away 5". The store "Market A" is on. The stage shows "Total 10.77" and "2 prices are missing". (Story 22: AC 3. Story 20: AC 5)
+- [ ] Type "4.29" as the price of eggs. The stage shows "Total 11.57". (Story 20: AC 6)
+- [ ] Tap "Put into the pantry". The new receipt of today has `store: Market A`, and its rows are cheese, batteries, rice, milk, and eggs, in this order. (Story 22: AC 5. Story 23: AC 2)
+- [ ] The note `Milk` has one row: "Kitchen", "1150 ml", 2026-10-24. The new milk went into the row with no date. (Story 16: AC 1)
+
+### The order on the next trip
+
+- [ ] In the stage Extras, type "milk" into "Add an item", and tap "Milk". Do the same for "rice", and tap "Add" on eggs.
+- [ ] Tap "Go shopping", and select "Market A". "Store order" is on, and the rows are "Rice", "Milk", and "Eggs": the order of your taps. (Story 23: AC 3, 3 a)
+- [ ] Select "A to Z". The rows are "Eggs", "Milk", and "Rice". (Story 23: AC 4)
 
 ## The old parts with the new screen
 

@@ -24,6 +24,8 @@ export type FoodItem = {
 	low: Amount | null;
 	// How often you buy this food. Null: the food item is not a staple.
 	staple: Kind | null;
+	// You told the plugin to never ask about this food in the Shop part.
+	neverAsk: boolean;
 	// The purchase date: the day of the last put away, as year-month-day, or null.
 	bought: string | null;
 	stocks: Stock[];

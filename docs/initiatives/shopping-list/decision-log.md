@@ -73,7 +73,7 @@ Four parts of the request are not in the pages, the code, or the design images o
    - a. The kinds are "Often", "Sometimes", and "Seldom". "Often" has no time: the staple is a suggestion at each trip. "Sometimes" is 3 weeks. "Seldom" is 2 months. The reason: the three names are steps of one question, "how often do you buy it?", so their sequence is clear. The names "Every trip", "Infrequent", and "Keeps" were rejected: they are about three different things, and "Infrequent" can read as less often than "Keeps".
    - b. A suggestion tells its reason, such as "Potatoes: bought 3 weeks ago".
    - c. An example: potatoes are "Sometimes", and you bought them on 12 October. On 19 October they are not a suggestion. On 2 November they are. If you cook with them and they get low, they are a suggestion on any day.
-7. **The label "staple" replaces the check box "Low food on the list".** Only a staple can be a suggestion. Food that is low and is not a staple gets on the list when a meal needs it, and the Pantry shows it as low. The reason: the check box is all or nothing, and it puts food on the list that you used one time. The label tells which food you always want. An option that was rejected: the check box stays, next to the suggestions. This decision changes the pages [low food](../../architecture/staples.md) and [shopping](../../architecture/shopping.md), the [features](../../features/README.md) page, and the test "Low food on the shopping list" of the [roadmap](../../features/roadmap.md).
+7. **The label "staple" replaces the check box "Low food on the list".** Only a staple can be a suggestion. Food that is low and is not a staple gets on the list when a meal needs it, and the Pantry shows it as low. The reason: the check box is all or nothing, and it puts food on the list that you used one time. The label tells which food you always want. An option that was rejected: the check box stays, next to the suggestions. This decision changes the pages [low food](../../architecture/staples.md) and [shopping](../../architecture/shopping.md), the [features](../../features/README.md) page, and the test "Low food on the shopping list" of the [roadmap](../../features/roadmap.md). Decision 40 replaces this decision: each low food item is a suggestion now.
    - a. The amount alone does not tell that food is good. Ginger can be above its low line and too old to use. So where the plugin decides about a food item, it uses the facts together: the amount, the use-by date, and the purchase date.
 8. **Food that a meal needs is a suggestion when its row in the pantry is past its use-by date.** The reason is "Past its date". The list counts only the amount, so food that is past its date is food that you have, and the list does not ask for it. The reason for the decision: the plugin has the date, and the suggestion needs no new entry from you. Two options were rejected: no change, and food past its date that does not count. A date is not exact: eggs that are 2 days past their date are good, and the list must not tell you to buy eggs.
    - a. Only a date that is past makes this suggestion. A date that is near is food to use soon, and the meal uses it.
@@ -182,6 +182,36 @@ The third test put oats away with the amount "1". The receipt of 14 October had 
    - c. A new bag size needs one correction at put away. The next trip proposes the new amount, because it is the newest.
    - d. An example: the receipts of oats have "1" on 14 and 17 October, and the note counts oats in grams. The pantry has 7.5 g of 50 g. Put away proposes "42.5 g", the amount of the row on the list. With 50 g in the pantry and oats as an extra, the row has no amount, so put away proposes "50 g", the full amount.
 
+## Decisions after the review of 17 October
+
+The vault had 13 food items below their low line, and the Shop part showed none of them, because none was a staple. The owner's words: "I need to see what is low. Remember this is mean to be really easy to see and use." A review of the full flow then found what was missing before the trip, in the store, and at put away. These decisions come from it, in three slices.
+
+### Slice 1: see each food item that needs a look
+
+40. **Each food item that is out or low is a suggestion, staple or not.** A food item with no label is out when it has no row and the pantry had it before: it has a full amount or a purchase date. It is low when it is below its low line. A staple keeps each reason of decision 6, so the label only adds the reminders of time and date. The reason: the plugin finds what is low, and you decide. A label that you must set first hides the food that has no label. Two options were rejected: decision 7, which only suggested staples, and a closed group "Low in the pantry", which still hides the food. This decision replaces decision 7, and it changes the pages [suggestions](../../architecture/suggestions.md) and [staples](../../architecture/staples.md).
+   - a. The suggestions are in four groups, in this sequence: "Out", "Low", "Use-by date", and "Time to check". A reason tells the group: "Past its date" and "Use by" are dates, and "Often", "Bought 3 weeks ago", and "No purchase date" are times.
+   - b. A food item that the pantry never had, such as a note that a recipe made, is not a suggestion.
+   - c. An example: butter has 40 g of 250 g, and its low line is 50 g. Butter is not a staple. It is a suggestion in the group "Low".
+41. **"Skip" offers "Never ask" for food that you bought one time.** After "Skip", one line tells what you skipped, with "Never ask" and "Undo". "Never ask" writes the property `suggest: never` into the food item note, and the food is never a suggestion again. The form of the Pantry part has a fifth option "Never ask" next to the kinds of a staple, so you can undo it. The reason: with all low food in view, the curry paste of one recipe comes back at each trip. An option that was rejected: a list of hidden food in the settings, which you must look for.
+42. **A suggestion shows the level, such as "150 ml of 1 l".** A food item that the pantry cannot count shows what it has, as before. The reason: you decide with no trip to the Pantry part.
+43. **Put away adds to the row of the same place that has no use-by date.** The row gets the new date. Only put away does this. The form of the Pantry part keeps its rule, because there you type a date on purpose. The reason: put away proposes the date, so you did not make the second row on purpose. Oats with no date and a new bag of oats with a date became two rows. An option that was rejected: one rule for put away and the form.
+44. **The open row of a food item in the Pantry part has "Add to the list".** It puts the food item on the list as an extra. A food item that is on the list shows "On the list". The reason: you see that the milk is low when you look at the fridge.
+
+### Slice 2: the trip in the store
+
+45. **The field to find in the stage Shop also adds.** When the text finds no row, the stage proposes the notes that the text finds, and "Add as new". One tap puts the item into the cart at once, as a task with a mark. The reason: in the store, you see the batteries and you take them. An option that was rejected: the field "Add an item" in the stage Shop too, which makes two fields on one screen.
+46. **The list shows the amount that you usually buy.** It is the newest amount of the receipts in the unit of the food item. When the meals need more than that, the row has what the meals need. With no such receipt, the row is as before. Put away starts from the amount of the row, so the list and put away agree. The reason: you buy a box of 12 eggs, not 28 eggs and not 42.5 g of oats. This decision changes decision 36 a and decision 39.
+   - a. An example: the receipts of eggs have 12. The boiled eggs need 4 eggs, and the pantry has 2. The row says "Eggs, 12".
+47. **Each row of the list shows its regular price, and the stage Shop shows the totals.** The price is the regular price of the receipts. Below the list, a line says "About 9.40 in the cart · 14.18 in all". A row with no price adds nothing. The reason: the receipts have the prices already, so you see the cost of the trip with no entry. The total is "about", because the price is for the amount of the receipt.
+48. **The screen stays on in the stage Shop.** The setting "Keep the screen on" of Cook Mode decides it. The reason: in the store, the phone must not lock between two shelves.
+49. **The stage Put away shows the total of the trip.** It is the sum of the prices of its lines. This decision confirms choice 14.
+
+### Slice 3: the store
+
+50. **You select the store at the start of the trip, in the stage Shop.** The open note keeps it as the property `store`, so the phone and the computer have the same store. Put away shows that store, and you can change it there. The receipt gets it. The reason: the store tells the order of the list (decision 51), and it is a fact of the trip from its start. This decision changes decision 23 and choice 34.
+51. **The list learns the order of each store.** A tick moves the task to the end of the tasks of the open note, so the receipt has the items in the order in which you took them. With a store, the list has the sequence "Store order": each row is where its item was in the newest receipt of that store. Items that you never bought there come last, from A to Z. The sequence is on when you select a store that has a receipt. The reason: you walk through a store in the same order each time, so the last trip is the best map. Two options were rejected: aisles that you type for each item, and AI.
+   - a. The receipts from before this decision have the order of the note, not of your taps. The order is correct from the first trip after it.
+
 ## Choices that are not confirmed
 
 You can change each of these after the first test.
@@ -222,7 +252,7 @@ You can change each of these after the first test.
 34. **No store is on when the screen opens.** The reason: you go to three stores in turn (decision 23), so the store of the last trip is often wrong.
 35. **The field "Add an item" is only in the stage Extras.** In the store, you open the stage Extras to add an item.
 36. **The field "Add an item" is above the suggestions.** The keyboard of a phone hides a field at the lower edge of the tab.
-37. **The group of the suggestions keeps the name "Suggestions".**
+37. **The suggestions have no heading of their own.** The groups by reason of decision 40 a are the headings.
 38. **The stage Extras with no suggestion says "No food needs a look."** The field "Add an item" stays.
 39. **The button "Put away" of the stage Shop shows only when the cart has items.** Its text has the number of the items, such as "Put away 3".
 40. **The stage Put away with an empty cart says "The cart is empty."** It has no button "Put into the pantry".
@@ -231,13 +261,18 @@ You can change each of these after the first test.
 43. **A staple that a meal needs, and that is not low, keeps its other reasons, such as "Often".** It is a suggestion when the pantry has enough of it for the meals.
 44. **Decision 36 holds for food that is past its date too.** A hard case: the curry needs 500 g of chicken thighs, and the pantry has 200 g that is past its date. The list asks for 300 g, and no suggestion tells that the 200 g is old.
 45. **Each motion takes 0.2 s, and with less motion there is none.** The ink line of the strip slides to the stage that opens. "Add" slides the line of a suggestion out. A tick fills the box, and then the row slides into the line "In the cart".
+46. **The group "Time to check" comes last.** A reason of time is a reminder, and an empty or low food item is a need.
+47. **The line of a skip stays until your next action, or for 8 s.**
+48. **"Add to the list" in the Pantry part adds the food item as an extra.** "On the list" is a fact, not a button: you take an item off the list in the Shop part.
+49. **"Store order" ranks an item by its row in the newest receipt of that store, as a part of the length of the receipt.** So a short receipt and a long receipt have one scale.
+50. **The totals of the stage Shop count only the rows with a price.** With no price at all, the line does not show.
 
 ## What this work does not include
 
 1. **The first fill of the pantry.** How a new pantry gets its food items, with their amounts, their kinds, and their purchase dates, is a subject with its own discussion.
 2. **A view of the prices over time.** A dashboard with the prices of all items is a subject with its own discussion. This work only records the data that the dashboard needs.
 3. **Brands and photos.** Which brand you bought, a photo of an item, a package size, and a barcode have their own initiative.
-4. **Groups by store.** The list does not put the items in a group for each store, and it does not tell which store is cheaper for an item.
+4. **A comparison of stores.** The list has the order of a store (decision 51), but it does not tell which store is cheaper for an item.
 5. **The setup of a vault.** The folders that the plugin makes for a new user, and the choice of your own folders, are a subject with its own discussion. Two facts for that discussion: today the plan note starts at the top of the vault, and with no recipes folder the plugin tries each note of the vault.
 
 ## Further reading

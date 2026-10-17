@@ -28,13 +28,13 @@ You usually buy the same box of eggs, for about the same price, and you put it i
 
 | Fact        | From the receipts                                    | With no receipt, or with an empty cell                                 |
 | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| Amount      | The newest amount in the unit of the food item.      | The larger of two amounts: the list row, and what makes the food full. |
+| Amount      | The amount of the row on the list.                   | The full amount of the food item, and then 1.                          |
 | Place       | The place of the last row.                           | The place of the first row of the food item.                           |
 | Use-by date | Today, plus the days that the food had then.         | Empty.                                                                 |
 | Price       | The regular price: the newest row with no sale mark. | Empty.                                                                 |
 | "Sale"      | Off.                                                 | Off.                                                                   |
 
-An amount must be in the unit of the food item: the unit of its full amount, or of its first row. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the full amount of the food item, and then with 1. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
+The row on the list has the amount that you usually buy: the newest amount of the receipts in the unit of the food item, unless the meals need more. So put away and the list agree. An amount must be in the unit of the food item: the unit of its full amount, or of its first row. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the full amount of the food item, and then with 1. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
 
 ## A sale price is never the start
 
@@ -45,6 +45,8 @@ You bought 12 eggs on 28 September for 3.99, and 12 on 4 October for 3.49, on sa
 ## One row for one place
 
 The amount goes into a row that the food item has, if three things are the same: the place, the use-by date, and the kind of unit. Flour has 200 g in the kitchen pantry, with no date. You bought 800 g, with no date. The row becomes 1000 g.
+
+Put away also adds to the row of the same place that has no use-by date, and the row gets the date. Oats with no date and a new bag of oats with a date are one row. The form of the Pantry part does not do this, because there you type a date on purpose.
 
 If not, the food gets a new row. Milk with a new date is a second row, because the two cartons spoil on different days. The [amounts](amounts.md) page tells which units compare.
 

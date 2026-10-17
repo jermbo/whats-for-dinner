@@ -6,10 +6,12 @@
 
 	type Props = {
 		cart: ShoppingRow[];
+		// The price that you usually pay for an item, or no text.
+		priceOf: (key: string) => string;
 		// Puts an item back on the list.
 		onundo: (key: string) => void;
 	};
-	let { cart, onundo }: Props = $props();
+	let { cart, priceOf, onundo }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	const uid = $props.id();
@@ -39,7 +41,10 @@
 				<li class="wfd-cart__item" transition:slide={{ duration }}>
 					<span class="wfd-cart__tick" aria-hidden="true">✓</span>
 					<span class="wfd-cart__name">{row.name}</span>
-					{#if row.amount}<span class="wfd-cart__amount wfd-number">{row.amount}</span>{/if}
+					<span class="wfd-cart__cost">
+						{#if row.amount}<span class="wfd-cart__amount wfd-number">{row.amount}</span>{/if}
+						{#if priceOf(row.key)}<span class="wfd-cart__price">{priceOf(row.key)}</span>{/if}
+					</span>
 					<Button kind="link" aria-label="Undo {row.name}" onclick={() => onundo(row.key)}>
 						Undo
 					</Button>
@@ -141,8 +146,20 @@
 		text-transform: uppercase;
 	}
 
+	.wfd-cart__cost {
+		display: grid;
+		justify-items: end;
+		gap: 2px;
+	}
+
 	.wfd-cart__amount {
 		font-size: 17px;
+	}
+
+	.wfd-cart__price {
+		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-variant-numeric: tabular-nums;
 	}
 
 	@keyframes jump {

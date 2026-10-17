@@ -11,9 +11,9 @@ import type { FoodNote, Note } from './note';
 import { readFoodItem } from './pantry/food-item';
 import { notePathIn } from './note-path';
 import { fullAfter } from './pantry/level';
-import type { Kind } from './pantry/staple';
+import type { StapleLabel } from './pantry/staple';
 import type { FoodItem, Stock } from './pantry/types';
-import { addStock, replaceStocks, showStocks } from './pantry/write';
+import { addStock, putAwayStock, replaceStocks, showStocks } from './pantry/write';
 import {
 	addMeal,
 	changeMeal,
@@ -46,6 +46,7 @@ import {
 	type TripTask
 } from './shop/shopping-note';
 import { suggestionsOf } from './shop/suggestions';
+import { storeOrderOf } from './shop/store-order';
 import { storesOf } from './shop/stores';
 import { cartOf, isPantryItem, itemsOf, listOf, type TripItem } from './shop/trip';
 import { showMeasure } from './units';
@@ -90,6 +91,8 @@ export class Kitchen {
 	plan = $state.raw<PlannedMeal[]>([]);
 	// The items of the open note of the trip.
 	trip = $state.raw<TripItem[]>([]);
+	// The store of the open trip, from the property `store` of its note, or no text.
+	tripStore = $state('');
 	// The paths of the notes of the items folder. The field "Add an item" proposes them.
 	itemNotes = $state.raw<string[]>([]);
 	// The receipts of the shopping folder: the history of your trips.
@@ -164,15 +167,21 @@ export class Kitchen {
 		past: pastDateRows(this.needs, this.today)
 	});
 
-	list = $derived(listOf(this.calculated, this.trip, this.foods));
-	cart = $derived(cartOf(this.calculated, this.trip, this.foods));
+	// The newest receipt row of each item: what you usually buy, and what it costs.
+	private bought = $derived.by(() => lastRows(this.receipts, this.pathOf));
 
-	// The stores that the screen of put away shows.
+	list = $derived(listOf(this.calculated, this.trip, this.foods, this.bought));
+	cart = $derived(cartOf(this.calculated, this.trip, this.foods, this.bought));
+
+	// The stores of the receipts, for the stage Shop and the stage Put away.
 	stores = $derived(storesOf(this.receipts));
+
+	// Where each item was on the newest receipt of the store of the trip.
+	storeOrder = $derived.by(() => storeOrderOf(this.receipts, this.tripStore, this.pathOf));
 
 	// The items of the cart for the screen of put away, each with the facts that it starts with.
 	toPutAway = $derived.by(() => {
-		const last = lastRows(this.receipts, this.pathOf);
+		const last = this.bought;
 		const now = { today: this.today, newPlace: this.newPlace };
 		return this.cart.map((row): CartItem => {
 			const item = this.trip.find((item) => item.key === row.key);
@@ -211,6 +220,7 @@ export class Kitchen {
 	private foodsByPath = new Map<string, FoodNote>();
 	private planNow: PlannedMeal[] = [];
 	private tripNow: TripTask[] = [];
+	private tripStoreNow = '';
 	private itemPaths = new Set<string>();
 	private receiptsByPath = new Map<string, Receipt>();
 
@@ -296,11 +306,12 @@ export class Kitchen {
 	}
 
 	// Adds an amount to the food item of a note. If the note is not there, the plugin makes it.
-	private async addStockTo(path: string, stock: Stock) {
+	// `add` tells which row gets the amount.
+	private async addStockTo(path: string, stock: Stock, add = addStock) {
 		const file = this.fileAt(path);
 		const food = this.foods.find((food) => food.path === path);
 		if (file) {
-			await this.app.vault.process(file, (text) => addStock(text, stock));
+			await this.app.vault.process(file, (text) => add(text, stock));
 			if (food) await this.keepFull(file, food.item, [...food.item.stocks, stock]);
 			return;
 		}
@@ -320,12 +331,19 @@ export class Kitchen {
 		});
 	}
 
-	// Labels a food item as a staple, with its kind. Null takes the label off.
-	async setStaple(path: string, kind: Kind | null) {
+	// Labels a food item as a staple, with its kind, or as food that the Shop part never asks about.
+	// Null takes the two labels off.
+	async setStaple(path: string, label: StapleLabel) {
 		const file = this.fileAt(path);
 		if (!file) return;
 		await this.app.fileManager.processFrontMatter(file, (properties) => {
-			if (kind) properties.staple = kind;
+			if (label === 'never') {
+				delete properties.staple;
+				properties.suggest = 'never';
+				return;
+			}
+			delete properties.suggest;
+			if (label) properties.staple = label;
 			else delete properties.staple;
 		});
 	}
@@ -401,6 +419,21 @@ export class Kitchen {
 		await this.writeTrip((text) => (onList ? removeTasks(text, [item]) : unmark(text, item)));
 	}
 
+	// The price that you usually pay for an item: the newest price of its receipts with no sale mark,
+	// or no text.
+	regularOf(key: string): string {
+		return this.bought.get(key)?.regular ?? '';
+	}
+
+	// In the store, you take an item that is not on the list. It goes into the cart at once.
+	async addToCart(path: string) {
+		await this.writeTrip((text) => putInCart(text, taskOf(path)));
+	}
+
+	async addNewToCart(name: string) {
+		await this.addToCart(notePathIn(this.where.items, name));
+	}
+
 	// Puts the note of an item on the list, as an extra: a suggestion that you accept, a note that
 	// the field "Add an item" proposes, or a new item. An item that is in the note stays as it is.
 	async addExtra(path: string) {
@@ -419,10 +452,44 @@ export class Kitchen {
 		if (item) await this.writeTrip((text) => removeTasks(text, [item]));
 	}
 
+	// The store is a fact of the trip from its start, so the open note keeps it. You type a new store
+	// letter by letter, and the note gets it when you stop.
+	setTripStore(store: string) {
+		this.tripStore = store.trim();
+		this.writeStore(store.trim());
+	}
+
+	private writeStore = debounce((store: string) => void this.saveTripStore(store), 600, true);
+
+	private saveTripStore(store: string) {
+		return this.inTurn(async () => {
+			if (!this.fileAt(this.openNote)) {
+				await this.makeFolderOf(this.openNote);
+				await this.app.vault.create(this.openNote, '');
+			}
+			const file = this.fileAt(this.openNote);
+			if (!file) return;
+			await this.app.fileManager.processFrontMatter(file, (properties) => {
+				if (store) properties.store = store;
+				else delete properties.store;
+			});
+		});
+	}
+
 	// The suggestion stays away until put away ends the trip.
 	async skip(path: string) {
 		this.skipped = [...this.skipped, path];
 		await this.save();
+	}
+
+	async unskip(path: string) {
+		this.skipped = this.skipped.filter((other) => other !== path);
+		await this.save();
+	}
+
+	// The food item is never a suggestion again. The form of the Pantry part can undo this.
+	async neverAsk(path: string) {
+		await this.setStaple(path, 'never');
 	}
 
 	// Put away is in progress. A second tap must not add the food a second time.
@@ -433,6 +500,8 @@ export class Kitchen {
 	// A trip can have no store.
 	async putAway(given: Map<string, Facts>, store: string) {
 		if (this.puttingAway) return;
+		// The store goes into the receipt now. A write that waits would make a new open note after it.
+		this.writeStore.cancel();
 		this.puttingAway = true;
 		try {
 			const purchases: Purchase[] = [];
@@ -461,7 +530,7 @@ export class Kitchen {
 		// name, or to a new one, and the receipt links to that note.
 		const own = !isPantryItem(item, this.where.pantry);
 		const path = own ? this.foodPath(item.name) : item.key;
-		for (const stock of stocksOf(facts)) await this.addStockTo(path, stock);
+		for (const stock of stocksOf(facts)) await this.addStockTo(path, stock, putAwayStock);
 
 		const file = this.fileAt(path);
 		if (file) {
@@ -605,6 +674,7 @@ export class Kitchen {
 			this.planNow = readPlan(text);
 		} else if (kind === 'trip') {
 			this.tripNow = readTrip(text);
+			this.tripStoreNow = typeof properties.store === 'string' ? properties.store.trim() : '';
 		} else if (kind === 'item') {
 			this.itemPaths.add(path);
 		} else if (kind === 'receipt') {
@@ -624,6 +694,7 @@ export class Kitchen {
 		this.foodsByPath.clear();
 		this.planNow = [];
 		this.tripNow = [];
+		this.tripStoreNow = '';
 		this.itemPaths.clear();
 		this.receiptsByPath.clear();
 		await Promise.all(this.app.vault.getMarkdownFiles().map((file) => this.read(file)));
@@ -640,7 +711,10 @@ export class Kitchen {
 
 	private forget(path: string) {
 		if (path === this.where.plan) this.planNow = [];
-		if (path === this.openNote) this.tripNow = [];
+		if (path === this.openNote) {
+			this.tripNow = [];
+			this.tripStoreNow = '';
+		}
 		this.itemPaths.delete(path);
 		this.receiptsByPath.delete(path);
 		this.notesByPath.delete(path);
@@ -654,6 +728,7 @@ export class Kitchen {
 		this.plan = this.planNow;
 		// A link can go to a different note after a change of the vault, so the paths are new each time.
 		this.trip = itemsOf(this.tripNow, this.pathOf);
+		this.tripStore = this.tripStoreNow;
 		this.itemNotes = [...this.itemPaths];
 		this.receipts = [...this.receiptsByPath.values()];
 		this.today = today();

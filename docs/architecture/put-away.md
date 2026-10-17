@@ -12,7 +12,7 @@ After the store, you have bags on the counter and no time. If the pantry needs o
 
 ## The plugin fills in, and you check
 
-"Put away" in the Shop part opens the screen. The pantry does not change at that moment.
+"Put away" in the stage Shop opens the stage Put away. The pantry does not change at that moment.
 
 Each line already has the [facts](put-away-facts.md) of its item: the amount, the use-by date, and the price. So a line is text to read, not a form to fill. You check it, and you correct only what is wrong.
 
@@ -24,7 +24,7 @@ A tap on a line opens it. Each fact has options: the amounts that you bought bef
 
 The open line stays in its group while you correct it, so it does not move under your thumb. When it closes, it goes into the group of its place.
 
-"Not bought" takes an item out of the cart, for a wrong tap in the store. The screen also has the store of the trip, which the [receipt](receipt.md) gets.
+"Not bought" takes an item out of the cart, for a wrong tap in the store. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store.
 
 ## A sale is one tap
 
@@ -34,7 +34,7 @@ Eggs usually cost 3.99. Today they are 3.49. You tap "Sale" and type 3.49.
 
 ## One button ends the trip
 
-"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the screen only tells how many prices are missing. Put away is the third stage of the [Shop part](shopping.md). You can open a different stage at any time, and what you gave stays while the kitchen is open. With an empty cart, the stage says "The cart is empty."
+"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the stage only tells how many prices are missing, and the total of the prices that it has. Put away is the third stage of the [Shop part](shopping.md). You can open a different stage at any time, and what you gave stays while the kitchen is open. With an empty cart, the stage says "The cart is empty."
 
 ## An item that is not in the pantry
 

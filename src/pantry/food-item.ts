@@ -1,5 +1,6 @@
 // Reads the note of a food item: the brands, the other names, the full amount, the low line, the
-// kind of a staple, and the purchase date are properties, and the table has one row for each place.
+// kind of a staple, "never ask", and the purchase date are properties, and the table has one row for
+// each place.
 
 import { parseAmount } from '../recipemd/amount';
 import { readKind } from './staple';
@@ -20,6 +21,7 @@ export function readFoodItem(
 		full: amountOf(properties.full),
 		low: amountOf(properties.low),
 		staple: readKind(properties.staple),
+		neverAsk: String(properties.suggest ?? '').trim().toLowerCase() === 'never',
 		bought: dateOf(properties.bought),
 		stocks: readStocks(body)
 	};

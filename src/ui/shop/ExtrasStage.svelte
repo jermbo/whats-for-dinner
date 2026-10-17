@@ -37,15 +37,13 @@
 		onaddnew={(name) => kitchen.addNewItem(name)}
 	/>
 
-	{#if kitchen.suggestions.length}
-		<SuggestionList
-			suggestions={kitchen.suggestions}
-			onadd={(path) => kitchen.addExtra(path)}
-			onskip={(path) => kitchen.skip(path)}
-		/>
-	{:else}
-		<p class="wfd-extras__none" aria-live="polite">No food needs a look.</p>
-	{/if}
+	<SuggestionList
+		suggestions={kitchen.suggestions}
+		onadd={(path) => kitchen.addExtra(path)}
+		onskip={(path) => kitchen.skip(path)}
+		onunskip={(path) => kitchen.unskip(path)}
+		onneverask={(path) => kitchen.neverAsk(path)}
+	/>
 
 	<StageFoot>
 		<Button kind="main" onclick={onshop}>Go shopping <span aria-hidden="true">→</span></Button>
@@ -89,10 +87,5 @@
 			outline: 2px solid var(--wfd-ink);
 			outline-offset: 2px;
 		}
-	}
-
-	.wfd-extras__none {
-		margin: 0;
-		color: var(--wfd-ink-2);
 	}
 </style>

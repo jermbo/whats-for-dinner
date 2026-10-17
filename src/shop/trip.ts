@@ -4,8 +4,10 @@
 import type { FoodNote } from '../note';
 import { fillOf } from '../pantry/level';
 import { showMeasure } from '../units';
+import type { LastRow } from './last-receipt';
 import type { ShoppingRow } from './shopping-list';
 import type { Item, TripTask } from './shopping-note';
+import { measuresOf, usualOf } from './usual';
 
 // An item of the open note. Its key is the path of the note that its link goes to, so that it
 // finds the row of the same note. An item with no link has its name as its key.
@@ -37,19 +39,23 @@ export function itemsOf(tasks: TripTask[], pathOf: (link: string) => string): Tr
 export const isPantryItem = (item: TripItem, pantryFolder: string) =>
 	item.link !== null && item.key.startsWith(`${pantryFolder}/`);
 
+// The receipts of each item, by its key: what you bought before.
+type Bought = Map<string, LastRow>;
+
 // The list has the rows that the plugin calculates, and your extras. An item of the cart is off
 // the list.
 export function listOf(
 	calculated: Calculated,
 	items: TripItem[],
-	foods: FoodNote[]
+	foods: FoodNote[],
+	bought: Bought
 ): ShoppingRow[] {
 	const inNote = new Set(items.map((item) => item.key));
 	const extras = items
 		.filter((item) => !item.inCart)
 		.map((item) => ({ ...rowOf(item, calculated, foods), extra: true }));
 	return [...calculated.missing.filter((row) => !inNote.has(row.key)), ...extras]
-		.map(asStaple)
+		.map((row) => withUsual(row, bought))
 		.sort(byName);
 }
 
@@ -57,11 +63,12 @@ export function listOf(
 export function cartOf(
 	calculated: Calculated,
 	items: TripItem[],
-	foods: FoodNote[]
+	foods: FoodNote[],
+	bought: Bought
 ): ShoppingRow[] {
 	return items
 		.filter((item) => item.inCart)
-		.map((item) => asStaple(rowOf(item, calculated, foods)))
+		.map((item) => withUsual(rowOf(item, calculated, foods), bought))
 		.sort(byName);
 }
 
@@ -91,3 +98,17 @@ function rowOf(item: TripItem, { missing, past }: Calculated, foods: FoodNote[])
 // A staple on the list fills. If the meals need more than that, their amount stays. The rule does
 // not ask how the staple got on the list, so an amount does not change when you tap a row.
 const asStaple = (row: ShoppingRow) => (row.food?.item.staple ? withFill(row) : row);
+
+// You buy a box of 12 eggs, not the 28 eggs that make the food item full. So a row has the amount
+// that you usually buy, when it covers what the meals need. When the meals need more, the row has
+// their amount. With no such purchase, a staple fills, as before.
+function withUsual(row: ShoppingRow, bought: Bought): ShoppingRow {
+	const usual = usualOf(row.food?.item ?? null, bought.get(row.key)?.amounts ?? []);
+	if (!usual) return asStaple(row);
+
+	const buy = measuresOf(usual);
+	const covers = row.buy.every((need) =>
+		buy.some((part) => part.kind === need.kind && part.value >= need.value)
+	);
+	return covers ? { ...row, amount: usual, buy } : row;
+}

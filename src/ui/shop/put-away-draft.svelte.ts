@@ -6,8 +6,6 @@ import type { CartItem, Facts } from '../../shop/facts';
 export class PutAwayDraft {
 	// The facts that you changed, by the key of the item.
 	private changes = new SvelteMap<string, Partial<Facts>>();
-	// The store of the trip, or no text.
-	store = $state('');
 
 	// A fact that you changed is yours. Each other fact is as the plugin proposes it now.
 	factsOf({ key, start }: CartItem): Facts {
@@ -26,6 +24,5 @@ export class PutAwayDraft {
 	// The trip is at its end, so the next trip starts with no change.
 	clear() {
 		this.changes.clear();
-		this.store = '';
 	}
 }

@@ -26,7 +26,7 @@ The boiled eggs need 4 eggs. The pantry has 2, the low line is 4, and the full a
 
 ## Your extras are on the list too
 
-Some food you want always, plan or no plan. When a staple needs a look, and no meal puts it on the list, the Shop part suggests it. One tap accepts a suggestion. Food of a meal that is [past its date](past-its-date.md) is a suggestion too.
+Each food item that is out or low, and that no meal puts on the list, is a [suggestion](suggestions.md). A staple also comes back after a time, such as bread. One tap accepts a suggestion. Food of a meal that is [past its date](past-its-date.md) is a suggestion too. The open row of a food item in the [Pantry](pantry.md) part also has "Add to the list".
 
 Somebody asks you for batteries on a Tuesday. You type the name into the field "Add an item", and the item is on the list of the next trip. The field proposes the notes that the name finds.
 
@@ -48,9 +48,23 @@ The cart is in a note, because Obsidian moves a note from one device to the othe
 
 ## In the store, one tap
 
-The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra", and the brands that you buy. Thus you can take the brand that is on sale.
+The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra", and the brands that you buy. Thus you can take the brand that is on sale. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
 
 The cart is one closed line under the list: "In the cart", with the number of its items. You open it to see the items, and "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
+
+You see batteries that are not on the list. You type "batt" into the field to find. The field finds no row, so it proposes the note "Batteries", and "Add to cart" puts it in the cart at once.
+
+## The amount that you usually buy, and its price
+
+You buy a box of 12 eggs, not the 28 eggs that make the food item full. So a row shows the newest amount of the receipts in the unit of the food item. When the meals need more than that, the row shows what the meals need. With no such receipt, the row shows what the meals need, or what makes a staple full. Put away starts from the same amount.
+
+Each row also shows its regular price: the price of the newest receipt row with no sale mark. Below the list, one line adds them up: "About 9.40 in the cart · 14.18 in all". It is "about", because the price is for the amount of the receipt.
+
+## The store has an order
+
+You select the store at the start of the trip, in the stage Shop. The open note keeps it, so the phone and the computer know it, and the receipt gets it.
+
+A tap on a row moves its task to the end of the tasks, so the receipt has the items in the order in which you took them. At the next trip to that store, the list has the sequence "Store order": each row is where its item was on the newest receipt of that store. You walk through the store in the same order each time, so the last trip is the best map. An item that you never bought there comes last.
 
 ## At home, one stage
 

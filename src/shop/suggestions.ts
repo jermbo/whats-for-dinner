@@ -1,8 +1,9 @@
-// A staple is a suggestion when it needs a look. The amount alone does not tell that food is
-// good: bread can be gone with no meal that took it, and ginger can be too old to use. So one rule
-// uses three facts together: the amount, the use-by date, and the purchase date.
+// A food item is a suggestion when it needs a look. Each food item that is out or low is one, so
+// that you see what is low with no label to set first. The amount alone does not tell that a
+// staple is good: bread can be gone with no meal that took it, and ginger can be too old to use. So
+// a staple also has the reasons of its use-by date and its purchase date.
 //
-// Food that is not a staple is a suggestion in one case: a meal needs it, and it is past its date.
+// Food of a meal is a suggestion when it is past its date, staple or not.
 
 import { daysBetween, showDate } from '../dates';
 import type { FoodNote } from '../note';
@@ -10,6 +11,7 @@ import { levelOf } from '../pantry/level';
 import { ASK_AFTER, showKind } from '../pantry/staple';
 import { firstUseBy, totalOf } from '../pantry/total';
 import type { FoodItem } from '../pantry/types';
+import { showMeasure } from '../units';
 import { isPastDate } from './past-date';
 
 export type Reason =
@@ -34,12 +36,27 @@ type Trip = {
 export function suggestionsOf(foods: FoodNote[], when: When, { past, hidden }: Trip): Suggestion[] {
 	const pastForMeal = (path: string): Reason | null => (past.has(path) ? { is: 'past' } : null);
 	return foods
-		.filter((food) => !hidden.has(food.path))
+		.filter((food) => !hidden.has(food.path) && !food.item.neverAsk)
 		.flatMap((food) => {
 			const reason = reasonOf(food.item, when) ?? pastForMeal(food.path);
 			return reason ? [{ food, reason }] : [];
 		})
 		.sort((a, b) => a.food.item.name.localeCompare(b.food.item.name));
+}
+
+// The groups of the stage Extras, in their sequence: what you have none of first, and a reminder
+// of time last.
+export const GROUPS = [
+	{ group: 'out', title: 'Out' },
+	{ group: 'low', title: 'Low' },
+	{ group: 'date', title: 'Use-by date' },
+	{ group: 'time', title: 'Time to check' }
+] as const;
+export type Group = (typeof GROUPS)[number]['group'];
+
+export function groupOf(reason: Reason): Group {
+	if (reason.is === 'out' || reason.is === 'low') return reason.is;
+	return reason.is === 'past' || reason.is === 'useBy' ? 'date' : 'time';
 }
 
 export function showReason(reason: Reason): string {
@@ -52,22 +69,26 @@ export function showReason(reason: Reason): string {
 	return showKind('often');
 }
 
-// What you look at before you decide: the amount that the pantry has, the purchase date, and the
-// first use-by date. A fact that the food item does not have is not in the list.
+// What you look at before you decide: the level, such as "150 ml of 1 l", the purchase date, and
+// the first use-by date. A food item that the plugin cannot count shows what the pantry has. A fact
+// that the food item does not have is not in the list.
 export function factsOf({ item }: FoodNote): string[] {
 	const useBy = firstUseBy(item.stocks);
+	const level = levelOf(item);
+	const show = (value: number) => showMeasure({ kind: level?.kind ?? '', value });
 	return [
-		totalOf(item.stocks),
+		level && level.has > 0 ? `${show(level.has)} of ${show(level.full)}` : totalOf(item.stocks),
 		item.bought ? `Bought ${showDate(item.bought)}` : '',
 		useBy ? `Use by ${showDate(useBy)}` : ''
 	].filter(Boolean);
 }
 
-// A staple can have more than one reason. The first that is true is the one that shows.
+// A food item can have more than one reason. The first that is true is the one that shows.
 function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason | null {
-	if (!item.staple) return null;
-	if (!item.stocks.length) return { is: 'out' };
+	// A note that a recipe made for food that you never bought is not out.
+	if (!item.stocks.length) return item.staple || hadIt(item) ? { is: 'out' } : null;
 	if (levelOf(item, lowPercent)?.isLow) return { is: 'low' };
+	if (!item.staple) return null;
 
 	if (isPastDate(item, today)) return { is: 'past' };
 	const useBy = firstUseBy(item.stocks);
@@ -80,6 +101,9 @@ function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason
 	const days = daysBetween(item.bought, today);
 	return days >= ASK_AFTER[item.staple] ? { is: 'bought', days } : null;
 }
+
+// The pantry had the food item before: it knows its full amount, or the day you bought it.
+const hadIt = (item: FoodItem) => item.full !== null || item.bought !== null;
 
 // Days below 14 days, full weeks below 60 days, and full months of 30 days after that.
 function showAge(days: number): string {

@@ -16,3 +16,6 @@ export function readKind(value: unknown): Kind | null {
 }
 
 export const showKind = (kind: Kind) => kind.charAt(0).toUpperCase() + kind.slice(1);
+
+// What the form of a food item says about suggestions: a kind of staple, "never ask", or neither.
+export type StapleLabel = Kind | 'never' | null;

@@ -67,6 +67,20 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - d. A low staple that a meal needs is on the list with no action, and food that a meal puts on the list is not a suggestion (decision 36)
    - e. The stage Shop has a box to tick on each row, and the cart as one closed line (decision 37)
    - f. The Shop part opens on the stage that has work (decision 38)
+9. The stage Extras shows each food item that needs a look (decisions 40 to 42)
+   - a. Each food item that is out or low is a suggestion, staple or not (decision 40)
+   - b. The suggestions are in groups by reason (decision 40 a)
+   - c. "Skip" offers "Never ask", and the form of the Pantry part can undo it (decision 41)
+   - d. A suggestion shows the level of the food item (decision 42)
+10. Put away adds to the row of the same place that has no use-by date (decision 43)
+11. The Pantry part puts a food item on the list (decision 44)
+12. The stage Shop serves the trip in the store (decisions 45 to 48)
+   - a. The field to find adds an item to the cart at once (decision 45)
+   - b. The list shows the amount that you usually buy (decision 46)
+   - c. Each row shows its regular price, and the stage shows the totals (decision 47)
+   - d. The screen stays on (decision 48)
+13. The stage Put away shows the total of the trip (decision 49)
+14. The store is a fact of the trip from its start, and the list learns its order (decisions 50 and 51)
 
 ## Out of scope
 
@@ -80,7 +94,7 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
 8. A price that the button needs (decision 19)
 9. A put away of one part of the cart (decision 17 a)
 10. A brand on a row of a receipt, a photo of an item, a package size, and a barcode (decision 24)
-11. A list in groups by store (decision 23 a)
+11. A comparison of the prices of two stores (decision 23 a)
 12. A view of the prices over time
 13. The first fill of the pantry, and the setup of a vault (decision 27)
 14. A reader of the paper receipt, and AI of any kind (decision 29)

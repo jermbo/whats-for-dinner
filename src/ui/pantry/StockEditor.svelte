@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { makeStock } from '../../pantry/food-item';
-	import { KINDS, showKind, type Kind } from '../../pantry/staple';
+	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
 	import Button from '../parts/Button.svelte';
 
@@ -16,12 +16,12 @@
 		// The low line of the food item, as text. The hint is the line that the plugin sets when the
 		// field is empty. With no low line here, the editor does not ask for it.
 		low?: { text: string; hint: string };
-		// The kind of the food item, or null when it is not a staple. With no value here, the editor
-		// does not ask for it.
-		staple?: Kind | null;
+		// The kind of the food item, "never" when the Shop part never asks about it, or null. With no
+		// value here, the editor does not ask for it.
+		staple?: StapleLabel;
 		// Small text below the fields, such as the brands of the food item.
 		facts?: string[];
-		onsave: (stock: Stock, name: string, labels: { low: string; staple: Kind | null }) => void;
+		onsave: (stock: Stock, name: string, labels: { low: string; staple: StapleLabel }) => void;
 		oncancel: () => void;
 		onusedup?: () => void;
 		onopen?: () => void;
@@ -46,7 +46,7 @@
 	const first = () => stock;
 	const firstName = () => startName;
 	const firstLow = () => low?.text ?? '';
-	const firstKind = () => staple ?? null;
+	const firstKind = (): StapleLabel => staple ?? null;
 	let name = $state(firstName());
 	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
@@ -56,7 +56,8 @@
 	// A place that the pantry does not have yet.
 	let newPlace = $state('');
 
-	const kinds = [
+	const kinds: { value: StapleLabel; label: string }[] = [
+		{ value: 'never', label: 'Never ask' },
 		{ value: null, label: 'Not a staple' },
 		...KINDS.map((value) => ({ value, label: showKind(value) }))
 	];
@@ -132,7 +133,10 @@
 	</div>
 
 	{#if staple !== undefined}
-		<!-- How often you buy the food. The plugin asks about a staple when it needs a look. -->
+		<!--
+			How often you buy the food. The plugin asks about each food item that is low, and about a staple
+			when its time is over. "Never ask" is for food that you bought for one recipe.
+		-->
 		<fieldset class="wfd-editor__field">
 			<legend class="wfd-label">Staple</legend>
 			<div class="wfd-editor__options">

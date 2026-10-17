@@ -53,11 +53,19 @@ export function taskOf(path: string): TripTask {
 	return { link, name: nameOf(link), inCart: false };
 }
 
-// Each task of the item gets a mark. An item with no task gets one, with a mark.
+// The task of the item gets a mark, and it goes after the last task. So the tasks with a mark are
+// in the order of your taps, and the receipt keeps the order of the store. An item with no task
+// gets one, with a mark. A second task of the same item goes, because it is one item.
 export function putInCart(text: string, item: TripTask): string {
 	const lines = linesOf(text);
-	if (!lines.some((line) => isTaskOf(line, item))) return addTask(lines, item, 'x');
-	return setMark(lines, item, 'x');
+	const task = lines.find((line) => isTaskOf(line, item));
+	if (task === undefined) return addTask(lines, item, 'x');
+
+	const others = lines.filter((line) => !isTaskOf(line, item));
+	const last = others.findLastIndex((line) => readTask(line) !== null);
+	if (last === -1) return setMark(lines, item, 'x');
+	others.splice(last + 1, 0, task.replace(TASK, '$1x$3$4'));
+	return others.join('\n');
 }
 
 // An item that has a task gets no second task.

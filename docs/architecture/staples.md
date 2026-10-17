@@ -28,13 +28,13 @@ You label a food item in the form of its row, in the Pantry. The label is the pr
 
 The three kinds are steps of one question: "how often do you buy it?". The plugin counts the days from the purchase date, which [put away](put-away.md) writes into the note.
 
-## The label makes a suggestion, not a row
+## The label adds reminders
 
-A staple is not on the list at each trip. When it needs a look, the Shop part shows it as a [suggestion](suggestions.md), with the reason. You accept it or you skip it. Thus you look at the food before you buy it.
+Each food item that is out or low is a [suggestion](suggestions.md), with or with no label. The label adds reminders that the amount cannot give: the use-by date, and the time since the purchase. A staple is not on the list at each trip. When it needs a look, you accept it or you skip it. Thus you look at the food before you buy it.
 
 A staple that is low or out, and that a meal of the week needs, is not a suggestion. The meal uses what is left, so the staple is on the list with no action from you, as the [shopping](shopping.md) page tells.
 
-Food that is low and that is not a staple gets no suggestion. It is on the list when a meal needs it, and the Pantry shows it as low.
+Food that is low and that is not a staple is a suggestion "Low" too. When a meal needs it, the meal puts it on the list.
 
 ## A staple on the list fills
 

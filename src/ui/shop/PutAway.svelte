@@ -24,6 +24,8 @@
 
 	const lines = $derived(kitchen.toPutAway.map((item) => ({ item, facts: draft.factsOf(item) })));
 	const missing = $derived(lines.filter(({ facts }) => readPrice(facts.price) === null).length);
+	// The cost of the trip, from the prices of the lines. A missing price adds nothing.
+	const total = $derived(lines.reduce((sum, { facts }) => sum + (readPrice(facts.price) ?? 0), 0));
 	type Line = (typeof lines)[number];
 
 	// The line that shows all its facts, and the group that it had when it opened. It stays in that
@@ -97,7 +99,7 @@
 		const given = new Map(lines.map(({ item, facts }) => [item.key, facts]));
 		busy = true;
 		try {
-			await kitchen.putAway(given, draft.store);
+			await kitchen.putAway(given, kitchen.tripStore);
 			draft.clear();
 		} finally {
 			busy = false;
@@ -117,14 +119,14 @@
 		<div class="wfd-away__receipt">
 			<div class="wfd-away__trip">
 				<p class="wfd-away__day wfd-label">Trip · {showDate(kitchen.today)}</p>
-				<!-- The store is a fact of the trip, and it can stay empty. -->
+				<!-- The store is a fact of the trip from the stage Shop, and it can stay empty. -->
 				<PickOne
 					legend="Store"
 					options={kitchen.stores}
-					value={draft.store}
+					value={kitchen.tripStore}
 					other="A new store"
 					canBeOff
-					onchange={(store) => (draft.store = store)}
+					onchange={(store) => kitchen.setTripStore(store)}
 				/>
 			</div>
 			{#each groups as group (group.title)}
@@ -158,7 +160,8 @@
 		</div>
 
 		<StageFoot>
-			<div aria-live="polite">
+			<div class="wfd-away__sums" aria-live="polite">
+				<p class="wfd-away__total">Total <strong class="wfd-number">{total.toFixed(2)}</strong></p>
 				{#if missing}
 					<p class="wfd-away__missing" transition:slide={{ duration }}>
 						{missing === 1 ? '1 price is missing' : `${missing} prices are missing`}
@@ -222,6 +225,25 @@
 
 	.wfd-away__line {
 		border-block-end: 1px dotted var(--wfd-ink-3);
+	}
+
+	.wfd-away__sums {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 16px;
+		align-items: baseline;
+		justify-content: space-between;
+	}
+
+	.wfd-away__total {
+		margin: 0;
+		color: var(--wfd-ink-2);
+		font-weight: 600;
+
+		& strong {
+			color: var(--wfd-ink);
+			font-size: 18px;
+		}
 	}
 
 	.wfd-away__missing {
