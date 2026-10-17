@@ -10,6 +10,10 @@ parent: ../README.md
 
 The plugin makes your vault a kitchen that knows what it has. This page tells what you can do with it, and why you would.
 
+## The first open sets up the vault
+
+The first time that you open the kitchen in a new vault, [setup](../architecture/setup.md) asks four things: where your recipes are, the name of the folder for the notes of the plugin, the places of your kitchen, and the first food. A checklist of staples adds food with a tap and an amount. Then the four parts open, and the pantry has your food.
+
 ## The pantry knows what you have, and where
 
 You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the [pantry](../architecture/pantry.md) keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.

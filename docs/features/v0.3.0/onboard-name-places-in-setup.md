@@ -7,7 +7,8 @@ depends-on:
   - onboard-keep-places-in-the-data-file.md
   - onboard-start-setup-and-pick-recipes-folder.md
   - onboard-create-the-plugin-home-in-setup.md
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Name places and choose Place for new food in setup
@@ -52,5 +53,6 @@ Each criterion starts with an empty vault, onboarding not complete, recipes fold
 
 ## Architecture
 
+- [Setup](../../architecture/setup.md): the steps of setup, and when setup replaces the four parts.
 - [Settings](../../architecture/settings.md): the place list and "Place for new food".
 - [Pantry](../../architecture/pantry.md): places as names before rows exist.

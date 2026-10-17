@@ -4,6 +4,7 @@
 import { AbstractInputSuggest, PluginSettingTab, Setting, type App, type Plugin } from 'obsidian';
 import { Alarm, type Sound } from './cook/alarm';
 import type { Kitchen } from './kitchen-state.svelte';
+import { addPlace, removePlace, renamePlace } from './pantry/places';
 import type { Settings } from './settings';
 
 // Proposes paths of the vault, or other texts, while you type.
@@ -55,6 +56,25 @@ export class KitchenSettingTab extends PluginSettingTab {
 		const notes = () => vault.getMarkdownFiles().map((file) => file.path);
 		containerEl.empty();
 
+		// Setup is for a new vault. A vault with notes of the kitchen goes on from here.
+		if (kitchen.screen === 'notes') {
+			this.heading('Setup');
+			new Setting(containerEl)
+				.setName('Use these notes')
+				.setDesc(
+					'This vault has notes of the kitchen already, so the kitchen does not run setup. Check the folders below, and then open the kitchen with the notes that are there.'
+				)
+				.addButton((button) =>
+					button
+						.setButtonText('Use these notes')
+						.setCta()
+						.onClick(async () => {
+							await kitchen.useNotes();
+							this.display();
+						})
+				);
+		}
+
 		this.heading('Notes');
 		this.text(
 			'recipesFolder',
@@ -67,28 +87,28 @@ export class KitchenSettingTab extends PluginSettingTab {
 			'pantryFolder',
 			'Pantry folder',
 			'Each note in this folder is a food item.',
-			'Pantry',
+			'Larder/Pantry',
 			folders
 		);
 		this.text(
 			'planNote',
 			'Meal plan note',
 			'The note with the meals of the week.',
-			'Meal plan.md',
+			'Larder/Meal plan.md',
 			notes
 		);
 		this.text(
 			'shoppingFolder',
 			'Shopping folder',
 			'The note of each shopping trip is in this folder.',
-			'Shopping',
+			'Larder/Shopping',
 			folders
 		);
 		this.text(
 			'itemsFolder',
 			'Items folder',
 			'An item of your own that no note has links to a note of this folder. The plugin makes no note there.',
-			'Shopping/Items',
+			'Larder/Shopping/Items',
 			folders
 		);
 		this.text(
@@ -98,6 +118,9 @@ export class KitchenSettingTab extends PluginSettingTab {
 			'Kitchen',
 			() => kitchen.places
 		);
+
+		this.heading('Places');
+		this.placeList();
 
 		this.heading('Look');
 		new Setting(containerEl)
@@ -208,6 +231,44 @@ export class KitchenSettingTab extends PluginSettingTab {
 					suggest.close();
 				});
 			});
+	}
+
+	// One field for each place of the list, and a field for a new place. Add food, the filters of the
+	// pantry, and put away show each of them, also before a row has the place.
+	private placeList() {
+		const list = this.kitchen.settings.places;
+		for (const name of list) {
+			new Setting(this.containerEl)
+				.addText((field) => {
+					field.setValue(name);
+					// A rename counts when you leave the field, and not at each letter.
+					field.inputEl.addEventListener('change', () =>
+						this.setPlaces(renamePlace(list, name, field.getValue()))
+					);
+				})
+				.addExtraButton((button) =>
+					button
+						.setIcon('trash-2')
+						.setTooltip(`Remove ${name}`)
+						.setDisabled(list.length === 1)
+						.onClick(() => this.setPlaces(removePlace(list, name)))
+				);
+		}
+
+		let added = '';
+		new Setting(this.containerEl)
+			.setName('A new place')
+			.setDesc('The list keeps one place at the minimum. A change here does not change a note.')
+			.addText((field) => field.setPlaceholder('Garage freezer').onChange((value) => (added = value)))
+			.addButton((button) =>
+				button.setButtonText('Add').onClick(() => this.setPlaces(addPlace(list, added)))
+			);
+	}
+
+	// The fields show the list as it is after the change.
+	private async setPlaces(places: string[]) {
+		await this.kitchen.changeSettings({ places });
+		this.display();
 	}
 
 	// The description gives the value, because a slider shows no number.

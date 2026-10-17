@@ -4,7 +4,8 @@ summary: "The keeper edits places in settings, and the kitchen uses the list bef
 parent: onboard-stories.md
 persona: Keeper
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Keep a list of places in the data file

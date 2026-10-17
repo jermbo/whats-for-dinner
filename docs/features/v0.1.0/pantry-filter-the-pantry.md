@@ -36,7 +36,7 @@ As the [shopper](../../personas.md), I want to show only one kind of food with o
    - a. A line shows only when it passes the two
 6. When no line passes the filter, the pantry tells that
    - a. With no text in the field "Find food", the text is "No food passes this filter."
-7. A place with no food left has no chip
+7. A place with no food left has no chip, when the place list of the [settings](../../architecture/settings.md) does not name it
    - a. If the filter of that place was on, it goes off
 
 ## Acceptance criteria

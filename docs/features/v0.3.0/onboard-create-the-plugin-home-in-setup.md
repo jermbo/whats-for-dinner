@@ -5,7 +5,8 @@ parent: onboard-stories.md
 persona: Writer
 depends-on:
   - onboard-start-setup-and-pick-recipes-folder.md
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Create the plugin home in setup
@@ -44,6 +45,7 @@ Each criterion starts with an empty vault, onboarding not complete, recipes fold
 
 ## Architecture
 
+- [Setup](../../architecture/setup.md): the steps of setup, and when setup replaces the four parts.
 - [Settings](../../architecture/settings.md): folder paths and the plugin home.
 - [Plan](../../architecture/plan.md): the meal plan note.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): the plan note as one kind of note.

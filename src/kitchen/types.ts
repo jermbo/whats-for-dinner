@@ -2,6 +2,7 @@ import type { RecipeMatch } from '../match/match';
 import type { PlannedMeal } from '../plan/plan-note';
 import type { Recipe } from '../recipemd/types';
 import type { Settings } from '../settings';
+import type { Setup } from '../setup/screen';
 import type { Stock } from '../pantry/types';
 
 export type RecipeEntry = {
@@ -25,9 +26,9 @@ export type CookResult = {
 };
 
 // What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped
-// for this trip, and the settings. The cart is not here. It is in the note of the trip, which
-// Obsidian moves to your other device.
-export type Saved = { skipped: string[]; settings: Settings };
+// for this trip, the settings, and the step of setup. The cart is not here. It is in the note of
+// the trip, which Obsidian moves to your other device.
+export type Saved = { skipped: string[]; settings: Settings; setup?: Setup };
 
 export type Disk = {
 	load: () => Promise<Partial<Saved> | null>;

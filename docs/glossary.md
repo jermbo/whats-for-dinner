@@ -12,11 +12,14 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 
 ## The kitchen
 
-| Word      | Meaning                                                                  |
-| --------- | ------------------------------------------------------------------------ |
-| Kitchen   | The tab of the plugin in Obsidian.                                       |
-| Part      | One of the four screens of the kitchen: Pantry, Recipes, Plan, and Shop. |
-| Data file | The file of the plugin with your settings. It is not a note.             |
+| Word        | Meaning                                                                                                                          |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Kitchen     | The tab of the plugin in Obsidian.                                                                                               |
+| Part        | One of the four screens of the kitchen: Pantry, Recipes, Plan, and Shop.                                                         |
+| Data file   | The file of the plugin with your settings. It is not a note.                                                                     |
+| Setup       | The [steps](architecture/setup.md) that the kitchen shows the first time, before the four parts.                              |
+| Plugin home | The one folder that holds each note of the plugin, but the recipes. You delete it to remove the notes of the plugin.            |
+| Larder      | The name that the plugin home starts with: `Larder/`. It is not the Pantry part, and not the pantry folder `Larder/Pantry/`. |
 
 ## The pantry
 

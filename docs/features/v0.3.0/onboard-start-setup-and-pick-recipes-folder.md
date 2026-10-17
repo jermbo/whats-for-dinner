@@ -6,7 +6,8 @@ persona: Keeper
 depends-on:
   - onboard-use-the-larder-layout-by-default.md
   - onboard-keep-places-in-the-data-file.md
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Start setup and pick the recipes folder
@@ -54,5 +55,6 @@ Criteria 5 and 6 start with the test vault and onboarding not complete.
 
 ## Architecture
 
+- [Setup](../../architecture/setup.md): the steps of setup, and when setup replaces the four parts.
 - [Settings](../../architecture/settings.md): the recipes folder and the onboarding flag in the data file.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): what is in the data file.

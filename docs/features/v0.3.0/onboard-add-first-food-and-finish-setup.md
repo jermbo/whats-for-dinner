@@ -5,7 +5,8 @@ parent: onboard-stories.md
 persona: Keeper
 depends-on:
   - onboard-name-places-in-setup.md
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Add the first food and finish setup
@@ -52,6 +53,7 @@ Each criterion starts with an empty vault, onboarding not complete, recipes fold
 
 ## Architecture
 
+- [Setup](../../architecture/setup.md): the steps of setup, and when setup replaces the four parts.
 - [Food item note](../../architecture/food-item-note.md): the form of a food item note that setup creates.
 - [Pantry](../../architecture/pantry.md): the first row in the pantry.
 - [Settings](../../architecture/settings.md): the onboarding-complete flag in the data file.

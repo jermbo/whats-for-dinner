@@ -4,7 +4,8 @@ summary: "The writer sees Larder paths in settings before onboarding runs."
 parent: onboard-stories.md
 persona: Writer
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-17
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Onboard stories](onboard-stories.md) / Use the Larder layout by default
