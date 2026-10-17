@@ -36,7 +36,7 @@ The bar stops when all places together have the full amount. For more than that,
 | "Used up"                   | Sets the place to nothing. Its row goes out of the table.       |
 | "Place, date, and low line" | Opens the form of that row, for all that the bar cannot change. |
 
-When all places together are below the low line, the bar is amber while you drag.
+When all places together are at or below the low line, the bar is amber while you drag.
 
 You can also set the amount with the arrow keys.
 

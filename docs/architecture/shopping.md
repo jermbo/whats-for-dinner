@@ -68,11 +68,11 @@ A tap on a row moves its task to the end of the tasks, so the receipt has the it
 
 ## At home, one stage
 
-[Put away](put-away.md) is the third stage. It shows each item of the cart with its facts: the amount, the place, the use-by date, and the price. The plugin proposes them, and you correct what is different. Then one button adds each item to its food item. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
+[Put away](put-away.md) is the third stage. It shows each item of the cart with its facts: the amount, the place, the use-by date, and the price. The plugin proposes them, and you correct what is different. The items that the plugin knows are in one closed group, with one button. "Put away" in an open line adds one item to its food item. For flour, the row "Kitchen pantry" goes from 200 g to 1000 g.
 
-A food that the pantry does not know gets a new note. After the button, the cart is empty, and the list has only what you did not buy.
+A food that the pantry does not know gets a new note. After the last item, the cart is empty, and the list has only what you did not buy.
 
-The shopping note becomes the [receipt](receipt.md) of that day, with the price of each item. An extra that you did not buy goes into the note of the next trip.
+The [receipt](receipt.md) of that day keeps the facts from the start of put away, with the price of each item. An extra that you did not buy goes into the note of the next trip.
 
 ## Further reading
 

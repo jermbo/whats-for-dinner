@@ -212,6 +212,39 @@ The vault had 13 food items below their low line, and the Shop part showed none 
 51. **The list learns the order of each store.** A tick moves the task to the end of the tasks of the open note, so the receipt has the items in the order in which you took them. With a store, the list has the sequence "Store order": each row is where its item was in the newest receipt of that store. Items that you never bought there come last, from A to Z. The sequence is on when you select a store that has a receipt. The reason: you walk through a store in the same order each time, so the last trip is the best map. Two options were rejected: aisles that you type for each item, and AI.
    - a. The receipts from before this decision have the order of the note, not of your taps. The order is correct from the first trip after it.
 
+## Decisions after the test of put away and Extras
+
+The test of 17 October corrected one item at put away, and the stage had no "Put away" for that item. The owner's words: "I want to put items away individually. I will look at the receipt and find the item to update. When done with that item, call it a day." And: "I see myself editing a thing, being satisfied with it, then wanting to commit it to the pantry right then."
+
+52. **The open line has "Put away", for that item only.** The item goes into the pantry at once, and its line goes off the screen. "Put into the pantry" puts the rest away. The reason: while the plugin does not know your food well, you check each item against the paper receipt, and an item that you checked is complete. "Put into the pantry" is for later, when most facts are correct with no change. This decision changes decision 17 and 17 a.
+   - a. "Put away" is in the open line, next to "Not bought", because you correct the facts there. The closed line has no "Put away".
+   - b. The row of the item goes into a table in the open note at once. Its task stays, so the receipt keeps the order of the store (decision 51). The stages Shop and Put away do not show the item again.
+   - c. The trip ends when its last line goes off the screen of put away, with "Put away" or with "Not bought". The reason: an empty cart has no other action that ends the trip. Decision 17 rejected this, when one button put the full cart away.
+   - d. The purchase date of the item is the day of its put away. The receipt gets the day of the end of the trip.
+   - e. An example: the cart has milk, lime, and avocados. You open milk, type "1.29", and tap "Put away". The note `Milk` gets the food, and milk goes off the screen. You tap "Put into the pantry", and lime and avocados go in. The receipt has the three rows in the order of the store.
+
+The same test found a gap in the stage Extras.
+
+53. **Each food item near or past its use-by date is a suggestion, staple or not.** The reasons are "Past its date" and "Use by", in the group "Use-by date". Only the reasons of time stay for a staple. The reason: the test of 17 October showed no suggestion for spinach with the use-by date of the next day, because spinach is not a staple. The owner's words: "I do not see all the items that are low, expire, or out in the suggestion." This decision changes decision 40. Decision 8 stays: the list does not ask for food of a meal that is past its date, and the suggestion asks you to look.
+54. **Food that is exactly at its low line is low.** This holds everywhere: the suggestions, the bars of the Pantry part, and the list. The reason: the same test showed no suggestion for ginger, with 20 g of 100 g and its line at 20 g, and for flour, with 300 g of 1 kg and its line at 300 g. The line is where you want more, so food at the line needs a look. The owner confirmed this rule. This decision changes the rule of the [level](../../architecture/level.md).
+
+### Put away shows only what needs a look
+
+The owner's words: "The put away can put away all the items where we can infer stuff. But then leave only the list of what cannot be inferred. [...] But the action of put away should still be manual." And: "I dont want to rely on app memory to store all this stuff. I want to create the receipt note as soon as we have some information, but the state is active or complete." And: "I would put it in its final location from the first fact. Why make it complicated and move files around?"
+
+55. **Put away has a closed group "Known" for the items that the plugin knows.** An item is known when its last receipt has an amount, a place, and a price. "Put away 9 known" at the lower edge puts these items into the pantry. Each other item is a line in the groups by place, with its own "Put away". The reason: you look only at what the plugin cannot know, and you still decide when food goes into the pantry. This decision changes decision 52, and "Put into the pantry" is gone.
+   - a. The group is closed, and you can open it. So you see each known item, and you can tap "Sale" on it before the button. The reason: no state of the pantry is hidden.
+   - b. A known item that you correct stays in the group "Known". It does not move under your thumb.
+   - c. The plugin never puts food away with no tap from you.
+   - d. An example: the cart has eggs, milk, and quinoa. Eggs and milk have a receipt with an amount, a place, and a price. Quinoa has no receipt. The group "Known" has 2 items, and quinoa is a line in "Kitchen", with "no place yet".
+56. **The receipt is a note in its final place from the first fact.** When the stage Put away opens with a cart, the plugin makes the note `Shopping/2026-10-17` with `status: active`, and one row for each item of the cart. Each correction goes into its row. The column "Done" has `yes` for each item that is in the pantry. The plugin reads the facts from the note, not from its memory. When each row is done, the note gets `status: complete`. The reason: a restart of Obsidian, or a different device, continues where you stopped. The note does not move, so a link to it stays correct. This decision changes decisions 16, 25, and 52 b.
+   - a. The name is the day on which the receipt starts. A second receipt of one day gets a number, as before.
+   - b. An item that you tick after the receipt starts gets a row at the end of the table. So the rows keep the order of the store.
+   - c. A price that you type goes into the note when you stop typing. The note keeps the price as you typed it, and it gets 2 decimals when the receipt is complete.
+   - d. "Not bought" and "Undo" take the row of the item out of the receipt, when the item is not done.
+   - e. When the receipt is complete, the column "Done" goes, and the receipt gets the store of the trip. The note "Next trip" keeps only its tasks with no mark. Your own text of that note goes into the receipt, as before.
+   - f. The history of the receipts, such as the last receipt of an item and "Store order", uses only receipts with no `status: active`.
+
 ## Choices that are not confirmed
 
 You can change each of these after the first test.

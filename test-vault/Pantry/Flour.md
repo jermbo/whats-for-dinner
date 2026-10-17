@@ -2,9 +2,9 @@
 full: 1 kg
 low: 300 g
 staple: seldom
-bought: 2026-09-30
+bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 300 g  |        |
+| Kitchen pantry | 1000 g |        |

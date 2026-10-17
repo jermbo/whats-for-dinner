@@ -34,7 +34,7 @@ If you have neither reason, repeat the code.
 
 ## An example of each
 
-**Share.** "A food item is low when it is below its low line." The pantry screen, the bar of a row, and the shopping list need this fact. It is one function, `levelOf`, and each of them calls it.
+**Share.** "A food item is low when it is at or below its low line." The pantry screen, the bar of a row, and the shopping list need this fact. It is one function, `levelOf`, and each of them calls it.
 
 **Repeat.** Each part has its own function `isFound`, for the text that you type in the find field. The four functions look the same. But the pantry finds a food by its name, its other names, and its brands, and the recipes find by title and ingredient. Each one changes for its own part, so they stay four.
 

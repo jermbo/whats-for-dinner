@@ -6,7 +6,7 @@ import { addDays, daysBetween } from '../dates';
 import { makeStock } from '../pantry/food-item';
 import type { Stock } from '../pantry/types';
 import type { LastRow } from './last-receipt';
-import { showPrice } from './price';
+import { readPrice, showPrice } from './price';
 import type { ShoppingRow } from './shopping-list';
 import { countsFor } from './usual';
 
@@ -34,6 +34,8 @@ export type CartItem = {
 	// The place comes from the setting "Place for new food", because the item has no row and no
 	// receipt. It is the only place that the plugin guesses, so it needs your look.
 	placeIsGuess: boolean;
+	// The last receipt has an amount, a place, and a price, so the line needs no look.
+	known: boolean;
 };
 
 // What the plugin knows about an item of the cart, before you give its facts.
@@ -59,7 +61,8 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 		name: row.name,
 		start,
 		amounts: [...new Set([start.amount, ...(last?.amounts ?? []).filter(fits)])].slice(0, 3),
-		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place
+		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place,
+		known: Boolean(last?.amounts.length && last.place && readPrice(last.regular) !== null)
 	};
 }
 

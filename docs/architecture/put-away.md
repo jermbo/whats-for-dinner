@@ -1,6 +1,6 @@
 ---
 title: Put away
-summary: "How the stage Put away puts a shopping trip into the pantry: lines that the plugin fills in, groups by place, corrections with one tap, and the button that ends the trip."
+summary: "How the stage Put away puts a shopping trip into the pantry: lines that the plugin fills in, groups by place, corrections with one tap, the group of known items, the receipt that keeps the work, and the end of the trip."
 parent: shopping.md
 ---
 
@@ -24,7 +24,7 @@ A tap on a line opens it. Each fact has options: the amounts that you bought bef
 
 The open line stays in its group while you correct it, so it does not move under your thumb. When it closes, it goes into the group of its place.
 
-"Not bought" takes an item out of the cart, for a wrong tap in the store. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store.
+"Not bought" takes an item out of the cart, for a wrong tap in the store. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store when it is complete.
 
 ## A sale is one tap
 
@@ -32,20 +32,37 @@ A sale ends, so the plugin never proposes a sale price. Each line has the chip "
 
 Eggs usually cost 3.99. Today they are 3.49. You tap "Sale" and type 3.49.
 
-## One button ends the trip
+## You see only what needs a look
 
-"Put into the pantry" puts each item of the screen away in one step. No empty fact stops the button. The pantry must be correct first, and a price can come later. So the stage only tells how many prices are missing, and the total of the prices that it has. Put away is the third stage of the [Shop part](shopping.md). You can open a different stage at any time, and what you gave stays while the kitchen is open. With an empty cart, the stage says "The cart is empty."
+The plugin knows an item when its last receipt has an amount, a place, and a price. Such items are in one closed group "Known", above the groups by place. Each other item is a line in the group of its place. So the lines that you see are the items that need you.
+
+The group "Known" is closed, but it is not hidden. Its head has the number of its items, and a tap opens it. There you can tap "Sale" on an item, or correct it. A known item stays in the group while you correct it.
+
+## Two actions put food away, and you take each one
+
+You check the food against the paper receipt, one item at a time. The open line has "Put away", next to "Not bought". It puts only that item into the pantry, and the line slides off the screen.
+
+"Put away 9 known", at the lower edge, puts each known item into the pantry. With no known item, the button does not show. The plugin never puts food away with no tap from you.
+
+No empty fact stops the two actions. The pantry must be correct first, and a price can come later. So the stage only tells how many prices are missing, and the total of the prices that it has. With an empty cart, the stage says "The cart is empty."
+
+## The receipt keeps the work
+
+When the stage opens with a cart, the [receipt](receipt.md) starts as a note in the shopping folder, with `status: active`. Each item of the cart has a row with the facts that the plugin proposes. Each correction goes into its row, and an item that is in the pantry has "yes" in the column "Done". The stage reads the facts from that note. So a restart of Obsidian, or your phone after Obsidian Sync, shows the work where you stopped.
+
+## The trip ends with its last item
+
+The trip ends when the last line goes off the screen: with "Put away", with "Put away 9 known", or with "Not bought" on the last line after an item went into the pantry. Then the receipt has `status: complete`. If you take each item out of the cart with "Not bought", nothing went into the pantry, and the trip stays open.
 
 ## An item that is not in the pantry
 
-Batteries are not food, so their line has only the price and "Sale", in the last group. The pantry does not change. For quinoa that you buy for the first time, you open its line and put "Into the pantry" on. The button then makes the [food item note](food-item-note.md).
+Batteries are not food, so their line has only the price and "Sale", in the last group. The pantry does not change. For quinoa that you buy for the first time, you open its line and put "Into the pantry" on. "Put away" then makes the [food item note](food-item-note.md).
 
-## What changes after the button
+## What changes when food goes into the pantry
 
 - The [level](level.md) of each food item goes up. If you have more than the full amount, the plugin writes the new full amount.
-- Each food item that got food has the day of put away as its purchase date.
-- The shopping note becomes the receipt of the trip, so the cart is empty.
-- An extra that you did not buy goes into the note of the next trip.
+- Each food item that got food has the day of its put away as its purchase date.
+- At the end of the trip, the receipt is complete, and the note "Next trip" keeps only the extras that you did not buy.
 - A [suggestion](suggestions.md) that you skipped shows again, if its food item still needs a look.
 
 ## Further reading

@@ -1,7 +1,8 @@
 ---
-full: 6
+full: "13"
+bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by     |
 | -------------- | ------ | ---------- |
-| Kitchen fridge | 1      | 2026-10-19 |
+| Kitchen fridge | 13     | 2026-10-19 |

@@ -34,6 +34,9 @@ The phone is where you use the plugin, and a function with no test there is not 
 | The last receipt              | The eggs start with the amount, the place, the price, and the days of their last receipt.       |
 | The store of a trip           | One tap on a store, and the receipt has the property `store`.                                   |
 | A new item into the pantry    | "Into the pantry" on a new item makes its food item note, and the receipt links to it.          |
+| One item at a time            | "Put away" on milk puts only milk into the pantry. The receipt keeps the order of the store.    |
+| The known items               | "Put away 9 known" puts the known items away. Quinoa, with no receipt, stays as a line.         |
+| The receipt keeps the work    | Type a price, restart Obsidian, and the price is still there. The phone shows it too.           |
 
 ## The pantry bar has two limits
 

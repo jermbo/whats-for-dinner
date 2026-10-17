@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { crossfade, slide } from 'svelte/transition';
 	import { showDate } from '../../dates';
@@ -28,6 +29,20 @@
 	const total = $derived(lines.reduce((sum, { facts }) => sum + (readPrice(facts.price) ?? 0), 0));
 	type Line = (typeof lines)[number];
 
+	// The items that the plugin knows are in one closed group, so the lines that you see are the
+	// items that need you.
+	const known = $derived(
+		lines.filter(({ item }) => item.known).sort((a, b) => a.item.name.localeCompare(b.item.name))
+	);
+	let knownOpen = $state(false);
+
+	// The receipt starts when the stage opens with a cart, and it gets a row for each item that you
+	// tick later. The stage does not read its own write, so the call is out of the effect.
+	const cartKeys = $derived(kitchen.toPutAway.map(({ key }) => key).join('\n'));
+	$effect(() => {
+		if (cartKeys) untrack(() => void kitchen.startPutAway());
+	});
+
 	// The line that shows all its facts, and the group that it had when it opened. It stays in that
 	// group while you correct it, so that it does not move under your thumb.
 	let open = $state<{ key: string; group: string } | null>(null);
@@ -40,13 +55,13 @@
 	// You put the food away one place at a time, so you check the food of the fridge at the
 	// fridge. The items that do not go into the pantry come last.
 	const groups = $derived.by(() => {
-		const titles = [...new Set(lines.map(groupOf))].sort((a, b) =>
+		const titles = [...new Set(lines.filter(({ item }) => !item.known).map(groupOf))].sort((a, b) =>
 			a === OUTSIDE ? 1 : b === OUTSIDE ? -1 : a.localeCompare(b)
 		);
 		return titles.map((title) => ({
 			title,
 			lines: lines
-				.filter((line) => groupOf(line) === title)
+				.filter((line) => !line.item.known && groupOf(line) === title)
 				.sort((a, b) => a.item.name.localeCompare(b.item.name))
 		}));
 	});
@@ -67,8 +82,14 @@
 	}
 
 	// A line needs a place. With no option and no text, it is the place that the plugin proposes.
-	function change({ key, start }: CartItem, changed: Partial<Facts>) {
-		draft.change(key, changed.place === '' ? { place: start.place } : changed);
+	function change(item: CartItem, changed: Partial<Facts>) {
+		update(item, changed.place === '' ? { place: item.start.place } : changed);
+	}
+
+	// The screen shows the change at once, and the receipt gets it when you stop typing.
+	function update(item: CartItem, changed: Partial<Facts>) {
+		draft.change(item.key, changed);
+		kitchen.changeFacts(item.key, draft.factsOf(item));
 	}
 
 	// A sale has its own price, so the regular price goes out of the field, and the field shows it
@@ -78,43 +99,79 @@
 		const { item, facts } = line;
 		if (facts.onSale) {
 			const price = facts.price.trim() ? {} : { price: item.start.price };
-			draft.change(item.key, { onSale: false, ...price });
+			update(item, { onSale: false, ...price });
 			return;
 		}
 		const price = facts.price === item.start.price ? { price: '' } : {};
-		draft.change(item.key, { onSale: true, ...price });
+		update(item, { onSale: true, ...price });
 		if (open?.key !== item.key) open = { key: item.key, group: placeGroup(line) };
-	}
-
-	function notBought(key: string) {
-		if (open?.key === key) open = null;
-		kitchen.takeOutOfCart(key);
 	}
 
 	// The lines go one by one while the items go into the pantry. The stage does not say that the
 	// cart is empty in that time, because the trip is not at its end yet.
 	let busy = $state(false);
 
-	async function putAll() {
-		const given = new Map(lines.map(({ item, facts }) => [item.key, facts]));
+	// The open line stays open while its item goes into the pantry, so that it slides out as you
+	// left it. The last item ends the trip.
+	function putOne({ item, facts }: Line) {
+		return run(() => kitchen.putAway(new Map([[item.key, facts]])));
+	}
+
+	function putKnown() {
+		return run(() => kitchen.putAway(new Map(known.map(({ item, facts }) => [item.key, facts]))));
+	}
+
+	// The last line of a trip that has food in the pantry already ends it. With no such food, the
+	// trip stays open, and the cart is empty.
+	function notBought(key: string) {
+		if (open?.key === key) open = null;
+		return run(() => kitchen.notBought(key));
+	}
+
+	async function run(action: () => Promise<boolean>) {
 		busy = true;
 		try {
-			await kitchen.putAway(given, kitchen.tripStore);
+			if (!(await action())) return;
 			draft.clear();
+			ondone();
 		} finally {
 			busy = false;
 		}
-		ondone();
 	}
 </script>
+
+<!-- One item of the cart. A line moves between the groups, so it has the same form in each. -->
+{#snippet lineOf(line: Line)}
+	{@const { item, facts } = line}
+	<li
+		class="wfd-away__line"
+		in:receive={{ key: item.key, duration }}
+		out:send={{ key: item.key, duration }}
+	>
+		<PutAwayLine
+			{item}
+			{facts}
+			places={placesFor(item)}
+			placeIsGuess={placeIsGuess(item)}
+			today={kitchen.today}
+			open={open?.key === item.key}
+			ontoggle={() => toggle(line)}
+			onsale={() => sale(line)}
+			onchange={(changed) => change(item, changed)}
+			onnotbought={() => notBought(item.key)}
+			onputaway={() => putOne(line)}
+			{busy}
+		/>
+	</li>
+{/snippet}
 
 <section class="wfd-away" aria-label="Put away">
 	{#if !lines.length && !busy}
 		<p class="wfd-away__empty">The cart is empty.</p>
 	{:else}
 		<!--
-			The receipt of the trip, before it is a note: one line for each item of the cart, in groups
-			by place.
+			The receipt of the trip, as the receipt note has it: the known items in one closed group,
+			and each other item in the group of its place.
 		-->
 		<div class="wfd-away__receipt">
 			<div class="wfd-away__trip">
@@ -129,30 +186,38 @@
 					onchange={(store) => kitchen.setTripStore(store)}
 				/>
 			</div>
+			{#if known.length}
+				<section class="wfd-away__known" transition:slide={{ duration }}>
+					<button
+						class="wfd-away__known-head"
+						type="button"
+						aria-expanded={knownOpen}
+						aria-controls="wfd-away-known"
+						onclick={() => (knownOpen = !knownOpen)}
+					>
+						<span class="wfd-away__known-title wfd-display">Known</span>
+						{#key known.length}
+							<span class="wfd-away__known-count wfd-number">{known.length}</span>
+						{/key}
+						<svg class="wfd-away__arrow" viewBox="0 0 20 20" aria-hidden="true">
+							<path d="M5 8l5 5 5-5" />
+						</svg>
+					</button>
+					{#if knownOpen}
+						<ul class="wfd-away__lines" id="wfd-away-known" transition:slide={{ duration }}>
+							{#each known as line (line.item.key)}
+								{@render lineOf(line)}
+							{/each}
+						</ul>
+					{/if}
+				</section>
+			{/if}
 			{#each groups as group (group.title)}
 				<section class="wfd-away__group" transition:slide={{ duration }}>
 					<GroupHead title={group.title} note={String(group.lines.length)} />
 					<ul class="wfd-away__lines">
 						{#each group.lines as line (line.item.key)}
-							{@const { item, facts } = line}
-							<li
-								class="wfd-away__line"
-								in:receive={{ key: item.key, duration }}
-								out:send={{ key: item.key, duration }}
-							>
-								<PutAwayLine
-									{item}
-									{facts}
-									places={placesFor(item)}
-									placeIsGuess={placeIsGuess(item)}
-									today={kitchen.today}
-									open={open?.key === item.key}
-									ontoggle={() => toggle(line)}
-									onsale={() => sale(line)}
-									onchange={(changed) => change(item, changed)}
-									onnotbought={() => notBought(item.key)}
-								/>
-							</li>
+							{@render lineOf(line)}
 						{/each}
 					</ul>
 				</section>
@@ -168,9 +233,11 @@
 					</p>
 				{/if}
 			</div>
-			<Button kind="olive" disabled={busy} onclick={putAll}>
-				Put into the pantry <span aria-hidden="true">→</span>
-			</Button>
+			{#if known.length}
+				<Button kind="olive" disabled={busy} onclick={putKnown}>
+					Put away {known.length} known <span aria-hidden="true">→</span>
+				</Button>
+			{/if}
 		</StageFoot>
 	{/if}
 </section>
@@ -208,8 +275,75 @@
 		text-align: center;
 	}
 
-	.wfd-away__group {
+	.wfd-away__group,
+	.wfd-away__known {
 		padding-block-end: 6px;
+	}
+
+	/* The head of the known items is one button, as the line "In the cart" of the stage Shop. */
+	button.wfd-away__known-head {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto auto;
+		gap: 12px;
+		align-items: center;
+		inline-size: 100%;
+		block-size: auto;
+		min-block-size: 52px;
+		margin-block-start: 6px;
+		padding: 0;
+		border: 0;
+		border-block-end: 2px solid var(--wfd-ink);
+		border-radius: 0;
+		background: none;
+		box-shadow: none;
+		color: var(--wfd-ink);
+		font-family: inherit;
+		text-align: start;
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: 2px solid var(--wfd-ink);
+			outline-offset: -3px;
+		}
+	}
+
+	.wfd-away__known-title,
+	.wfd-away__known-count {
+		font-size: 19px;
+	}
+
+	/* A count that changes makes a small jump, so that you see that the items went in. */
+	.wfd-away__known-count {
+		animation: jump 0.3s ease-out;
+	}
+
+	.wfd-away__arrow {
+		inline-size: 20px;
+		block-size: 20px;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2.5;
+		transition: rotate 0.2s ease-out;
+	}
+
+	[aria-expanded='true'] .wfd-away__arrow {
+		rotate: 180deg;
+	}
+
+	@keyframes jump {
+		40% {
+			translate: 0 -5px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.wfd-away__known-count {
+			animation: none;
+		}
+
+		.wfd-away__arrow {
+			transition: none;
+		}
 	}
 
 	/* On a wide tab, the lines are in columns, as the rows of the list. */

@@ -1,7 +1,8 @@
 ---
-full: 100 g
+full: 115 g
+bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 15 g   |        |
+| Kitchen pantry | 115 g  |        |

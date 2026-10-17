@@ -12,14 +12,15 @@ status: built
 
 # See all food that needs a look
 
-As the [planner](../../personas.md), I want the stage Extras to show each food item that is out or low, so that I see what is low with no label to set first.
+As the [planner](../../personas.md), I want the stage Extras to show each food item that is out, low, or near its use-by date, so that I see it with no label to set first.
 
 ## Requirements
 
 1. A food item with no label is a suggestion when it is out or low
    - a. It is out when it has no row, and it has a full amount or a purchase date
-   - b. It is low when it is below its low line
+   - b. It is low when it is at or below its low line (decision 54)
    - c. A food item with no row, no full amount, and no purchase date is not a suggestion
+   - d. A food item with no label is a suggestion when a row is past its use-by date, or has it in the days of "Use soon" (decision 53)
 2. A staple keeps each reason of [See the staples that need a look](shop-see-the-staples-that-need-a-look.md)
 3. The suggestions are in four groups, in this sequence: "Out", "Low", "Use-by date", and "Time to check"
    - a. "Use-by date" has the reasons "Past its date" and "Use by"
@@ -37,15 +38,16 @@ As the [planner](../../personas.md), I want the stage Extras to show each food i
 Each criterion starts with the test vault on 2026-10-17, after the clean-up of that day, with the setting "Low line" at 20 %. The plan has the boiled eggs, the open note has no task, and the data file has no skipped suggestion.
 
 1. GIVEN the vault WHEN the planner opens the stage Extras THEN the group "Out" has "Curry paste" and "Taco seasoning"
-2. GIVEN the vault WHEN the planner opens the stage Extras THEN the group "Low" has 11 lines
-   - a. AND the lines are "Baking powder", "Butter", "Cheese", "Coconut milk", "Dark chocolate", "Elbow pasta", "Milk", "Peanuts", "Raisins", "Shell pasta", and "Spring onion"
+2. GIVEN the vault WHEN the planner opens the stage Extras THEN the group "Low" has 13 lines
+   - a. AND the lines are "Baking powder", "Butter", "Cheese", "Coconut milk", "Dark chocolate", "Elbow pasta", "Flour", "Ginger", "Milk", "Peanuts", "Raisins", "Shell pasta", and "Spring onion"
 3. GIVEN the vault WHEN the planner looks at the line "Milk" THEN it shows "150 ml of 1 l"
 4. GIVEN the vault WHEN the planner looks at the line "Butter" THEN it shows "40 g of 250 g"
    - a. AND it shows "Use by 20 Nov"
 5. GIVEN the vault WHEN the planner opens the stage Extras THEN the group "Time to check" has "Eggs" with "Often"
 6. GIVEN the planner skipped eggs WHEN the planner opens the stage Extras THEN the group "Time to check" does not show
 7. GIVEN the note `Lime` has no row, no full amount, and no purchase date WHEN the planner opens the stage Extras THEN no group has a line for lime
-8. GIVEN the vault WHEN the planner looks at the strip THEN "1 Extras" has "14"
+8. GIVEN the vault WHEN the planner looks at the strip THEN "1 Extras" has "17"
+9. GIVEN the vault, where spinach is not a staple and has a row with the use-by date 2026-10-18 WHEN the planner opens the stage Extras THEN the group "Use-by date" has "Spinach", with "Use by 18 Oct"
 
 ## Depends on
 

@@ -1,6 +1,6 @@
 ---
 title: Shop stories
-summary: "The user stories of the shopping list in version 0.2.0: twenty-three pieces of work, with the sequence in which they depend on each other."
+summary: "The user stories of the shopping list in version 0.2.0: twenty-six pieces of work, with the sequence in which they depend on each other."
 parent: ../README.md
 ---
 
@@ -16,7 +16,7 @@ The list has more than the food of the meals: you add an item on any day, and th
 
 The Shop part has three stages, one for each moment of a trip. In "Extras", you decide the suggestions and add your own items, because the meals fill the list with no action from you. In "Shop", you tick the items into the cart. In "Put away", you check the facts and put the cart into the pantry.
 
-Stories 14 to 23 come from the review of 17 October. Each food item that is out or low is a suggestion now, staple or not. In the store, the list shows the amount that you usually buy, its price, and the order of the store.
+Stories 14 to 23 come from the review of 17 October. Each food item that is out or low is a suggestion now, staple or not. In the store, the list shows the amount that you usually buy, its price, and the order of the store. Stories 24 to 26 come from the test of put away on that day: you put one item away after you check it, the known items have one button, and the receipt note keeps each fact.
 
 The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed, and each line of it names its decision. The wiki [glossary](../../glossary.md) has the words of these stories, such as "choice", "suggestion", and "receipt".
 
@@ -47,12 +47,15 @@ The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed
 | 21. [Keep the screen on in the store](shop-keep-the-screen-on-in-the-store.md)                  | Shopper | Story 13                |
 | 22. [Pick the store at the start of the trip](shop-pick-the-store-at-the-start.md)              | Shopper | Stories 9 and 13        |
 | 23. [Sort the list in the order of the store](shop-sort-the-list-in-the-order-of-the-store.md)  | Shopper | Story 22                |
+| 24. [Put away one item at a time](shop-put-away-one-item.md)                                    | Keeper  | Stories 7 and 23        |
+| 25. [Put away the known items with one button](shop-put-away-the-known-items.md)                | Keeper  | Story 24                |
+| 26. [Keep put away in the receipt note](shop-keep-put-away-in-the-receipt.md)                   | Keeper  | Story 24                |
 
 The [personas](../../personas.md) page tells who the shopper, the keeper, and the planner are.
 
 ## The sequence of the work
 
-A story can start when the stories that it depends on are done. This gives eight steps. The stories of one step can be built at the same time.
+A story can start when the stories that it depends on are done. This gives ten steps. The stories of one step can be built at the same time.
 
 | Step | Stories      | What you have after the step                                                                    |
 | ---- | ------------ | ----------------------------------------------------------------------------------------------- |
@@ -64,6 +67,8 @@ A story can start when the stories that it depends on are done. This gives eight
 | 6    | 12 and 13    | Extras has only what the meals do not decide, and you tick each item into the cart.             |
 | 7    | 14, 16 to 22 | Each low food item is a suggestion, and the store trip has amounts, prices, and the store.      |
 | 8    | 15 and 23    | You can say "Never ask", and the list has the order of the store.                               |
+| 9    | 24           | You put one item into the pantry as soon as you checked it.                                     |
+| 10   | 25 and 26    | You look only at what the plugin cannot know, and the receipt note keeps each fact.             |
 
 Story 3 reads the property that story 2 writes. Story 2 does not stop story 3, because you can type the property into a note.
 

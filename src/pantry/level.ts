@@ -27,7 +27,8 @@ export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null 
 
 	const lowSet = item.low ? measure(item.low) : null;
 	const low = lowSet?.kind === kind ? Math.min(lowSet.value, full) : (full * lowPercent) / 100;
-	return { kind, has, full, low, isLow: has < low };
+	// Food at its low line is low: the line is where you want more.
+	return { kind, has, full, low, isLow: has <= low };
 }
 
 // What makes a food item full again: the full amount less what the pantry has. Null: the food

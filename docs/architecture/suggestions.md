@@ -10,30 +10,30 @@ parent: staples.md
 
 The pantry knows what is low, but a list that you must think of yourself forgets it. This page tells how the plugin decides which food to show you in the stage Extras, and what you do with it.
 
-## Each food item that is out or low
+## Each food item that is out, low, or near its date
 
-A food item is a suggestion when the pantry is out of it or low on it. You do not have to label it first. The plugin finds it, and you decide.
+A food item is a suggestion when the pantry is out of it, low on it, or has it near or past its use-by date. You do not have to label it first. The plugin finds it, and you decide.
 
-| The food item                            | The reason that shows | The group |
-| ---------------------------------------- | --------------------- | --------- |
-| Has no row, and the pantry had it before | "Out"                 | Out       |
-| Is below its [low line](level.md)        | "Low"                 | Low       |
+| The food item                                 | The reason that shows | The group   |
+| --------------------------------------------- | --------------------- | ----------- |
+| Has no row, and the pantry had it before      | "Out"                 | Out         |
+| Is at or below its [low line](level.md)       | "Low"                 | Low         |
+| Has a row with a use-by date that is past     | "Past its date"       | Use-by date |
+| Has a row to [use soon](use-soon.md)          | "Use by 15 Oct"       | Use-by date |
 
 The pantry had a food item before when its note has a full amount or a purchase date. A note that a recipe made for food that you never bought is not a suggestion.
 
 ## A staple adds reminders
 
-The amount alone does not tell that food is good. Ginger can be above its low line and too old to use, and nothing tells the pantry that the bread is gone. So a [staple](staples.md) has more reasons, from its use-by date and its purchase date.
+Nothing tells the pantry that the bread is gone. So a [staple](staples.md) has more reasons, from its purchase date.
 
 | The staple                                                   | The reason that shows | The group     |
 | ------------------------------------------------------------ | --------------------- | ------------- |
-| Has a row with a use-by date that is past                    | "Past its date"       | Use-by date   |
-| Has a row to [use soon](use-soon.md)                         | "Use by 15 Oct"       | Use-by date   |
 | Has no purchase date                                         | "No purchase date"    | Time to check |
 | Is "Sometimes" or "Seldom", and the time of its kind is over | "Bought 3 weeks ago"  | Time to check |
 | Is "Often"                                                   | "Often"               | Time to check |
 
-A suggestion shows one reason: the first line that is true, with "Out" and "Low" first. The time is in days below 14 days, in weeks below 60 days, and in months of 30 days after that.
+A suggestion shows one reason: the first line that is true, with "Out", "Low", and the dates first. The time is in days below 14 days, in weeks below 60 days, and in months of 30 days after that.
 
 ## Four groups, with the need first
 
@@ -55,10 +55,6 @@ Butter has 40 g of 250 g, and its low line is 50 g. Butter is a suggestion in th
 - **"Remove"** on the row of an extra takes its task out of the note. The food item is a suggestion again.
 
 A food item that has a task in the shopping note is not a suggestion. Food that a meal puts on the list is not a suggestion either: the list has it already. A low staple that a meal needs is such food, as the [shopping](shopping.md) page tells.
-
-## Food of a meal can need a look too
-
-Food that is not a staple is also a suggestion when a meal of the week needs it, and the pantry has it [past its date](past-its-date.md). You accept it or you skip it in the same way.
 
 ## A skip is not in a note
 

@@ -18,7 +18,7 @@ Is 500 g of rice much or little? The answer depends on how much rice you usually
 | ------------- | ----------------------------------------- | ------------------------------------------------------ |
 | What you have | The sum of all rows of the food item      | The table of the [food item note](food-item-note.md)   |
 | Full amount   | The most that the pantry had of this food | The property `full`                                    |
-| Low line      | Below this amount, the food item is low   | The property `low`, or a percentage of the full amount |
+| Low line      | At this amount, the food item is low      | The property `low`, or a percentage of the full amount |
 
 ## All places count together
 

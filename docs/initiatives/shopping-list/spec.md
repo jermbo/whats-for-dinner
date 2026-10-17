@@ -53,10 +53,10 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - g. The keeper takes an item out of the cart (not confirmed)
    - h. The keeper selects the store of the trip, or types a new one (decision 23)
    - i. An item that is not in the pantry has only a price. One tap puts it into the pantry (decision 21 b)
-6. The button of put away ends the trip, in one step (decision 17)
+6. Put away puts the cart into the pantry, and ends the trip with the last item (decisions 17, 52, and 55)
    - a. The amount adds to the row of the place in the food item note, with the use-by date (decision 11 a and b)
    - b. The food item note gets the purchase date (decisions 9 and 11)
-   - c. The open note becomes the receipt: a table with one row for each item, the day, and the store. Its name is the day (decisions 16 and 25)
+   - c. The receipt is a table with one row for each item, the day, and the store. Its name is the day on which it starts (decisions 16, 25, and 56)
    - d. A choice that the keeper did not buy goes into the note of the next trip (decision 18)
 7. The plugin makes each note in a folder that a setting names (decision 22)
    - a. The settings get a folder for the shopping notes, and a folder for the items that are not in the pantry (decision 22 a)
@@ -67,11 +67,12 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - d. A low staple that a meal needs is on the list with no action, and food that a meal puts on the list is not a suggestion (decision 36)
    - e. The stage Shop has a box to tick on each row, and the cart as one closed line (decision 37)
    - f. The Shop part opens on the stage that has work (decision 38)
-9. The stage Extras shows each food item that needs a look (decisions 40 to 42)
+9. The stage Extras shows each food item that needs a look (decisions 40 to 42, and 53)
    - a. Each food item that is out or low is a suggestion, staple or not (decision 40)
    - b. The suggestions are in groups by reason (decision 40 a)
    - c. "Skip" offers "Never ask", and the form of the Pantry part can undo it (decision 41)
    - d. A suggestion shows the level of the food item (decision 42)
+   - e. Each food item near or past its use-by date is a suggestion, staple or not (decision 53)
 10. Put away adds to the row of the same place that has no use-by date (decision 43)
 11. The Pantry part puts a food item on the list (decision 44)
 12. The stage Shop serves the trip in the store (decisions 45 to 48)
@@ -81,6 +82,12 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
    - d. The screen stays on (decision 48)
 13. The stage Put away shows the total of the trip (decision 49)
 14. The store is a fact of the trip from its start, and the list learns its order (decisions 50 and 51)
+15. The open line of put away has "Put away", for that item only (decision 52)
+   - a. The trip ends when its last line goes off the screen of put away (decision 52 c)
+16. Put away has a closed group "Known", and one button puts the known items away (decision 55)
+17. The receipt is a note in its final place from the first fact, with `status: active` or `status: complete` (decision 56)
+   - a. Each correction goes into its row, and the column "Done" tells which items are in the pantry (decision 56)
+   - b. The history uses only receipts that are complete (decision 56 f)
 
 ## Out of scope
 
@@ -92,12 +99,11 @@ An example: eggs are a staple of the kind "Often". The planner accepts them. The
 6. Food past its date that does not count as food in the pantry (decision 8)
 7. A note that the plugin makes for an item that is not in the pantry (decision 21)
 8. A price that the button needs (decision 19)
-9. A put away of one part of the cart (decision 17 a)
-10. A brand on a row of a receipt, a photo of an item, a package size, and a barcode (decision 24)
-11. A comparison of the prices of two stores (decision 23 a)
-12. A view of the prices over time
-13. The first fill of the pantry, and the setup of a vault (decision 27)
-14. A reader of the paper receipt, and AI of any kind (decision 29)
+9. A brand on a row of a receipt, a photo of an item, a package size, and a barcode (decision 24)
+10. A comparison of the prices of two stores (decision 23 a)
+11. A view of the prices over time
+12. The first fill of the pantry, and the setup of a vault (decision 27)
+13. A reader of the paper receipt, and AI of any kind (decision 29)
 
 ## What changes in the system
 

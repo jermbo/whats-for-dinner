@@ -33,7 +33,17 @@ import { cartItemOf, stocksOf, type CartItem, type Facts } from './shop/facts';
 import { lastRows } from './shop/last-receipt';
 import { pastDateRows } from './shop/past-date';
 import { readReceipt, type Receipt } from './shop/read-receipt';
-import { leftOf, purchaseOf, receiptOf, receiptPath, type Purchase } from './shop/receipt';
+import {
+	completeReceipt,
+	leftOf,
+	lineOf,
+	linesIn,
+	newReceipt,
+	ownTextOf,
+	receiptPath,
+	withLines,
+	type ReceiptLine
+} from './shop/receipt';
 import { needsOf, shoppingList } from './shop/shopping-list';
 import {
 	addExtra,
@@ -48,7 +58,7 @@ import {
 import { suggestionsOf } from './shop/suggestions';
 import { storeOrderOf } from './shop/store-order';
 import { storesOf } from './shop/stores';
-import { cartOf, isPantryItem, itemsOf, listOf, type TripItem } from './shop/trip';
+import { cartOf, isPantryItem, itemsOf, keyOf, listOf, type TripItem } from './shop/trip';
 import { showMeasure } from './units';
 
 export type RecipeEntry = {
@@ -93,9 +103,11 @@ export class Kitchen {
 	trip = $state.raw<TripItem[]>([]);
 	// The store of the open trip, from the property `store` of its note, or no text.
 	tripStore = $state('');
+	// The receipt of the trip while put away is open, with its rows. Null: no receipt is active.
+	private active = $state.raw<{ path: string; lines: ReceiptLine[] } | null>(null);
 	// The paths of the notes of the items folder. The field "Add an item" proposes them.
 	itemNotes = $state.raw<string[]>([]);
-	// The receipts of the shopping folder: the history of your trips.
+	// The complete receipts of the shopping folder: the history of your trips.
 	private receipts = $state.raw<Receipt[]>([]);
 	// The paths of the food items whose suggestion you skipped for this trip.
 	private skipped = $state.raw<string[]>([]);
@@ -171,7 +183,18 @@ export class Kitchen {
 	private bought = $derived.by(() => lastRows(this.receipts, this.pathOf));
 
 	list = $derived(listOf(this.calculated, this.trip, this.foods, this.bought));
-	cart = $derived(cartOf(this.calculated, this.trip, this.foods, this.bought));
+	// An item that is done in the active receipt is in the pantry, so it is not in the cart.
+	cart = $derived(
+		cartOf(
+			this.calculated,
+			this.trip.filter((item) => !this.lineFor(item)?.done),
+			this.foods,
+			this.bought
+		)
+	);
+
+	// An item of the trip is in the pantry already, so the receipt is complete with the last item.
+	hasPutAway = $derived(this.active?.lines.some((line) => line.done) ?? false);
 
 	// The stores of the receipts, for the stage Shop and the stage Put away.
 	stores = $derived(storesOf(this.receipts));
@@ -179,14 +202,17 @@ export class Kitchen {
 	// Where each item was on the newest receipt of the store of the trip.
 	storeOrder = $derived.by(() => storeOrderOf(this.receipts, this.tripStore, this.pathOf));
 
-	// The items of the cart for the screen of put away, each with the facts that it starts with.
+	// The items of the cart for the screen of put away. An item with a row in the active receipt
+	// starts with the facts of that row, so a restart or a different device keeps your corrections.
 	toPutAway = $derived.by(() => {
 		const last = this.bought;
 		const now = { today: this.today, newPlace: this.newPlace };
 		return this.cart.map((row): CartItem => {
 			const item = this.trip.find((item) => item.key === row.key);
 			const inPantry = item !== undefined && isPantryItem(item, this.where.pantry);
-			return cartItemOf({ row, inPantry, last: last.get(row.key) ?? null }, now);
+			const proposed = cartItemOf({ row, inPantry, last: last.get(row.key) ?? null }, now);
+			const line = item && this.lineFor(item);
+			return line ? { ...proposed, start: line.facts } : proposed;
 		});
 	});
 
@@ -201,7 +227,6 @@ export class Kitchen {
 				lowPercent: this.settings.lowPercent
 			},
 			{
-				past: new Set(this.calculated.past.map((row) => row.key)),
 				hidden: new Set([
 					...this.skipped,
 					...this.trip.map((item) => item.key),
@@ -417,6 +442,9 @@ export class Kitchen {
 		if (!item) return;
 		const onList = this.calculated.missing.some((row) => row.key === key);
 		await this.writeTrip((text) => (onList ? removeTasks(text, [item]) : unmark(text, item)));
+		await this.changeReceipt((lines) =>
+			lines.filter((line) => line.done || !isLineOf(line, item, this.pathOf))
+		);
 	}
 
 	// The price that you usually pay for an item: the newest price of its receipts with no sale mark,
@@ -495,39 +523,121 @@ export class Kitchen {
 	// Put away is in progress. A second tap must not add the food a second time.
 	private puttingAway = false;
 
-	// Ends the trip: each item of the cart goes into the pantry with the facts that you gave, and
-	// the open note becomes the receipt of today. `given` has the facts of each item, by its key.
-	// A trip can have no store.
-	async putAway(given: Map<string, Facts>, store: string) {
-		if (this.puttingAway) return;
-		// The store goes into the receipt now. A write that waits would make a new open note after it.
-		this.writeStore.cancel();
+	// The receipt that is active, as the kitchen wrote or read it last. The state `active` comes
+	// later, after Obsidian reads the note, and two fast actions must not make two receipts.
+	private activePath: string | null = null;
+
+	// The stage Put away opens with a cart, so the receipt starts, with the facts that the plugin
+	// proposes. An item that you ticked later gets a row at the end, and an item that is not in the
+	// cart any more loses its row.
+	startPutAway() {
+		return this.inTurn(async () => {
+			// The notes, not the state: the state can be from before the end of the trip.
+			const open = this.fileAt(this.openNote);
+			const tasks = open ? readTrip(await this.app.vault.read(open)) : [];
+			const file = this.activePath ? this.fileAt(this.activePath) : null;
+			const text = file ? await this.app.vault.read(file) : '';
+			const lines = linesIn(text);
+			const isDone = (item: TripItem) =>
+				lines.some((line) => line.done && isLineOf(line, item, this.pathOf));
+			const cart = itemsOf(tasks, this.pathOf).filter((item) => item.inCart && !isDone(item));
+
+			const facts = new Map(this.toPutAway.map((item) => [item.key, item.start]));
+			const lineOfItem = (item: TripItem): ReceiptLine => ({
+				link: item.link,
+				name: item.name,
+				facts: facts.get(item.key) ?? this.fallbackFacts(item),
+				done: false
+			});
+			if (!file) {
+				if (cart.length) await this.makeReceipt(cart.map(lineOfItem));
+				return;
+			}
+			const kept = lines.filter(
+				(line) => line.done || cart.some((item) => isLineOf(line, item, this.pathOf))
+			);
+			const added = cart.filter((item) => !lines.some((line) => isLineOf(line, item, this.pathOf)));
+			if (kept.length === lines.length && !added.length) return;
+			await this.app.vault.modify(file, withLines(text, [...kept, ...added.map(lineOfItem)]));
+		});
+	}
+
+	// You correct a fact, and it goes into the receipt when you stop typing.
+	changeFacts(key: string, facts: Facts) {
+		this.pendingFacts.set(key, facts);
+		this.writeFacts();
+	}
+
+	private pendingFacts = new Map<string, Facts>();
+	private writeFacts = debounce(() => void this.flushFacts(), 600, true);
+
+	private flushFacts() {
+		this.writeFacts.cancel();
+		const pending = new Map(this.pendingFacts);
+		this.pendingFacts.clear();
+		if (!pending.size) return Promise.resolve();
+		return this.changeReceipt((lines) =>
+			lines.map((line) => {
+				const key = [...pending.keys()].find((key) => keyOf(line, this.pathOf) === key);
+				return key && !line.done ? { ...line, facts: pending.get(key) ?? line.facts } : line;
+			})
+		);
+	}
+
+	// Puts the items of `given` into the pantry with their facts: one item from its line, or the
+	// known items with one button. Each one is done in the receipt. With the last item of the cart,
+	// the receipt is complete. True: the trip is at its end.
+	async putAway(given: Map<string, Facts>): Promise<boolean> {
+		const items = this.trip.filter((item) => item.inCart && given.has(item.key));
+		if (this.puttingAway || !items.length) return false;
+		const isLast = this.cart.every((row) => given.has(row.key));
 		this.puttingAway = true;
 		try {
-			const purchases: Purchase[] = [];
-			for (const item of this.trip) {
-				const facts = given.get(item.key);
-				if (item.inCart && facts) purchases.push(await this.buy(item, facts));
+			await this.flushFacts();
+			const done: { item: TripItem; line: ReceiptLine }[] = [];
+			for (const item of items) {
+				const facts = given.get(item.key) ?? this.fallbackFacts(item);
+				const link = await this.buy(item, facts);
+				done.push({ item, line: { link, name: item.name, facts, done: true } });
 			}
-			if (!purchases.length) return;
-			await this.endTrip(purchases, store.trim());
+			await this.changeReceipt((lines) => {
+				const next = [...lines];
+				for (const { item, line } of done) {
+					const at = next.findIndex((other) => isLineOf(other, item, this.pathOf));
+					if (at === -1) next.push(line);
+					else next[at] = line;
+				}
+				return next;
+			});
 
-			this.skipped = [];
-			await this.save();
-			const count = purchases.filter(({ place }) => place).length;
-			if (count) this.notify(`${count} ${count === 1 ? 'item is' : 'items are'} in the pantry.`);
+			const inPantry = done.filter(({ line }) => line.facts.intoPantry);
+			if (inPantry.length === 1) this.notify(`${inPantry[0].item.name} is in the pantry.`);
+			if (inPantry.length > 1) this.notify(`${inPantry.length} items are in the pantry.`);
+			if (isLast) await this.completeTrip();
+			return isLast;
 		} finally {
 			this.puttingAway = false;
 		}
 	}
 
+	// "Not bought" at put away. When the last line goes and an item is done, the trip is at its end.
+	// True: the trip is at its end.
+	async notBought(key: string): Promise<boolean> {
+		const isLast = this.cart.every((row) => row.key === key);
+		const ends = isLast && this.hasPutAway;
+		await this.takeOutOfCart(key);
+		if (ends) await this.completeTrip();
+		return ends;
+	}
+
 	// Puts one item of the cart into the pantry. An item that does not go into the pantry, such as
-	// batteries, changes nothing there.
-	private async buy(item: TripItem, facts: Facts): Promise<Purchase> {
-		if (!facts.intoPantry) return purchaseOf(item, facts, item.link);
+	// batteries, changes nothing there. Gives the link of the row: an item of your own links to the
+	// food item note that it went into.
+	private async buy(item: TripItem, facts: Facts): Promise<string | null> {
+		if (!facts.intoPantry) return item.link;
 
 		// An item of your own has no note in the pantry folder. It goes to the food item with its
-		// name, or to a new one, and the receipt links to that note.
+		// name, or to a new one.
 		const own = !isPantryItem(item, this.where.pantry);
 		const path = own ? this.foodPath(item.name) : item.key;
 		for (const stock of stocksOf(facts)) await this.addStockTo(path, stock, putAwayStock);
@@ -538,30 +648,73 @@ export class Kitchen {
 				properties.bought = this.today;
 			});
 		}
-		return purchaseOf(item, facts, own ? path.replace(/\.md$/, '') : item.link);
+		return own ? path.replace(/\.md$/, '') : item.link;
 	}
 
-	// The open note becomes the receipt: it gets the day as its property and as its name, and the
-	// store. Each task with no mark starts the note of the next trip.
-	private endTrip(purchases: Purchase[], store: string) {
-		return this.inTurn(async () => {
-			const file = this.fileAt(this.openNote);
-			if (!file) return;
+	// An item of the cart that the screen does not show yet, such as a tick on a different device.
+	private fallbackFacts(item: TripItem): Facts {
+		const intoPantry = isPantryItem(item, this.where.pantry);
+		return { intoPantry, amount: '1', place: this.newPlace, useBy: '', price: '', onSale: false };
+	}
 
-			let left = '';
-			await this.app.vault.process(file, (text) => {
-				left = leftOf(text);
-				return receiptOf(text, purchases);
-			});
-			await this.app.fileManager.processFrontMatter(file, (properties) => {
-				properties.date = this.today;
-				if (store) properties.store = store;
-			});
-			const isTaken = (path: string) => this.app.vault.getAbstractFileByPath(path) !== null;
-			const path = receiptPath(this.where.shopping, this.today, isTaken);
-			await this.app.fileManager.renameFile(file, path);
-			if (left) await this.app.vault.create(this.openNote, left);
+	// The note has its properties from its first write. Obsidian reads it at once, and a note with
+	// no status is a receipt that is complete.
+	private async makeReceipt(lines: ReceiptLine[]) {
+		const isTaken = (path: string) => this.app.vault.getAbstractFileByPath(path) !== null;
+		const path = receiptPath(this.where.shopping, this.today, isTaken);
+		await this.makeFolderOf(path);
+		this.activePath = path;
+		await this.app.vault.create(path, newReceipt(this.today, this.tripStore.trim(), lines));
+	}
+
+	// A change of the rows of the active receipt. The change gets the rows that the note has at
+	// that moment.
+	private changeReceipt(change: (lines: ReceiptLine[]) => ReceiptLine[]) {
+		return this.inTurn(async () => {
+			const file = this.activePath ? this.fileAt(this.activePath) : null;
+			if (!file) return;
+			const text = await this.app.vault.read(file);
+			const next = withLines(text, change(linesIn(text)));
+			if (next !== text) await this.app.vault.modify(file, next);
 		});
+	}
+
+	// Each item is in the pantry. The receipt is complete, with the store of the trip and your own
+	// text of the open note. The open note keeps each task with no mark, for the next trip. The
+	// skipped suggestions ask again at the next trip.
+	private async completeTrip() {
+		// A store that waits to be written would come back into the open note after this.
+		this.writeStore.cancel();
+		const store = this.tripStore.trim();
+		await this.inTurn(async () => {
+			const receipt = this.activePath ? this.fileAt(this.activePath) : null;
+			const open = this.fileAt(this.openNote);
+			const openText = open ? await this.app.vault.read(open) : '';
+			if (receipt) {
+				const ownText = ownTextOf(readProperties(openText).body);
+				await this.app.vault.process(receipt, (text) =>
+					completeReceipt(
+						text,
+						linesIn(text).filter((line) => line.done),
+						ownText
+					)
+				);
+				await this.app.fileManager.processFrontMatter(receipt, (properties) => {
+					properties.status = 'complete';
+					if (store) properties.store = store;
+					else delete properties.store;
+				});
+			}
+			if (open) await this.app.vault.modify(open, leftOf(openText));
+			this.activePath = null;
+		});
+		this.skipped = [];
+		await this.save();
+	}
+
+	// The row of an item in the active receipt.
+	private lineFor(item: TripItem): ReceiptLine | undefined {
+		return this.active?.lines.find((line) => isLineOf(line, item, this.pathOf));
 	}
 
 	// --- Cook ---
@@ -681,6 +834,12 @@ export class Kitchen {
 			const receipt = readReceipt(file.basename, properties, body);
 			if (receipt) this.receiptsByPath.set(path, receipt);
 			else this.receiptsByPath.delete(path);
+			// The newest active receipt counts. A receipt that is complete is not active any more.
+			if (receipt?.active) {
+				if (!this.activePath || path > this.activePath) this.activePath = path;
+			} else if (this.activePath === path) {
+				this.activePath = null;
+			}
 		} else if (kind === 'food') {
 			const item = readFoodItem(file.basename, properties, body);
 			this.foodsByPath.set(path, { path, item });
@@ -695,6 +854,7 @@ export class Kitchen {
 		this.planNow = [];
 		this.tripNow = [];
 		this.tripStoreNow = '';
+		this.activePath = null;
 		this.itemPaths.clear();
 		this.receiptsByPath.clear();
 		await Promise.all(this.app.vault.getMarkdownFiles().map((file) => this.read(file)));
@@ -715,6 +875,7 @@ export class Kitchen {
 			this.tripNow = [];
 			this.tripStoreNow = '';
 		}
+		if (this.activePath === path) this.activePath = null;
 		this.itemPaths.delete(path);
 		this.receiptsByPath.delete(path);
 		this.notesByPath.delete(path);
@@ -730,7 +891,16 @@ export class Kitchen {
 		this.trip = itemsOf(this.tripNow, this.pathOf);
 		this.tripStore = this.tripStoreNow;
 		this.itemNotes = [...this.itemPaths];
-		this.receipts = [...this.receiptsByPath.values()];
+		const all = [...this.receiptsByPath.entries()];
+		this.receipts = all.flatMap(([, receipt]) => (receipt.active ? [] : [receipt]));
+		const active = this.activePath ? this.receiptsByPath.get(this.activePath) : undefined;
+		this.active =
+			active && this.activePath ? { path: this.activePath, lines: active.rows.map(lineOf) } : null;
 		this.today = today();
 	}
 }
+
+// A row of the receipt names its item by its link, as a task does. The row of an item of your own
+// that went into the pantry links to its food item note, so it also finds its item by the name.
+const isLineOf = (line: ReceiptLine, item: TripItem, pathOf: (link: string) => string) =>
+	keyOf(line, pathOf) === item.key || line.name === item.name;

@@ -14,6 +14,8 @@ export type ReceiptRow = Item & {
 	useBy: string;
 	// The cell "Sale" has "yes". A sale ends, so the next put away does not start from its price.
 	onSale: boolean;
+	// The cell "Done" has "yes": the item is in the pantry. Only an active receipt has the column.
+	done: boolean;
 };
 
 export type Receipt = {
@@ -23,6 +25,8 @@ export type Receipt = {
 	day: string | null;
 	// The store of the trip, or no text.
 	store: string;
+	// Put away is still open. Such a receipt is not history yet.
+	active: boolean;
 	rows: ReceiptRow[];
 };
 
@@ -49,11 +53,13 @@ export function readReceipt(
 				price: cells['price'] ?? '',
 				place: cells['place'] ?? '',
 				useBy: DATE.test(useBy) ? useBy : '',
-				onSale: (cells['sale'] ?? '').trim().toLowerCase() === 'yes'
+				onSale: isYes(cells['sale']),
+				done: isYes(cells['done'])
 			}
 		];
 	});
-	return { name, day: dayOf(name, properties.date), store: textOf(properties.store), rows };
+	const active = textOf(properties.status).toLowerCase() === 'active';
+	return { name, day: dayOf(name, properties.date), store: textOf(properties.store), active, rows };
 }
 
 // You can give a receipt a different name, so the property comes first. A receipt that you wrote
@@ -62,5 +68,7 @@ function dayOf(name: string, date: unknown): string | null {
 	const text = textOf(date);
 	return DATE.test(text) ? text : (DATE_AT_START.exec(name)?.[0] ?? null);
 }
+
+const isYes = (cell: string | undefined) => (cell ?? '').trim().toLowerCase() === 'yes';
 
 const textOf = (value: unknown) => (typeof value === 'string' ? value.trim() : '');

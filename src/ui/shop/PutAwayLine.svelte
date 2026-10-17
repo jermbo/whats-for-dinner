@@ -24,6 +24,10 @@
 		onsale: () => void;
 		onchange: (change: Partial<Facts>) => void;
 		onnotbought: () => void;
+		// You checked the line, and only this item goes into the pantry.
+		onputaway: () => void;
+		// An item is on its way into the pantry, so a second tap waits.
+		busy: boolean;
 	};
 	let {
 		item,
@@ -35,7 +39,9 @@
 		ontoggle,
 		onsale,
 		onchange,
-		onnotbought
+		onnotbought,
+		onputaway,
+		busy
 	}: Props = $props();
 
 	const uid = $props.id();
@@ -154,7 +160,12 @@
 				/>
 			{/if}
 			<div class="wfd-away-line__actions">
-				<Button aria-label="Not bought: {item.name}" onclick={onnotbought}>Not bought</Button>
+				<Button kind="olive" aria-label="Put away: {item.name}" disabled={busy} onclick={onputaway}>
+					Put away
+				</Button>
+				<Button aria-label="Not bought: {item.name}" disabled={busy} onclick={onnotbought}>
+					Not bought
+				</Button>
 			</div>
 		</div>
 	{/if}
@@ -300,6 +311,8 @@
 
 	.wfd-away-line__actions {
 		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 12px;
 	}
 
 	@media (prefers-reduced-motion: reduce) {

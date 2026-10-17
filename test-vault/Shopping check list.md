@@ -1,6 +1,6 @@
 # Check list: shopping list
 
-This list tests the thirteen stories of the shopping list. Part A tests stories 11, 12, and 13: the three stages and the low staple of a meal. Part B tests the amount that put away proposes. Part C tests stories 14 to 23: all food that needs a look, the trip in the store, and the store. Part A starts from the vault of the morning of 17 October, and parts B and C from the vault after the clean-up of that day. Parts 1 to 11 test stories 1 to 10, from the vault of 13 October. Do the parts of each group in sequence. Each part starts from the state that the part before it leaves.
+This list tests the thirteen stories of the shopping list. Part A tests stories 11, 12, and 13: the three stages and the low staple of a meal. Part B tests the amount that put away proposes. Part C tests stories 14 to 23: all food that needs a look, the trip in the store, and the store. Part D tests stories 24 to 26: put away of one item at a time, the known items, and the receipt note. Part A starts from the vault of the morning of 17 October, and parts B, C, and D from the vault after the clean-up of that day. Parts 1 to 11 test stories 1 to 10, from the vault of 13 October. Do the parts of each group in sequence. Each part starts from the state that the part before it leaves.
 
 Each line has one action and what you must see. The text in brackets is the story and its criterion.
 
@@ -108,10 +108,12 @@ The values are for 17 October 2026, with the setting "Low line" at 20 %. A date 
 
 ### All food that needs a look
 
-- [ ] Open the Shop part. The stage Extras is open, and the strip has "1 Extras" with "14". (Story 14: AC 8)
+- [ ] Open the Shop part. The stage Extras is open, and the strip has "1 Extras" with "17". (Story 14: AC 8)
 - [ ] The group "Out" has "Curry paste" and "Taco seasoning". (Story 14: AC 1)
-- [ ] The group "Low" has 11 lines: "Baking powder", "Butter", "Cheese", "Coconut milk", "Dark chocolate", "Elbow pasta", "Milk", "Peanuts", "Raisins", "Shell pasta", and "Spring onion". (Story 14: AC 2, 2 a)
-- [ ] The group "Time to check" has "Eggs" with "Often". There is no group "Use-by date". (Story 14: AC 5)
+- [ ] The group "Low" has 13 lines: "Baking powder", "Butter", "Cheese", "Coconut milk", "Dark chocolate", "Elbow pasta", "Flour", "Ginger", "Milk", "Peanuts", "Raisins", "Shell pasta", and "Spring onion". (Story 14: AC 2, 2 a)
+- [ ] The group "Time to check" has "Eggs" with "Often". (Story 14: AC 5)
+- [ ] The group "Use-by date" has "Spinach" with "Use by 18 Oct". Spinach is not a staple. (Story 14: AC 9)
+- [ ] "Ginger" shows "20 g of 100 g". It is exactly at its low line, and it is low. (Decision 54)
 - [ ] The line "Milk" shows "150 ml of 1 l". The line "Butter" shows "40 g of 250 g" and the use-by date 20 Nov. (Story 14: AC 3, 4, 4 a)
 
 ### Skip and never ask
@@ -173,6 +175,39 @@ The values are for 17 October 2026, with the setting "Low line" at 20 %. A date 
 - [ ] Tap "Go shopping", and select "Market A". "Store order" is on, and the rows are "Rice", "Milk", and "Eggs": the order of your taps. (Story 23: AC 3, 3 a)
 - [ ] Select "A to Z". The rows are "Eggs", "Milk", and "Rice". (Story 23: AC 4)
 
+## D. One item at a time, and the receipt note
+
+In the Shop part, with the folder `Shopping` open next to it. This is stories 24, 25, and 26. The part starts where part C stops: the list has eggs, milk, and rice, and the store is "Market A". Eggs, milk, and rice have a receipt with an amount, a place, and a price.
+
+### The receipt starts
+
+- [ ] In the stage Extras, type "quinoa" into "Add an item", and tap "Add as new". Tap "Go shopping", and select "Store order".
+- [ ] Tap the rows "Rice", "Milk", "Eggs", and "Quinoa", in this order, and tap "Put away 4".
+- [ ] The folder `Shopping` has a new receipt of today, with a number, such as `2026-10-17 2`. It has `status: active`, `store: Market A`, and the rows rice, milk, eggs, and quinoa, in this order. The column "Done" is empty. (Story 26: AC 1, 1 a)
+- [ ] The stage has the closed group "Known" with "3", and quinoa in the group "Kitchen". The button says "Put away 3 known". (Story 25: AC 1, 1 a, 1 b)
+- [ ] Tap the head "Known". It shows eggs, milk, and rice. Tap it again, and it closes. (Story 25: AC 2)
+
+### Corrections stay in the note
+
+- [ ] Open the group "Known", tap "Sale" on eggs, and type "3.49". After 1 s, the row of eggs has "3.49" and "yes" in "Sale". Eggs stay in the group "Known". (Story 26: AC 2. Story 25: AC 3)
+- [ ] Restart Obsidian, and open the stage Put away. Eggs have "Sale" and "3.49". (Story 26: AC 3)
+- [ ] On the phone, after Obsidian Sync, the stage Put away shows the same. (Story 26: requirement 4 b)
+
+### One item, then the known items
+
+- [ ] Tap the line of quinoa. It has "Put away" and "Not bought". No closed line has "Put away". (Story 24: AC 1, 2)
+- [ ] Tap "Kitchen" in "Where", put "Into the pantry" on, and tap "Put away". The line slides out, and the message says "Quinoa is in the pantry.". The row of quinoa has "yes" in "Done", and it links to `Pantry/Quinoa`. (Story 24: AC 3 a, 3 b, 3 c)
+- [ ] Tap "2 Shop". The line "In the cart" has "3". Tap "3 Put away". (Story 24: AC 4)
+- [ ] Tap "Put away 3 known". The message says "3 items are in the pantry.", and the Shop part opens the stage that has work. (Story 25: AC 4, 5)
+- [ ] The receipt has `status: complete`, the rows rice, milk, eggs, and quinoa in this order, no column "Done", and eggs with "3.49". The note `Shopping/Next trip` has no task with a mark. (Story 26: AC 6, 6 a, 6 b. Story 24: AC 5 a)
+
+### Not bought and Undo
+
+- [ ] Add milk and rice, tick both, and tap "Put away 2". A new receipt is active, with milk and rice. Tap "2 Shop", open "In the cart", and tap "Undo" on rice. The receipt has no row for rice. (Story 26: AC 5)
+- [ ] Tick rice again, and tap "Put away 2". Rice is the last row of the receipt. (Story 26: AC 4)
+- [ ] Open the group "Known", open milk, and tap "Put away". Open rice, and tap "Not bought". The receipt has `status: complete`, with only milk. (Story 24: AC 6)
+- [ ] Add milk, tick it, and tap "Put away 1". Tap "Not bought" on milk. The stage says "The cart is empty.", and the new receipt has `status: active` and no row. (Story 24: AC 7, 7 a)
+
 ## The old parts with the new screen
 
 Parts 1 to 11 tell the one screen of the first build. Use this table to read them.
@@ -186,7 +221,8 @@ Parts 1 to 11 tell the one screen of the first build. Use this table to read the
 | Tap "Put away", and the screen comes in          | Tap "Put away" with the number in the stage Shop, or "3 Put away" in the strip.   |
 | Tap "Back"                                       | Tap "2 Shop" in the strip.                                                        |
 | The head says "2/7 with a price"                 | The head is gone. The lower edge says how many prices are missing.                |
-| The screen closes after "Put into the pantry"    | The Shop part opens the stage that has work.                                      |
+| The screen closes after "Put into the pantry"    | The Shop part opens the stage that has work, after the last item.                 |
+| Tap "Put into the pantry"                        | Tap "Put away 3 known", or "Put away" on each line that needs a look.             |
 
 A low staple that a meal needs is a row of the list now, not a suggestion. So in part 2, a staple that a meal of the 9 meals needs, and that is low, is a row with the amount that makes it full.
 

@@ -36,7 +36,7 @@ As the [keeper](../../personas.md), I want to drag the bar of a row to the amoun
 6. The bar shows the amount of the selected place
    - a. In the unit of its row, with 2 decimals at most
    - b. As "None" when the amount is 0
-   - c. In amber while all places together are below the low line
+   - c. In amber while all places together are at or below the low line
 7. Tap "Done" to write the new amounts into the food item note
    - a. A changed row keeps its place and its use-by date
    - b. A row with no change stays as it was

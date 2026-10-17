@@ -63,7 +63,8 @@ The plugin changes only the lines of the tasks. It changes the mark of a line, a
 - **"Undo"** takes the mark off, and the item is an extra. But if a meal puts the item on the list, the task goes out of the note.
 - **"Add" on a suggestion, the field "Add an item", and "Add to the list" in the Pantry part** add a task with no mark. An item that has a task gets no second task.
 - **"Remove"** takes the task of an extra out of the note.
-- **Put away** changes the note into the [receipt](receipt.md) of the trip. Each task with no mark goes into a new note "Next trip".
+- **Put away** writes the facts into the [receipt](receipt.md), not into this note. An item that is done in the receipt is not in the cart.
+- **The end of the trip** takes the tasks with a mark out of the note, and your own text goes into the receipt. Each task with no mark stays.
 
 Each change starts from the text that the note has at that moment. So two taps, one directly after the other, do not lose an item.
 

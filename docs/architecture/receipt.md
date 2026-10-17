@@ -8,7 +8,7 @@ parent: shopping-note.md
 
 # Receipt
 
-When you put the cart away, the [shopping note](shopping-note.md) of the trip becomes its receipt. Thus the vault has one note for each trip to the store, with what you bought and what you paid. This page gives the form of that note.
+Each trip to the store gets a receipt note: what you bought, and what you paid. The note starts when the stage Put away opens, and it is complete when the last item is in the pantry. This page gives the form of that note.
 
 ## A complete note
 
@@ -16,6 +16,7 @@ This is the note `2026-10-18.md`, in the shopping folder:
 
 ```markdown
 ---
+status: complete
 date: 2026-10-18
 store: Market B
 ---
@@ -33,7 +34,7 @@ In a table, the line between a link and its name has a backslash before it. Obsi
 
 ## The name is the day of put away
 
-A trip can start on Tuesday with one item, and be in the store on Saturday. The receipt gets the name of the day on which you put the cart away, as year-month-day. So each receipt has the day on which you bought the food, and the number of receipts is the number of trips.
+A trip can start on Tuesday with one item, and be in the store on Saturday. The receipt gets the name of the day on which put away starts, as year-month-day. It keeps that name, so a link to it stays correct. Each receipt has the day on which you bought the food, and the number of receipts is the number of trips.
 
 A second receipt of one day gets a number: `2026-10-18 2`.
 
@@ -41,6 +42,7 @@ A second receipt of one day gets a number: `2026-10-18 2`.
 
 | Property | Value                                   | With no value                                |
 | -------- | --------------------------------------- | -------------------------------------------- |
+| `status` | `active` while put away is open, and `complete` after it. | The receipt is complete.        |
 | `date`   | The day of put away, as year-month-day. | The day is the date in the name of the note. |
 | `store`  | The store of the trip.                  | The receipt has no store.                    |
 
@@ -63,13 +65,27 @@ The plugin reads each note of the shopping folder that has a table with the colu
 
 The next put away starts from the last receipt of each item, and it shows each store that a receipt has. So a price or a store that you correct by hand counts at the next trip.
 
-## What put away does to the note
+## An active receipt
 
-1. Each task with a mark becomes a row of the table. The table is where the first task was.
-2. Each task with no mark goes into a new note "Next trip". You did not buy that item, and the request still stands.
-3. The note gets its properties, and the name of the day.
+While put away is open, the receipt has `status: active` and one more column, `Done`. It has `yes` for each item that is in the pantry. The plugin reads the facts of the stage Put away from this table, so the work continues after a restart or on a different device.
 
-Your own text stays in the receipt. If each task has a mark, the plugin makes no new note.
+| Event                                  | What changes in the note                                     |
+| -------------------------------------- | ------------------------------------------------------------ |
+| The stage Put away opens with a cart   | The note starts, with one row for each item, in task order.  |
+| You tick an item in the store          | Its row comes at the end of the table.                       |
+| You correct a fact                     | Its cell changes. A price stays as you typed it.             |
+| "Undo" or "Not bought"                 | The row goes, if the item is not done.                       |
+| "Put away" on an item                  | Its cell `Done` gets `yes`.                                  |
+| The last item is in the pantry         | The receipt is complete.                                     |
+
+The history uses only the receipts that are complete. So a price that you are typing is not the price of the last receipt.
+
+## What the end of put away does
+
+1. The note gets `status: complete` and the store of the trip.
+2. The column `Done` goes, and each price gets 2 decimals.
+3. Your own text of the note "Next trip" goes into the receipt, above the table.
+4. The note "Next trip" keeps only the tasks with no mark. You did not buy those items, and the request still stands.
 
 ## Further reading
 

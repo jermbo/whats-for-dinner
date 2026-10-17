@@ -50,7 +50,7 @@ You add an item of your own on any day, such as batteries. The cart is a note of
 
 ## The trip goes into the pantry, with its prices
 
-At home, [put away](../architecture/put-away.md) shows each item of the cart filled in with its amount, its place, its use-by date, and its regular price, in groups by place. You check the lines, and one tap corrects a fact or marks a sale. One button puts the full trip into the pantry.
+At home, [put away](../architecture/put-away.md) shows each item of the cart filled in with its amount, its place, its use-by date, and its regular price, in groups by place. You check the lines, and one tap corrects a fact or marks a sale. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that item into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
 
 The note of the trip becomes its [receipt](../architecture/receipt.md): what you bought, in which store, and what you paid. Thus the vault has the price of each item over time.
 

@@ -30,7 +30,7 @@ The three kinds are steps of one question: "how often do you buy it?". The plugi
 
 ## The label adds reminders
 
-Each food item that is out or low is a [suggestion](suggestions.md), with or with no label. The label adds reminders that the amount cannot give: the use-by date, and the time since the purchase. A staple is not on the list at each trip. When it needs a look, you accept it or you skip it. Thus you look at the food before you buy it.
+Each food item that is out, low, or near its use-by date is a [suggestion](suggestions.md), with or with no label. The label adds the reminders that the amount and the date cannot give: the time since the purchase. A staple is not on the list at each trip. When it needs a look, you accept it or you skip it. Thus you look at the food before you buy it.
 
 A staple that is low or out, and that a meal of the week needs, is not a suggestion. The meal uses what is left, so the staple is on the list with no action from you, as the [shopping](shopping.md) page tells.
 

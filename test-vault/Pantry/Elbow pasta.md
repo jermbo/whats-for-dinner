@@ -5,9 +5,10 @@ aliases:
 brands:
   - Brand A
   - Store brand
-full: 2 kg
+full: 2.3 kg
+bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 300 g  |        |
+| Kitchen pantry | 2300 g |        |

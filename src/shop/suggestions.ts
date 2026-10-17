@@ -1,9 +1,7 @@
-// A food item is a suggestion when it needs a look. Each food item that is out or low is one, so
-// that you see what is low with no label to set first. The amount alone does not tell that a
-// staple is good: bread can be gone with no meal that took it, and ginger can be too old to use. So
-// a staple also has the reasons of its use-by date and its purchase date.
-//
-// Food of a meal is a suggestion when it is past its date, staple or not.
+// A food item is a suggestion when it needs a look. Each food item that is out, low, past its date,
+// or near its date is one, so that you see it with no label to set first. The amount alone does
+// not tell that a staple is good: bread can be gone with no meal that took it. So a staple also
+// has the reason of its purchase date.
 
 import { daysBetween, showDate } from '../dates';
 import type { FoodNote } from '../note';
@@ -26,19 +24,16 @@ type When = { today: string; soonDays: number; lowPercent: number };
 
 // What the trip tells about the food items, as paths of their notes.
 type Trip = {
-	// The food that a meal needs, and that is past its use-by date.
-	past: Set<string>;
 	// The food items that do not show: a food item that a meal or a task of the open note puts on
 	// the list is on it already, and a suggestion that you skipped stays away until the trip ends.
 	hidden: Set<string>;
 };
 
-export function suggestionsOf(foods: FoodNote[], when: When, { past, hidden }: Trip): Suggestion[] {
-	const pastForMeal = (path: string): Reason | null => (past.has(path) ? { is: 'past' } : null);
+export function suggestionsOf(foods: FoodNote[], when: When, { hidden }: Trip): Suggestion[] {
 	return foods
 		.filter((food) => !hidden.has(food.path) && !food.item.neverAsk)
 		.flatMap((food) => {
-			const reason = reasonOf(food.item, when) ?? pastForMeal(food.path);
+			const reason = reasonOf(food.item, when);
 			return reason ? [{ food, reason }] : [];
 		})
 		.sort((a, b) => a.food.item.name.localeCompare(b.food.item.name));
@@ -88,11 +83,10 @@ function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason
 	// A note that a recipe made for food that you never bought is not out.
 	if (!item.stocks.length) return item.staple || hadIt(item) ? { is: 'out' } : null;
 	if (levelOf(item, lowPercent)?.isLow) return { is: 'low' };
-	if (!item.staple) return null;
-
 	if (isPastDate(item, today)) return { is: 'past' };
 	const useBy = firstUseBy(item.stocks);
 	if (useBy && daysBetween(today, useBy) <= soonDays) return { is: 'useBy', date: useBy };
+	if (!item.staple) return null;
 
 	// The plugin cannot tell that the time of the kind is not over.
 	if (!item.bought) return { is: 'noPurchase' };
