@@ -3,22 +3,14 @@
 import { measure } from '../units';
 import { readStocks } from './food-item';
 import { withAmount } from './stock-amount';
-import { replaceTable } from './table';
+import { formatMarkdownTable, replaceTable } from './table';
 import type { Stock } from './types';
 
 const COLUMNS = ['Place', 'Amount', 'Use by'];
 
 export function showStocks(stocks: Stock[]): string {
 	const rows = stocks.map((stock) => [stock.place, stock.amountText, stock.useBy ?? '']);
-	const widths = COLUMNS.map((column, at) =>
-		Math.max(column.length, ...rows.map((row) => row[at].length))
-	);
-	const line = (cells: string[]) =>
-		`| ${cells.map((cell, at) => cell.padEnd(widths[at])).join(' | ')} |`;
-
-	return [line(COLUMNS), line(widths.map((width) => '-'.repeat(width))), ...rows.map(line)].join(
-		'\n'
-	);
+	return formatMarkdownTable(COLUMNS, rows);
 }
 
 export function replaceStocks(text: string, stocks: Stock[]): string {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { RecipeEntry } from '../../kitchen-state.svelte';
+	import type { RecipeEntry } from '../../kitchen/types';
 	import type { Ingredient } from '../../recipemd/types';
 	import { isReady } from '../../recipes/browse';
 	import { withoutPrep } from '../../recipes/prep';

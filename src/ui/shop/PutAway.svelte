@@ -5,6 +5,7 @@
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { CartItem, Facts } from '../../shop/facts';
+	import { putAwayGroups, putAwayKnown, putAwayPlaceGroup } from '../../shop/put-away-view';
 	import { readPrice } from '../../shop/price';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -31,9 +32,7 @@
 
 	// The items that the plugin knows are in one closed group, so the lines that you see are the
 	// items that need you.
-	const known = $derived(
-		lines.filter(({ item }) => item.known).sort((a, b) => a.item.name.localeCompare(b.item.name))
-	);
+	const known = $derived(putAwayKnown(lines));
 	let knownOpen = $state(false);
 
 	// The receipt starts when the stage opens with a cart, and it gets a row for each item that you
@@ -47,24 +46,11 @@
 	// group while you correct it, so that it does not move under your thumb.
 	let open = $state<{ key: string; group: string } | null>(null);
 
-	const OUTSIDE = 'Not in the pantry';
-	const placeGroup = ({ item, facts }: Line) =>
-		facts.intoPantry ? facts.place.trim() || item.start.place : OUTSIDE;
-	const groupOf = (line: Line) => (open?.key === line.item.key ? open.group : placeGroup(line));
+	const placeGroup = (line: Line) => putAwayPlaceGroup(line, open?.key ?? null, open?.group ?? null);
 
 	// You put the food away one place at a time, so you check the food of the fridge at the
 	// fridge. The items that do not go into the pantry come last.
-	const groups = $derived.by(() => {
-		const titles = [...new Set(lines.filter(({ item }) => !item.known).map(groupOf))].sort((a, b) =>
-			a === OUTSIDE ? 1 : b === OUTSIDE ? -1 : a.localeCompare(b)
-		);
-		return titles.map((title) => ({
-			title,
-			lines: lines
-				.filter((line) => !line.item.known && groupOf(line) === title)
-				.sort((a, b) => a.item.name.localeCompare(b.item.name))
-		}));
-	});
+	const groups = $derived(putAwayGroups(lines, open));
 
 	// A line that gets a new place moves into the group of that place. A line that comes or goes
 	// alone, such as an item that you did not buy, slides.

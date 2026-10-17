@@ -31,7 +31,7 @@ flowchart TD
 | ------ | ------------------------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------ |
 | Shell  | `main.ts`, `kitchen-view.svelte.ts`, `settings-tab.ts`             | Connects the plugin to Obsidian: the tab, the command, the settings. | Decide a rule of the kitchen.                    |
 | Screen | `ui/`                                                              | Shows what it gets, and tells what you did.                          | Read or write a note, or decide a rule.          |
-| State  | `kitchen-state.svelte.ts`, `read-properties.ts`                    | Keeps the notes of the vault current, and has each action.           | Know a component.                                |
+| State  | `kitchen-state.svelte.ts`, `kitchen/*-actions.ts`, `read-properties.ts` | Keeps the notes of the vault current, and has each action.      | Know a component.                                |
 | Domain | All other files: a folder for each subject, `units.ts`, `dates.ts` | The rules of the kitchen.                                            | Import Obsidian, Svelte, the state, or a screen. |
 
 The shell and the state are the only files that import Obsidian. That is five files. When Obsidian changes, no other file changes.

@@ -1,6 +1,6 @@
 // The filters and the sequences of the recipe list.
 
-import type { RecipeEntry } from '../kitchen-state.svelte';
+import type { RecipeEntry } from '../kitchen/types';
 import { showName } from '../match/names';
 
 export type Sort = 'match' | 'type' | 'rating' | 'name';

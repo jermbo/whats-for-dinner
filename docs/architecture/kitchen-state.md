@@ -11,7 +11,11 @@ After any read, forget, or full reload, `Kitchen.show()` calls `vault.snapshot()
 
 ## Derived data
 
-Lists such as `recipes`, `cart`, and `suggestions` are `$derived` from the snapshot fields and settings. Pure helpers live under `src/kitchen/` and `src/shop/` so new features can extend logic without growing the class.
+Lists such as `recipes`, `cart`, and `suggestions` are `$derived` from the snapshot fields and settings. Pure helpers live in `src/kitchen/shop-read-model.ts`, `src/kitchen/meals-view.ts`, and `src/shop/` so new features can extend logic without growing the class.
+
+## Writes
+
+Vault changes go through `src/kitchen/pantry-actions.ts`, `plan-actions.ts`, `shop-actions.ts`, and `cook-actions.ts`. `Kitchen` exposes the same public methods as before; each one forwards to the right module with a small host object (paths, trip, vault buffer, and so on).
 
 ## Adding a new note kind
 

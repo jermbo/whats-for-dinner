@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CookResult, RecipeEntry } from '../../kitchen-state.svelte';
+	import type { CookResult, RecipeEntry } from '../../kitchen/types';
 	import { showName } from '../../match/names';
 	import type { FoodNote } from '../../note';
 	import { available, takeOut } from '../../pantry/total';

@@ -3,7 +3,7 @@
 // a different device continues the work. It is complete when each item is in the pantry. Your own
 // text stays.
 
-import { replaceTable } from '../pantry/table';
+import { formatMarkdownTable, replaceTable } from '../pantry/table';
 import { amountOf, type Facts } from './facts';
 import { showPrice } from './price';
 import { readReceipt, type ReceiptRow } from './read-receipt';
@@ -103,17 +103,5 @@ function cellsOf({ link, name, facts, done }: ReceiptLine): string[] {
 
 const showItem = (link: string | null, name: string) => (link ? `[[${link}|${name}]]` : name);
 
-// In a table, a pipe is the edge of a cell. So the pipe of a link gets a backslash, as Obsidian
-// writes it, and a pipe that you typed gets one too.
-function showTable(columns: string[], rows: string[][]): string {
-	const safe = rows.map((row) => row.map((cell) => cell.replaceAll('|', '\\|')));
-	const widths = columns.map((column, at) =>
-		Math.max(column.length, ...safe.map((row) => row[at].length))
-	);
-	const line = (cells: string[]) =>
-		`| ${cells.map((cell, at) => cell.padEnd(widths[at])).join(' | ')} |`;
-
-	return [line(columns), line(widths.map((width) => '-'.repeat(width))), ...safe.map(line)].join(
-		'\n'
-	);
-}
+const showTable = (columns: string[], rows: string[][]) =>
+	formatMarkdownTable(columns, rows, true);
