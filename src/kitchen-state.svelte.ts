@@ -5,7 +5,9 @@ import { debounce, Notice, TFile, type App, type EventRef, type TAbstractFile } 
 import { shrinkPhoto } from './cook/photo';
 import { addRecord } from './cook/record';
 import { today } from './dates';
-import { indexFoods, matchRecipe, type RecipeMatch } from './match/match';
+import { rejectedRecipes, recipesOf } from './kitchen/recipes-view';
+import type { CookResult, Disk, Meal, Saved } from './kitchen/types';
+import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import { nameKey } from './match/names';
 import type { FoodNote, Note } from './note';
 import { readFoodItem } from './pantry/food-item';
@@ -17,26 +19,21 @@ import { addStock, putAwayStock, replaceStocks, showStocks } from './pantry/writ
 import {
 	addMeal,
 	changeMeal,
-	readPlan,
 	removeMeal,
 	removeMeals,
 	type PlannedMeal
 } from './plan/plan-note';
 import { hasRoom, ROOM } from './plan/week';
 import { readProperties } from './read-properties';
-import { readRecipe } from './recipemd/parse';
-import type { Recipe } from './recipemd/types';
 import { typeOf } from './recipes/browse';
-import { readPrep } from './recipes/prep';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
 import { cartItemOf, stocksOf, type CartItem, type Facts } from './shop/facts';
 import { lastRows } from './shop/last-receipt';
 import { pastDateRows } from './shop/past-date';
-import { readReceipt, type Receipt } from './shop/read-receipt';
+import { isLineOf } from './shop/receipt-line';
 import {
 	completeReceipt,
 	leftOf,
-	lineOf,
 	linesIn,
 	newReceipt,
 	ownTextOf,
@@ -52,48 +49,16 @@ import {
 	readTrip,
 	removeTasks,
 	taskOf,
-	unmark,
-	type TripTask
+	unmark
 } from './shop/shopping-note';
+import type { Receipt } from './shop/read-receipt';
 import { suggestionsOf } from './shop/suggestions';
 import { storeOrderOf } from './shop/store-order';
 import { storesOf } from './shop/stores';
 import { cartOf, isPantryItem, itemsOf, keyOf, listOf, type TripItem } from './shop/trip';
 import { showMeasure } from './units';
 
-export type RecipeEntry = {
-	path: string;
-	recipe: Recipe;
-	rating: number | null;
-	match: RecipeMatch;
-	// What you must do before you can cook the recipe, or null.
-	prep: string | null;
-};
-
-// A meal of the plan. The entry is null when the note of the recipe is gone.
-export type Meal = PlannedMeal & { entry: RecipeEntry | null };
-
-export type CookResult = {
-	// The new rows of each food item that the meal used, by the path of its note.
-	stocks: Map<string, Stock[]>;
-	rating: number | null;
-	note: string;
-	photo: Blob | null;
-};
-
-// What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped
-// for this trip, and the settings. The cart is not here. It is in the note of the trip, which
-// Obsidian moves to your other device.
-type Saved = { skipped: string[]; settings: Settings };
-type Disk = { load: () => Promise<Partial<Saved> | null>; save: (data: Saved) => Promise<void> };
-
-const share = (entry: RecipeEntry) =>
-	entry.match.ingredients.length ? entry.match.inPantry / entry.match.ingredients.length : 0;
-
-function ratingOf(properties: Record<string, unknown>): number | null {
-	const rating = Number(properties.rating);
-	return rating >= 1 && rating <= 5 ? Math.round(rating) : null;
-}
+export type { CookResult, Meal, RecipeEntry } from './kitchen/types';
 
 export class Kitchen {
 	notes = $state.raw<Note[]>([]);
@@ -128,27 +93,11 @@ export class Kitchen {
 	private newPlace = $derived(this.settings.newPlace.trim() || DEFAULT_SETTINGS.newPlace);
 
 	// The recipes that use up the pantry come first, and food to use soon moves its recipes up.
-	recipes = $derived.by(() => {
-		const index = indexFoods(this.foods);
-		return this.notes
-			.flatMap(({ path, result, rating }): RecipeEntry[] => {
-				if (!result.ok) return [];
-				const match = matchRecipe(result.recipe, index, this.today, this.settings.soonDays);
-				return [{ path, recipe: result.recipe, rating, match, prep: readPrep(result.recipe) }];
-			})
-			.sort(
-				(a, b) =>
-					Number(b.match.useSoon.length > 0) - Number(a.match.useSoon.length > 0) ||
-					share(b) - share(a) ||
-					a.recipe.title.localeCompare(b.recipe.title)
-			);
-	});
-
-	rejected = $derived(
-		this.notes
-			.flatMap(({ path, result }) => (result.ok ? [] : [{ path, reason: result.reason }]))
-			.sort((a, b) => a.path.localeCompare(b.path))
+	recipes = $derived.by(() =>
+		recipesOf(this.notes, this.foods, this.today, this.settings.soonDays)
 	);
+
+	rejected = $derived(rejectedRecipes(this.notes));
 
 	places = $derived(
 		[...new Set(this.foods.flatMap(({ item }) => item.stocks.map((stock) => stock.place)))].sort()
@@ -241,13 +190,7 @@ export class Kitchen {
 	// Obsidian removes a registered event when the plugin stops.
 	private register: (ref: EventRef) => void;
 	private started = false;
-	private notesByPath = new Map<string, Note>();
-	private foodsByPath = new Map<string, FoodNote>();
-	private planNow: PlannedMeal[] = [];
-	private tripNow: TripTask[] = [];
-	private tripStoreNow = '';
-	private itemPaths = new Set<string>();
-	private receiptsByPath = new Map<string, Receipt>();
+	private vault = new VaultBuffer();
 
 	constructor(app: App, disk: Disk, register: (ref: EventRef) => void) {
 		this.app = app;
@@ -523,10 +466,6 @@ export class Kitchen {
 	// Put away is in progress. A second tap must not add the food a second time.
 	private puttingAway = false;
 
-	// The receipt that is active, as the kitchen wrote or read it last. The state `active` comes
-	// later, after Obsidian reads the note, and two fast actions must not make two receipts.
-	private activePath: string | null = null;
-
 	// The stage Put away opens with a cart, so the receipt starts, with the facts that the plugin
 	// proposes. An item that you ticked later gets a row at the end, and an item that is not in the
 	// cart any more loses its row.
@@ -535,7 +474,7 @@ export class Kitchen {
 			// The notes, not the state: the state can be from before the end of the trip.
 			const open = this.fileAt(this.openNote);
 			const tasks = open ? readTrip(await this.app.vault.read(open)) : [];
-			const file = this.activePath ? this.fileAt(this.activePath) : null;
+			const file = this.vault.activePath ? this.fileAt(this.vault.activePath) : null;
 			const text = file ? await this.app.vault.read(file) : '';
 			const lines = linesIn(text);
 			const isDone = (item: TripItem) =>
@@ -663,7 +602,7 @@ export class Kitchen {
 		const isTaken = (path: string) => this.app.vault.getAbstractFileByPath(path) !== null;
 		const path = receiptPath(this.where.shopping, this.today, isTaken);
 		await this.makeFolderOf(path);
-		this.activePath = path;
+		this.vault.activePath = path;
 		await this.app.vault.create(path, newReceipt(this.today, this.tripStore.trim(), lines));
 	}
 
@@ -671,7 +610,7 @@ export class Kitchen {
 	// that moment.
 	private changeReceipt(change: (lines: ReceiptLine[]) => ReceiptLine[]) {
 		return this.inTurn(async () => {
-			const file = this.activePath ? this.fileAt(this.activePath) : null;
+			const file = this.vault.activePath ? this.fileAt(this.vault.activePath) : null;
 			if (!file) return;
 			const text = await this.app.vault.read(file);
 			const next = withLines(text, change(linesIn(text)));
@@ -687,7 +626,7 @@ export class Kitchen {
 		this.writeStore.cancel();
 		const store = this.tripStore.trim();
 		await this.inTurn(async () => {
-			const receipt = this.activePath ? this.fileAt(this.activePath) : null;
+			const receipt = this.vault.activePath ? this.fileAt(this.vault.activePath) : null;
 			const open = this.fileAt(this.openNote);
 			const openText = open ? await this.app.vault.read(open) : '';
 			if (receipt) {
@@ -706,7 +645,7 @@ export class Kitchen {
 				});
 			}
 			if (open) await this.app.vault.modify(open, leftOf(openText));
-			this.activePath = null;
+			this.vault.activePath = null;
 		});
 		this.skipped = [];
 		await this.save();
@@ -802,61 +741,19 @@ export class Kitchen {
 	private pathOf = (link: string) =>
 		this.app.metadataCache.getFirstLinkpathDest(link, this.openNote)?.path ?? notePath(link);
 
-	// What a note is for the kitchen, from its path. Null: the kitchen does not read the note. A
-	// note of the shopping folder that is not the open note can be a receipt.
-	private kindOf(path: string): 'plan' | 'trip' | 'food' | 'item' | 'receipt' | 'recipe' | null {
-		const { plan, pantry, shopping, items, recipes } = this.where;
-		if (path === plan) return 'plan';
-		if (path === this.openNote) return 'trip';
-		if (path.startsWith(`${pantry}/`)) return 'food';
-		if (path.startsWith(`${items}/`)) return 'item';
-		if (path.startsWith(`${shopping}/`)) return 'receipt';
-		return !recipes || path.startsWith(`${recipes}/`) ? 'recipe' : null;
-	}
-
 	private async read(file: TAbstractFile) {
 		if (!(file instanceof TFile) || file.extension !== 'md') return;
-		if (!this.kindOf(file.path)) return;
+		if (!noteKind(file.path, this.where, this.openNote)) return;
 		const text = await this.app.vault.cachedRead(file);
 		// A rename can occur during the read, so the path comes after it.
 		const { path } = file;
-		const kind = this.kindOf(path);
-		const { properties, body } = readProperties(text);
-
-		if (kind === 'plan') {
-			this.planNow = readPlan(text);
-		} else if (kind === 'trip') {
-			this.tripNow = readTrip(text);
-			this.tripStoreNow = typeof properties.store === 'string' ? properties.store.trim() : '';
-		} else if (kind === 'item') {
-			this.itemPaths.add(path);
-		} else if (kind === 'receipt') {
-			const receipt = readReceipt(file.basename, properties, body);
-			if (receipt) this.receiptsByPath.set(path, receipt);
-			else this.receiptsByPath.delete(path);
-			// The newest active receipt counts. A receipt that is complete is not active any more.
-			if (receipt?.active) {
-				if (!this.activePath || path > this.activePath) this.activePath = path;
-			} else if (this.activePath === path) {
-				this.activePath = null;
-			}
-		} else if (kind === 'food') {
-			const item = readFoodItem(file.basename, properties, body);
-			this.foodsByPath.set(path, { path, item });
-		} else if (kind === 'recipe') {
-			this.notesByPath.set(path, { path, result: readRecipe(text), rating: ratingOf(properties) });
-		}
+		const kind = noteKind(path, this.where, this.openNote);
+		if (!kind) return;
+		this.vault.applyRead(path, kind, text, file.basename);
 	}
 
 	private async readAll() {
-		this.notesByPath.clear();
-		this.foodsByPath.clear();
-		this.planNow = [];
-		this.tripNow = [];
-		this.tripStoreNow = '';
-		this.activePath = null;
-		this.itemPaths.clear();
-		this.receiptsByPath.clear();
+		this.vault.clear();
 		await Promise.all(this.app.vault.getMarkdownFiles().map((file) => this.read(file)));
 		this.show();
 	}
@@ -870,37 +767,20 @@ export class Kitchen {
 	}
 
 	private forget(path: string) {
-		if (path === this.where.plan) this.planNow = [];
-		if (path === this.openNote) {
-			this.tripNow = [];
-			this.tripStoreNow = '';
-		}
-		if (this.activePath === path) this.activePath = null;
-		this.itemPaths.delete(path);
-		this.receiptsByPath.delete(path);
-		this.notesByPath.delete(path);
-		this.foodsByPath.delete(path);
+		this.vault.forget(path, this.openNote, this.where.plan);
 		this.show();
 	}
 
 	private show() {
-		this.notes = [...this.notesByPath.values()];
-		this.foods = [...this.foodsByPath.values()];
-		this.plan = this.planNow;
-		// A link can go to a different note after a change of the vault, so the paths are new each time.
-		this.trip = itemsOf(this.tripNow, this.pathOf);
-		this.tripStore = this.tripStoreNow;
-		this.itemNotes = [...this.itemPaths];
-		const all = [...this.receiptsByPath.entries()];
-		this.receipts = all.flatMap(([, receipt]) => (receipt.active ? [] : [receipt]));
-		const active = this.activePath ? this.receiptsByPath.get(this.activePath) : undefined;
-		this.active =
-			active && this.activePath ? { path: this.activePath, lines: active.rows.map(lineOf) } : null;
+		const snap = this.vault.snapshot(this.where, this.openNote, this.pathOf);
+		this.notes = snap.notes;
+		this.foods = snap.foods;
+		this.plan = snap.plan;
+		this.trip = snap.trip;
+		this.tripStore = snap.tripStore;
+		this.itemNotes = snap.itemNotes;
+		this.receipts = snap.receipts;
+		this.active = snap.active;
 		this.today = today();
 	}
 }
-
-// A row of the receipt names its item by its link, as a task does. The row of an item of your own
-// that went into the pantry links to its food item note, so it also finds its item by the name.
-const isLineOf = (line: ReceiptLine, item: TripItem, pathOf: (link: string) => string) =>
-	keyOf(line, pathOf) === item.key || line.name === item.name;

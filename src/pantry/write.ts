@@ -3,7 +3,7 @@
 import { measure } from '../units';
 import { readStocks } from './food-item';
 import { withAmount } from './stock-amount';
-import { findTable } from './table';
+import { replaceTable } from './table';
 import type { Stock } from './types';
 
 const COLUMNS = ['Place', 'Amount', 'Use by'];
@@ -22,12 +22,7 @@ export function showStocks(stocks: Stock[]): string {
 }
 
 export function replaceStocks(text: string, stocks: Stock[]): string {
-	const lines = text.split(/\r?\n/);
-	const table = findTable(lines);
-	if (!table) return `${text.trimEnd()}\n\n${showStocks(stocks)}\n`.trimStart();
-
-	lines.splice(table.start, table.end - table.start, showStocks(stocks));
-	return lines.join('\n');
+	return replaceTable(text, showStocks(stocks));
 }
 
 const kindOf = (stock: Stock) => (stock.amount ? measure(stock.amount).kind : null);

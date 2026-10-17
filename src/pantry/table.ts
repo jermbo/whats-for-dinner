@@ -38,3 +38,11 @@ export function readTable(text: string): Record<string, string>[] {
 		return Object.fromEntries(columns.map((column, at) => [column, cells[at] ?? '']));
 	});
 }
+
+// The new table goes where the first table was. A note with no table gets it at the end.
+export function replaceTable(text: string, table: string): string {
+	const lines = text.split(/\r?\n/);
+	const at = findTable(lines);
+	if (!at) return `${text.trimEnd()}\n\n${table}\n`.trimStart();
+	return [...lines.slice(0, at.start), table, ...lines.slice(at.end)].join('\n');
+}

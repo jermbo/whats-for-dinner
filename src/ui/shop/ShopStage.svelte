@@ -3,7 +3,14 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
-	import { byMeal, byStore, isForMeal, isFound, type Only, type Sort } from '../../shop/browse';
+	import type { Only, Sort } from '../../shop/browse';
+	import {
+		anyRegularPrice,
+		filterShopRows,
+		regularPriceSum,
+		shopHasMixedList,
+		shopListGroups
+	} from '../../shop/shop-stage-view';
 	import { readPrice, showPrice } from '../../shop/price';
 	import { proposalsFor } from '../../shop/proposals';
 	import type { ShoppingRow } from '../../shop/shopping-list';
@@ -44,25 +51,15 @@
 	const text = $derived(bar.find.trim());
 	// With rows of one kind only, a filter hides nothing. So the filters are there only when the
 	// list has rows for a meal and rows of an extra.
-	const mixed = $derived(needed.some(isForMeal) && needed.some((row) => row.extra));
-	const only = (kind: Only) => mixed && bar.only.has(kind);
+	const mixed = $derived(shopHasMixedList(needed));
 	const count = $derived(mixed ? bar.only.size : 0);
 
-	const shown = $derived(
-		needed.filter(
-			(row) =>
-				isFound(row, bar.find) &&
-				(!only('meal') || isForMeal(row)) &&
-				(!only('extra') || row.extra)
-		)
-	);
+	const shown = $derived(filterShopRows(needed, bar.find, bar.only, mixed));
 	// The sequence by meal has one group for each meal. The sequences by name and by store are one
 	// list. With no order of a store, "Store order" is A to Z.
-	const groups = $derived.by(() => {
-		if (bar.sort === 'meal') return byMeal(shown);
-		const rows = bar.sort === 'store' && hasOrder ? byStore(shown, kitchen.storeOrder) : shown;
-		return [{ title: '', rows }];
-	});
+	const groups = $derived.by(() =>
+		shopListGroups(shown, bar.sort, hasOrder, kitchen.storeOrder)
+	);
 
 	// When you select a store with an order, the list follows it at once.
 	function pickStore(store: string) {
@@ -106,8 +103,9 @@
 	// What an item usually costs. The total is "about", because the price is for the amount of the
 	// receipt.
 	const priceOf = (row: ShoppingRow) => readPrice(kitchen.regularOf(row.key));
-	const sumOf = (rows: ShoppingRow[]) => rows.reduce((sum, row) => sum + (priceOf(row) ?? 0), 0);
-	const priced = $derived(all.some((row) => priceOf(row) !== null));
+	const sumOf = (rows: ShoppingRow[]) =>
+		regularPriceSum(rows, (key) => kitchen.regularOf(key), readPrice);
+	const priced = $derived(anyRegularPrice(all, (key) => kitchen.regularOf(key), readPrice));
 
 	// --- The screen stays on in the store, if the settings say so. ---
 

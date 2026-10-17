@@ -3,7 +3,7 @@
 // a different device continues the work. It is complete when each item is in the pantry. Your own
 // text stays.
 
-import { findTable } from '../pantry/table';
+import { replaceTable } from '../pantry/table';
 import { amountOf, type Facts } from './facts';
 import { showPrice } from './price';
 import { readReceipt, type ReceiptRow } from './read-receipt';
@@ -86,13 +86,7 @@ export function leftOf(text: string): string {
 
 const linesOf = (text: string) => text.split(/\r?\n/);
 
-// The new table goes where the table was. A note with no table gets it at the end.
-function withTable(text: string, table: string): string {
-	const lines = linesOf(text);
-	const at = findTable(lines);
-	if (!at) return `${text.trimEnd()}\n\n${table}\n`.trimStart();
-	return [...lines.slice(0, at.start), table, ...lines.slice(at.end)].join('\n');
-}
+const withTable = (text: string, table: string) => replaceTable(text, table);
 
 function cellsOf({ link, name, facts, done }: ReceiptLine): string[] {
 	const pantry = facts.intoPantry;
