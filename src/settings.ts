@@ -18,6 +18,8 @@ export type Settings = AlarmOptions & {
 	itemsFolder: string;
 	// The place of food that is new in the pantry, until you change it.
 	newPlace: string;
+	// The names of the places of the kitchen, also the places that no row has yet.
+	places: string[];
 
 	// The font of titles, names, and numbers: the font of the plugin, the font of Obsidian, or a
 	// font of the device with the name `fontName`.
@@ -37,11 +39,12 @@ export type Settings = AlarmOptions & {
 
 export const DEFAULT_SETTINGS: Settings = {
 	recipesFolder: '',
-	pantryFolder: 'Pantry',
-	planNote: 'Meal plan.md',
-	shoppingFolder: 'Shopping',
-	itemsFolder: 'Shopping/Items',
+	pantryFolder: 'Larder/Pantry',
+	planNote: 'Larder/Meal plan.md',
+	shoppingFolder: 'Larder/Shopping',
+	itemsFolder: 'Larder/Shopping/Items',
 	newPlace: 'Kitchen',
+	places: [],
 	font: 'bricolage',
 	fontName: '',
 	accent: 'olive',

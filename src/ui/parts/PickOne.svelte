@@ -4,8 +4,9 @@
 		options: string[];
 		// The option that is on, or a text that no option has.
 		value: string;
-		// The words of the field for a text that no option has, such as "A new place".
-		other: string;
+		// The words of the field for a text that no option has, such as "A new place". With no words,
+		// the control has no field.
+		other?: string;
 		// A second tap puts an option off, so that no option is on.
 		canBeOff?: boolean;
 		onchange: (value: string) => void;
@@ -46,15 +47,17 @@
 				{option}
 			</button>
 		{/each}
-		<input
-			class="wfd-pick__other"
-			type="text"
-			autocomplete="off"
-			aria-label={other}
-			placeholder={other}
-			value={text}
-			oninput={(event) => type(event.currentTarget.value)}
-		/>
+		{#if other}
+			<input
+				class="wfd-pick__other"
+				type="text"
+				autocomplete="off"
+				aria-label={other}
+				placeholder={other}
+				value={text}
+				oninput={(event) => type(event.currentTarget.value)}
+			/>
+		{/if}
 	</div>
 </fieldset>
 

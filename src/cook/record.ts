@@ -25,18 +25,33 @@ export function addRecord(text: string, hasInstructions: boolean, record: CookRe
 	return `${result}\n${lines.join('\n')}\n`;
 }
 
-// The newest note that you wrote after you cooked this recipe. Cook Mode shows it the next time.
-export function lastNote(instructions: string | null): string | null {
+const STARS = /^[★☆]+$/;
+
+// The parts of each record after the date, newest first. A record is "date · stars · note".
+function recordsOf(instructions: string | null): string[][] {
 	const lines = (instructions ?? '').split(/\r?\n/);
 	const start = lines.findIndex((line) => new RegExp(`^#+ ${RECORD_HEADING}\\s*$`).test(line));
-	if (start === -1) return null;
+	if (start === -1) return [];
 
 	const records = lines.slice(start + 1).filter((line) => line.startsWith('- '));
-	for (const record of records.reverse()) {
-		// A record is "date · stars · note". The date is always there.
-		const [, ...parts] = record.slice(2).split(' · ');
-		const note = parts.filter((part) => !/^[★☆]+$/.test(part)).join(' · ');
+	return records.reverse().map((record) => record.slice(2).split(' · ').slice(1));
+}
+
+// The newest note that you wrote after you cooked this recipe. Cook Mode shows it the next time.
+export function lastNote(instructions: string | null): string | null {
+	for (const parts of recordsOf(instructions)) {
+		const note = parts.filter((part) => !STARS.test(part)).join(' · ');
 		if (note) return note;
+	}
+	return null;
+}
+
+// The rating of the recipe: the stars of the newest record that has stars. The record keeps it, not
+// a property, because a property would make the note an incorrect RecipeMD recipe.
+export function lastRating(instructions: string | null): number | null {
+	for (const parts of recordsOf(instructions)) {
+		const stars = parts.find((part) => STARS.test(part));
+		if (stars) return [...stars].filter((star) => star === '★').length || null;
 	}
 	return null;
 }

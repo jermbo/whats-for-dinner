@@ -18,6 +18,8 @@ You have rice in the kitchen and more rice downstairs. In the store, you think o
 
 Each food is one note in the pantry folder: `Rice`, `Eggs`, `Elbow pasta`. This is a [food item](food-item-note.md). Its note has a table with one row for each place: 500 g in the kitchen pantry, and 2 kg in the downstairs pantry. A row can have a [use-by date](use-soon.md).
 
+You name the places before food is there. The [settings](settings.md) keep the list of names, so that add food and the filters show a place that has no row yet.
+
 The pantry screen shows one line for each row, in a group for each place. You see what is in the outside fridge and you do not have to go there. You find a food item by its name, by a different name of the food, or by a brand.
 
 ## The level tells you when to buy

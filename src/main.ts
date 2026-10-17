@@ -1,4 +1,4 @@
-import { Plugin } from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 import { Kitchen } from './kitchen-state.svelte';
 import { KITCHEN_VIEW, KitchenView } from './kitchen-view.svelte';
 import { KitchenSettingTab } from './settings-tab';
@@ -23,6 +23,18 @@ export default class WhatsForDinnerPlugin extends Plugin {
 			name: 'Open the kitchen',
 			callback: () => this.openKitchen()
 		});
+		// Only the development build has it, so that a test of setup can start again many times.
+		if (import.meta.env.MODE === 'development') {
+			this.addCommand({
+				id: 'start-setup-again',
+				name: 'Start setup again (deletes the plugin home)',
+				callback: async () => {
+					await kitchen.startSetupAgain();
+					new Notice('Setup starts again. The plugin home is in the trash of the vault.');
+					await this.openKitchen();
+				}
+			});
+		}
 	}
 
 	// One kitchen is sufficient: a second call shows the tab that is open.

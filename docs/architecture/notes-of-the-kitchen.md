@@ -47,10 +47,11 @@ The chicken curry needs 500 g of chicken thighs, and the outside fridge has 500 
 
 ## What is not in a note
 
-Two things are not facts of the kitchen, so they are in the data file of the plugin:
+Three things are not facts of the kitchen, so they are in the data file of the plugin:
 
-- your [settings](settings.md)
+- your [settings](settings.md), with the list of your places
 - the [suggestions](suggestions.md) that you skipped
+- the step of [setup](setup.md), and if setup is complete
 
 The cart is not in that file. The plugin reads the data file one time, when it starts. So a cart in that file is not the same on your phone and on your computer.
 

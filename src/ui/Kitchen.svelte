@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './fonts.css';
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import type { Kitchen } from '../kitchen-state.svelte';
 	import type { Only as PantryOnly, Sort as PantrySort } from '../pantry/views';
 	import type { Only as PlanOnly, Sort as PlanSort } from '../plan/browse';
@@ -13,6 +13,8 @@
 	import Nav from './parts/Nav.svelte';
 	import PlanPart from './plan/PlanPart.svelte';
 	import RecipesPart from './recipes/RecipesPart.svelte';
+	import HasNotes from './setup/HasNotes.svelte';
+	import Setup from './setup/Setup.svelte';
 	import { PutAwayDraft } from './shop/put-away-draft.svelte';
 	import ShopPart from './shop/ShopPart.svelte';
 	import type { Stage } from './shop/stage';
@@ -34,6 +36,11 @@
 	// The new part comes in from the side of its option in the navigation.
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	// The kitchen fades in at the end of setup. A tab that opens on the four parts shows them at once.
+	let inSetup = $state(false);
+	$effect.pre(() => {
+		if (kitchen.screen !== 'kitchen') inSetup = true;
+	});
 
 	// The bar of each part, with the sequence that the part starts with. A part forgets its bar
 	// when it goes off the screen, so the bars are here: they stay while the kitchen is open.
@@ -70,10 +77,20 @@
 	const draft = new PutAwayDraft();
 </script>
 
-{#if cooked}
+<!--
+	Until setup is complete, the four parts are not there. Before the first read of the vault, the
+	kitchen cannot tell setup from a vault with notes, so the screen is empty.
+-->
+{#if kitchen.screen === null}
+	<div class="wfd-kitchen"></div>
+{:else if kitchen.screen === 'notes'}
+	<HasNotes />
+{:else if kitchen.screen !== 'kitchen'}
+	<Setup {kitchen} step={kitchen.screen} />
+{:else if cooked}
 	<CookMode {kitchen} entry={cooked} onclose={() => (cooking = null)} />
 {:else}
-	<div class="wfd-kitchen">
+	<div class="wfd-kitchen" in:fade={{ duration: inSetup ? duration : 0 }}>
 		<Nav label="Part of the kitchen" {options} value={part} onchange={show} />
 
 		{#key part}

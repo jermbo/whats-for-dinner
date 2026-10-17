@@ -40,6 +40,14 @@ import {
 	type ShopMutable
 } from './kitchen/shop-actions';
 import { rejectedRecipes, recipesOf } from './kitchen/recipes-view';
+import {
+	choosePlaces as choosePlacesAction,
+	chooseRecipesFolder as chooseRecipesFolderAction,
+	finishSetup as finishSetupAction,
+	makeHome as makeHomeAction,
+	startAgain as startAgainAction,
+	type SetupActionsHost
+} from './kitchen/setup-actions';
 import type { CookResult, Disk, Meal } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import {
@@ -53,9 +61,11 @@ import {
 } from './kitchen/shop-read-model';
 import type { FoodNote, Note } from './note';
 import type { StapleLabel } from './pantry/staple';
+import { placesOf } from './pantry/places';
 import type { Stock } from './pantry/types';
 import type { PlannedMeal } from './plan/plan-note';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
+import { hasKitchenNotes, screenOf, type Setup } from './setup/screen';
 import type { Facts } from './shop/facts';
 import type { Receipt } from './shop/read-receipt';
 import type { ReceiptLine } from './shop/receipt';
@@ -76,6 +86,11 @@ export class Kitchen {
 	private skipped = $state.raw<string[]>([]);
 	settings = $state.raw<Settings>(DEFAULT_SETTINGS);
 	today = $state(today());
+	// The step of setup, "done", or null before setup starts.
+	setup = $state<Setup | null>(null);
+	// If the vault had notes of the kitchen at the last read. Null before the first read.
+	private hasNotes = $state<boolean | null>(null);
+	screen = $derived(screenOf(this.setup, this.hasNotes));
 
 	private where = $derived({
 		recipes: folderPath(this.settings.recipesFolder),
@@ -91,9 +106,7 @@ export class Kitchen {
 		recipesOf(this.notes, this.foods, this.today, this.settings.soonDays)
 	);
 	rejected = $derived(rejectedRecipes(this.notes));
-	places = $derived(
-		[...new Set(this.foods.flatMap(({ item }) => item.stocks.map((stock) => stock.place)))].sort()
-	);
+	places = $derived(placesOf(this.settings.places, this.foods));
 	meals = $derived(mealsOf(this.plan, this.recipes));
 
 	private needs = $derived(mealNeeds(this.meals, this.where.pantry));
@@ -159,21 +172,58 @@ export class Kitchen {
 	async loadSaved() {
 		const saved = await this.disk.load();
 		this.skipped = saved?.skipped ?? [];
+		this.setup = saved?.setup ?? null;
 		this.settings = { ...DEFAULT_SETTINGS, ...saved?.settings };
+		// A new install writes the defaults, so that the data file and the settings tab agree.
+		if (!saved?.settings) await this.save();
 	}
 
 	async changeSettings(change: Partial<Settings>) {
-		const places = [
+		const paths = [
 			'recipesFolder',
 			'pantryFolder',
 			'planNote',
 			'shoppingFolder',
 			'itemsFolder'
 		] as const;
-		const moved = places.some((key) => key in change && change[key] !== this.settings[key]);
+		const moved = paths.some((key) => key in change && change[key] !== this.settings[key]);
 		this.settings = { ...this.settings, ...change };
 		await this.save();
 		if (moved && this.started) this.readAgain();
+	}
+
+	// The folders of the vault, for the recipes step of setup.
+	folders(): string[] {
+		return this.app.vault
+			.getAllFolders()
+			.map((folder) => folder.path)
+			.sort();
+	}
+
+	async chooseRecipesFolder(text: string) {
+		await chooseRecipesFolderAction(this.setupHost, text);
+	}
+
+	async makeHome(name: string) {
+		await makeHomeAction(this.setupHost, name);
+	}
+
+	async choosePlaces(places: string[], newPlace: string) {
+		await choosePlacesAction(this.setupHost, places, newPlace);
+	}
+
+	finishSetup(staples: Map<string, string>): Promise<boolean> {
+		return finishSetupAction(this.setupHost, staples);
+	}
+
+	async startSetupAgain() {
+		await startAgainAction(this.setupHost);
+	}
+
+	// For a vault that had notes of the kitchen before setup. The settings tab has the button.
+	async useNotes() {
+		this.setup = 'done';
+		await this.save();
 	}
 
 	async start() {
@@ -183,6 +233,10 @@ export class Kitchen {
 		const { vault } = this.app;
 		const { register } = this;
 		await this.readAll();
+		// A vault from before the list of places starts with the places that its rows have.
+		if (!this.settings.places.length && this.places.length) {
+			await this.changeSettings({ places: this.places });
+		}
 
 		register(vault.on('create', (file) => this.update(file)));
 		register(vault.on('modify', (file) => this.update(file)));
@@ -343,6 +397,43 @@ export class Kitchen {
 		};
 	}
 
+	private get setupHost(): SetupActionsHost {
+		const k = this;
+		return {
+			get settings() {
+				return k.settings;
+			},
+			get foodCount() {
+				return k.foods.length;
+			},
+			exists: (path) => Boolean(k.app.vault.getAbstractFileByPath(path)),
+			createFolder: async (path) => {
+				await k.app.vault.createFolder(path);
+			},
+			createFile: async (path, text) => {
+				await k.app.vault.create(path, text);
+			},
+			changeSettings: (change) => k.changeSettings(change),
+			goTo: async (setup) => {
+				k.setup = setup;
+				await k.save();
+			},
+			addStock: (name, stock) => k.addStock(name, stock),
+			trash: async (path) => {
+				const folder = k.app.vault.getAbstractFileByPath(path);
+				// The trash of the vault, and not of the system: a phone can have no system trash.
+				if (folder) await k.app.vault.trash(folder, false);
+			},
+			forgetAll: async () => {
+				k.skipped = [];
+				k.setup = null;
+				k.settings = DEFAULT_SETTINGS;
+				await k.save();
+				if (k.started) await k.readAll();
+			}
+		};
+	}
+
 	private get planHost(): PlanActionsHost {
 		const k = this;
 		return {
@@ -467,7 +558,11 @@ export class Kitchen {
 	}
 
 	private save() {
-		return this.disk.save({ skipped: this.skipped, settings: this.settings });
+		return this.disk.save({
+			skipped: this.skipped,
+			settings: this.settings,
+			...(this.setup ? { setup: this.setup } : {})
+		});
 	}
 
 	private fileAt(path: string): TFile | null {
@@ -497,7 +592,12 @@ export class Kitchen {
 
 	private async readAll() {
 		this.vault.clear();
-		await Promise.all(this.app.vault.getMarkdownFiles().map((file) => this.read(file)));
+		const files = this.app.vault.getMarkdownFiles();
+		await Promise.all(files.map((file) => this.read(file)));
+		this.hasNotes = hasKitchenNotes(
+			files.map((file) => file.path),
+			this.where
+		);
 		this.show();
 	}
 

@@ -28,10 +28,9 @@ The step "Cook the onion for 5 minutes" shows a [timer](timers.md) of 5:00. The 
 
 ## The end makes the pantry correct
 
-The [last page](end-of-a-meal.md) lists each ingredient that the plugin can count, with its amount. You take the mark off an ingredient that you did not use. Then "Update the pantry" does four things:
+The [last page](end-of-a-meal.md) lists each ingredient that the plugin can count, with its amount. You take the mark off an ingredient that you did not use. Then "Update the pantry" does three things:
 
 - It takes each amount out of its food item in the [pantry](pantry.md). The row with the first use-by date gives its food first.
-- It writes your rating as a property of the recipe note.
 - It adds a line below the heading "Cooked" of the recipe note: the date, the rating, your note, and the photo.
 - It marks the meal as cooked in the [plan](plan.md).
 

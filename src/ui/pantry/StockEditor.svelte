@@ -13,6 +13,8 @@
 		stock?: Stock;
 		// The places that the pantry has. One tap selects a place.
 		places: string[];
+		// The place that a new row starts with, such as "Place for new food".
+		startPlace?: string;
 		// The low line of the food item, as text. The hint is the line that the plugin sets when the
 		// field is empty. With no low line here, the editor does not ask for it.
 		low?: { text: string; hint: string };
@@ -32,6 +34,7 @@
 		startName = '',
 		stock,
 		places,
+		startPlace = '',
 		low,
 		staple,
 		facts = [],
@@ -45,13 +48,14 @@
 	// The fields start with the row as it is. After that, they are yours.
 	const first = () => stock;
 	const firstName = () => startName;
+	const firstPlace = () => first()?.place ?? startPlace;
 	const firstLow = () => low?.text ?? '';
 	const firstKind = (): StapleLabel => staple ?? null;
 	let name = $state(firstName());
 	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
-	let place = $state(first()?.place ?? '');
+	let place = $state(firstPlace());
 	let useBy = $state(first()?.useBy ?? '');
 	// A place that the pantry does not have yet.
 	let newPlace = $state('');

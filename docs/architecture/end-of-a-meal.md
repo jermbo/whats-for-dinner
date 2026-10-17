@@ -37,7 +37,7 @@ You can give a rating of 1 to 5 stars, a note for the next time, and a photo. Th
   ![[Chicken curry 2026-10-11.jpg]]
 ```
 
-Each meal adds one line below the heading "Cooked", at the end of the note. The rating is also the property `rating` of the note, so that the recipe list can use it.
+Each meal adds one line below the heading "Cooked", at the end of the note. The rating of the recipe is the stars of the newest line that has stars. The recipe list sorts by it. The plugin does not write a property, so the note stays a correct RecipeMD recipe.
 
 A photo from a phone is some megabytes. The plugin makes it small before it goes into the vault, with your other attachments.
 

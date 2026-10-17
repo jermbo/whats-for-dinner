@@ -11,7 +11,7 @@ This note tests an ingredient that is a link to a different recipe. The specific
 
 ---
 
-- *2 servings* [Steamed rice](../Recipes/Steamed%20rice.md)
+- *2 servings* [Steamed rice](_old/Recipes/Steamed%20rice.md)
 - *2* eggs
 - *1 tablespoon* soy sauce
 
