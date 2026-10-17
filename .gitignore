@@ -1,6 +1,8 @@
 node_modules
 
 _archive
+recipes
+_old
 
 # Output
 .output

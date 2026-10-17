@@ -2,7 +2,7 @@ import { makeStock } from '../pantry/food-item';
 import type { Stock } from '../pantry/types';
 import type { Settings } from '../settings';
 import { folderPath } from '../settings';
-import { homeFolders, homePaths } from '../setup/home';
+import { homeFolders, homeOf, homePaths } from '../setup/home';
 import type { Setup } from '../setup/screen';
 
 export type SetupActionsHost = {
@@ -14,6 +14,8 @@ export type SetupActionsHost = {
 	changeSettings(change: Partial<Settings>): Promise<void>;
 	goTo(setup: Setup): Promise<void>;
 	addStock(name: string, stock: Stock): Promise<void>;
+	trash(path: string): Promise<void>;
+	forgetAll(): Promise<void>;
 };
 
 async function makeFolder(host: SetupActionsHost, path: string) {
@@ -41,6 +43,14 @@ export async function makeHome(host: SetupActionsHost, name: string) {
 export async function choosePlaces(host: SetupActionsHost, places: string[], newPlace: string) {
 	await host.changeSettings({ places, newPlace });
 	await host.goTo('food');
+}
+
+// For a test of setup: the plugin home goes to the trash of the vault, where you can get it back,
+// and the data file starts as on a new install. The recipes folder stays.
+export async function startAgain(host: SetupActionsHost) {
+	const home = homeOf(host.settings.pantryFolder);
+	if (home && host.exists(home)) await host.trash(home);
+	await host.forgetAll();
 }
 
 // Each staple with an amount gets its note in "Place for new food". The vault reports a new note

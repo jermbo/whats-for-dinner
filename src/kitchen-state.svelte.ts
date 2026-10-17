@@ -45,6 +45,7 @@ import {
 	chooseRecipesFolder as chooseRecipesFolderAction,
 	finishSetup as finishSetupAction,
 	makeHome as makeHomeAction,
+	startAgain as startAgainAction,
 	type SetupActionsHost
 } from './kitchen/setup-actions';
 import type { CookResult, Disk, Meal } from './kitchen/types';
@@ -213,6 +214,10 @@ export class Kitchen {
 
 	finishSetup(staples: Map<string, string>): Promise<boolean> {
 		return finishSetupAction(this.setupHost, staples);
+	}
+
+	async startSetupAgain() {
+		await startAgainAction(this.setupHost);
 	}
 
 	// For a vault that had notes of the kitchen before setup. The settings tab has the button.
@@ -413,7 +418,19 @@ export class Kitchen {
 				k.setup = setup;
 				await k.save();
 			},
-			addStock: (name, stock) => k.addStock(name, stock)
+			addStock: (name, stock) => k.addStock(name, stock),
+			trash: async (path) => {
+				const folder = k.app.vault.getAbstractFileByPath(path);
+				// The trash of the vault, and not of the system: a phone can have no system trash.
+				if (folder) await k.app.vault.trash(folder, false);
+			},
+			forgetAll: async () => {
+				k.skipped = [];
+				k.setup = null;
+				k.settings = DEFAULT_SETTINGS;
+				await k.save();
+				if (k.started) await k.readAll();
+			}
 		};
 	}
 

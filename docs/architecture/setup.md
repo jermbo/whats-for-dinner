@@ -34,6 +34,10 @@ Each step needs the step before it. The home must not hold the recipes, and food
 
 Setup is for a new vault. Before setup starts, the kitchen looks at the paths of the settings. If it finds a food item, the meal plan note, or a note in the shopping folder, it does not run setup. It tells you to open the plugin settings. There, you check the folders and tap "Use these notes". Then the kitchen opens with the notes that are there.
 
+## Setup again, for a test
+
+The development build has the command "Start setup again". It moves the plugin home to the trash of the vault, where you can get it back, and the data file starts as on a new install. The recipes folder stays. A plugin home at the root of the vault, as in a vault from before setup, is not moved. The release has no such command: the plugin deletes no folder of yours.
+
 ## An example
 
 You keep `Recipes/` at the root of the vault, and you keep `Larder`. You rename "Fridge" to "Kitchen fridge", and add "Garage freezer". On the checklist, you give rice "2 kg". The vault gets `Larder/Pantry/Rice.md` with a row for "Kitchen pantry", and the kitchen opens on the Pantry part with rice.

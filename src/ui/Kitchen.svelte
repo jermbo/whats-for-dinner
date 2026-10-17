@@ -37,8 +37,10 @@
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	// The kitchen fades in at the end of setup. A tab that opens on the four parts shows them at once.
-	const opensInSetup = () => kitchen.screen !== 'kitchen';
-	const inSetup = opensInSetup();
+	let inSetup = $state(false);
+	$effect.pre(() => {
+		if (kitchen.screen !== 'kitchen') inSetup = true;
+	});
 
 	// The bar of each part, with the sequence that the part starts with. A part forgets its bar
 	// when it goes off the screen, so the bars are here: they stay while the kitchen is open.

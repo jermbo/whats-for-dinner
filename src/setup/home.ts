@@ -19,6 +19,13 @@ export const homePaths = (home: string) => ({
 	planNote: `${home}/Meal plan.md`
 });
 
+// The home of a pantry folder that setup made, or no home: a pantry folder at the root of the
+// vault, as in a vault from before setup, has none.
+export function homeOf(pantryFolder: string): string {
+	const end = '/Pantry';
+	return pantryFolder.endsWith(end) ? pantryFolder.slice(0, -end.length) : '';
+}
+
 export const isInFolder = (path: string, folder: string) =>
 	path === folder || path.startsWith(`${folder}/`);
 
