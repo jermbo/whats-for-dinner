@@ -29,6 +29,7 @@ As the [keeper](../../personas.md), I want the Kitchen tab to start setup and to
    - b. The recipes folder is not under the plugin home folder (`Larder/` by default)
 5. Tap "Continue" on the recipes step to save the recipes folder setting and go to the next step
    - a. "Continue" is active only when the recipes folder field has text
+6. Before code, update [Settings](../../architecture/settings.md) and [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md) for the onboarding-complete flag and when setup replaces the four parts
 
 ## Acceptance criteria
 

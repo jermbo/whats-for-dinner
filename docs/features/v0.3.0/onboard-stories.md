@@ -43,6 +43,19 @@ A story can start when the stories that it depends on are done. This gives five 
 
 Story 2 changes how [Add food](../v0.1.0/pantry-add-food.md) and [Filter the pantry](../v0.1.0/pantry-filter-the-pantry.md) use **places**. Update those stories when this work ships, if their criteria no longer match.
 
+## Architecture pages
+
+Each story updates wiki pages **before** its code, in the **Elevate** step of [implement](../../standards/workflow.md). The owner reads the page diff; then the builder writes code. Do not leave architecture for a doc-only pass at the end.
+
+| Page | Stories that update it |
+| ---- | ---------------------- |
+| [Settings](../../architecture/settings.md) | 1: Larder default paths. 2: place list in the data file. 3: onboarding-complete flag. 4: plugin home and teardown (delete the home folder; recipes stay). 6: flag set when setup finishes. |
+| [Pantry](../../architecture/pantry.md) | 2: UI uses the place list before rows exist. 5: onboarding places step (no new mechanism). |
+| [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md) | 2: place list in the data file. 3: onboarding flag. |
+| [Glossary](../../glossary.md) | 4: **Larder** and **plugin home**, with links to the [initiative glossary](../../initiatives/pantry-onboarding/glossary.md). |
+
+Story 6 updates [Features](../README.md) when you add a short “first run” paragraph there. Update [roadmap](../roadmap.md) only if it still lists onboarding as future work.
+
 ## What the vault needs
 
 | The vault needs                                                                 | For stories |

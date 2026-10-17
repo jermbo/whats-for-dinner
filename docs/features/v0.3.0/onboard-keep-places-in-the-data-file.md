@@ -26,6 +26,7 @@ As the [keeper](../../personas.md), I want a list of place names in the plugin d
 4. The filter chips of the Pantry part show each name in the list, even when no row uses that place yet
 5. Put away proposes a place from the list when the line has no row yet
    - a. The proposed place is still the setting "Place for new food"
+6. Before code, update [Settings](../../architecture/settings.md), [Pantry](../../architecture/pantry.md), and [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md) so they describe the place list and how the kitchen uses it
 
 ## Acceptance criteria
 

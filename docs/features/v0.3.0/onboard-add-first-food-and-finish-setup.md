@@ -28,6 +28,7 @@ As the [keeper](../../personas.md), I want to add the first food from a short ch
 4. When onboarding completes, the data file flag records that onboarding is complete
 5. When onboarding is complete, the Kitchen tab shows the four parts and opens on the Pantry part
    - a. The pantry shows the food that setup added
+6. Before code, update [Settings](../../architecture/settings.md) for when onboarding is complete, and [Features](../README.md) with a short first-run paragraph if that page does not mention setup yet
 
 ## Acceptance criteria
 

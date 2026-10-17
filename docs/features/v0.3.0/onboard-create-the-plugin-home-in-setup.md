@@ -25,6 +25,7 @@ As the [writer](../../personas.md), I want setup to create the Larder folders an
    - d. The plugin does not move notes from other folders
 3. When `{home}` is not `Larder`, the paths in settings use the name the writer chose
 4. Tap "Continue" goes to the places step
+5. Before code, update [Settings](../../architecture/settings.md) for the plugin home layout and teardown, and [Glossary](../../glossary.md) for **Larder** and **plugin home**
 
 ## Acceptance criteria
 

@@ -29,6 +29,7 @@ As the [keeper](../../personas.md), I want to name where food lives and to choos
    - c. When `Kitchen pantry` is not in the list, no option is pre-selected
 4. "Continue" is active only when the list has at least one place and "Place for new food" has a selection
 5. Tap "Continue" to save the place list and "Place for new food" into the data file and to go to the first-food step
+6. Before code, update [Settings](../../architecture/settings.md) and [Pantry](../../architecture/pantry.md) if the places step adds anything not already covered by story 2
 
 ## Acceptance criteria
 
