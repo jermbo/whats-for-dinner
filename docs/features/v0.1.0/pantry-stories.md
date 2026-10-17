@@ -1,8 +1,7 @@
 ---
 title: Pantry stories
-summary: 'The user stories of the pantry in version 0.1.0: eleven pieces of work, with the sequence in which they depend on each other.'
+summary: "The user stories of the pantry in version 0.1.0: eleven pieces of work, with the sequence in which they depend on each other."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / Pantry stories
@@ -50,7 +49,7 @@ Each story has the form that the [user story](../../standards/user-story.md) pag
 
 ## The status of a story
 
-The metadata of a story has its status. All stories of this page have the status `built`: the code is there, and no automatic test covers it yet.
+The metadata of a story has its status. All stories of this page have the status `built`: the code is there, and nobody recorded a test on the phone.
 
 ## Further reading
 

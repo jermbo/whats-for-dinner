@@ -1,0 +1,101 @@
+---
+title: Shop stories
+summary: "The user stories of the shopping list in version 0.2.0: twenty-six pieces of work, with the sequence in which they depend on each other."
+parent: ../README.md
+---
+
+[Wiki](../../README.md) / [Features](../README.md) / Shop stories
+
+# Shop stories
+
+The Shop part is where you make the list, mark what you take, and put the food away. This page lists its user stories for version 0.2.0. Each story is one piece of work that one agent or one person can complete.
+
+## The goal of the feature
+
+The list has more than the food of the meals: you add an item on any day, and the plugin suggests the staples that need a look. Each trip has a note. When you put the food away, the plugin fills in the amount, the place, the use-by date, and the price of each item. You check them, and the note becomes the receipt.
+
+The Shop part has three stages, one for each moment of a trip. In "Extras", you decide the suggestions and add your own items, because the meals fill the list with no action from you. In "Shop", you tick the items into the cart. In "Put away", you check the facts and put the cart into the pantry.
+
+Stories 14 to 23 come from the review of 17 October. Each food item that is out or low is a suggestion now, staple or not. In the store, the list shows the amount that you usually buy, its price, and the order of the store. Stories 24 to 26 come from the test of put away on that day: you put one item away after you check it, the known items have one button, and the receipt note keeps each fact.
+
+The [spec](../../initiatives/shopping-list/spec.md) has the scope that is agreed, and each line of it names its decision. The wiki [glossary](../../glossary.md) has the words of these stories, such as "choice", "suggestion", and "receipt".
+
+## The stories
+
+| Story                                                                                           | Persona | Depends on              |
+| ----------------------------------------------------------------------------------------------- | ------- | ----------------------- |
+| 1. [Keep the cart in the shopping note](shop-keep-the-cart-in-the-shopping-note.md)             | Shopper | Nothing                 |
+| 2. [Label a staple](shop-label-a-staple.md)                                                     | Keeper  | Nothing                 |
+| 3. [See the staples that need a look](shop-see-the-staples-that-need-a-look.md)                 | Planner | Story 1                 |
+| 4. [See food of a meal that is past its date](shop-see-food-of-a-meal-that-is-past-its-date.md) | Planner | Story 3                 |
+| 5. [Add an item of your own](shop-add-an-item-of-your-own.md)                                   | Planner | Story 1                 |
+| 6. [Get a receipt for each trip](shop-get-a-receipt-for-each-trip.md)                           | Keeper  | Story 1                 |
+| 7. [Give the facts of each item at put away](shop-give-the-facts-of-each-item.md)               | Keeper  | Story 6                 |
+| 8. [Start from the facts of the last receipt](shop-start-from-the-last-receipt.md)              | Keeper  | Story 7                 |
+| 9. [Record the store of a trip](shop-record-the-store-of-a-trip.md)                             | Keeper  | Story 7                 |
+| 10. [Put an item of your own into the pantry](shop-put-an-item-of-your-own-into-the-pantry.md)  | Keeper  | Stories 5 and 7         |
+| 11. [Move between the three stages of a trip](shop-move-between-the-three-stages.md)            | Shopper | Stories 1, 3, and 7     |
+| 12. [Decide the extras before the trip](shop-decide-the-extras.md)                              | Planner | Stories 3, 4, 5, and 11 |
+| 13. [Tick the items into the cart](shop-tick-the-items-into-the-cart.md)                        | Shopper | Stories 1, 3, and 11    |
+| 14. [See all food that needs a look](shop-see-all-food-that-needs-a-look.md)                    | Planner | Story 12                |
+| 15. [Never ask about a food item](shop-never-ask-about-a-food-item.md)                          | Planner | Stories 2 and 14        |
+| 16. [Put a new bag into the row with no date](shop-put-a-new-bag-into-the-row-with-no-date.md)  | Keeper  | Story 7                 |
+| 17. [Add to the list from the Pantry](shop-add-to-the-list-from-the-pantry.md)                  | Keeper  | Story 5                 |
+| 18. [Add an item in the store](shop-add-an-item-in-the-store.md)                                | Shopper | Stories 5 and 13        |
+| 19. [See the amount that you usually buy](shop-see-the-usual-amount.md)                         | Shopper | Story 8                 |
+| 20. [See the prices and the total](shop-see-the-prices-and-the-total.md)                        | Shopper | Stories 8 and 13        |
+| 21. [Keep the screen on in the store](shop-keep-the-screen-on-in-the-store.md)                  | Shopper | Story 13                |
+| 22. [Pick the store at the start of the trip](shop-pick-the-store-at-the-start.md)              | Shopper | Stories 9 and 13        |
+| 23. [Sort the list in the order of the store](shop-sort-the-list-in-the-order-of-the-store.md)  | Shopper | Story 22                |
+| 24. [Put away one item at a time](shop-put-away-one-item.md)                                    | Keeper  | Stories 7 and 23        |
+| 25. [Put away the known items with one button](shop-put-away-the-known-items.md)                | Keeper  | Story 24                |
+| 26. [Keep put away in the receipt note](shop-keep-put-away-in-the-receipt.md)                   | Keeper  | Story 24                |
+
+The [personas](../../personas.md) page tells who the shopper, the keeper, and the planner are.
+
+## The sequence of the work
+
+A story can start when the stories that it depends on are done. This gives ten steps. The stories of one step can be built at the same time.
+
+| Step | Stories      | What you have after the step                                                                    |
+| ---- | ------------ | ----------------------------------------------------------------------------------------------- |
+| 1    | 1 and 2      | The cart is a note of the vault, and a food item can be a staple.                               |
+| 2    | 3, 5, and 6  | The plugin suggests staples, you add your own items, and each trip leaves a receipt.            |
+| 3    | 4 and 7      | Food past its date is a suggestion, and put away records the facts and the price of an item.    |
+| 4    | 8, 9, and 10 | Put away starts from the last receipt, records the store, and takes a new item into the pantry. |
+| 5    | 11           | The Shop part has three stages: Extras, Shop, and Put away.                                     |
+| 6    | 12 and 13    | Extras has only what the meals do not decide, and you tick each item into the cart.             |
+| 7    | 14, 16 to 22 | Each low food item is a suggestion, and the store trip has amounts, prices, and the store.      |
+| 8    | 15 and 23    | You can say "Never ask", and the list has the order of the store.                               |
+| 9    | 24           | You put one item into the pantry as soon as you checked it.                                     |
+| 10   | 25 and 26    | You look only at what the plugin cannot know, and the receipt note keeps each fact.             |
+
+Story 3 reads the property that story 2 writes. Story 2 does not stop story 3, because you can type the property into a note.
+
+## What the test vault needs
+
+The criteria of the stories use the notes of the test vault. The vault has four things for them, and the story that needs each of them tells its exact form.
+
+| The vault needs                                               | For story           |
+| ------------------------------------------------------------- | ------------------- |
+| The guacamole in the plan, so that the list has two rows      | 1, 6, 7, 11, 12, 13 |
+| A recipe with an ingredient that the pantry does not know     | 1                   |
+| The properties `staple` and `bought` in eight food item notes | 3                   |
+| Two receipts in the folder `Shopping`, each with a store      | 8, 9                |
+
+## The form of a story
+
+Each story has the form that the [user story](../../standards/user-story.md) page gives.
+
+## The status of a story
+
+The metadata of a story has its status. Each of the twenty-three stories has the status `built`: the code is there, and nobody recorded a test on the phone. Stories 11 to 13 change the screen after the second test, and stories 14 to 23 come from the review of 17 October.
+
+The stories use one test vault, and two of them do not agree in it. Story 7 tells milk with no receipt, and story 8 gives milk a receipt. So the check list of the test vault tests story 7 with food that has no receipt.
+
+Story 3 and story 12 do not agree in the vault either. With the guacamole in the plan, avocados are on the list, so they are not a suggestion. So the criteria of story 3 start with no meal in the plan.
+
+## Further reading
+
+- [Decision log: shopping list](../../initiatives/shopping-list/decision-log.md): the reason for each rule of these stories.
+- [Workflow](../../standards/workflow.md): what occurs after the stories.

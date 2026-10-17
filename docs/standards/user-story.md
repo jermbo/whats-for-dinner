@@ -1,8 +1,7 @@
 ---
 title: User story
-summary: 'The form of a user story: one sentence, numbered requirements, and acceptance criteria that are each true or false.'
+summary: "The form of a user story: one sentence, numbered requirements, and acceptance criteria that are each true or false."
 parent: workflow.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Workflow](workflow.md) / User story
@@ -50,6 +49,19 @@ A criterion is one check that is true or false. It is one line with three words 
 ```
 
 Use the names and the amounts of the test vault. A check with real values becomes a test later, with no change.
+
+## The status tells who acts next
+
+A story has one status at a time. The status does not tell how good the story is. It tells who must do the next thing.
+
+| Status       | Meaning                                           | Who acts next                  |
+| ------------ | ------------------------------------------------- | ------------------------------ |
+| `needs-info` | The story is an idea, and its details are open.   | You, in a grill                |
+| `ready`      | The story is complete, and you approved it.       | An agent or a person builds it |
+| `built`      | The code is there. Nobody tested it on the phone. | You, with the phone            |
+| `done`       | You tested it on the phone, and it works.         | Nobody                         |
+
+You can write a story at any moment, with only its title and its sentence. It gets the status `needs-info`, so that nobody builds it before its grill. Only you make a story `done`.
 
 ## The file
 

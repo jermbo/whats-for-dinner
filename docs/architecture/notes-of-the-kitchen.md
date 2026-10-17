@@ -1,8 +1,7 @@
 ---
 title: Notes of the kitchen
-summary: 'Where the plugin keeps its data: three kinds of notes in your vault, and the path that each change takes.'
+summary: "Where the plugin keeps its data: four kinds of notes in your vault, and the path that each change takes."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Notes of the kitchen
@@ -15,15 +14,16 @@ The plugin has no database. All that it knows is in notes of your vault. This pa
 
 Only its program can read a database. If the program stops, your data stops with it. A note is text that you can read and change with no plugin. So the vault is the only source of the kitchen.
 
-## Three kinds of notes
+## Four kinds of notes
 
 | Note      | One note for            | Where it is                                   |
 | --------- | ----------------------- | --------------------------------------------- |
 | Recipe    | Each recipe             | The recipes folder of the settings            |
 | Food item | Each food of the pantry | The pantry folder of the settings             |
 | Plan      | The meals of the week   | The plan note of the settings: `Meal plan.md` |
+| Shopping  | Each shopping trip      | The shopping folder of the settings           |
 
-A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md) and the [plan](plan.md) have a form of the plugin, and you can write each of them by hand.
+A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md), the [plan](plan.md), and a [shopping trip](shopping-note.md) have a form of the plugin, and you can write each of them by hand.
 
 ## Each change goes through a note
 
@@ -47,11 +47,12 @@ The chicken curry needs 500 g of chicken thighs, and the outside fridge has 500 
 
 ## What is not in a note
 
-Three things are not facts of the kitchen, so they are in the data file of the plugin:
+Two things are not facts of the kitchen, so they are in the data file of the plugin:
 
 - your [settings](settings.md)
-- the items in your cart
-- the choice to put low food on the shopping list
+- the [suggestions](suggestions.md) that you skipped
+
+The cart is not in that file. The plugin reads the data file one time, when it starts. So a cart in that file is not the same on your phone and on your computer.
 
 ## Further reading
 

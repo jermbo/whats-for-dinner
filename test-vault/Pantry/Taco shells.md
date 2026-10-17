@@ -4,4 +4,4 @@ full: 8
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 8      |        |
+| Kitchen pantry | 4      |        |

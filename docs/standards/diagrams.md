@@ -1,8 +1,7 @@
 ---
 title: Diagrams
-summary: 'When a diagram helps, which type to use, and how to write one that does not break.'
+summary: "When a diagram helps, which type to use, and how to write one that does not break."
 parent: documentation-standards.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Diagrams

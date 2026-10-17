@@ -1,64 +1,54 @@
-// The shopping list is the plan minus the pantry. Two meals that need onions make one row. Food
-// that is low can go on the list too, so that you buy it before a recipe needs it.
+// The rows that the plugin calculates: the plan minus the pantry. Two meals that need onions make
+// one row. A low staple that a meal needs is a row too.
 
 import type { IngredientMatch } from '../match/match';
 import { nameKey, showName } from '../match/names';
 import type { FoodNote } from '../note';
+import { notePathIn } from '../note-path';
 import { levelOf } from '../pantry/level';
 import { available } from '../pantry/total';
 import { addTo, showMeasure, type Measure } from '../units';
 
 export type ShoppingRow = {
+	// The path of the note of the item. Food that the pantry does not know has the path of a note
+	// of the pantry folder that is not there yet. An item with no note has its name as its key.
 	key: string;
 	name: string;
-	// What to buy, as text: "20 g", "1 can + 200 ml", or no text when the recipes give no amount.
+	// What to buy, as text: "20 g", "1 can + 200 ml", or no text when the row has no amount.
 	amount: string;
-	// What to buy, as quantities. Put away adds these to the pantry.
+	// What to buy, as quantities. Put away proposes these for the pantry.
 	buy: Measure[];
 	food: FoodNote | null;
 	// The titles of the recipes that need this row.
 	recipes: string[];
-	// The row is on the list because the food item is low or out.
-	low: boolean;
+	// The row is on the list because you put it there: its item has a task with no mark.
+	extra: boolean;
 };
 
-// A food item to buy with no meal that needs it: it is below its low line, or it is out. `fill` is
-// what makes it full again. It is null when the plugin cannot count the food item.
-export type LowFood = { food: FoodNote; fill: Measure | null };
-
-export function lowFoods(foods: FoodNote[], lowPercent: number): LowFood[] {
-	return foods.flatMap((food) => {
-		const level = levelOf(food.item, lowPercent);
-		const isOut = !food.item.stocks.length;
-		if (!isOut && !level?.isLow) return [];
-		return [{ food, fill: level && { kind: level.kind, value: level.full - level.has } }];
-	});
-}
-
-type Need = {
+// What the meals need of one item, with no regard to the pantry.
+export type Need = {
+	key: string;
 	name: string;
 	food: FoodNote | null;
+	// One sum for each kind of measure. An ingredient with no amount adds nothing.
 	sums: Map<string, number>;
-	recipes: Set<string>;
-	fill: Measure | null;
-	low: boolean;
+	recipes: string[];
 };
 
-export function shoppingList(
+export function needsOf(
 	meals: { title: string; ingredients: IngredientMatch[] }[],
-	low: LowFood[] = []
-) {
+	pantryFolder: string
+): Need[] {
 	const needs = new Map<string, Need>();
-	const needOf = (key: string, name: string, food: FoodNote | null) => {
-		const need = needs.get(key) ?? {
+	const needOf = (id: string, name: string, food: FoodNote | null) => {
+		const need = needs.get(id) ?? {
+			key: food?.path ?? notePathIn(pantryFolder, name),
 			name,
 			food,
 			sums: new Map<string, number>(),
-			recipes: new Set<string>(),
-			fill: null,
-			low: false
+			recipes: []
 		};
-		needs.set(key, need);
+		needs.set(id, need);
 		return need;
 	};
 
@@ -68,35 +58,40 @@ export function shoppingList(
 				? needOf(food.path, food.item.name, food)
 				: needOf(nameKey(ingredient.name), showName(ingredient.name), null);
 			if (need) addTo(entry.sums, need);
-			entry.recipes.add(title);
+			if (!entry.recipes.includes(title)) entry.recipes.push(title);
 		}
 	}
+	return [...needs.values()];
+}
 
-	for (const { food, fill } of low) {
-		const entry = needOf(food.path, food.item.name, food);
-		entry.fill = fill;
-		entry.low = true;
-	}
-
+export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
 	const rows: ShoppingRow[] = [];
-	for (const [key, { name, food, sums, recipes, fill, low }] of needs) {
-		const stocks = food?.item.stocks ?? [];
-		const short = new Map<string, number>();
+	for (const need of needs) {
+		const stocks = need.food?.item.stocks ?? [];
+		const short: Measure[] = [];
 
-		for (const [kind, value] of sums) {
+		for (const [kind, value] of need.sums) {
 			const has = available(stocks, kind);
 			// The pantry has the food in a unit that does not compare: the plugin does not ask for more.
 			if (has === 0 && stocks.length) continue;
-			if (value > has) short.set(kind, value - has);
+			if (value > has) short.push({ kind, value: value - has });
 		}
-		// Low food fills to its full amount. If the meals need more than that, their amount stays.
-		if (fill) short.set(fill.kind, Math.max(short.get(fill.kind) ?? 0, fill.value));
 
-		const buy = [...short].map(([kind, value]) => ({ kind, value }));
-		if (buy.length || !stocks.length) {
-			const amount = buy.map(showMeasure).join(' + ');
-			rows.push({ key, name, amount, buy, food, recipes: [...recipes], low });
+		if (short.length || !stocks.length || isLowStaple(need.food, lowPercent)) {
+			rows.push(rowFor(need, short));
 		}
 	}
 	return rows.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// The meal uses what is left of a low staple, so you need more of it, also when the pantry has
+// enough for the meal. The list fills the row of a staple.
+function isLowStaple(food: FoodNote | null, lowPercent: number): boolean {
+	return Boolean(food?.item.staple && levelOf(food.item, lowPercent)?.isLow);
+}
+
+// The row of a need, with what to buy of it.
+export function rowFor({ key, name, food, recipes }: Need, buy: Measure[]): ShoppingRow {
+	const amount = buy.map(showMeasure).join(' + ');
+	return { key, name, amount, buy, food, recipes, extra: false };
 }

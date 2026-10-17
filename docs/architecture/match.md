@@ -1,8 +1,7 @@
 ---
 title: Match
-summary: 'How one ingredient of a recipe finds its food item in the pantry, and how the plugin decides if you have sufficient of it.'
+summary: "How one ingredient of a recipe finds its food item in the pantry, and how the plugin decides if you have sufficient of it."
 parent: recipes.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Recipes](recipes.md) / Match

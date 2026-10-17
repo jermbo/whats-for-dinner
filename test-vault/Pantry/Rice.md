@@ -3,9 +3,10 @@ brands:
   - Store brand
 full: 5 kg
 low: 1 kg
+staple: sometimes
+bought: 2026-10-17
 ---
 
-| Place             | Amount | Use by     |
-| ----------------- | ------ | ---------- |
-| Kitchen pantry    | 500 g  |            |
-| Downstairs pantry | 1.8 kg | 2027-06-01 |
+| Place          | Amount | Use by |
+| -------------- | ------ | ------ |
+| Kitchen pantry | 5 kg   |        |

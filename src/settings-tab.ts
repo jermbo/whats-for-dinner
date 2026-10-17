@@ -25,7 +25,14 @@ class TextSuggest extends AbstractInputSuggest<string> {
 	}
 }
 
-type TextKey = 'recipesFolder' | 'pantryFolder' | 'planNote' | 'newPlace' | 'fontName';
+type TextKey =
+	| 'recipesFolder'
+	| 'pantryFolder'
+	| 'planNote'
+	| 'shoppingFolder'
+	| 'itemsFolder'
+	| 'newPlace'
+	| 'fontName';
 type NumberKey = 'volume' | 'soonDays' | 'lowPercent';
 type SwitchKey = 'vibrate' | 'keepScreenOn';
 
@@ -69,6 +76,20 @@ export class KitchenSettingTab extends PluginSettingTab {
 			'The note with the meals of the week.',
 			'Meal plan.md',
 			notes
+		);
+		this.text(
+			'shoppingFolder',
+			'Shopping folder',
+			'The note of each shopping trip is in this folder.',
+			'Shopping',
+			folders
+		);
+		this.text(
+			'itemsFolder',
+			'Items folder',
+			'An item of your own that no note has links to a note of this folder. The plugin makes no note there.',
+			'Shopping/Items',
+			folders
 		);
 		this.text(
 			'newPlace',

@@ -2,7 +2,6 @@
 title: Cook Mode
 summary: 'What occurs from the button "Cook" to a correct pantry: the pages of Cook Mode, the timers, and the record of the meal.'
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Cook Mode

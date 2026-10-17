@@ -1,8 +1,7 @@
 ---
 title: Workflow
-summary: 'The path of a piece of work, from a discussion to code with tests, and the folder that holds it at each step.'
+summary: "The path of a piece of work, from a discussion to code with tests, and the folder that holds it at each step."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Workflow
@@ -25,9 +24,9 @@ Code that comes first decides things that nobody decided. A page is easy to chan
 
 ## The six steps
 
-1. **Grill.** You make a folder for the initiative, and you discuss the feature there. The folder has a temporary glossary, where each new word gets its meaning. It has a decision log, where you explore the options and select a direction, with the reason. It can have more pages for detail, such as a flow chart, the connections of a schema, or the contract of an endpoint. All of this looks forward, but it starts from the code of today.
-2. **Stories.** When the grill is complete and the scope is agreed, you divide the work into [user stories](user-story.md). One agent or one person can complete a story. A story has a persona, requirements, acceptance criteria, and links to the stories that it depends on.
-3. **Elevate.** The initiative goes from draft to architecture. You compare the story with the architecture pages and with the code, to see that they agree. Then you change the pages that must change.
+1. **Grill.** You make a folder for the initiative, and you discuss the feature there. The folder has a temporary glossary, where each new word gets its meaning. It has a decision log, where you explore the options and select a direction, with the reason. It can have more pages for detail, such as a flow chart, the connections of a schema, or the contract of an endpoint. All of this looks forward, but it starts from the code of today. The grill ends with a [spec](spec.md): one page with the scope that is agreed.
+2. **Stories.** You divide the scope of the spec into [user stories](user-story.md). One agent or one person can complete a story. A story has a persona, requirements, acceptance criteria, and links to the stories that it depends on.
+3. **Elevate.** The initiative goes from draft to architecture. You compare the story with the architecture pages and with the code, to see that they agree. Then you change the pages that must change, and you approve them before the code starts. It is the last moment in which a change is only words.
 4. **Code.** The code follows the story and the pages that step 3 changed.
 5. **Tests.** Each test must be useful. You do not make a test only to have a test.
 6. **Repeat.** You go back to the stories, and you do steps 3 to 6 for the next story, until all stories are done.
@@ -46,4 +45,5 @@ flowchart LR
 ## Further reading
 
 - [Page template](page-template.md): the form of a page, and the folders of the wiki.
+- [Pull request](pull-request.md): the form of the message that puts a branch into the plugin.
 - [Pantry stories](../features/v0.1.0/pantry-stories.md): the user stories of one feature, as a model.

@@ -1,8 +1,7 @@
 ---
-title: 'Glossary: one bar for each part'
+title: "Glossary: one bar for each part"
 summary: 'The new words of the initiative "one bar for each part", each with one meaning, until the wiki glossary gets them.'
 parent: decision-log.md
-updated: 2026-10-12
 ---
 
 [Wiki](../../README.md) / [Decision log: one bar for each part](decision-log.md) / Glossary: one bar for each part

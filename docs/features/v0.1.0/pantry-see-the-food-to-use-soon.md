@@ -1,11 +1,10 @@
 ---
 title: See the food to use soon
-summary: 'The planner sees which food has a use-by date that is near, so that it is used before it is waste.'
+summary: "The planner sees which food has a use-by date that is near, so that it is used before it is waste."
 parent: pantry-stories.md
 persona: Planner
 depends-on: [pantry-see-the-food-of-each-place.md]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / See the food to use soon

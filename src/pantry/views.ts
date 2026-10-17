@@ -35,7 +35,7 @@ export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 	});
 }
 
-// A row is low when its food item is below the low line, with all places together.
+// A row is low when its food item is at or below the low line, with all places together.
 export const isLow = (row: StockRow) => row.bar?.isLow ?? false;
 
 const byFood = (a: StockRow, b: StockRow) => a.food.item.name.localeCompare(b.food.item.name);

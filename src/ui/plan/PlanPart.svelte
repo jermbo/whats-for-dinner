@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { Kitchen, Meal } from '../../kitchen-state.svelte';
+	import type { Meal } from '../../kitchen/types';
+	import type { Kitchen } from '../../kitchen-state.svelte';
 	import {
 		inSequence,
 		isFound,

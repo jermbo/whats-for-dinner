@@ -27,7 +27,16 @@ export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null 
 
 	const lowSet = item.low ? measure(item.low) : null;
 	const low = lowSet?.kind === kind ? Math.min(lowSet.value, full) : (full * lowPercent) / 100;
-	return { kind, has, full, low, isLow: has < low };
+	// Food at its low line is low: the line is where you want more.
+	return { kind, has, full, low, isLow: has <= low };
+}
+
+// What makes a food item full again: the full amount less what the pantry has. Null: the food
+// item is full, or the plugin cannot count it.
+export function fillOf(item: FoodItem): Measure | null {
+	const level = levelOf(item);
+	if (!level || level.has >= level.full) return null;
+	return { kind: level.kind, value: level.full - level.has };
 }
 
 // The parts of the bar of one row, each as a part of the full amount: the food in this place, the

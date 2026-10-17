@@ -1,11 +1,15 @@
 ---
 title: Change a row
-summary: 'The keeper changes the place, the amount, the use-by date, or the low line of one row in a form.'
+summary: "The keeper changes the place, the amount, the use-by date, or the low line of one row in a form."
 parent: pantry-stories.md
 persona: Keeper
-depends-on: [pantry-see-the-food-of-each-place.md, pantry-see-the-level.md, pantry-correct-an-amount.md]
+depends-on:
+  [
+    pantry-see-the-food-of-each-place.md,
+    pantry-see-the-level.md,
+    pantry-correct-an-amount.md,
+  ]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / Change a row

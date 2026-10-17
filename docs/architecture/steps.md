@@ -1,8 +1,7 @@
 ---
 title: Steps
-summary: 'How the plugin divides the instructions of a recipe into the pages of Cook Mode, and how each page gets its ingredients.'
+summary: "How the plugin divides the instructions of a recipe into the pages of Cook Mode, and how each page gets its ingredients."
 parent: cook-mode.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Cook Mode](cook-mode.md) / Steps

@@ -1,8 +1,7 @@
 ---
 title: End of a meal
-summary: 'What the last page of Cook Mode writes: the food that goes out of the pantry, the rating, and the record in the recipe note.'
+summary: "What the last page of Cook Mode writes: the food that goes out of the pantry, the rating, and the record in the recipe note."
 parent: cook-mode.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Cook Mode](cook-mode.md) / End of a meal

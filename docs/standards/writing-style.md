@@ -1,8 +1,7 @@
 ---
 title: Writing style
-summary: 'How to write a description that teaches: the order of an explanation, and the rules of the language.'
+summary: "How to write a description that teaches: the order of an explanation, and the rules of the language."
 parent: documentation-standards.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Writing style

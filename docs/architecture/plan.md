@@ -1,8 +1,7 @@
 ---
 title: Plan
-summary: 'How the week works: meals with no fixed day, room for each type of meal, and one note that holds the plan.'
+summary: "How the week works: meals with no fixed day, room for each type of meal, and one note that holds the plan."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Plan

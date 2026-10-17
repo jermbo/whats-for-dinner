@@ -6,7 +6,16 @@
 	import { getOutGroups, type GetOutGroup } from '../../cook/get-out';
 	import { lastNote } from '../../cook/record';
 	import { readSteps } from '../../cook/steps';
-	import type { CookResult, Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
+	import {
+		cookGotOutCount,
+		cookGotOutOf,
+		cookPageCount,
+		cookSecondsLeft,
+		cookSlideFrom,
+		cookTimerClock
+	} from '../../cook/cook-pages';
+	import type { CookResult, RecipeEntry } from '../../kitchen/types';
+	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
@@ -24,7 +33,7 @@
 	// The note shows as one line. A tap opens it, and a new page closes it.
 	let noteOpen = $state(false);
 	// Page 0 is "Get out". Then there is one page for each step. The last page is the finish.
-	const last = $derived(steps.length + 1);
+	const last = $derived(cookPageCount(steps.length));
 	let page = $state(0);
 	const step = $derived(steps[page - 1]);
 
@@ -32,7 +41,7 @@
 	let from = $state(24);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	function go(to: number) {
-		from = to > page ? 24 : -24;
+		from = cookSlideFrom(page, to);
 		page = Math.max(0, Math.min(last, to));
 		noteOpen = false;
 	}
@@ -40,11 +49,10 @@
 	// The ingredients that are on the counter. You mark them before you start.
 	const ingredients = $derived(entry.match.ingredients);
 	let onCounter = $state<boolean[]>([]);
-	const gotOut = $derived(ingredients.filter((_, at) => onCounter[at]).length);
+	const gotOut = $derived(cookGotOutCount(onCounter));
 	// The list has the groups of the recipe, each with its own count.
 	const getOut = $derived(getOutGroups(entry.recipe, ingredients));
-	const gotOf = ({ rows }: GetOutGroup) =>
-		`${rows.filter(({ at }) => onCounter[at]).length}/${rows.length}`;
+	const gotOf = (group: GetOutGroup) => cookGotOutOf(group, onCounter);
 
 	// --- Timers. A timer continues when you go to a different step. ---
 
@@ -54,9 +62,8 @@
 	const timer = $derived(timers.find((one) => one.step === page));
 	const others = $derived(timers.filter((one) => one.step !== page));
 
-	const secondsLeft = (one: Timer) => Math.max(0, Math.ceil((one.end - now) / 1000));
-	const clock = (seconds: number) =>
-		`${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+	const secondsLeft = (one: Timer) => cookSecondsLeft(one.end, now);
+	const clock = cookTimerClock;
 
 	const alarm = new Alarm();
 	onDestroy(() => alarm.close());

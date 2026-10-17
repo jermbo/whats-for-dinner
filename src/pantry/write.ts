@@ -3,31 +3,18 @@
 import { measure } from '../units';
 import { readStocks } from './food-item';
 import { withAmount } from './stock-amount';
-import { findTable } from './table';
+import { formatMarkdownTable, replaceTable } from './table';
 import type { Stock } from './types';
 
 const COLUMNS = ['Place', 'Amount', 'Use by'];
 
 export function showStocks(stocks: Stock[]): string {
 	const rows = stocks.map((stock) => [stock.place, stock.amountText, stock.useBy ?? '']);
-	const widths = COLUMNS.map((column, at) =>
-		Math.max(column.length, ...rows.map((row) => row[at].length))
-	);
-	const line = (cells: string[]) =>
-		`| ${cells.map((cell, at) => cell.padEnd(widths[at])).join(' | ')} |`;
-
-	return [line(COLUMNS), line(widths.map((width) => '-'.repeat(width))), ...rows.map(line)].join(
-		'\n'
-	);
+	return formatMarkdownTable(COLUMNS, rows);
 }
 
 export function replaceStocks(text: string, stocks: Stock[]): string {
-	const lines = text.split(/\r?\n/);
-	const table = findTable(lines);
-	if (!table) return `${text.trimEnd()}\n\n${showStocks(stocks)}\n`.trimStart();
-
-	lines.splice(table.start, table.end - table.start, showStocks(stocks));
-	return lines.join('\n');
+	return replaceTable(text, showStocks(stocks));
 }
 
 const kindOf = (stock: Stock) => (stock.amount ? measure(stock.amount).kind : null);
@@ -43,11 +30,25 @@ const isSameRow = (row: Stock, stock: Stock) =>
 // One row is one food item in one place: 800 g for a place that has 200 g makes one row of 1000 g.
 // The rows come from the text, so two writes one after the other do not lose a row.
 export function addStock(text: string, stock: Stock): string {
+	return addInto(text, stock, (row) => isSameRow(row, stock));
+}
+
+// Put away proposes the use-by date, so you did not choose to keep the new bag apart. It goes into
+// the row of its place that has no date, and that row gets the date. The form of the Pantry part
+// does not do this, because there you type a date on purpose.
+export function putAwayStock(text: string, stock: Stock): string {
+	return addInto(text, stock, (row) => {
+		const noDate = row.useBy === null || stock.useBy === null;
+		return isSameRow(row, noDate ? { ...stock, useBy: row.useBy } : stock);
+	});
+}
+
+function addInto(text: string, stock: Stock, fits: (row: Stock) => boolean): string {
 	const stocks = readStocks(text);
-	const at = stocks.findIndex((row) => isSameRow(row, stock));
+	const at = stocks.findIndex(fits);
 	const sum = at === -1 ? null : withAmount(stocks[at], valueOf(stocks[at]) + valueOf(stock));
 
-	if (sum) stocks[at] = sum;
+	if (sum) stocks[at] = { ...sum, useBy: stocks[at].useBy ?? stock.useBy };
 	else stocks.push(stock);
 	return replaceStocks(text, stocks);
 }

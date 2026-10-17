@@ -4,6 +4,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { FoodNote } from '../../note';
 	import { levelOf, type Level } from '../../pantry/level';
+	import type { StapleLabel } from '../../pantry/staple';
 	import { totalOf } from '../../pantry/total';
 	import type { Stock } from '../../pantry/types';
 	import {
@@ -27,6 +28,7 @@
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
+	import OnTheList from './OnTheList.svelte';
 	import StockEditor from './StockEditor.svelte';
 	import StockGauge from './StockGauge.svelte';
 	import StockLine from './StockLine.svelte';
@@ -143,21 +145,30 @@
 		hint: level ? showMeasure({ kind: level.kind, value: level.low }) : '200 g'
 	});
 
-	// The low line is written only when you changed it. The writes go one after the other.
-	async function keepLow(food: FoodNote, lowText: string | undefined) {
-		if (lowText !== undefined && lowText !== (food.item.low?.text ?? '')) {
-			await kitchen.setLow(food.path, lowText);
-		}
+	// What the form tells about the food item, and not about one row.
+	type Labels = { low: string; staple: StapleLabel };
+
+	const labelOf = ({ item }: FoodNote): StapleLabel => (item.neverAsk ? 'never' : item.staple);
+
+	// The low line and the kind are written only when you changed them. The writes go one after the
+	// other.
+	async function keepLabels(food: FoodNote, labels: Labels | undefined) {
+		if (!labels) return;
+		if (labels.low !== (food.item.low?.text ?? '')) await kitchen.setLow(food.path, labels.low);
+		if (labels.staple !== labelOf(food)) await kitchen.setStaple(food.path, labels.staple);
 	}
 
+	const isOnList = (path: string) =>
+		kitchen.list.some((row) => row.key === path) || kitchen.cart.some((row) => row.key === path);
+
 	// Changes one row of a food item, or removes it.
-	async function change(food: FoodNote, at: number, stock: Stock | null, lowText?: string) {
+	async function change(food: FoodNote, at: number, stock: Stock | null, labels?: Labels) {
 		open = null;
 		const stocks = food.item.stocks.flatMap((old, index) =>
 			index !== at ? [old] : stock ? [stock] : []
 		);
 		await kitchen.setStocks(food.path, stocks);
-		await keepLow(food, lowText);
+		await keepLabels(food, labels);
 	}
 
 	// Writes all rows of a food item, after a change of the bar.
@@ -166,10 +177,10 @@
 		await kitchen.setStocks(food.path, stocks);
 	}
 
-	async function add(name: string, stock: Stock, food?: FoodNote, lowText?: string) {
+	async function add(name: string, stock: Stock, food?: FoodNote, labels?: Labels) {
 		open = null;
 		await kitchen.addStock(name, stock);
-		if (food) await keepLow(food, lowText);
+		if (food) await keepLabels(food, labels);
 	}
 </script>
 
@@ -271,10 +282,15 @@
 									title={food.item.name}
 									places={kitchen.places}
 									low={lowOf(food, levelOf(food.item, lowPercent))}
+									staple={labelOf(food)}
 									facts={factsOf(food)}
-									onsave={(stock, _, lowText) => add(food.item.name, stock, food, lowText)}
+									onsave={(stock, _, labels) => add(food.item.name, stock, food, labels)}
 									oncancel={() => (open = null)}
 									onopen={() => kitchen.open(food.path)}
+								/>
+								<OnTheList
+									onList={isOnList(food.path)}
+									onadd={() => kitchen.addExtra(food.path)}
 								/>
 							</div>
 						{:else}
@@ -327,14 +343,19 @@
 												stock={row.food.item.stocks[at] ?? row.stock}
 												places={kitchen.places}
 												low={lowOf(row.food, row.level)}
+												staple={labelOf(row.food)}
 												facts={factsOf(row.food)}
-												onsave={(stock, _, lowText) => change(row.food, at, stock, lowText)}
+												onsave={(stock, _, labels) => change(row.food, at, stock, labels)}
 												onusedup={() => change(row.food, at, null)}
 												oncancel={() => (open = null)}
 												onopen={() => kitchen.open(row.food.path)}
 											/>
 										</div>
 									{/if}
+									<OnTheList
+										onList={isOnList(row.food.path)}
+										onadd={() => kitchen.addExtra(row.food.path)}
+									/>
 								</div>
 							{:else}
 								<StockLine

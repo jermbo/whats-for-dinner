@@ -13,7 +13,9 @@
 	import Nav from './parts/Nav.svelte';
 	import PlanPart from './plan/PlanPart.svelte';
 	import RecipesPart from './recipes/RecipesPart.svelte';
+	import { PutAwayDraft } from './shop/put-away-draft.svelte';
 	import ShopPart from './shop/ShopPart.svelte';
+	import type { Stage } from './shop/stage';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
@@ -21,12 +23,11 @@
 	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop'];
 
 	const toCook = $derived(kitchen.meals.filter((meal) => !meal.cooked).length);
-	const toBuy = $derived(kitchen.shopping.filter((row) => !kitchen.cart.includes(row.key)).length);
 	const options = $derived([
 		{ value: 'pantry' as const, label: 'Pantry' },
 		{ value: 'recipes' as const, label: 'Recipes' },
 		{ value: 'plan' as const, label: 'Plan', count: toCook },
-		{ value: 'shop' as const, label: 'Shop', count: toBuy }
+		{ value: 'shop' as const, label: 'Shop', count: kitchen.list.length }
 	]);
 
 	let part = $state<Part>('pantry');
@@ -62,6 +63,11 @@
 	let cooking = $state<string | null>(null);
 	const cooked = $derived(kitchen.recipes.find((entry) => entry.path === cooking));
 	const cook = (path: string) => (cooking = path);
+
+	// The Shop part forgets its stage and what you gave at put away when it goes off the screen, so
+	// the two are here: they stay while the kitchen is open.
+	let shopStage = $state<Stage | null>(null);
+	const draft = new PutAwayDraft();
 </script>
 
 {#if cooked}
@@ -79,7 +85,7 @@
 				{:else if part === 'plan'}
 					<PlanPart {kitchen} oncook={cook} onbrowse={browse} bar={bars.plan} />
 				{:else}
-					<ShopPart {kitchen} bar={bars.shop} />
+					<ShopPart {kitchen} bar={bars.shop} {draft} bind:stage={shopStage} />
 				{/if}
 			</div>
 		{/key}

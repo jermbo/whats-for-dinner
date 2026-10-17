@@ -1,11 +1,10 @@
 ---
 title: Set an amount with the keyboard
-summary: 'The keeper sets the amount of a row with the keys, and a screen reader tells what the bar is.'
+summary: "The keeper sets the amount of a row with the keys, and a screen reader tells what the bar is."
 parent: pantry-stories.md
 persona: Keeper
 depends-on: [pantry-correct-an-amount.md]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / Set an amount with the keyboard

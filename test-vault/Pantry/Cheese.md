@@ -1,7 +1,8 @@
 ---
-full: 200 g
+full: 230 g
+bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by     |
 | -------------- | ------ | ---------- |
-| Kitchen fridge | 180 g  | 2026-10-30 |
+| Kitchen fridge | 230 g  | 2026-10-30 |

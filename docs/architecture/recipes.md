@@ -1,8 +1,7 @@
 ---
 title: Recipes
-summary: 'How a note becomes a recipe, how each ingredient finds its food, and why the pantry decides which recipe comes first.'
+summary: "How a note becomes a recipe, how each ingredient finds its food, and why the pantry decides which recipe comes first."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Recipes
@@ -16,8 +15,8 @@ A recipe viewer shows your recipes by name. This plugin shows them by what you c
 A recipe is a plain note in the [RecipeMD](https://recipemd.org/specification.html) format: a title, a description, tags, the yield, the ingredients, and the instructions. The amount of an ingredient is in italics:
 
 ```markdown
-- *500 g* chicken thighs
-- *1 can* coconut milk
+- _500 g_ chicken thighs
+- _1 can_ coconut milk
 - salt
 ```
 

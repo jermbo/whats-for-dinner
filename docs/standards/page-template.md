@@ -1,8 +1,7 @@
 ---
 title: Page template
-summary: 'The five parts of a page, with a block that you can copy.'
+summary: "The five parts of a page, with a block that you can copy."
 parent: documentation-standards.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Page template
@@ -14,9 +13,8 @@ Each page has the same five parts, so that a reader always knows where to look. 
 ```markdown
 ---
 title: Level
-summary: 'How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line.'
+summary: "How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Level
@@ -62,8 +60,8 @@ The folder tells the kind of a page. The links tell how the pages connect.
 | `docs/`               | The wiki home, the vision, the glossary, and the personas.                                       |
 | `architecture/`       | The system as it is: what each part does, how a mechanism decides, and the exact form of a note. |
 | `features/<version>/` | The user stories of that version.                                                                |
-| `initiatives/<slug>/` | The discussion of one piece of work before it is agreed: a glossary, a decision log, and detail. |
-| `standards/`          | The rules for the pages of the wiki, and for the flow of the work.                               |
+| `initiatives/<slug>/` | The discussion of one piece of work: a glossary, a decision log, detail, and a spec at its end.  |
+| `standards/`          | The rules for the pages of the wiki, for the flow of the work, and for the code.                 |
 
 The [workflow](workflow.md) tells how a piece of work goes through these folders.
 

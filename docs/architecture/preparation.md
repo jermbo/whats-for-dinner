@@ -1,8 +1,7 @@
 ---
 title: Preparation
-summary: 'How a recipe tells what you must do before you cook, and how the plan makes you see it in time.'
+summary: "How a recipe tells what you must do before you cook, and how the plan makes you see it in time."
 parent: recipes.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Recipes](recipes.md) / Preparation

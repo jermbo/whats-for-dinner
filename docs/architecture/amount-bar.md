@@ -1,8 +1,7 @@
 ---
 title: Amount bar
-summary: 'How you correct an amount in the pantry with one drag: the bar of an open row, its pieces, and the steps that it snaps to.'
+summary: "How you correct an amount in the pantry with one drag: the bar of an open row, its pieces, and the steps that it snaps to."
 parent: pantry.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Pantry](pantry.md) / Amount bar
@@ -37,7 +36,7 @@ The bar stops when all places together have the full amount. For more than that,
 | "Used up"                   | Sets the place to nothing. Its row goes out of the table.       |
 | "Place, date, and low line" | Opens the form of that row, for all that the bar cannot change. |
 
-When all places together are below the low line, the bar is amber while you drag.
+When all places together are at or below the low line, the bar is amber while you drag.
 
 You can also set the amount with the arrow keys.
 

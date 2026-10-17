@@ -2,9 +2,18 @@
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
+const asText = (day: Date) =>
+	`${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}`;
+
 export function today(): string {
-	const now = new Date();
-	return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+	return asText(new Date());
+}
+
+// The date that is a number of days after a date.
+export function addDays(date: string, days: number): string {
+	const day = new Date(`${date}T00:00`);
+	day.setDate(day.getDate() + days);
+	return asText(day);
 }
 
 // The count of days from one date to a second date. It is negative if the second date is earlier.

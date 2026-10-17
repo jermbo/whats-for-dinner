@@ -1,8 +1,7 @@
 ---
 title: Altitudes
-summary: 'The four heights of a page, from the full picture down to the exact rule, and how a reader goes from one to the next.'
+summary: "The four heights of a page, from the full picture down to the exact rule, and how a reader goes from one to the next."
 parent: documentation-standards.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Documentation standards](documentation-standards.md) / Altitudes

@@ -22,6 +22,10 @@ The pantry starts in this state, on 2026-10-11:
 
 The plan starts with two dinners and one breakfast: chicken curry, tacos, and pancakes. The shopping list for them has milk and taco seasoning.
 
+## Shopping
+
+The folder `Shopping` has two receipts: one of 28 September at "Market A", and one of 4 October at "Market B". Eggs are in the two of them, and milk is in the second. The note `Shopping check list` uses them to test the shopping list.
+
 ## Edge cases
 
 One note for each case that the plugin must decide about. The description of each note tells what it tests.

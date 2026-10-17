@@ -49,7 +49,7 @@
 	const others = $derived(total - sizes[chosen]);
 	const most = $derived((full - others) / piece.per);
 	const step = $derived(stepFor(full / piece.per, isCount(kind)));
-	const isLow = $derived(total < low);
+	const isLow = $derived(total <= low);
 
 	// The amount snaps to a round step, with about 20 steps from empty to full: 50 g for 1 kg.
 	function stepFor(scale: number, counted: boolean): number {

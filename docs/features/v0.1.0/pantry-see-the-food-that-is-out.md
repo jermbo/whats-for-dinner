@@ -1,11 +1,10 @@
 ---
 title: See the food that is out
-summary: 'The keeper still sees a food item that has no row, and can add it again with one tap.'
+summary: "The keeper still sees a food item that has no row, and can add it again with one tap."
 parent: pantry-stories.md
 persona: Keeper
 depends-on: [pantry-see-the-food-of-each-place.md, pantry-add-food.md]
 status: built
-updated: 2026-10-11
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Pantry stories](pantry-stories.md) / See the food that is out
@@ -52,4 +51,4 @@ Each criterion starts with the test vault in the state in which it starts. Milk 
 ## Architecture
 
 - [Pantry](../../architecture/pantry.md): why a food item that is out stays a note.
-- [Low food](../../architecture/low-food.md): how food that is out gets on the shopping list.
+- [Staples](../../architecture/staples.md): how food that is out gets on the shopping list.

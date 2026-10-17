@@ -1,8 +1,7 @@
 ---
 title: Amounts
-summary: 'The exact rules for an amount: the forms of a number, the units that the plugin converts, and the amounts that it cannot compare.'
+summary: "The exact rules for an amount: the forms of a number, the units that the plugin converts, and the amounts that it cannot compare."
 parent: match.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / [Recipes](recipes.md) / [Match](match.md) / Amounts

@@ -1,8 +1,7 @@
 ---
 title: Pantry
-summary: 'How the plugin knows what you have: one note for each food item, one row for each place, and one level for each food.'
+summary: "How the plugin knows what you have: one note for each food item, one row for each place, and one level for each food."
 parent: ../README.md
-updated: 2026-10-11
 ---
 
 [Wiki](../README.md) / Pantry
@@ -36,7 +35,7 @@ The plugin counts only what a row tells. Water is a food item too, with an amoun
 Each of these writes the note of the food item, so the pantry stays correct:
 
 - **You.** You add food, or you open a row and drag its [bar](amount-bar.md) to what is really there.
-- **A shopping trip.** In [Shopping](shopping.md), one action puts your cart into the pantry.
+- **A shopping trip.** In [Shopping](shopping.md), one button puts your cart into the pantry. The open row of a food item has "Add to the list", so the milk that you see is low gets on the list with one tap.
 - **A meal.** At the end of [Cook Mode](cook-mode.md), the plugin takes the ingredients out.
 
 ## Further reading
