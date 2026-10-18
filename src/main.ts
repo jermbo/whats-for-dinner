@@ -23,6 +23,42 @@ export default class WhatsForDinnerPlugin extends Plugin {
 			name: 'Open the kitchen',
 			callback: () => this.openKitchen()
 		});
+		this.addCommand({
+			id: 'add-recipe',
+			name: 'Add recipe',
+			callback: async () => {
+				kitchen.openPage({ is: 'intake' });
+				await this.openKitchen();
+			}
+		});
+		this.addCommand({
+			id: 'edit-recipe',
+			name: 'Edit recipe',
+			checkCallback: (checking) => {
+				const path = this.app.workspace.getActiveFile()?.path;
+				const entry = kitchen.recipes.find((recipe) => recipe.path === path);
+				if (!entry) return false;
+				if (!checking) {
+					kitchen.openPage({ is: 'edit', path: entry.path });
+					void this.openKitchen();
+				}
+				return true;
+			}
+		});
+		this.addCommand({
+			id: 'open-gallery',
+			name: 'Open the gallery',
+			checkCallback: (checking) => {
+				const path = this.app.workspace.getActiveFile()?.path;
+				const entry = kitchen.recipes.find((recipe) => recipe.path === path);
+				if (!entry?.photo) return false;
+				if (!checking) {
+					kitchen.openPage({ is: 'gallery', path: entry.path });
+					void this.openKitchen();
+				}
+				return true;
+			}
+		});
 		// Only the development build has it, so that a test of setup can start again many times.
 		if (import.meta.env.MODE === 'development') {
 			this.addCommand({

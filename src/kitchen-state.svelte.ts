@@ -2,7 +2,19 @@
 // only source. Each action writes a note, and the kitchen reads the note again after the change.
 
 import { debounce, Notice, TFile, type App, type EventRef, type TAbstractFile } from 'obsidian';
-import { finishCooking as finishCookingAction, type CookActionsHost } from './kitchen/cook-actions';
+import {
+	addStepPhoto as addStepPhotoAction,
+	finishCooking as finishCookingAction,
+	setBestPhoto as setBestPhotoAction,
+	type CookActionsHost
+} from './kitchen/cook-actions';
+import {
+	replaceRecipe as replaceRecipeAction,
+	saveRecipe as saveRecipeAction,
+	type IntakeActionsHost
+} from './kitchen/intake-actions';
+import { convertNote } from './intake/convert';
+import { editNote } from './intake/edit';
 import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
@@ -48,7 +60,7 @@ import {
 	startAgain as startAgainAction,
 	type SetupActionsHost
 } from './kitchen/setup-actions';
-import type { CookResult, Disk, Meal } from './kitchen/types';
+import type { CookResult, Disk, KitchenPage, Meal } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import {
 	calculatedList,
@@ -59,6 +71,8 @@ import {
 	storesOf,
 	tripSuggestions
 } from './kitchen/shop-read-model';
+import { indexFoods } from './match/match';
+import type { IntakeDraft, IntakeStart } from './intake/recipe-text';
 import type { FoodNote, Note } from './note';
 import type { StapleLabel } from './pantry/staple';
 import { placesOf } from './pantry/places';
@@ -69,10 +83,11 @@ import { hasKitchenNotes, screenOf, type Setup } from './setup/screen';
 import type { Facts } from './shop/facts';
 import type { Receipt } from './shop/read-receipt';
 import type { ReceiptLine } from './shop/receipt';
+import { notePathIn } from './note-path';
 import { openNotePath } from './shop/shopping-note';
 import { today } from './dates';
 
-export type { CookResult, Meal, RecipeEntry } from './kitchen/types';
+export type { CookResult, KitchenPage, Meal, RecipeEntry } from './kitchen/types';
 
 export class Kitchen {
 	notes = $state.raw<Note[]>([]);
@@ -91,6 +106,12 @@ export class Kitchen {
 	// If the vault had notes of the kitchen at the last read. Null before the first read.
 	private hasNotes = $state<boolean | null>(null);
 	screen = $derived(screenOf(this.setup, this.hasNotes));
+	// A page that covers the four parts, such as intake. A command of Obsidian can open it, so it is
+	// here and not in a screen.
+	page = $state.raw<KitchenPage | null>(null);
+	// The line of the note that you converted last. The Recipes part shows it once more when it opens,
+	// so that you see the line go out of the list of notes that fail.
+	private converted: { path: string; reason: string } | null = null;
 
 	private where = $derived({
 		recipes: folderPath(this.settings.recipesFolder),
@@ -106,6 +127,7 @@ export class Kitchen {
 		recipesOf(this.notes, this.foods, this.today, this.settings.soonDays)
 	);
 	rejected = $derived(rejectedRecipes(this.notes));
+	foodIndex = $derived(indexFoods(this.foods));
 	places = $derived(placesOf(this.settings.places, this.foods));
 	meals = $derived(mealsOf(this.plan, this.recipes));
 
@@ -372,6 +394,104 @@ export class Kitchen {
 
 	async finishCooking(path: string, result: CookResult) {
 		await finishCookingAction(this.cookHost, path, result);
+	}
+
+	addStepPhoto(path: string, step: number, photo: Blob): Promise<boolean> {
+		return this.tried('The photo is not saved', () =>
+			addStepPhotoAction(this.cookHost, path, step, photo)
+		);
+	}
+
+	setBestPhoto(path: string, step: number, name: string | null): Promise<boolean> {
+		return this.tried('The best photo did not change', () =>
+			setBestPhotoAction(this.cookHost, path, step, name)
+		);
+	}
+
+	openPage(page: KitchenPage) {
+		this.page = page;
+	}
+
+	closePage() {
+		this.page = null;
+	}
+
+	// The address of a photo of a recipe, for an image on the screen, or null when it is gone.
+	photoUrl(link: string, recipePath: string): string | null {
+		const file = this.app.metadataCache.getFirstLinkpathDest(link, recipePath);
+		return file ? this.app.vault.getResourcePath(file) : null;
+	}
+
+	// Where the stub of a new food goes: the pantry folder, with the name of the food.
+	newFoodPath(name: string): string {
+		return notePathIn(this.where.pantry, name);
+	}
+
+	saveRecipe(draft: IntakeDraft, photos: Blob[]): Promise<boolean> {
+		return this.tried('The recipe is not saved', () =>
+			saveRecipeAction(this.intakeHost, draft, photos)
+		);
+	}
+
+	// The fields of intake for a note that is not a recipe, or for a recipe. Null when the note is
+	// gone, or when a recipe to edit is not a recipe now.
+	async readForIntake(page: { is: 'convert' | 'edit'; path: string }): Promise<IntakeStart | null> {
+		const file = this.fileAt(page.path);
+		if (!file) return null;
+		const text = await this.app.vault.read(file);
+		return page.is === 'convert' ? convertNote(text, file.basename) : editNote(text);
+	}
+
+	async convertRecipe(
+		path: string,
+		properties: string,
+		draft: IntakeDraft,
+		photos: Blob[]
+	): Promise<boolean> {
+		const line = this.rejected.find((one) => one.path === path) ?? null;
+		const done = await this.tried('The note is not converted', () =>
+			replaceRecipeAction(this.intakeHost, path, properties, draft, photos)
+		);
+		if (done) this.converted = line;
+		return done;
+	}
+
+	editRecipe(path: string, properties: string, draft: IntakeDraft, photos: Blob[]): Promise<boolean> {
+		return this.tried('The recipe is not saved', () =>
+			replaceRecipeAction(this.intakeHost, path, properties, draft, photos)
+		);
+	}
+
+	takeConverted() {
+		const line = this.converted;
+		this.converted = null;
+		return line;
+	}
+
+	// A write of the vault can fail, for example when the disk is full. The screen stays as it was,
+	// so that you can try again, and the notice tells you why.
+	private async tried(what: string, action: () => Promise<unknown>): Promise<boolean> {
+		try {
+			await action();
+			return true;
+		} catch (error) {
+			this.notify(`${what}. ${error instanceof Error ? error.message : String(error)}`);
+			return false;
+		}
+	}
+
+	private get intakeHost(): IntakeActionsHost {
+		const k = this;
+		return {
+			app: k.app,
+			get where() {
+				return k.where;
+			},
+			get today() {
+				return k.today;
+			},
+			makeFolderOf: (path) => k.makeFolderOf(path)
+		};
 	}
 
 	private get pantryHost(): PantryActionsHost {

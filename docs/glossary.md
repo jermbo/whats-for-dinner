@@ -35,6 +35,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Level         | What you have of a food item, against its full amount and its low line. See [level](architecture/level.md).               |
 | Low           | Below the low line, with all places together.                                                                             |
 | Out           | With no row. The food item is still a note.                                                                               |
+| Stub          | A food item note that [intake](architecture/intake.md) makes for an ingredient with no food item. It has no row, so the food item is out. |
 | Use soon      | With a [use-by date](architecture/use-soon.md) in 5 days or less. The number of days is a setting.                        |
 | Past its date | With a use-by date before today. The date of today is not past.                                                           |
 | Staple        | A food item that you always want, plan or no plan. Its note has the label [staple](architecture/staples.md).              |
@@ -49,6 +50,11 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Type        | The first tag of a recipe, such as "dinner".                                                              |
 | Ready       | A recipe is ready when the pantry has each of its ingredients.                                            |
 | Preparation | [Work](architecture/preparation.md) that a recipe needs before you can cook, such as food that must thaw. |
+| Intake      | The [work](architecture/intake.md) that makes a recipe note from a source, such as a card or a cookbook, up to "Save". |
+| Line        | One ingredient or one step in a field of intake. It is not a row of the pantry.                           |
+| Source photo | A photo of the original of a recipe, such as the card or the page of the cookbook. [Intake](architecture/intake.md) puts it below the title. |
+| Step photo  | A photo that shows one [step](architecture/steps.md) of a recipe, in the note below that step. The mark `\|best` tells the best one. |
+| Gallery     | The [view](architecture/gallery.md) of the records of a recipe that have a photo: each photo with its date, its rating, and its note. |
 | Meal        | A recipe that is in the [plan](architecture/plan.md).                                                     |
 | Week        | The meals of the plan that you did not cook.                                                              |
 

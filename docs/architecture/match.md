@@ -20,7 +20,9 @@ A recipe says "2 chicken thighs". The note of the food item has the name `Chicke
 2. It looks for each food item with that name, or with that name as one of its other names. "Pasta" finds the two kinds of pasta.
 3. If it finds more than one food item, it uses the one that has the most.
 
-An ingredient can also be a link to a note, such as `[[Pantry/Rice|rice]]`. Then the name is the name of that note.
+An ingredient can also be a link to a note, such as `[[Pantry/Rice|rice]]`. Then the name is the name of that note, and text after the link, such as ", cooked", is not a part of it.
+
+With no link, the name stops at a comma or a parenthesis. "salt, to taste" is salt, and "onion (diced)" is onion. The rest is a note of the recipe, not a different food.
 
 ## Then the amount
 

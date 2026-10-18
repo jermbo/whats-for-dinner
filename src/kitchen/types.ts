@@ -12,6 +12,8 @@ export type RecipeEntry = {
 	match: RecipeMatch;
 	// What you must do before you can cook the recipe, or null.
 	prep: string | null;
+	// The link of the photo of the newest meal with a photo, or null. The card shows it.
+	photo: string | null;
 };
 
 // A meal of the plan. The entry is null when the note of the recipe is gone.
@@ -24,6 +26,13 @@ export type CookResult = {
 	note: string;
 	photo: Blob | null;
 };
+
+// A page that covers the four parts of the kitchen.
+export type KitchenPage =
+	| { is: 'intake' }
+	| { is: 'convert'; path: string }
+	| { is: 'edit'; path: string }
+	| { is: 'gallery'; path: string };
 
 // What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped
 // for this trip, the settings, and the step of setup. The cart is not here. It is in the note of

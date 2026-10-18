@@ -2,7 +2,7 @@
 // one row. A low staple that a meal needs is a row too.
 
 import type { IngredientMatch } from '../match/match';
-import { nameKey, showName } from '../match/names';
+import { foodNameOf, nameKey, showName } from '../match/names';
 import type { FoodNote } from '../note';
 import { notePathIn } from '../note-path';
 import { levelOf } from '../pantry/level';
@@ -54,9 +54,11 @@ export function needsOf(
 
 	for (const { title, ingredients } of meals) {
 		for (const { ingredient, food, need } of ingredients) {
+			// With no food item, "salt, to taste" is on the list as "salt".
+			const name = foodNameOf(ingredient.name);
 			const entry = food
 				? needOf(food.path, food.item.name, food)
-				: needOf(nameKey(ingredient.name), showName(ingredient.name), null);
+				: needOf(nameKey(name), showName(name), null);
 			if (need) addTo(entry.sums, need);
 			if (!entry.recipes.includes(title)) entry.recipes.push(title);
 		}

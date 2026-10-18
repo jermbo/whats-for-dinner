@@ -80,8 +80,8 @@ export function factsOf({ item }: FoodNote): string[] {
 
 // A food item can have more than one reason. The first that is true is the one that shows.
 function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason | null {
-	// A note that a recipe made for food that you never bought is not out.
-	if (!item.stocks.length) return item.staple || hadIt(item) ? { is: 'out' } : null;
+	// Also a food item that you never bought, such as a stub of intake: a recipe needs it.
+	if (!item.stocks.length) return { is: 'out' };
 	if (levelOf(item, lowPercent)?.isLow) return { is: 'low' };
 	if (isPastDate(item, today)) return { is: 'past' };
 	const useBy = firstUseBy(item.stocks);
@@ -95,9 +95,6 @@ function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason
 	const days = daysBetween(item.bought, today);
 	return days >= ASK_AFTER[item.staple] ? { is: 'bought', days } : null;
 }
-
-// The pantry had the food item before: it knows its full amount, or the day you bought it.
-const hadIt = (item: FoodItem) => item.full !== null || item.bought !== null;
 
 // Days below 14 days, full weeks below 60 days, and full months of 30 days after that.
 function showAge(days: number): string {

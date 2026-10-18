@@ -46,6 +46,38 @@ function singular(word: string): string {
 
 const plural = (word: string) => (/(ch|sh|x|ss|o)$/.test(word) ? `${word}es` : `${word}s`);
 
+// The words that count things of one kind. "2 cans of beans" has a unit, and "2 eggs" has none.
+// A count can have any word as its unit, so intake knows only these, to tell a unit from a name.
+const COUNT_UNITS = new Set([
+	'bag',
+	'bottle',
+	'box',
+	'bunch',
+	'can',
+	'clove',
+	'cube',
+	'dash',
+	'handful',
+	'head',
+	'jar',
+	'pack',
+	'package',
+	'packet',
+	'piece',
+	'pinch',
+	'sheet',
+	'slice',
+	'sprig',
+	'stalk',
+	'stick'
+]);
+
+// A word that is a unit, such as "g", "cups", or "cans". "pinches" is "pinch".
+export function isUnit(word: string): boolean {
+	const unit = singular(word.toLowerCase().replace(/\.$/, '').trim());
+	return unit in GRAMS || unit in MILLILITRES || COUNT_UNITS.has(unit);
+}
+
 export function measure(amount: Amount): Measure {
 	const unit = singular((amount.unit ?? '').toLowerCase().replace(/\.$/, '').trim());
 	if (unit in GRAMS) return { kind: 'mass', value: amount.factor * GRAMS[unit] };

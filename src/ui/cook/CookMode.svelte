@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { Alarm } from '../../cook/alarm';
 	import { getOutGroups, type GetOutGroup } from '../../cook/get-out';
+	import { optionsOf, pickFood } from '../../cook/pick-food';
 	import { lastNote } from '../../cook/record';
 	import { readSteps } from '../../cook/steps';
 	import {
@@ -22,6 +23,7 @@
 	import GroupHead from '../parts/GroupHead.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import CookFinish from './CookFinish.svelte';
+	import StepPhoto from './StepPhoto.svelte';
 
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
 	let { kitchen, entry, onclose }: Props = $props();
@@ -53,6 +55,20 @@
 	// The list has the groups of the recipe, each with its own count.
 	const getOut = $derived(getOutGroups(entry.recipe, ingredients));
 	const gotOf = (group: GetOutGroup) => cookGotOutOf(group, onCounter);
+
+	// A line that fits two food items has one selected, and the last page takes the food out of it.
+	// Until you tap, the line asks "Which one?".
+	const options = $derived(ingredients.map(optionsOf));
+	// The selection starts once, with the pantry as it is when Cook Mode opens.
+	let picked = $state(
+		(() => entry.match.ingredients.map((match) => pickFood(match)?.path ?? null))()
+	);
+	let checked = $state<boolean[]>([]);
+	function pick(at: number, path: string) {
+		picked[at] = path;
+		checked[at] = true;
+		onCounter[at] = true;
+	}
 
 	// --- Timers. A timer continues when you go to a different step. ---
 
@@ -188,7 +204,7 @@
 								{/if}
 								<ul class="wfd-cook__list">
 									{#each group.rows as { at, match: { ingredient, status } }}
-										<li>
+										<li class="wfd-cook__row">
 											<label class="wfd-cook__item" class:wfd-cook__item--got={onCounter[at]}>
 												<input type="checkbox" bind:checked={onCounter[at]} />
 												<span class="wfd-cook__name">{showName(ingredient.name)}</span>
@@ -201,6 +217,30 @@
 													{ingredient.amount?.text ?? ''}
 												</span>
 											</label>
+											{#if options[at].length > 1}
+												<div
+													class="wfd-cook__pick"
+													role="group"
+													aria-label="The food item for {showName(ingredient.name)}"
+												>
+													{#each options[at] as option (option.path)}
+														<button
+															class="wfd-cook__option"
+															class:wfd-cook__option--on={picked[at] === option.path}
+															type="button"
+															aria-pressed={picked[at] === option.path}
+															onclick={() => pick(at, option.path)}
+														>
+															{option.item.name}
+														</button>
+													{/each}
+													{#if !checked[at]}
+														<span out:fade={{ duration }}>
+															<Sticker label="Which one?" kind="olive" />
+														</span>
+													{/if}
+												</div>
+											{/if}
 										</li>
 									{/each}
 								</ul>
@@ -240,8 +280,15 @@
 							{/if}
 						</div>
 					{/if}
+
+					<StepPhoto
+						{step}
+						urlOf={(name) => kitchen.photoUrl(name, entry.path)}
+						ontake={(photo) => kitchen.addStepPhoto(entry.path, page, photo)}
+						onbest={(name) => kitchen.setBestPhoto(entry.path, page, name)}
+					/>
 				{:else}
-					<CookFinish id="{uid}-finish" {entry} ondone={finish} bind:busy={saving} />
+					<CookFinish id="{uid}-finish" {entry} {picked} ondone={finish} bind:busy={saving} />
 				{/if}
 			</div>
 
@@ -384,6 +431,7 @@
 
 	/* The title and the note keep their place. Only the work between them scrolls. */
 	.wfd-cook__card {
+		position: relative;
 		display: grid;
 		flex: 1 0 15rem;
 		grid-template-rows: auto minmax(0, 1fr) auto;
@@ -474,6 +522,51 @@
 		border-block-end: 1px solid var(--wfd-line);
 		cursor: pointer;
 		transition: color 0.2s ease-out;
+	}
+
+	.wfd-cook__row {
+		border-block-end: 1px solid var(--wfd-line);
+
+		& .wfd-cook__item {
+			border-block-end: 0;
+		}
+	}
+
+	/* The options of a line that fits two food items. The selected one is ink. */
+	.wfd-cook__pick {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		padding-block-end: 12px;
+		padding-inline-start: 42px;
+	}
+
+	button.wfd-cook__option {
+		block-size: auto;
+		min-block-size: 44px;
+		padding: 0 14px;
+		border: 2px solid var(--wfd-line);
+		border-radius: var(--wfd-radius-button);
+		background: var(--wfd-quiet);
+		box-shadow: none;
+		color: var(--wfd-ink);
+		font-family: inherit;
+		font-size: 16px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background-color 0.15s ease-out;
+
+		&:focus-visible {
+			outline: 2px solid var(--wfd-ink);
+			outline-offset: 2px;
+		}
+	}
+
+	button.wfd-cook__option--on {
+		border-color: var(--wfd-ink);
+		background: var(--wfd-ink);
+		color: var(--wfd-on-ink);
 	}
 
 	.wfd-cook__item--got {
@@ -642,6 +735,7 @@
 	@media (prefers-reduced-motion: reduce) {
 		.wfd-cook__piece,
 		.wfd-cook__item,
+		button.wfd-cook__option,
 		button.wfd-cook__note {
 			transition: none;
 		}

@@ -22,6 +22,21 @@ export function nameKey(name: string): string {
 		.join(' ');
 }
 
+// "2 eggs, beaten" and "1 onion (diced)": the food is the text before the mark, and the rest is a
+// note of the recipe. A text that starts with the mark has no name before it, so all of it is the
+// name.
+export function splitNote(text: string): { name: string; note: string } {
+	const mark = /\s*[,(]/.exec(text);
+	if (!mark || mark.index === 0) return { name: text, note: '' };
+	return { name: text.slice(0, mark.index), note: text.slice(mark.index) };
+}
+
+// The name of the food of an ingredient: the note that it links to, or the text before a note.
+export function foodNameOf(ingredient: string): string {
+	const link = /\[\[([^\]|#]+)[^\]]*\]\]/.exec(ingredient);
+	return link ? (link[1].split('/').pop() ?? '') : splitNote(ingredient).name;
+}
+
 // The name as a person reads it: a wikilink shows its text, not its brackets.
 export function showName(name: string): string {
 	return name.replace(/\[\[([^\]|#]+)(?:\|([^\]]+))?[^\]]*\]\]/g, (_, target: string, text?: string) =>

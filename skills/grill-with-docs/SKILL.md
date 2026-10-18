@@ -45,6 +45,9 @@ A decision is the owner's. Do not make one for the owner, and do not continue pa
 ## Write during the discussion, not after it
 
 - A decision goes into `decision-log.md` when the owner makes it: the decision in bold, the reason, and each option that was rejected. A decision has a number, and a detail below it has a letter.
+- Until the spec exists, a decision has one entry. When a later answer changes it, edit that entry. The old choice goes into "An option that was rejected", with its reason. Do not add a second entry that changes the first.
+- Keep the decisions in groups by subject, not in the order of the discussion. Number them again when a group changes.
+- When `spec.md` exists, the numbers are locked. A change is a new entry that names the decision it changes, such as "This changes decision 6".
 - A new word goes into `glossary.md` of the initiative when it gets its meaning. Make that page when the first word needs it.
 - When a decision changes a story or an architecture page that exists, the decision names that page.
 - A flow chart or the form of a note gets its own page in the folder, only when the decision log cannot hold it.
@@ -59,5 +62,6 @@ Some questions need a look or a try: "which layout?", "does this state model hol
 The grill is complete when no question that decides the form is open.
 
 1. Show the decisions, one line for each, and the choices that are not confirmed.
-2. Ask if the scope is agreed.
-3. Stop. The next step is `to-spec`. Do not write a story, an architecture page, or code.
+2. Ask the owner to confirm or change each choice that is not confirmed. Each answer becomes a decision, until the section is empty.
+3. Ask if the scope is agreed.
+4. Stop. The next step is `to-spec`. Do not write a story, an architecture page, or code.

@@ -16,12 +16,12 @@ A food item is a suggestion when the pantry is out of it, low on it, or has it n
 
 | The food item                                 | The reason that shows | The group   |
 | --------------------------------------------- | --------------------- | ----------- |
-| Has no row, and the pantry had it before      | "Out"                 | Out         |
+| Has no row                                    | "Out"                 | Out         |
 | Is at or below its [low line](level.md)       | "Low"                 | Low         |
 | Has a row with a use-by date that is past     | "Past its date"       | Use-by date |
 | Has a row to [use soon](use-soon.md)          | "Use by 15 Oct"       | Use-by date |
 
-The pantry had a food item before when its note has a full amount or a purchase date. A note that a recipe made for food that you never bought is not a suggestion.
+This is true also for a food item that you never bought, such as the [stub](intake.md) that intake makes for a new ingredient. A recipe needs it, so you see it. "Skip" takes it away with one tap, and "Never ask" keeps it away.
 
 ## A staple adds reminders
 

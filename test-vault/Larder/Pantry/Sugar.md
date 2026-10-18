@@ -1,6 +1,9 @@
 ---
-full: 500 g
+full: 1 kg
+staple: seldom
+bought: 2026-09-30
 ---
+
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 500 g  |        |
+| Kitchen pantry | 250 g  |        |

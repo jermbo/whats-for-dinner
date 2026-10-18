@@ -5,7 +5,7 @@ import type { FoodNote } from '../note';
 import { available, firstUseBy } from '../pantry/total';
 import type { Ingredient, IngredientGroup, Recipe } from '../recipemd/types';
 import { measure, type Measure } from '../units';
-import { nameKey } from './names';
+import { foodNameOf, nameKey } from './names';
 
 // enough: the pantry has the amount. unknown: the pantry has the food, but the units do not
 // compare. short: the pantry has less than the amount. missing: the pantry has none.
@@ -46,7 +46,7 @@ export function allIngredients(recipe: Recipe): Ingredient[] {
 }
 
 function matchIngredient(ingredient: Ingredient, index: FoodIndex): IngredientMatch {
-	const key = nameKey(ingredient.name);
+	const key = nameKey(foodNameOf(ingredient.name));
 	const candidates = index.get(key) ?? [];
 	const need = ingredient.amount ? measure(ingredient.amount) : null;
 	const stocked = candidates.filter((food) => food.item.stocks.length);

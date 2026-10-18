@@ -10,9 +10,13 @@
 	import { BarState } from './bar-state.svelte';
 	import CookMode from './cook/CookMode.svelte';
 	import PantryPart from './pantry/PantryPart.svelte';
+	import Button from './parts/Button.svelte';
 	import Nav from './parts/Nav.svelte';
+	import PartHead from './parts/PartHead.svelte';
 	import PlanPart from './plan/PlanPart.svelte';
 	import RecipesPart from './recipes/RecipesPart.svelte';
+	import Intake from './intake/Intake.svelte';
+	import Gallery from './recipes/Gallery.svelte';
 	import HasNotes from './setup/HasNotes.svelte';
 	import Setup from './setup/Setup.svelte';
 	import { PutAwayDraft } from './shop/put-away-draft.svelte';
@@ -70,12 +74,32 @@
 	let cooking = $state<string | null>(null);
 	const cooked = $derived(kitchen.recipes.find((entry) => entry.path === cooking));
 	const cook = (path: string) => (cooking = path);
+	const page = $derived(kitchen.page);
+	const inGallery = $derived(
+		page?.is === 'gallery' ? kitchen.recipes.find((entry) => entry.path === page.path) : undefined
+	);
+
+	// After "Save", the Recipes part shows the new recipe.
+	function closePage(saved: boolean) {
+		kitchen.closePage();
+		if (saved) show('recipes');
+	}
 
 	// The Shop part forgets its stage and what you gave at put away when it goes off the screen, so
 	// the two are here: they stay while the kitchen is open.
 	let shopStage = $state<Stage | null>(null);
 	const draft = new PutAwayDraft();
 </script>
+
+<!-- The note is gone, or it is not a recipe now, or the vault cannot read it: one tap goes back. -->
+{#snippet gone(path: string)}
+	<PartHead title="Intake">
+		{#snippet side()}
+			<Button kind="link" onclick={() => kitchen.closePage()}>Close</Button>
+		{/snippet}
+	</PartHead>
+	<p class="wfd-kitchen__gone">The plugin cannot read the note "{path}".</p>
+{/snippet}
 
 <!--
 	Until setup is complete, the four parts are not there. Before the first read of the vault, the
@@ -87,6 +111,24 @@
 	<HasNotes />
 {:else if kitchen.screen !== 'kitchen'}
 	<Setup {kitchen} step={kitchen.screen} />
+{:else if page?.is === 'intake'}
+	<div class="wfd-kitchen" in:fade={{ duration }}>
+		<Intake {kitchen} onclose={closePage} />
+	</div>
+{:else if page?.is === 'convert' || page?.is === 'edit'}
+	<div class="wfd-kitchen" in:fade={{ duration }}>
+		{#await kitchen.readForIntake(page) then start}
+			{#if start}
+				<Intake {kitchen} replace={{ is: page.is, path: page.path, start }} onclose={closePage} />
+			{:else}
+				{@render gone(page.path)}
+			{/if}
+		{:catch}
+			{@render gone(page.path)}
+		{/await}
+	</div>
+{:else if inGallery}
+	<Gallery {kitchen} entry={inGallery} onclose={() => kitchen.closePage()} />
 {:else if cooked}
 	<CookMode {kitchen} entry={cooked} onclose={() => (cooking = null)} />
 {:else}
@@ -110,6 +152,11 @@
 {/if}
 
 <style>
+	.wfd-kitchen__gone {
+		margin: 0;
+		color: var(--wfd-ink-2);
+	}
+
 	/*
 	 * The Larder look: paper, cards, and ink. Olive, amber, and tomato are rare, so that they keep
 	 * their meaning. Each class has the prefix "wfd", because Obsidian has its own rules for names

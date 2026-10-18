@@ -23,6 +23,10 @@ Only its program can read a database. If the program stops, your data stops with
 | Plan      | The meals of the week   | The plan note of the settings: `Meal plan.md` |
 | Shopping  | Each shopping trip      | The shopping folder of the settings           |
 
+A food item note can also come from a recipe: [intake](intake.md) makes a stub in the pantry folder for each new food.
+
+The photos of a recipe are not notes. They are in the folder `Photos` of the recipes folder, such as `Recipes/Photos`, so that a recipe and its photos move as one unit. The plugin makes that folder when it saves the first photo.
+
 A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md), the [plan](plan.md), and a [shopping trip](shopping-note.md) have a form of the plugin, and you can write each of them by hand.
 
 ## Each change goes through a note
