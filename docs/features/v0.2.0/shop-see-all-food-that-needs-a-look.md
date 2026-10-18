@@ -2,10 +2,10 @@
 title: See all food that needs a look
 summary: "The planner sees each food item that is out or low, staple or not, in groups by reason, with its level."
 parent: shop-stories.md
-updated: 2026-10-17
+updated: 2026-10-18
 persona: Planner
 depends-on: [shop-decide-the-extras.md]
-status: built
+status: ready
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / See all food that needs a look
@@ -17,9 +17,9 @@ As the [planner](../../personas.md), I want the stage Extras to show each food i
 ## Requirements
 
 1. A food item with no label is a suggestion when it is out or low
-   - a. It is out when it has no row, and it has a full amount or a purchase date
+   - a. It is out when it has no row, unless it has `suggest: never` ([decision 13 a of recipe intake](../../initiatives/recipe-intake/decision-log.md))
    - b. It is low when it is at or below its low line (decision 54)
-   - c. A food item with no row, no full amount, and no purchase date is not a suggestion
+   - c. A food item with no row, no full amount, and no purchase date is out also. A stub of intake is such a food item
    - d. A food item with no label is a suggestion when a row is past its use-by date, or has it in the days of "Use soon" (decision 53)
 2. A staple keeps each reason of [See the staples that need a look](shop-see-the-staples-that-need-a-look.md)
 3. The suggestions are in four groups, in this sequence: "Out", "Low", "Use-by date", and "Time to check"
@@ -45,7 +45,8 @@ Each criterion starts with the test vault on 2026-10-17, after the clean-up of t
    - a. AND it shows "Use by 20 Nov"
 5. GIVEN the vault WHEN the planner opens the stage Extras THEN the group "Time to check" has "Eggs" with "Often"
 6. GIVEN the planner skipped eggs WHEN the planner opens the stage Extras THEN the group "Time to check" does not show
-7. GIVEN the note `Lime` has no row, no full amount, and no purchase date WHEN the planner opens the stage Extras THEN no group has a line for lime
+7. GIVEN the note `Lime` has no row, no full amount, and no purchase date WHEN the planner opens the stage Extras THEN the group "Out" has "Lime"
+   - a. AND with `suggest: never` in the note of lime, no group has a line for lime
 8. GIVEN the vault WHEN the planner looks at the strip THEN "1 Extras" has "17"
 9. GIVEN the vault, where spinach is not a staple and has a row with the use-by date 2026-10-18 WHEN the planner opens the stage Extras THEN the group "Use-by date" has "Spinach", with "Use by 18 Oct"
 

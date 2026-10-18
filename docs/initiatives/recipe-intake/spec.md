@@ -58,11 +58,16 @@ An example: the cook types "Pancakes" from page 46 of "One Pan Wonders", takes a
    - c. The plugin makes each photo smaller: the longest side is 1600 pixels or less, as a JPEG with the quality 100%. A smaller photo keeps its size (decision 22)
 10. The **gallery** shows the **records** of a recipe that have a photo: the photo, the date, the rating, and the note (decision 23)
     - a. A tap on the photo of a recipe card in the Recipes part opens it, and so does a command of Obsidian (decision 25)
+       - i. A recipe card shows the photo of the newest record with a photo. With no such record, it shows no photo (decision 25 a)
     - b. It shows one record at a time, full screen, and a swipe goes to the next (decision 25)
 11. A note that fails gets a button "Convert" in the Recipes list. It opens intake with the text of that note (decision 26)
     - a. "Save" replaces the text of the same note, and the note keeps its name (decision 27)
     - b. The property block stays. Each tag of the note goes into the tags field, and each source link or source text goes into the description (decision 27)
     - c. A text that the plugin cannot put into a field stays in the description (decision 27)
+    - d. The title field starts with the name of the note. A first heading with the same text, also as a link, is that title (decision 27 a)
+    - e. A list below a heading "Ingredients" gives the ingredients, and a list below "Directions", "Instructions", "Method", or "Steps" gives the steps. With no such heading, the first list is the ingredients, and the later lists are the steps (decision 27 b)
+    - f. The text below a heading "Source" or "Sources" goes into the source field. With no such heading, each web link outside the lists goes there (decision 27 c)
+    - g. A tag of Obsidian keeps its `#` in the tags field and in the note (decision 27 d)
 
 ## Out of scope
 
@@ -91,6 +96,8 @@ An example: the cook types "Pancakes" from page 46 of "One Pan Wonders", takes a
 23. The time of day in a record (decision 24)
 24. A recipe that you type again by hand, a script that converts the notes one time outside the plugin, and a converted note next to the old note (decisions 26 and 27)
 25. A rule for the habits of one vault, such as its own tags or links (decision 27)
+26. For "Convert": a title from the first heading, an empty title field, lists by their sequence only, a pool of lines that you sort, only the web links as the source, an empty source field, a tag without its `#`, and a tag that stays as text (decisions 27 a to 27 d)
+27. Groups of ingredients in intake (decision 27 b)
 
 ## What changes in the system
 
