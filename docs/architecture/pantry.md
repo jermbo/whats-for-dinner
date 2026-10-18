@@ -20,7 +20,9 @@ Each food is one note in the pantry folder: `Rice`, `Eggs`, `Elbow pasta`. This 
 
 You name the places before food is there. The [settings](settings.md) keep the list of names, so that add food and the filters show a place that has no row yet.
 
-The pantry screen shows one line for each row, in a group for each place. You see what is in the outside fridge and you do not have to go there. You find a food item by its name, by a different name of the food, or by a brand.
+The pantry screen shows one line for each row, in a group for each place. You see what is in the outside fridge and you do not have to go there. You find a food item by its name, by a different name of the food, or by the name of one of its [brands](brands.md). "brand c" finds taco seasoning.
+
+The form of a food item shows its brands: the photo of each package, small, and a chip for a brand with no photo. A tap on a brand shows it large, with its name, "New photo", and "Remove". "Add brand" opens the camera, and the photo is a new brand. "Save" writes the brands into the note, and "Cancel" writes nothing.
 
 ## The level tells you when to buy
 

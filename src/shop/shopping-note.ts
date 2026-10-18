@@ -1,7 +1,8 @@
 // The shopping note of a trip has one task for each item: "- [x] [[Pantry/Lime|Lime]]". A task
 // with a mark is an item of the cart. A task with no mark is an extra: an item that is on the list
 // because you put it there. A task with no link, such as "- [ ] Batteries", has its text as the
-// name of its item.
+// name of its item. A task of the cart can keep the brand that you took after ` · `: the link to its
+// photo, or its name.
 //
 // The note is yours. A change of the cart changes only the lines of the tasks, and each change
 // starts from the text of the note, so the other text stays.
@@ -13,10 +14,12 @@ export type Item = {
 	name: string;
 };
 
-export type TripTask = Item & { inCart: boolean };
+// `brand` is the text after ` · `, or no text.
+export type TripTask = Item & { inCart: boolean; brand: string };
 
 const TASK = /^(\s*[-*]\s+\[)([ xX])(\]\s+)(.+)$/;
 const LINK = /\[\[([^\]|#]+)(?:#[^\]|]*)?(?:\|([^\]]*))?\]\]/;
+const BRAND = ' · ';
 
 // The note of the open trip has a fixed name, so that the open list is always in one place.
 export const openNotePath = (folder: string) => `${folder}/Next trip.md`;
@@ -30,8 +33,10 @@ export function readTask(line: string): TripTask | null {
 	if (!match) return null;
 
 	const [, , mark, , text] = match;
-	const item = readItem(text);
-	return item && { ...item, inCart: mark !== ' ' };
+	const cut = text.indexOf(BRAND);
+	const item = readItem(cut === -1 ? text : text.slice(0, cut));
+	const brand = cut === -1 ? '' : text.slice(cut + BRAND.length).trim();
+	return item && { ...item, inCart: mark !== ' ', brand };
 }
 
 // The item that a text names. Null: the text has no name in it. A row of a receipt names its item
@@ -50,21 +55,25 @@ export const isSameItem = (a: TripTask, b: TripTask) =>
 // item, and the name of that note as its text. Thus two notes with one name do not get mixed.
 export function taskOf(path: string): TripTask {
 	const link = path.replace(/\.md$/, '');
-	return { link, name: nameOf(link), inCart: false };
+	return { link, name: nameOf(link), inCart: false, brand: '' };
 }
 
 // The task of the item gets a mark, and it goes after the last task. So the tasks with a mark are
 // in the order of your taps, and the receipt keeps the order of the store. An item with no task
-// gets one, with a mark. A second task of the same item goes, because it is one item.
-export function putInCart(text: string, item: TripTask): string {
+// gets one, with a mark. A second task of the same item goes, because it is one item. With a
+// brand, the task keeps that brand in place of its own. With no brand, the line stays as you wrote it.
+export function putInCart(text: string, item: TripTask, brand?: string): string {
 	const lines = linesOf(text);
 	const task = lines.find((line) => isTaskOf(line, item));
-	if (task === undefined) return addTask(lines, item, 'x');
+	if (task === undefined) return addTask(lines, item, 'x', brand ?? '');
 
+	const marked = withBrand(task.replace(TASK, '$1x$3$4'), brand);
+	// An item of the cart that gets a different brand keeps its place in the order of the store.
+	if (readTask(task)?.inCart) return lines.map((line) => (line === task ? marked : line)).join('\n');
 	const others = lines.filter((line) => !isTaskOf(line, item));
 	const last = others.findLastIndex((line) => readTask(line) !== null);
-	if (last === -1) return setMark(lines, item, 'x');
-	others.splice(last + 1, 0, task.replace(TASK, '$1x$3$4'));
+	if (last === -1) return lines.map((line) => (line === task ? marked : line)).join('\n');
+	others.splice(last + 1, 0, marked);
 	return others.join('\n');
 }
 
@@ -74,8 +83,11 @@ export function addExtra(text: string, item: TripTask): string {
 	return lines.some((line) => isTaskOf(line, item)) ? text : addTask(lines, item, ' ');
 }
 
+// The item is not in the cart, so the brand that you took goes too.
 export function unmark(text: string, item: TripTask): string {
-	return setMark(linesOf(text), item, ' ');
+	return linesOf(text)
+		.map((line) => (isTaskOf(line, item) ? withBrand(line.replace(TASK, '$1 $3$4'), '') : line))
+		.join('\n');
 }
 
 export function removeTasks(text: string, items: TripTask[]): string {
@@ -93,8 +105,8 @@ function isTaskOf(line: string, item: TripTask): boolean {
 }
 
 // The new task comes after the last task of the note. With no task, it goes at the end.
-function addTask(lines: string[], { link, name }: TripTask, mark: string): string {
-	const line = `- [${mark}] ${link ? `[[${link}|${name}]]` : name}`;
+function addTask(lines: string[], { link, name }: TripTask, mark: string, brand = ''): string {
+	const line = withBrand(`- [${mark}] ${link ? `[[${link}|${name}]]` : name}`, brand);
 	const last = lines.findLastIndex((other) => readTask(other) !== null);
 	if (last === -1) return `${lines.join('\n').trimEnd()}\n\n${line}\n`.trimStart();
 
@@ -102,9 +114,11 @@ function addTask(lines: string[], { link, name }: TripTask, mark: string): strin
 	return lines.join('\n');
 }
 
-// Only the mark changes, so the other text of the line stays as you wrote it.
-function setMark(lines: string[], item: TripTask, mark: string): string {
-	return lines
-		.map((line) => (isTaskOf(line, item) ? line.replace(TASK, `$1${mark}$3$4`) : line))
-		.join('\n');
+// The brand goes after the item, in place of the brand that the line has. No brand: the line
+// stays.
+function withBrand(line: string, brand: string | undefined): string {
+	if (brand === undefined) return line;
+	const cut = line.indexOf(BRAND);
+	const item = cut === -1 ? line.trimEnd() : line.slice(0, cut);
+	return brand ? `${item}${BRAND}${brand}` : item;
 }

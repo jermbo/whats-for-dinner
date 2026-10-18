@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { ShoppingRow } from '../../shop/shopping-list';
@@ -10,8 +11,10 @@
 		priceOf: (key: string) => string;
 		// Puts an item back on the list.
 		onundo: (key: string) => void;
+		// The brand that you took, below the name of an item.
+		brands?: Snippet<[ShoppingRow]>;
 	};
-	let { cart, priceOf, onundo }: Props = $props();
+	let { cart, priceOf, onundo, brands }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	const uid = $props.id();
@@ -48,6 +51,9 @@
 					<Button kind="link" aria-label="Undo {row.name}" onclick={() => onundo(row.key)}>
 						Undo
 					</Button>
+					{#if brands}
+						<div class="wfd-cart__brands">{@render brands(row)}</div>
+					{/if}
 				</li>
 			{/each}
 		</ul>
@@ -123,6 +129,15 @@
 		gap: 12px;
 		align-items: center;
 		border-block-end: 1px solid var(--wfd-line);
+	}
+
+	.wfd-cart__brands {
+		grid-column: 2 / -1;
+		padding-block-end: 10px;
+
+		&:empty {
+			display: none;
+		}
 	}
 
 	.wfd-cart__tick {

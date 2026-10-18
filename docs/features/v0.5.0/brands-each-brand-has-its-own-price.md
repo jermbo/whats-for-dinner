@@ -4,7 +4,8 @@ summary: "At put away, the price of a line starts from the last regular price of
 parent: brands-stories.md
 persona: Keeper
 depends-on: [brands-check-the-brand-at-put-away.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Each brand has its own price
@@ -43,6 +44,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Facts of an item](../../architecture/put-away-facts.md): the regular price, which is now a price for each brand.
 - [Receipt](../../architecture/receipt.md): the history of the prices.
 - [Spec: brands and photos](../../initiatives/brands-and-photos/spec.md): scope 11.

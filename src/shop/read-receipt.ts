@@ -7,6 +7,9 @@ import { readItem, type Item } from './shopping-note';
 
 // One row of a receipt. A cell with no text has no value.
 export type ReceiptRow = Item & {
+	// The bought brand: the link to its photo, or its name. A receipt with no column "Brand" has no
+	// brand.
+	brand: string;
 	amount: string;
 	price: string;
 	place: string;
@@ -49,6 +52,7 @@ export function readReceipt(
 		return [
 			{
 				...item,
+				brand: cells['brand'] ?? '',
 				amount: cells['amount'] ?? '',
 				price: cells['price'] ?? '',
 				place: cells['place'] ?? '',

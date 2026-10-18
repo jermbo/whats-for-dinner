@@ -1,6 +1,7 @@
 // The last receipt of an item is the newest receipt with a row for it. It tells what you bought
 // and what you paid the last time, and the screen of put away starts from it.
 
+import type { RegularRow } from './brand-price';
 import { readPrice } from './price';
 import type { Receipt, ReceiptRow } from './read-receipt';
 import { keyOf } from './trip';
@@ -11,6 +12,9 @@ export type LastRow = ReceiptRow & {
 	// The price of the newest row with a price and no sale mark, or no text. A sale ends, so the
 	// price of a sale is not the price that you can expect at the next trip.
 	regular: string;
+	// Each row with a price and no sale mark, with its brand, the newest first. Each brand has its
+	// own regular price.
+	regulars: RegularRow[];
 	// The amounts of the rows of the item, with the newest first, each one time.
 	amounts: string[];
 };
@@ -32,6 +36,10 @@ export function lastRows(
 				...row,
 				day,
 				regular: isRegular ? row.price : (older?.regular ?? ''),
+				regulars: [
+					...(isRegular ? [{ brand: row.brand, price: row.price }] : []),
+					...(older?.regulars ?? [])
+				],
 				amounts: [...new Set([row.amount, ...(older?.amounts ?? [])])].filter(Boolean)
 			});
 		}

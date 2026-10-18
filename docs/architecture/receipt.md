@@ -23,11 +23,11 @@ store: Market B
 
 Mum comes on Friday.
 
-| Item                                    | Amount | Price | Sale | Place          | Use by     |
-| --------------------------------------- | ------ | ----- | ---- | -------------- | ---------- |
-| [[Pantry/Eggs\|Eggs]]                   | 12     | 3.49  | yes  | Outside fridge | 2026-11-08 |
-| [[Pantry/Lime\|Lime]]                   | 2      |       |      | Kitchen pantry |            |
-| [[Shopping/Items/Batteries\|Batteries]] |        | 6.99  |      |                |            |
+| Item                                              | Brand                            | Amount | Price | Sale | Place          | Use by     |
+| ------------------------------------------------- | -------------------------------- | ------ | ----- | ---- | -------------- | ---------- |
+| [[Pantry/Eggs\|Eggs]]                             |                                  | 12     | 3.49  | yes  | Outside fridge | 2026-11-08 |
+| [[Pantry/Taco seasoning\|Taco seasoning]]         | [[Taco seasoning - Brand A.jpg]] | 1 bag  | 2.49  |      | Kitchen pantry |            |
+| [[Shopping/Items/Batteries\|Batteries]]           |                                  |        | 6.99  |      |                |            |
 ```
 
 In a table, the line between a link and its name has a backslash before it. Obsidian writes a link in a table this way.
@@ -53,6 +53,7 @@ Each row has the [facts](put-away-facts.md) that you gave for its item. The rows
 | Column   | Value                                               | With no value                        |
 | -------- | --------------------------------------------------- | ------------------------------------ |
 | `Item`   | The link of the task, or its text.                  | The row is not a row of the receipt. |
+| `Brand`  | The brand that you bought: the link to its first photo, or its name. | The row has no brand. |
 | `Amount` | What went into the pantry, such as `12` or `1 l`.   | The item is not in the pantry.       |
 | `Price`  | What you paid for the full amount, with 2 decimals. | The price is missing.                |
 | `Sale`   | `yes`, if the item was on sale.                     | The item was not on sale.            |
@@ -62,6 +63,8 @@ Each row has the [facts](put-away-facts.md) that you gave for its item. The rows
 ## The receipts are the history
 
 The plugin reads each note of the shopping folder that has a table with the column `Item`. It finds each column by its name, so the sequence of the columns is free.
+
+A receipt with no column `Brand` counts as a receipt with no brand. The cell is the link to a photo, and not the name, because the plugin never renames a photo. So the row still finds its [brand](brands.md) after the brand gets a name or a new name.
 
 The next put away starts from the last receipt of each item, and it shows each store that a receipt has. So a price or a store that you correct by hand counts at the next trip.
 
@@ -74,6 +77,7 @@ While put away is open, the receipt has `status: active` and one more column, `D
 | The stage Put away opens with a cart   | The note starts, with one row for each item, in task order.  |
 | You tick an item in the store          | Its row comes at the end of the table.                       |
 | You correct a fact                     | Its cell changes. A price stays as you typed it.             |
+| You tap a brand                        | The cell `Brand` changes.                                    |
 | "Undo" or "Not bought"                 | The row goes, if the item is not done.                       |
 | "Put away" on an item                  | Its cell `Done` gets `yes`.                                  |
 | The last item is in the pantry         | The receipt is complete.                                     |

@@ -4,7 +4,8 @@ summary: "On a row of the stage Shop, the shopper taps the camera tile, takes a 
 parent: brands-stories.md
 persona: Shopper
 depends-on: [brands-add-a-brand-with-the-camera.md, brands-put-a-brand-in-the-cart.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Take a photo of a new brand in the store
@@ -51,6 +52,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Shopping](../../architecture/shopping.md): the row of the stage Shop.
 - [Food item note](../../architecture/food-item-note.md): the section "Brands".
 - [Spec: brands and photos](../../initiatives/brands-and-photos/spec.md): scope 2 c and 2 d.

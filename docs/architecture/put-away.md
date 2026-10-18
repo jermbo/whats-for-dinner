@@ -26,6 +26,12 @@ The open line stays in its group while you correct it, so it does not move under
 
 "Not bought" takes an item out of the cart, for a wrong tap in the store. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store when it is complete.
 
+## The brand is one tap
+
+The open line of a food item shows its [brands](brands.md), as the row of the stage Shop does. One brand is selected, with a ring in the accent colour: the brand that you took in the store, or the brand of the last receipt, or the only brand. You have the package in your hand, so you check it. One tap selects a different brand, and a tap on the selected brand takes the selection off. The closed line shows the selected brand small, before the name.
+
+A new package gets its photo here: the camera tile after the brands makes a new brand with no name, and selects it. The brand never stops "Put away". A line with no brand goes into the pantry as today, and the row of the pantry gets no brand.
+
 ## A sale is one tap
 
 A sale ends, so the plugin never proposes a sale price. Each line has the chip "Sale". A tap opens the line with the cursor in the price, and the field shows the regular price as a hint.

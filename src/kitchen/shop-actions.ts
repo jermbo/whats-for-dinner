@@ -115,10 +115,11 @@ export function flushReceiptFacts(host: ShopActionsHost) {
 	);
 }
 
-export async function putInCart(host: ShopActionsHost, key: string) {
+// With a brand, the task keeps the brand that you took, as the cell of a receipt has it.
+export async function putInCart(host: ShopActionsHost, key: string, brand?: string) {
 	const row = host.calculated.missing.find((row) => row.key === key);
 	const task = host.trip.find((item) => item.key === key) ?? (row && taskOf(row.key));
-	if (task) await host.writeTrip((text) => putInCartNote(text, task));
+	if (task) await host.writeTrip((text) => putInCartNote(text, task, brand));
 }
 
 export async function takeOutOfCart(host: ShopActionsHost, key: string) {

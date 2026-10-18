@@ -41,6 +41,9 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Staple        | A food item that you always want, plan or no plan. Its note has the label [staple](architecture/staples.md).              |
 | Kind          | How often you buy a staple: "Often", "Sometimes", or "Seldom". It tells when the plugin asks about the staple again.      |
 | Purchase date | The day on which you put a food item away the last time.                                                                  |
+| Brand         | One package of a food item that you can buy, such as Brand A of taco seasoning. It has a name, a photo, or the two. See [brands](architecture/brands.md). |
+| Brand photo   | A photo of the package of one brand. It is in the section "Brands" of the food item note, below its brand.               |
+| Brands section | The heading "Brands" of a food item note, with one list item for each brand and its photos below it.                    |
 
 ## The recipes and the week
 
@@ -71,7 +74,8 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Stage         | One of the three moments of a trip in the Shop part: "Extras", "Shop", and "Put away". A strip at the top opens each [stage](architecture/shopping.md).                                                                                                                                   |
 | Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                                                                                                                          |
 | Put away      | The [third stage and its button](architecture/put-away.md) that add the cart to the pantry, and that end the trip.                                                                                                                                                                        |
-| Fact          | One of the five things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, and the mark "Sale".                                                                                                                   |
+| Fact          | One of the six things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, the mark "Sale", and the brand.                                                                                                       |
+| Bought brand  | The brand on a row of a receipt or a cart task: the brand that you took in the store, or that put away selected. The row links to its photo, or has its name.                                                                                                                         |
 | Price         | What you paid for the full amount of an item. It has no currency, and it is only in a receipt.                                                                                                                                                                                            |
 | Store         | Where you made a trip. A receipt can have one store.                                                                                                                                                                                                                                      |
 | Receipt       | The [note](architecture/receipt.md) of a trip, with each item that you bought. It starts as active when put away opens, and it is complete with the last item. Its name is the day on which it starts.                                                                                    |

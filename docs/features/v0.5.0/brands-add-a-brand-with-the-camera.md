@@ -4,7 +4,8 @@ summary: "In the Pantry form and in setup, the keeper takes a photo of a package
 parent: brands-stories.md
 persona: Keeper
 depends-on: [brands-see-the-brands-as-photos.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Add a brand with the camera
@@ -94,6 +95,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Food item note](../../architecture/food-item-note.md): what the plugin writes, which now includes the section "Brands".
 - [End of a meal](../../architecture/end-of-a-meal.md): the folder, the name, and the size of a photo.
 - [Pantry](../../architecture/pantry.md): the form of a food item.

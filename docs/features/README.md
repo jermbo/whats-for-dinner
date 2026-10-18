@@ -50,11 +50,13 @@ The [list](../architecture/shopping.md) is the plan minus the pantry. If two mea
 
 Some food you want always, plan or no plan: bread, eggs, salt. You label such food as a [staple](../architecture/staples.md), and you tell how often you buy it. The plugin then suggests it when it needs a look: it is low, its date is near, or its time is over. One tap puts it on the list, and one tap skips it. Food that a meal needs gets a suggestion too, when the pantry has it [past its date](../architecture/past-its-date.md).
 
+In the store, each row shows the [photo of each package](../architecture/brands.md) that you buy, so you find it on the shelf with no name to read. A tap shows the photo large, and "In cart" records the brand that you took. A new package gets its photo from the row, with one hand. In the Pantry, you give a brand a name and a new photo later.
+
 You add an item of your own on any day, such as batteries. The cart is a note of your vault, so your phone and your computer show the same cart.
 
 ## The trip goes into the pantry, with its prices
 
-At home, [put away](../architecture/put-away.md) shows each item of the cart filled in with its amount, its place, its use-by date, and its regular price, in groups by place. You check the lines, and one tap corrects a fact or marks a sale. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that item into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
+At home, [put away](../architecture/put-away.md) shows each item of the cart filled in with its amount, its place, its use-by date, and its regular price, in groups by place. You check the lines, and one tap corrects a fact, marks a sale, or selects the brand in your hand. Each brand has its own price. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that item into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
 
 The note of the trip becomes its [receipt](../architecture/receipt.md): what you bought, in which store, and what you paid. Thus the vault has the price of each item over time.
 

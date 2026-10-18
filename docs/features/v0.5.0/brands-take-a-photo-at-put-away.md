@@ -4,7 +4,8 @@ summary: "On the open line of put away, the keeper takes a photo of the package 
 parent: brands-stories.md
 persona: Keeper
 depends-on: [brands-add-a-brand-with-the-camera.md, brands-check-the-brand-at-put-away.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Take a photo of a brand at put away
@@ -45,6 +46,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Put away](../../architecture/put-away.md): the open line.
 - [Food item note](../../architecture/food-item-note.md): the section "Brands".
 - [Spec: brands and photos](../../initiatives/brands-and-photos/spec.md): scope 2 b.

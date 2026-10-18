@@ -4,7 +4,8 @@ summary: "In the stage Shop, the shopper taps the photo of a brand and then In c
 parent: brands-stories.md
 persona: Shopper
 depends-on: [brands-see-the-brands-as-photos.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Put a brand in the cart
@@ -48,6 +49,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Shopping note](../../architecture/shopping-note.md): the task, and what the plugin changes in it.
 - [Shopping](../../architecture/shopping.md): the stage Shop and the cart.
 - [Spec: brands and photos](../../initiatives/brands-and-photos/spec.md): scope 12 and 13.

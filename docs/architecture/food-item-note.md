@@ -1,6 +1,6 @@
 ---
 title: Food item note
-summary: "The exact form of the note of a food item: its name, its properties, and its table."
+summary: "The exact form of the note of a food item: its name, its properties, its table, and its section Brands."
 parent: pantry.md
 ---
 
@@ -19,8 +19,6 @@ This is the note `Elbow pasta.md`:
 aliases:
   - pasta
   - macaroni
-brands:
-  - Store brand
 full: 2 kg
 low: 500 g
 staple: seldom
@@ -31,6 +29,12 @@ bought: 2026-10-04
 | ----------------- | ------ | ---------- |
 | Kitchen pantry    | 500 g  |            |
 | Downstairs pantry | 1 kg   | 2027-03-01 |
+
+## Brands
+
+- Store brand
+  ![[Elbow pasta - Store brand.jpg]]
+- ![[Elbow pasta - brand 2026-10-18.jpg]]
 ```
 
 ## The name of the note is the name of the food
@@ -44,7 +48,6 @@ Each property is optional.
 | Property  | Value                                                           | With no value                                       |
 | --------- | --------------------------------------------------------------- | --------------------------------------------------- |
 | `aliases` | Other names that a recipe can use. One text, or a list.         | A recipe finds the food item only by its name.      |
-| `brands`  | The brands that you buy. One text, or a list.                   | The shopping list shows no brand.                   |
 | `full`    | The full amount, such as `2 kg` or `12`.                        | It is the amount that you have now.                 |
 | `low`     | The low line, such as `500 g`.                                  | The line is a percentage of the full amount.        |
 | `staple`  | How often you buy it: `often`, `sometimes`, `seldom`.           | The food item is not a [staple](staples.md).        |
@@ -67,11 +70,25 @@ The plugin reads the first table of the note. It finds each column by its name, 
 
 A note with no row is a food item that is out. [Intake](intake.md) makes such a note for a new ingredient: a stub, with no property and no row, which the Shop part shows as out until you buy the food.
 
+## The section "Brands"
+
+The [brands](brands.md) of the food item are below the heading "Brands", of any level, up to the next heading.
+
+| Line                                         | Meaning                                                          |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| A list item                                  | One brand. Its text is the name of the brand.                    |
+| A line with an indent below it, with an image | A photo of that brand. The first photo is the photo that shows. |
+| A list item with only the link of an image   | A brand with that photo and no name.                             |
+
+This is the form of a [step photo](steps.md): the photo continues the list item. A note with no section has no brand. The plugin does not read a property `brands`.
+
 ## What the plugin changes
 
-The plugin writes five things: the table, `full`, `low`, `staple`, and `bought`. All text outside the table stays, so you can write your own text in the note.
+The plugin writes six things: the table, `full`, `low`, `staple`, `bought`, and the list items of the section "Brands". All other text stays, so you can write your own text in the note.
 
 The plugin writes the table again with the three columns of this page. A column of your own does not stay.
+
+In the section "Brands", a new brand goes at the end, and a note with no section gets `## Brands` at its end. A new name goes on the line of the item, and its photo goes on the line below. A brand that you remove goes with its lines. The text of the section that is not a list item stays.
 
 ## Further reading
 

@@ -3,6 +3,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
+	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Stock } from '../../pantry/types';
 	import { STAPLES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
@@ -26,9 +27,11 @@
 		else picked.set(name, '');
 	}
 
-	async function add(name: string, stock: Stock) {
+	// The note of the food item comes from the row, so its brands go after it.
+	async function add(name: string, stock: Stock, brands: BrandDraft[]) {
 		adding = false;
 		await kitchen.addStock(name, stock);
+		if (brands.length) await kitchen.saveBrands(name, brands);
 	}
 </script>
 
@@ -73,7 +76,7 @@
 				{names}
 				places={kitchen.places}
 				startPlace={kitchen.settings.newPlace}
-				onsave={(stock, name) => add(name, stock)}
+				onsave={(stock, name, _, brands) => add(name, stock, brands)}
 				oncancel={() => (adding = false)}
 			/>
 		</div>

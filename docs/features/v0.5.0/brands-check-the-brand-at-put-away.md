@@ -4,7 +4,8 @@ summary: "At put away, the open line shows the brands of the item with one selec
 parent: brands-stories.md
 persona: Keeper
 depends-on: [brands-see-the-brands-as-photos.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / Check the brand at put away
@@ -67,6 +68,7 @@ Each criterion starts with the vault of the [list page](brands-stories.md#what-t
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Put away](../../architecture/put-away.md): the open line and the two actions.
 - [Facts of an item](../../architecture/put-away-facts.md): what the plugin fills in, now with the brand.
 - [Receipt](../../architecture/receipt.md): the column `Brand`.

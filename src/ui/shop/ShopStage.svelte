@@ -3,6 +3,7 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
+	import { brandAt, brandCell } from '../../shop/bought-brand';
 	import type { Only, Sort } from '../../shop/browse';
 	import {
 		anyRegularPrice,
@@ -15,7 +16,10 @@
 	import { proposalsFor } from '../../shop/proposals';
 	import type { ShoppingRow } from '../../shop/shopping-list';
 	import type { BarState } from '../bar-state.svelte';
+	import { tilesOf } from '../brand-tiles';
 	import Bar from '../parts/Bar.svelte';
+	import BrandPhoto from '../parts/BrandPhoto.svelte';
+	import BrandStrip from '../parts/BrandStrip.svelte';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -73,10 +77,59 @@
 	const ticked = new SvelteSet<string>();
 	const TICK_SHOWS = 180;
 
-	function tick(key: string) {
+	// With a brand, the task keeps the brand that you took.
+	function tick(key: string, brand?: string) {
 		if (ticked.has(key)) return;
 		ticked.add(key);
-		setTimeout(() => kitchen.putInCart(key), prefersReducedMotion.current ? 0 : TICK_SHOWS);
+		setTimeout(() => kitchen.putInCart(key, brand), prefersReducedMotion.current ? 0 : TICK_SHOWS);
+	}
+
+	// --- The photos of the brands. ---
+
+	const urlFor = (row: ShoppingRow) => (photo: string) =>
+		kitchen.photoUrl(photo, row.food?.path ?? '');
+	const brandsOf = (row: ShoppingRow) => row.food?.item.brands ?? [];
+
+	// The photo that shows large: its row, the name of its file, and the small photo that it grows
+	// from. The brand comes from the note, so a new photo gets its brand when the note is read.
+	let large = $state<{ key: string; path: string; photo: string; from: HTMLElement } | null>(null);
+	const largeBrand = $derived.by(() => {
+		const row = large && all.find((one) => one.key === large?.key);
+		return row ? brandsOf(row).find((brand) => brand.photos[0] === large?.photo) : undefined;
+	});
+
+	function showLarge(row: ShoppingRow, at: number, from: HTMLElement) {
+		const photo = brandsOf(row)[at]?.photos[0];
+		if (photo && row.food) large = { key: row.key, path: row.food.path, photo, from };
+	}
+
+	// "In cart" ticks the row with the brand of the large photo. An item of the cart gets the new
+	// brand in place of its own.
+	function intoCart() {
+		if (!large) return;
+		const { key, photo } = large;
+		const brand = largeBrand ? brandCell(largeBrand) : `[[${photo}]]`;
+		large = null;
+		opened.delete(key);
+		if (inCart.some((one) => one.key === key)) void kitchen.putInCart(key, brand);
+		else tick(key, brand);
+	}
+
+	// The photo of a new package is a new brand with no name. It shows large at once, so that "In
+	// cart" is one tap away.
+	async function takeNew(row: ShoppingRow, photo: Blob, from: HTMLElement) {
+		if (!row.food) return;
+		const { path } = row.food;
+		const name = await kitchen.addBrandPhoto(path, photo);
+		if (name) large = { key: row.key, path, photo: name, from };
+	}
+
+	// An item of the cart shows only the brand that you took. A tap on it shows each brand again,
+	// so that you can take a different one.
+	const opened = new SvelteSet<string>();
+	function cartBrandOf(row: ShoppingRow): number | null {
+		const item = kitchen.trip.find((one) => one.key === row.key);
+		return item ? brandAt(item.brand, brandsOf(row)) : null;
 	}
 
 	// A row that "Undo" brings back has no tick.
@@ -224,11 +277,6 @@
 										{#if row.recipes.length}
 											<span class="wfd-shop__note">{row.recipes.join(', ')}</span>
 										{/if}
-										{#if row.food?.item.brands.length}
-											<span class="wfd-shop__note">
-												Any brand: {row.food.item.brands.join(', ')}
-											</span>
-										{/if}
 									</span>
 									<span class="wfd-shop__cost">
 										<span class="wfd-shop__amount wfd-number">{row.amount}</span>
@@ -246,6 +294,18 @@
 										Remove
 									</Button>
 								{/if}
+								{#if row.food}
+									<div class="wfd-shop__brands">
+										<BrandStrip
+											brands={tilesOf(brandsOf(row), urlFor(row))}
+											of={row.name}
+											tapChips={false}
+											ontap={(at, tile) => showLarge(row, at, tile)}
+											onrest={() => tick(row.key)}
+											ontake={(photo, tile) => takeNew(row, photo, tile)}
+										/>
+									</div>
+								{/if}
 							</li>
 						{/each}
 					</ul>
@@ -260,8 +320,34 @@
 				cart={inCart}
 				priceOf={(key) => showPrice(kitchen.regularOf(key))}
 				onundo={(key) => kitchen.takeOutOfCart(key)}
-			/>
+			>
+				{#snippet brands(row)}
+					{@const all = brandsOf(row)}
+					{@const chosen = cartBrandOf(row)}
+					{@const only = chosen !== null && !opened.has(row.key)}
+					{#if all.length}
+						<BrandStrip
+							brands={tilesOf(chosen !== null && only ? [all[chosen]] : all, urlFor(row))}
+							of={row.name}
+							tapChips={false}
+							ontap={(at, tile) =>
+								only ? opened.add(row.key) : showLarge(row, at, tile)}
+						/>
+					{/if}
+				{/snippet}
+			</CartLine>
 		</div>
+	{/if}
+
+	{#if large}
+		<BrandPhoto
+			url={kitchen.photoUrl(large.photo, large.path)}
+			name={largeBrand?.name ?? ''}
+			from={large.from}
+			onclose={() => (large = null)}
+		>
+			<Button kind="main" onclick={intoCart}>In cart</Button>
+		</BrandPhoto>
 	{/if}
 
 	{#if inCart.length || priced}
@@ -385,6 +471,12 @@
 	.wfd-shop__group {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
+	}
+
+	/* The photos are below the text of the row, in line with the name. */
+	.wfd-shop__brands {
+		grid-column: 1 / -1;
+		padding: 0 0 12px 38px;
 	}
 
 	.wfd-shop__text {

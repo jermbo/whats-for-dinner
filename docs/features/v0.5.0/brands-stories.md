@@ -20,13 +20,13 @@ The [spec](../../initiatives/brands-and-photos/spec.md) has the scope that is ag
 
 | Story                                                                                       | Persona | Depends on      | Status  |
 | ------------------------------------------------------------------------------------------- | ------- | --------------- | ------- |
-| 1. [See the brands of a food item as photos](brands-see-the-brands-as-photos.md)            | Shopper | Nothing         | `ready` |
-| 2. [Add a brand with the camera](brands-add-a-brand-with-the-camera.md)                     | Keeper  | Story 1         | `ready` |
-| 3. [Put a brand in the cart](brands-put-a-brand-in-the-cart.md)                             | Shopper | Story 1         | `ready` |
-| 4. [Take a photo of a new brand in the store](brands-take-a-photo-in-the-store.md)          | Shopper | Stories 2 and 3 | `ready` |
-| 5. [Check the brand at put away](brands-check-the-brand-at-put-away.md)                     | Keeper  | Story 1         | `ready` |
-| 6. [Each brand has its own price](brands-each-brand-has-its-own-price.md)                   | Keeper  | Story 5         | `ready` |
-| 7. [Take a photo of a brand at put away](brands-take-a-photo-at-put-away.md)                | Keeper  | Stories 2 and 5 | `ready` |
+| 1. [See the brands of a food item as photos](brands-see-the-brands-as-photos.md)            | Shopper | Nothing         | `built` |
+| 2. [Add a brand with the camera](brands-add-a-brand-with-the-camera.md)                     | Keeper  | Story 1         | `built` |
+| 3. [Put a brand in the cart](brands-put-a-brand-in-the-cart.md)                             | Shopper | Story 1         | `built` |
+| 4. [Take a photo of a new brand in the store](brands-take-a-photo-in-the-store.md)          | Shopper | Stories 2 and 3 | `built` |
+| 5. [Check the brand at put away](brands-check-the-brand-at-put-away.md)                     | Keeper  | Story 1         | `built` |
+| 6. [Each brand has its own price](brands-each-brand-has-its-own-price.md)                   | Keeper  | Story 5         | `built` |
+| 7. [Take a photo of a brand at put away](brands-take-a-photo-at-put-away.md)                | Keeper  | Stories 2 and 5 | `built` |
 | [Find a food item](../v0.1.0/pantry-find-a-food-item.md) (changed)                          | Shopper | Story 1         | `built` |
 | [Change a row](../v0.1.0/pantry-change-a-row.md) (changed)                                  | Keeper  | Story 1         | `built` |
 
@@ -48,6 +48,7 @@ Each story updates the wiki pages **before** its code, in the **Elevate** step o
 
 | Page                                                                 | Stories that update it                                                                  |
 | -------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| [Brands](../../architecture/brands.md)                               | 1 to 7: the mechanism, the file of a photo, and the bought brand.                       |
 | [Food item note](../../architecture/food-item-note.md)               | 1: the section "Brands" replaces the property `brands`. 2: the plugin writes the section. |
 | [Pantry](../../architecture/pantry.md)                               | 1: the find field and the brands in the form. 2: the camera button in the form.        |
 | [Shopping](../../architecture/shopping.md)                           | 1: the photos on the row. 3: the large photo with "In cart". 4: the camera tile.        |

@@ -13,12 +13,19 @@ import {
 	saveRecipe as saveRecipeAction,
 	type IntakeActionsHost
 } from './kitchen/intake-actions';
+import {
+	addBrandPhoto as addBrandPhotoAction,
+	saveBrands as saveBrandsAction,
+	type BrandActionsHost,
+	type BrandDraft
+} from './kitchen/brand-actions';
 import { convertNote } from './intake/convert';
 import { editNote } from './intake/edit';
 import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
 	addStockTo,
+	foodPath,
 	setLow as setLowAction,
 	setStaple as setStapleAction,
 	setStocks as setStocksAction,
@@ -324,8 +331,26 @@ export class Kitchen {
 		await clearPlanAction(this.planHost);
 	}
 
-	async putInCart(key: string) {
-		await putInCartAction(this.shopHost, key);
+	async putInCart(key: string, brand?: string) {
+		await putInCartAction(this.shopHost, key, brand);
+	}
+
+	// The brands of the form of a food item, by the name of the food item. A new food item has its
+	// note from "Add to pantry" before this call.
+	saveBrands(name: string, drafts: BrandDraft[]): Promise<boolean> {
+		const path = foodPath(this.pantryHost, name);
+		return this.tried('The brands are not saved', () =>
+			saveBrandsAction(this.brandHost, path, drafts)
+		);
+	}
+
+	// A new brand with no name, from the camera tile. It gives the name of the photo, or null.
+	async addBrandPhoto(path: string, photo: Blob): Promise<string | null> {
+		let name: string | null = null;
+		await this.tried('The photo is not saved', async () => {
+			name = await addBrandPhotoAction(this.brandHost, path, photo);
+		});
+		return name;
 	}
 
 	async takeOutOfCart(key: string) {
@@ -491,6 +516,14 @@ export class Kitchen {
 				return k.today;
 			},
 			makeFolderOf: (path) => k.makeFolderOf(path)
+		};
+	}
+
+	private get brandHost(): BrandActionsHost {
+		const k = this;
+		return {
+			...k.intakeHost,
+			fileAt: (path) => k.fileAt(path)
 		};
 	}
 

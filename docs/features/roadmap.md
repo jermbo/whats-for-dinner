@@ -37,6 +37,13 @@ The phone is where you use the plugin, and a function with no test there is not 
 | One item at a time            | "Put away" on milk puts only milk into the pantry. The receipt keeps the order of the store.    |
 | The known items               | "Put away 9 known" puts the known items away. Quinoa, with no receipt, stays as a line.         |
 | The receipt keeps the work    | Type a price, restart Obsidian, and the price is still there. The phone shows it too.           |
+| The photos of the brands      | The row of taco seasoning shows the photos of Brand A and Brand B, and the chip "Brand C".      |
+| A brand with the camera       | "Add brand" in the Pantry form takes a photo, and the section "Brands" gets it.                 |
+| A brand in the cart           | "In cart" on the photo of Brand A writes the brand after the link of the task.                  |
+| A photo in the store          | The camera tile of a row makes a new brand, which shows large with "In cart".                   |
+| The brand at put away         | The line of taco seasoning starts with Brand A, and the receipt gets it in the column `Brand`.  |
+| A price for each brand        | A tap on Brand B changes the price to 1.99.                                                     |
+| A photo at put away           | The camera tile of the open line makes a new brand, and selects it.                             |
 
 ## The pantry bar has two limits
 
@@ -55,12 +62,11 @@ The plugin has a fixed value for each of these. A value becomes a setting when i
 | The heading of the cook record       | "Cooked"                                                         |
 | The units that the plugin shows      | g, kg, ml, and l                                                 |
 
-## Four ideas have no decision
+## Three ideas have no decision
 
 - **A drag on a closed row.** The first design sets an amount with no tap to open the row.
 - **Preparation from the pantry.** Food in a place with the name "Freezer" needs time before you can cook it. The plugin does not tell you this: only the callout of a recipe is a preparation.
 - **Groups by store.** You go to more than one store, and one store can be cheaper for some items. The list does not tell you which item to buy in which store, and it has no group for each store.
-- **Brands and photos.** The plugin does not record which brand you bought, and an item has no photo. The questions for the discussion are in the initiative [brands and photos](../initiatives/brands-and-photos/decision-log.md).
 
 The first version also has choices that you did not confirm, such as how the name in a recipe finds a food item. They are in the table "Choices that are not decided" of the [build plan](../../PLAN.md).
 

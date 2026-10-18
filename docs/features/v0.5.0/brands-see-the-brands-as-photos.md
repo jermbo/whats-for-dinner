@@ -4,7 +4,8 @@ summary: "The shopper sees the package of each brand on the row of the stage Sho
 parent: brands-stories.md
 persona: Shopper
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Brands stories](brands-stories.md) / See the brands of a food item as photos
@@ -64,6 +65,7 @@ Nothing. The vault of the list page has the section "Brands" and the photos.
 
 ## Architecture
 
+- [Brands](../../architecture/brands.md): the mechanism of the brands, from the photo to the receipt.
 - [Food item note](../../architecture/food-item-note.md): the form of the note, which gets the section "Brands" in place of the property `brands`.
 - [Shopping](../../architecture/shopping.md): the row of the stage Shop.
 - [Pantry](../../architecture/pantry.md): the find field and the form.

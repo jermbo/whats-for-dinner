@@ -12,7 +12,7 @@ import { readTask, type Item } from './shopping-note';
 // One row of an active receipt: the item, its facts, and if it is in the pantry.
 export type ReceiptLine = Item & { facts: Facts; done: boolean };
 
-const COLUMNS = ['Item', 'Amount', 'Price', 'Sale', 'Place', 'Use by'];
+const COLUMNS = ['Item', 'Brand', 'Amount', 'Price', 'Sale', 'Place', 'Use by'];
 // Only an active receipt has this column. A complete receipt is done in each row.
 const DONE = 'Done';
 
@@ -27,12 +27,12 @@ export function receiptPath(folder: string, day: string, isTaken: (path: string)
 // The facts of a row, as the stage Put away reads them. An item that does not go into the pantry
 // has no amount.
 export function lineOf(row: ReceiptRow): ReceiptLine {
-	const { link, name, amount, price, onSale, place, useBy, done } = row;
+	const { link, name, brand, amount, price, onSale, place, useBy, done } = row;
 	return {
 		link,
 		name,
 		done,
-		facts: { intoPantry: amount !== '', amount, place, useBy, price, onSale }
+		facts: { intoPantry: amount !== '', amount, place, useBy, price, onSale, brand }
 	};
 }
 
@@ -92,6 +92,7 @@ function cellsOf({ link, name, facts, done }: ReceiptLine): string[] {
 	const pantry = facts.intoPantry;
 	return [
 		showItem(link, name),
+		facts.brand.trim(),
 		pantry ? amountOf(facts) : '',
 		facts.price.trim(),
 		facts.onSale ? 'yes' : '',

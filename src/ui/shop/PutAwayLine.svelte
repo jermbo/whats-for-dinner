@@ -3,8 +3,13 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import { showDate } from '../../dates';
+	import { prefersReducedMotion as reduced } from 'svelte/motion';
+	import { fade } from 'svelte/transition';
+	import { brandAt, brandCell } from '../../shop/bought-brand';
 	import { amountOf, type CartItem, type Facts } from '../../shop/facts';
 	import { readPrice, showPrice } from '../../shop/price';
+	import { tilesOf } from '../brand-tiles';
+	import BrandStrip from '../parts/BrandStrip.svelte';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import PickOne from '../parts/PickOne.svelte';
@@ -23,6 +28,12 @@
 		ontoggle: () => void;
 		onsale: () => void;
 		onchange: (change: Partial<Facts>) => void;
+		// The regular price of the brand of the line, for the hint of a sale.
+		regular: string;
+		// The address of a photo of a brand, for the screen.
+		urlOf: (photo: string) => string | null;
+		// A photo of the camera tile: a new brand for the line.
+		ontake: (photo: Blob) => Promise<unknown>;
 		onnotbought: () => void;
 		// You checked the line, and only this item goes into the pantry.
 		onputaway: () => void;
@@ -39,6 +50,9 @@
 		ontoggle,
 		onsale,
 		onchange,
+		regular,
+		urlOf,
+		ontake,
 		onnotbought,
 		onputaway,
 		busy
@@ -59,8 +73,19 @@
 	// Text that is not a number is not a price. The line and the field show it.
 	const badPrice = $derived(facts.price.trim() !== '' && readPrice(facts.price) === null);
 	const price = $derived(showPrice(facts.price) || (badPrice ? facts.price.trim() : '–'));
-	// On a sale, the field is empty, and the price that you usually pay is its hint.
-	const hint = $derived(facts.onSale && item.start.price ? `${item.start.price} regular` : 'Price');
+	// On a sale, the field is empty, and the price that you usually pay for the brand is its hint.
+	const hint = $derived(facts.onSale && regular ? `${regular} regular` : 'Price');
+
+	// The brands of the food item. An item with no food item note has none, and no camera tile.
+	const brands = $derived(item.brands ?? []);
+	const selected = $derived(brandAt(facts.brand, brands));
+	const chosen = $derived(selected === null ? null : brands[selected]);
+	const chosenUrl = $derived(chosen?.photos[0] ? urlOf(chosen.photos[0]) : null);
+
+	// One tap selects a brand. A tap on the selected brand takes the selection off.
+	function pick(at: number) {
+		onchange({ brand: selected === at ? '' : brandCell(brands[at]) });
+	}
 
 	let priceField = $state<HTMLInputElement>();
 
@@ -92,6 +117,11 @@
 		</span>
 		<span class="wfd-away-line__text">
 			<span class="wfd-away-line__top">
+				{#if chosenUrl}
+					<img class="wfd-away-line__brand" src={chosenUrl} alt="" in:fade={{ duration }} />
+				{:else if chosen}
+					<span class="wfd-away-line__brand-name">{chosen.name}</span>
+				{/if}
 				<span class="wfd-away-line__name">{item.name}</span>
 				{#if facts.intoPantry}
 					<span class="wfd-away-line__amount wfd-number">{amountOf(facts)}</span>
@@ -101,13 +131,17 @@
 				<span class="wfd-away-line__when">{when}</span>
 			{/if}
 		</span>
-		<span
-			class="wfd-away-line__price wfd-number"
-			class:wfd-away-line__price--missing={price === '–'}
-			class:wfd-away-line__price--bad={badPrice}
-		>
-			{price}
-		</span>
+		<!-- A different brand has a different price. The new price fades in. -->
+		{#key price}
+			<span
+				class="wfd-away-line__price wfd-number"
+				class:wfd-away-line__price--missing={price === '–'}
+				class:wfd-away-line__price--bad={badPrice}
+				in:fade={{ duration: reduced.current ? 0 : 300 }}
+			>
+				{price}
+			</span>
+		{/key}
 	</button>
 
 	<div class="wfd-away-line__sale">
@@ -116,6 +150,15 @@
 
 	{#if open}
 		<div class="wfd-away-line__facts" id="{uid}-facts" transition:slide={{ duration }}>
+			{#if item.brands}
+				<BrandStrip
+					brands={tilesOf(brands, urlOf)}
+					of={item.name}
+					{selected}
+					ontap={pick}
+					{ontake}
+				/>
+			{/if}
 			<div class="wfd-away-line__paid">
 				<label class="wfd-away-line__field">
 					<span class="wfd-label">Price</span>
@@ -232,6 +275,21 @@
 		flex-wrap: wrap;
 		gap: 2px 10px;
 		align-items: baseline;
+	}
+
+	/* The brand of the line, small, before the name. */
+	.wfd-away-line__brand {
+		inline-size: 24px;
+		block-size: 24px;
+		align-self: center;
+		border-radius: 4px;
+		object-fit: cover;
+	}
+
+	.wfd-away-line__brand-name {
+		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-weight: 600;
 	}
 
 	.wfd-away-line__name {

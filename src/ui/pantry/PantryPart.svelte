@@ -2,6 +2,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
+	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { FoodNote } from '../../note';
 	import { levelOf, type Level } from '../../pantry/level';
 	import type { StapleLabel } from '../../pantry/staple';
@@ -117,10 +118,10 @@
 		open = 'new';
 	}
 
-	const factsOf = (food: FoodNote) => [
-		...(food.item.brands.length ? [`Brands: ${food.item.brands.join(', ')}`] : []),
-		...(food.item.aliases.length ? [`Other names: ${food.item.aliases.join(', ')}`] : [])
-	];
+	const factsOf = (food: FoodNote) =>
+		food.item.aliases.length ? [`Other names: ${food.item.aliases.join(', ')}`] : [];
+
+	const urlFor = (food: FoodNote) => (photo: string) => kitchen.photoUrl(photo, food.path);
 
 	const placesOf = (food: FoodNote) => new Set(food.item.stocks.map((stock) => stock.place)).size;
 
@@ -161,14 +162,21 @@
 	const isOnList = (path: string) =>
 		kitchen.list.some((row) => row.key === path) || kitchen.cart.some((row) => row.key === path);
 
-	// Changes one row of a food item, or removes it.
-	async function change(food: FoodNote, at: number, stock: Stock | null, labels?: Labels) {
+	// Changes one row of a food item, or removes it. The brands of the form go after the row.
+	async function change(
+		food: FoodNote,
+		at: number,
+		stock: Stock | null,
+		labels?: Labels,
+		brands: BrandDraft[] = []
+	) {
 		open = null;
 		const stocks = food.item.stocks.flatMap((old, index) =>
 			index !== at ? [old] : stock ? [stock] : []
 		);
 		await kitchen.setStocks(food.path, stocks);
 		await keepLabels(food, labels);
+		if (brands.length) await kitchen.saveBrands(food.item.name, brands);
 	}
 
 	// Writes all rows of a food item, after a change of the bar.
@@ -177,10 +185,18 @@
 		await kitchen.setStocks(food.path, stocks);
 	}
 
-	async function add(name: string, stock: Stock, food?: FoodNote, labels?: Labels) {
+	// A new food item gets its note from the row, so its brands go after it.
+	async function add(
+		name: string,
+		stock: Stock,
+		brands: BrandDraft[],
+		food?: FoodNote,
+		labels?: Labels
+	) {
 		open = null;
 		await kitchen.addStock(name, stock);
 		if (food) await keepLabels(food, labels);
+		if (brands.length) await kitchen.saveBrands(name, brands);
 	}
 </script>
 
@@ -243,7 +259,7 @@
 				names={kitchen.foods.map(({ item }) => item.name).sort()}
 				startName={newName}
 				places={kitchen.places}
-				onsave={(stock, name) => add(name, stock)}
+				onsave={(stock, name, _, brands) => add(name, stock, brands)}
 				oncancel={() => (open = null)}
 			/>
 		</div>
@@ -284,7 +300,10 @@
 									low={lowOf(food, levelOf(food.item, lowPercent))}
 									staple={labelOf(food)}
 									facts={factsOf(food)}
-									onsave={(stock, _, labels) => add(food.item.name, stock, food, labels)}
+									brands={food.item.brands}
+									urlOf={urlFor(food)}
+									onsave={(stock, _, labels, brands) =>
+										add(food.item.name, stock, brands, food, labels)}
 									oncancel={() => (open = null)}
 									onopen={() => kitchen.open(food.path)}
 								/>
@@ -345,7 +364,10 @@
 												low={lowOf(row.food, row.level)}
 												staple={labelOf(row.food)}
 												facts={factsOf(row.food)}
-												onsave={(stock, _, labels) => change(row.food, at, stock, labels)}
+												brands={row.food.item.brands}
+												urlOf={urlFor(row.food)}
+												onsave={(stock, _, labels, brands) =>
+													change(row.food, at, stock, labels, brands)}
 												onusedup={() => change(row.food, at, null)}
 												oncancel={() => (open = null)}
 												onopen={() => kitchen.open(row.food.path)}

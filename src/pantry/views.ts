@@ -50,11 +50,12 @@ export const daysLeft = (stock: Stock, today: string) =>
 export const isSoon = (stock: Stock, today: string, soonDays: number) =>
 	(daysLeft(stock, today) ?? 9999) <= soonDays;
 
-// The text that you type finds a food item by its name, its other names, or its brands.
+// The text that you type finds a food item by its name, its other names, or the names of its brands.
 export function isFound(food: FoodNote, text: string): boolean {
 	const words = text.trim().toLowerCase();
 	const { name, aliases, brands } = food.item;
-	return !words || [name, ...aliases, ...brands].some((one) => one.toLowerCase().includes(words));
+	const names = [name, ...aliases, ...brands.map((brand) => brand.name)];
+	return !words || names.some((one) => one.toLowerCase().includes(words));
 }
 
 // One group for each place, so that you see the downstairs pantry and the outside fridge.

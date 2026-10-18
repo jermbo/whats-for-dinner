@@ -23,6 +23,7 @@ Mum comes on Friday.
 - [ ] [[Shopping/Items/Batteries|Batteries]]
 - [x] [[Pantry/Lime|Lime]]
 - [x] [[Pantry/Avocados|Avocados]]
+- [x] [[Pantry/Taco seasoning|Taco seasoning]] · [[Taco seasoning - Brand A.jpg]]
 ```
 
 The note has the name "Next trip". It is in the shopping folder of the [settings](settings.md), which starts as `Shopping`. If the note is not there, the plugin makes it with your first action: a tap on a row of the list, a suggestion that you accept, or an item that you add.
@@ -37,6 +38,7 @@ The plugin reads each line that is a task. All other lines are your own text.
 | `[x]`             | The item is in the cart.                                           |
 | The link          | The note of the item, with the name that the list shows.           |
 | Text with no link | An item with that text as its name. Thus you can type a line fast. |
+| Text after ` · `  | The [brand](brands.md) that you took: the link to its photo, or its name. |
 
 A row that the plugin calculates from the meals is not in the note. It gets its task when you put it in the cart. If two tasks have the same item, the plugin reads the first.
 
@@ -59,8 +61,9 @@ An item of your own that no note has, such as the batteries, links into the item
 The plugin changes only the lines of the tasks. It changes the mark of a line, and the other text of the line stays as you wrote it.
 
 - **A tap on a row of the list** gives the task of the item a mark, and moves it after the last task. So the tasks with a mark are in the order of your taps, and the receipt keeps that order. An item with no task gets a new line, after the last task. With no task in the note, the line goes at the end.
+- **"In cart" on a large photo** does the same, and the task gets the brand after its link: ` · [[Taco seasoning - Brand A.jpg]]`. It replaces a brand that the task has.
 - **"Add to cart" in the stage Shop** adds a task with a mark, after the last task.
-- **"Undo"** takes the mark off, and the item is an extra. But if a meal puts the item on the list, the task goes out of the note.
+- **"Undo"** takes the mark and the brand off, and the item is an extra. But if a meal puts the item on the list, the task goes out of the note.
 - **"Add" on a suggestion, the field "Add an item", and "Add to the list" in the Pantry part** add a task with no mark. An item that has a task gets no second task.
 - **"Remove"** takes the task of an extra out of the note.
 - **Put away** writes the facts into the [receipt](receipt.md), not into this note. An item that is done in the receipt is not in the cart.

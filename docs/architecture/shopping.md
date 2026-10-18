@@ -48,9 +48,17 @@ The cart is in a note, because Obsidian moves a note from one device to the othe
 
 ## In the store, one tap
 
-The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra", and the brands that you buy. Thus you can take the brand that is on sale. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
+The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra". Below that, it shows the [brands](brands.md) of its food item: the photo of each package, small, in the order of the note. A brand with no photo shows its name as a chip. A tap on the chip, or on the row outside the photos, ticks the row. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
 
-The cart is one closed line under the list: "In the cart", with the number of its items. You open it to see the items, and "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
+## The photo of the package
+
+A tap on a photo shows it large, over the stage, with the name of the brand below it. It grows from the small photo. The large photo has "In cart" at its lower edge, in reach of the thumb. "In cart" ticks the row, and the task keeps that brand, so put away starts from it. "Close", or a tap outside the photo, leaves the row as it was.
+
+The row of a food item has a small camera tile after its photos. A row with no brand shows only the tile. A new package on the shelf gets its photo there: the photo is a new brand with no name, in the note at once, and it shows large with "In cart". Batteries have no food item note, so their row has no tile.
+
+## The cart
+
+The cart is one closed line under the list: "In the cart", with the number of its items. You open it to see the items, each with the photo of its brand, and "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
 
 You see batteries that are not on the list. You type "batt" into the field to find. The field finds no row, so it proposes the note "Batteries", and "Add to cart" puts it in the cart at once.
 

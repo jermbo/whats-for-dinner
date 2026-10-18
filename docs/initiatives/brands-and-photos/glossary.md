@@ -12,12 +12,7 @@ The [decision log](decision-log.md) uses words that the [glossary](../../glossar
 
 ## The words of the brands
 
-| Word           | Meaning                                                                                                                  |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| Brand          | One package of a food item that you can buy, such as Brand A of taco seasoning. It has a name, a photo, or the two.       |
-| Brand photo    | A photo of the package of one brand. It is in the section "Brands" of the food item note, below its brand.               |
-| Brands section | The heading "Brands" of a food item note, with one list item for each brand and its photos below it.                    |
-| Bought brand   | The brand on a row of a receipt: the brand that you took in the store, or that put away selected. The row links to its photo, or has its name. |
+The four words of this initiative are in the wiki [glossary](../../glossary.md) now: brand, brand photo, brands section, and bought brand.
 
 ## Further reading
 

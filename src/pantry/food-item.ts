@@ -1,8 +1,9 @@
-// Reads the note of a food item: the brands, the other names, the full amount, the low line, the
-// kind of a staple, "never ask", and the purchase date are properties, and the table has one row for
-// each place.
+// Reads the note of a food item: the other names, the full amount, the low line, the kind of a
+// staple, "never ask", and the purchase date are properties. The table has one row for each place,
+// and the section "Brands" has the brands.
 
 import { parseAmount } from '../recipemd/amount';
+import { readBrands } from './brands';
 import { readKind } from './staple';
 import { readTable } from './table';
 import type { FoodItem, Stock } from './types';
@@ -17,7 +18,7 @@ export function readFoodItem(
 	return {
 		name,
 		aliases: textList(properties.aliases),
-		brands: textList(properties.brands),
+		brands: readBrands(body),
 		full: amountOf(properties.full),
 		low: amountOf(properties.low),
 		staple: readKind(properties.staple),

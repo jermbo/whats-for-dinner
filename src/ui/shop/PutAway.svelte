@@ -4,7 +4,7 @@
 	import { crossfade, slide } from 'svelte/transition';
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
-	import type { CartItem, Facts } from '../../shop/facts';
+	import { priceOfBrand, type CartItem, type Facts } from '../../shop/facts';
 	import { putAwayGroups, putAwayKnown, putAwayPlaceGroup } from '../../shop/put-away-view';
 	import { readPrice } from '../../shop/price';
 	import Button from '../parts/Button.svelte';
@@ -83,14 +83,21 @@
 	// gives the regular price back.
 	function sale(line: Line) {
 		const { item, facts } = line;
+		const regular = priceOfBrand(item, facts.brand);
 		if (facts.onSale) {
-			const price = facts.price.trim() ? {} : { price: item.start.price };
-			update(item, { onSale: false, ...price });
+			if (!facts.price.trim()) draft.forget(item.key, 'price');
+			update(item, { onSale: false });
 			return;
 		}
-		const price = facts.price === item.start.price ? { price: '' } : {};
+		const price = facts.price === regular ? { price: '' } : {};
 		update(item, { onSale: true, ...price });
 		if (open?.key !== item.key) open = { key: item.key, group: placeGroup(line) };
+	}
+
+	// A photo of the package in your hand is a new brand, and the brand of the line.
+	async function takeBrand(item: CartItem, photo: Blob) {
+		const name = await kitchen.addBrandPhoto(item.key, photo);
+		if (name) update(item, { brand: `[[${name}]]` });
 	}
 
 	// The lines go one by one while the items go into the pantry. The stage does not say that the
@@ -144,6 +151,9 @@
 			ontoggle={() => toggle(line)}
 			onsale={() => sale(line)}
 			onchange={(changed) => change(item, changed)}
+			regular={priceOfBrand(item, facts.brand)}
+			urlOf={(photo) => kitchen.photoUrl(photo, item.key)}
+			ontake={(photo) => takeBrand(item, photo)}
 			onnotbought={() => notBought(item.key)}
 			onputaway={() => putOne(line)}
 			{busy}

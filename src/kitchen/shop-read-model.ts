@@ -65,7 +65,8 @@ export function putAwayCartItems(
 	return cart.map((row): CartItem => {
 		const item = trip.find((item) => item.key === row.key);
 		const inPantry = item !== undefined && isPantryItem(item, pantryFolder);
-		const proposed = cartItemOf({ row, inPantry, last: bought.get(row.key) ?? null }, now);
+		const known = { row, inPantry, last: bought.get(row.key) ?? null, brand: item?.brand ?? '' };
+		const proposed = cartItemOf(known, now);
 		const line = item && receiptLineFor(active, item, pathOf);
 		return line ? { ...proposed, start: line.facts } : proposed;
 	});
@@ -89,7 +90,15 @@ export function fallbackPutAwayFacts(
 	newPlace: string
 ): Facts {
 	const intoPantry = isPantryItem(item, pantryFolder);
-	return { intoPantry, amount: '1', place: newPlace, useBy: '', price: '', onSale: false };
+	return {
+		intoPantry,
+		amount: '1',
+		place: newPlace,
+		useBy: '',
+		price: '',
+		onSale: false,
+		brand: ''
+	};
 }
 
 export { storesOf, storeOrderOf };

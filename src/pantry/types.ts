@@ -1,4 +1,5 @@
 import type { Amount } from '../recipemd/types';
+import type { Brand } from './brands';
 import type { Kind } from './staple';
 
 // An amount of a food item in one place: one row of the table in its note.
@@ -16,7 +17,8 @@ export type FoodItem = {
 	name: string;
 	// Other names that a recipe can use for this food item, such as "pasta" for elbow pasta.
 	aliases: string[];
-	brands: string[];
+	// From the section "Brands" of the note, in its order.
+	brands: Brand[];
 	// The most that the pantry had of this food, such as "2 kg". The plugin learns it, and you can
 	// change it in the note.
 	full: Amount | null;

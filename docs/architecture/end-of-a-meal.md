@@ -41,7 +41,7 @@ Each meal adds one line below the heading "Cooked", at the end of the note. The 
 
 A photo from a phone is 2 to 15 MB, and Obsidian Sync takes a file of 5 MB or less on the Standard plan. So the plugin draws the photo again as a JPEG with the quality 100%, with the longest side 1600 pixels or less. That is sharp on a phone, also full screen, and it is about 1 MB. A smaller photo keeps its size. The GPS location of the photo does not stay.
 
-The photo goes into the folder `Photos` of the recipes folder, with a name that the plugin gives: the recipe and the date, such as `Chicken curry 2026-10-11.jpg`. A step photo and a source photo use the same folder and the same size, with the part in the name: `Chicken curry - step 3 2026-10-11.jpg` and `Chicken curry - source 2026-10-11.jpg`. When a name is in use, the plugin adds a number: `Chicken curry 2026-10-11 1.jpg`.
+The photo goes into the folder `Photos` of the recipes folder, with a name that the plugin gives: the recipe and the date, such as `Chicken curry 2026-10-11.jpg`. A step photo and a source photo use the same folder and the same size, with the part in the name: `Chicken curry - step 3 2026-10-11.jpg` and `Chicken curry - source 2026-10-11.jpg`. When a name is in use, the plugin adds a number: `Chicken curry 2026-10-11 1.jpg`. The photo of a [brand](brands.md) has the same size, in the pantry folder.
 
 ## The plan and the next time
 

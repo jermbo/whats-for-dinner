@@ -3,7 +3,10 @@
 // The plugin proposes each fact that it knows, so that the usual item needs no entry.
 
 import { addDays, daysBetween } from '../dates';
+import type { Brand } from '../pantry/brands';
 import { makeStock } from '../pantry/food-item';
+import { brandAt, brandCell } from './bought-brand';
+import { regularOfBrand, type RegularRow } from './brand-price';
 import type { Stock } from '../pantry/types';
 import type { LastRow } from './last-receipt';
 import { readPrice, showPrice } from './price';
@@ -21,6 +24,8 @@ export type Facts = {
 	// What you paid for the full amount, as you typed it.
 	price: string;
 	onSale: boolean;
+	// The bought brand, as the cell of the receipt has it, or no text. Only the receipt keeps it.
+	brand: string;
 };
 
 // An item of the cart on the screen of put away, with the facts that it starts with.
@@ -36,6 +41,10 @@ export type CartItem = {
 	placeIsGuess: boolean;
 	// The last receipt has an amount, a place, and a price, so the line needs no look.
 	known: boolean;
+	// The brands of its food item. Null: the item has no food item note.
+	brands: Brand[] | null;
+	// The regular rows of its receipts, the newest first, for the price of each brand.
+	regulars: RegularRow[];
 };
 
 // What the plugin knows about an item of the cart, before you give its facts.
@@ -46,6 +55,8 @@ export type Known = {
 	inPantry: boolean;
 	// The row of the item in its last receipt, or null.
 	last: LastRow | null;
+	// The brand after the link of its cart task, or no text.
+	brand: string;
 };
 
 // The day, and the place of a food item that has no row.
@@ -62,24 +73,45 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 		start,
 		amounts: [...new Set([start.amount, ...(last?.amounts ?? []).filter(fits)])].slice(0, 3),
 		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place,
-		known: Boolean(last?.amounts.length && last.place && readPrice(last.regular) !== null)
+		known: Boolean(last?.amounts.length && last.place && readPrice(last.regular) !== null),
+		brands: row.food?.item.brands ?? null,
+		regulars: last?.regulars ?? []
 	};
 }
+
+// The price of a line with this brand: the regular price of the brand, or of any brand.
+export const priceOfBrand = (item: CartItem, brand: string) =>
+	showPrice(regularOfBrand(item.regulars, item.brands ?? [], brand));
 
 // A fact of the last receipt comes first: you usually buy the same amount, for about the same
 // price, and you put it in the same place. The row of the cart already has the amount that you
 // usually buy, so put away and the list agree. An item always starts with an amount and a place, so
 // that no line needs an entry before the button. A sale ends, so "Sale" starts off, and the
-// price is the regular price.
-function startFactsOf({ row, inPantry, last }: Known, { today, newPlace }: Now): Facts {
+// price is the regular price of the brand.
+function startFactsOf(known: Known, { today, newPlace }: Now): Facts {
+	const { row, inPantry, last } = known;
+	const brands = row.food?.item.brands ?? [];
+	const brand = startBrandOf(brands, known.brand, last);
 	return {
 		intoPantry: inPantry,
 		amount: row.amount || row.food?.item.full?.text || '1',
 		place: last?.place || row.food?.item.stocks[0]?.place || newPlace,
 		useBy: last ? useByAfter(last, today) : '',
-		price: showPrice(last?.regular ?? ''),
-		onSale: false
+		price: showPrice(regularOfBrand(last?.regulars ?? [], brands, brand)),
+		onSale: false,
+		brand
 	};
+}
+
+// You took the brand in the store, so the cart task comes first. Then you usually buy the brand of
+// the last time. A food item with one brand has that brand. A cell that is no brand of the food item
+// counts as no brand.
+function startBrandOf(brands: Brand[], task: string, last: LastRow | null): string {
+	const named = [task, last?.brand ?? '']
+		.map((cell) => brandAt(cell, brands))
+		.find((at) => at !== null);
+	const at = named ?? (brands.length === 1 ? 0 : null);
+	return at === null ? '' : brandCell(brands[at]);
 }
 
 // The food gets the days that it had the last time: eggs that had 3 weeks get 3 weeks from today.
