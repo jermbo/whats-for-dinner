@@ -1,8 +1,12 @@
 <script lang="ts">
+	import type { BrandDraft } from '../../kitchen/brand-actions';
+	import type { Brand } from '../../pantry/brands';
 	import { makeStock } from '../../pantry/food-item';
 	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
 	import Button from '../parts/Button.svelte';
+	import Chip from '../parts/Chip.svelte';
+	import BrandFields from './BrandFields.svelte';
 
 	type Props = {
 		title: string;
@@ -21,9 +25,22 @@
 		// The kind of the food item, "never" when the Shop part never asks about it, or null. With no
 		// value here, the editor does not ask for it.
 		staple?: StapleLabel;
-		// Small text below the fields, such as the brands of the food item.
+		// Small text below the fields, such as the other names of the food item.
 		facts?: string[];
-		onsave: (stock: Stock, name: string, labels: { low: string; staple: StapleLabel }) => void;
+		// The brands of the food item, and the address of a photo for the screen. A new food item
+		// has no brand yet.
+		brands?: Brand[];
+		urlOf?: (photo: string) => string | null;
+		// The food item has no packages. With no value here, the editor does not show the chip.
+		loose?: boolean;
+		// The chip writes the note at once, as a chip does.
+		onloose?: (on: boolean) => void;
+		onsave: (
+			stock: Stock,
+			name: string,
+			labels: { low: string; staple: StapleLabel },
+			brands: BrandDraft[]
+		) => void;
 		oncancel: () => void;
 		onusedup?: () => void;
 		onopen?: () => void;
@@ -38,6 +55,10 @@
 		low,
 		staple,
 		facts = [],
+		brands = [],
+		urlOf = () => null,
+		loose,
+		onloose,
 		onsave,
 		oncancel,
 		onusedup,
@@ -55,10 +76,22 @@
 	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
+	// The form of one package shows its size. New food gets its amount as its size.
+	let size = $state(first()?.sizeText ?? '');
 	let place = $state(firstPlace());
 	let useBy = $state(first()?.useBy ?? '');
 	// A place that the pantry does not have yet.
 	let newPlace = $state('');
+	const firstBrands = () => brands;
+	let drafts = $state<BrandDraft[]>(
+		firstBrands().map((brand, at) => ({
+			at,
+			start: brand.name,
+			name: brand.name,
+			photo: null,
+			removed: false
+		}))
+	);
 
 	const kinds: { value: StapleLabel; label: string }[] = [
 		{ value: 'never', label: 'Never ask' },
@@ -72,7 +105,12 @@
 	function save(event: SubmitEvent) {
 		event.preventDefault();
 		if (!ready) return;
-		onsave(makeStock(where, amount, useBy), name.trim(), { low: lowText.trim(), staple: kind });
+		onsave(
+			makeStock(where, amount, useBy, size),
+			name.trim(),
+			{ low: lowText.trim(), staple: kind },
+			drafts
+		);
 	}
 </script>
 
@@ -124,6 +162,12 @@
 			<span class="wfd-label">How much</span>
 			<input type="text" placeholder="500 g" bind:value={amount} />
 		</label>
+		{#if stock}
+			<label class="wfd-editor__field">
+				<span class="wfd-label">Size</span>
+				<input type="text" placeholder={amount || '1 gal'} bind:value={size} />
+			</label>
+		{/if}
 		<label class="wfd-editor__field">
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />
@@ -158,6 +202,14 @@
 			</div>
 		</fieldset>
 	{/if}
+
+	{#if loose !== undefined && onloose}
+		<div class="wfd-editor__options">
+			<Chip label="Loose" on={loose} onclick={() => onloose(!loose)} />
+		</div>
+	{/if}
+
+	<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />
 
 	{#if facts.length}
 		<p class="wfd-editor__facts">{facts.join(' · ')}</p>

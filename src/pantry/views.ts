@@ -1,17 +1,24 @@
-// The views of the pantry. A row is one food item in one place, because the place is what you
-// forget when you shop.
+// The views of the pantry. A line is one food item in one place, because the place is what you
+// forget when you shop. The packages of that place are in the line, so eight cans are one line.
 
 import { daysBetween } from '../dates';
 import type { FoodNote } from '../note';
+import { isEmpty } from './empty-row';
 import { barOf, levelOf, type Bar, type Level } from './level';
-import type { Stock } from './types';
+import { firstUseBy, totalOf } from './total';
+import type { Package } from './open-line';
 
 export type StockRow = {
 	key: string;
 	food: FoodNote;
-	stock: Stock;
-	at: number;
-	// The level of the food item, and the part of it that this row shows. Null when the plugin
+	place: string;
+	// The rows of the food item in this place that are not empty.
+	packages: Package[];
+	// The total of the packages, such as "1 1/2 gal".
+	total: string;
+	// The first use-by date of the packages, or null.
+	useBy: string | null;
+	// The level of the food item, and the part of it that this line shows. Null when the plugin
 	// cannot count the amount.
 	level: Level | null;
 	bar: Bar | null;
@@ -24,55 +31,65 @@ export type Only = 'low' | 'soon' | 'out';
 export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 	return foods.flatMap((food) => {
 		const level = levelOf(food.item, lowPercent);
-		return food.item.stocks.map((stock, at) => ({
-			key: `${food.path}#${at}`,
-			food,
-			stock,
-			at,
-			level,
-			bar: barOf(stock, level)
-		}));
+		const rows = food.item.stocks.map((stock, at) => ({ stock, at }));
+		const full = rows.filter(({ stock }) => !isEmpty(stock));
+		const places = [...new Set(full.map(({ stock }) => stock.place))];
+		return places.map((place) => {
+			const packages = full.filter(({ stock }) => stock.place === place);
+			const stocks = packages.map(({ stock }) => stock);
+			return {
+				key: `${food.path}#${place}`,
+				food,
+				place,
+				packages,
+				total: totalOf(stocks),
+				useBy: firstUseBy(stocks),
+				level,
+				bar: barOf(stocks, level)
+			};
+		});
 	});
 }
 
-// A row is low when its food item is at or below the low line, with all places together.
+// A line is low when its food item is at or below the low line, with all places together.
 export const isLow = (row: StockRow) => row.bar?.isLow ?? false;
 
 const byFood = (a: StockRow, b: StockRow) => a.food.item.name.localeCompare(b.food.item.name);
 const byDate = (a: StockRow, b: StockRow) =>
-	(a.stock.useBy ?? '9999').localeCompare(b.stock.useBy ?? '9999') || byFood(a, b);
+	(a.useBy ?? '9999').localeCompare(b.useBy ?? '9999') || byFood(a, b);
 
-// The days until the use-by date. Null when the row has no date.
-export const daysLeft = (stock: Stock, today: string) =>
-	stock.useBy ? daysBetween(today, stock.useBy) : null;
+// The days until the first use-by date of a line. Null when it has no date.
+export const daysLeft = (row: StockRow, today: string) =>
+	row.useBy ? daysBetween(today, row.useBy) : null;
 
 // Food with a use-by date in `soonDays` days, or less, is food to use soon.
-export const isSoon = (stock: Stock, today: string, soonDays: number) =>
-	(daysLeft(stock, today) ?? 9999) <= soonDays;
+export const isSoon = (row: StockRow, today: string, soonDays: number) =>
+	(daysLeft(row, today) ?? 9999) <= soonDays;
 
-// The text that you type finds a food item by its name, its other names, or its brands.
+// The text that you type finds a food item by its name, its other names, or the names of its brands.
 export function isFound(food: FoodNote, text: string): boolean {
 	const words = text.trim().toLowerCase();
 	const { name, aliases, brands } = food.item;
-	return !words || [name, ...aliases, ...brands].some((one) => one.toLowerCase().includes(words));
+	const names = [name, ...aliases, ...brands.map((brand) => brand.name)];
+	return !words || names.some((one) => one.toLowerCase().includes(words));
 }
 
 // One group for each place, so that you see the downstairs pantry and the outside fridge.
 export function byPlace(rows: StockRow[]): StockGroup[] {
-	const places = [...new Set(rows.map((row) => row.stock.place))].sort();
+	const places = [...new Set(rows.map((row) => row.place))].sort();
 	return places.map((place) => ({
 		title: place,
-		rows: rows.filter((row) => row.stock.place === place).sort(byDate)
+		rows: rows.filter((row) => row.place === place).sort(byDate)
 	}));
 }
 
 // The food to use first is at the top.
 export function bySoon(rows: StockRow[], today: string, soonDays: number): StockGroup[] {
-	const dated = rows.filter((row) => row.stock.useBy).sort(byDate);
+	const dated = rows.filter((row) => row.useBy).sort(byDate);
 	const groups = [
-		{ title: 'Use first', rows: dated.filter((row) => isSoon(row.stock, today, soonDays)) },
-		{ title: 'Later', rows: dated.filter((row) => !isSoon(row.stock, today, soonDays)) },
-		{ title: 'No date', rows: rows.filter((row) => !row.stock.useBy).sort(byFood) }
+		{ title: 'Use first', rows: dated.filter((row) => isSoon(row, today, soonDays)) },
+		{ title: 'Later', rows: dated.filter((row) => !isSoon(row, today, soonDays)) },
+		{ title: 'No date', rows: rows.filter((row) => !row.useBy).sort(byFood) }
 	];
 	return groups.filter((group) => group.rows.length);
 }

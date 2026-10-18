@@ -2,8 +2,11 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
+	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { FoodNote } from '../../note';
+	import { changeRows, isOut, withFood } from '../../pantry/empty-row';
 	import { levelOf, type Level } from '../../pantry/level';
+	import { barOf as packageBarOf, lastPackage, stockAt } from '../../pantry/open-line';
 	import type { StapleLabel } from '../../pantry/staple';
 	import { totalOf } from '../../pantry/total';
 	import type { Stock } from '../../pantry/types';
@@ -21,7 +24,8 @@
 		type Sort,
 		type StockRow
 	} from '../../pantry/views';
-	import { showMeasure } from '../../units';
+	import { withPackage } from '../../pantry/write';
+	import { showLike } from '../../units';
 	import type { BarState } from '../bar-state.svelte';
 	import Bar from '../parts/Bar.svelte';
 	import Button from '../parts/Button.svelte';
@@ -30,7 +34,7 @@
 	import PartHead from '../parts/PartHead.svelte';
 	import OnTheList from './OnTheList.svelte';
 	import StockEditor from './StockEditor.svelte';
-	import StockGauge from './StockGauge.svelte';
+	import PackageGauge from './PackageGauge.svelte';
 	import StockLine from './StockLine.svelte';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
@@ -66,13 +70,14 @@
 	const lowPercent = $derived(kitchen.settings.lowPercent);
 
 	const all = $derived(stockRows(kitchen.foods, lowPercent));
-	// A food item with no row is out. It stays in view, as a reminder to buy it again.
+	// A food item with no row, or with only empty rows, is out. It stays in view, as a reminder to
+	// buy it again.
 	const allOut = $derived(
 		kitchen.foods
-			.filter((food) => !food.item.stocks.length)
+			.filter((food) => isOut(food.item))
 			.sort((a, b) => a.item.name.localeCompare(b.item.name))
 	);
-	const soon = $derived(all.filter((row) => isSoon(row.stock, kitchen.today, soonDays)).length);
+	const soon = $derived(all.filter((row) => isSoon(row, kitchen.today, soonDays)).length);
 	// A food item in two places is low one time.
 	const low = $derived(new Set(all.filter(isLow).map((row) => row.food.path)).size);
 
@@ -84,8 +89,8 @@
 					(row) =>
 						isFound(row.food, bar.find) &&
 						(!bar.only.has('low') || isLow(row)) &&
-						(!bar.only.has('soon') || isSoon(row.stock, kitchen.today, soonDays)) &&
-						(!placeOn || row.stock.place === placeOn)
+						(!bar.only.has('soon') || isSoon(row, kitchen.today, soonDays)) &&
+						(!placeOn || row.place === placeOn)
 				)
 	);
 	const groups = $derived.by(() => {
@@ -100,10 +105,10 @@
 			: allOut.filter((food) => isFound(food, bar.find))
 	);
 
-	// The row that is open: the key of a row, the path of a food item that is out, or "new".
+	// The line that is open: the key of a line, the path of a food item that is out, or "new".
 	let open = $state<string | null>(null);
-	// An open row shows its bar first. The form has the place and the date of one row of the food
-	// item: this is the number of that row, or null while the bar shows.
+	// An open line shows its packages first. The form has the place, the date, and the size of one
+	// package: this is the number of its row, or null while the packages show.
 	let form = $state<number | null>(null);
 	function toggle(key: string) {
 		open = open === key ? null : key;
@@ -117,16 +122,17 @@
 		open = 'new';
 	}
 
-	const factsOf = (food: FoodNote) => [
-		...(food.item.brands.length ? [`Brands: ${food.item.brands.join(', ')}`] : []),
-		...(food.item.aliases.length ? [`Other names: ${food.item.aliases.join(', ')}`] : [])
-	];
+	const factsOf = (food: FoodNote) =>
+		food.item.aliases.length ? [`Other names: ${food.item.aliases.join(', ')}`] : [];
 
-	const placesOf = (food: FoodNote) => new Set(food.item.stocks.map((stock) => stock.place)).size;
+	const urlFor = (food: FoodNote) => (photo: string) => kitchen.photoUrl(photo, food.path);
+
+	const placesOf = (food: FoodNote) =>
+		new Set(withFood(food.item.stocks).map((stock) => stock.place)).size;
 
 	// In the view by place, the line below the name tells where more of the food is.
-	function noteOf({ food, stock }: StockRow) {
-		if (bar.sort !== 'place') return stock.place;
+	function noteOf({ food, place }: StockRow) {
+		if (bar.sort !== 'place') return place;
 		const places = placesOf(food);
 		return places > 1 ? `${totalOf(food.item.stocks)} in ${places} places` : '';
 	}
@@ -142,7 +148,9 @@
 	// The low line for the form: your own text, and the line of the plugin as a hint.
 	const lowOf = (food: FoodNote, level: Level | null) => ({
 		text: food.item.low?.text ?? '',
-		hint: level ? showMeasure({ kind: level.kind, value: level.low }) : '200 g'
+		hint: level
+			? showLike({ kind: level.kind, value: level.low }, food.item.full?.unit ?? null)
+			: '200 g'
 	});
 
 	// What the form tells about the food item, and not about one row.
@@ -161,26 +169,53 @@
 	const isOnList = (path: string) =>
 		kitchen.list.some((row) => row.key === path) || kitchen.cart.some((row) => row.key === path);
 
-	// Changes one row of a food item, or removes it.
-	async function change(food: FoodNote, at: number, stock: Stock | null, labels?: Labels) {
+	// Changes one package of a food item. The brands of the form go after the row.
+	async function change(
+		food: FoodNote,
+		at: number,
+		stock: Stock,
+		labels?: Labels,
+		brands: BrandDraft[] = []
+	) {
 		open = null;
-		const stocks = food.item.stocks.flatMap((old, index) =>
-			index !== at ? [old] : stock ? [stock] : []
-		);
-		await kitchen.setStocks(food.path, stocks);
+		await kitchen.changeStocks(food.path, (stocks) => changeRows(stocks, [{ at, stock }]));
 		await keepLabels(food, labels);
+		if (brands.length) await kitchen.saveBrands(food.item.name, brands);
 	}
 
-	// Writes all rows of a food item, after a change of the bar.
-	async function save(food: FoodNote, stocks: Stock[]) {
-		open = null;
-		await kitchen.setStocks(food.path, stocks);
+	// "Used up" in the form makes the package an empty row.
+	function usedUp(food: FoodNote, at: number) {
+		const stock = food.item.stocks[at];
+		if (stock) void change(food, at, stockAt(stock, packageBarOf({ stock, at }), 0));
 	}
 
-	async function add(name: string, stock: Stock, food?: FoodNote, labels?: Labels) {
+	// The packages of the open line: your drags, and the new sealed packages.
+	async function write(
+		food: FoodNote,
+		changes: { at: number; stock: Stock }[],
+		added: Stock[],
+		close: boolean
+	) {
+		if (close) open = null;
+		await kitchen.changeStocks(food.path, (stocks) =>
+			added.reduce(withPackage, changeRows(stocks, changes))
+		);
+	}
+
+	const canOpen = (row: StockRow) => row.packages.some(({ stock }) => stock.amount && stock.size);
+
+	// A new food item gets its note from the row, so its brands go after it.
+	async function add(
+		name: string,
+		stock: Stock,
+		brands: BrandDraft[],
+		food?: FoodNote,
+		labels?: Labels
+	) {
 		open = null;
 		await kitchen.addStock(name, stock);
 		if (food) await keepLabels(food, labels);
+		if (brands.length) await kitchen.saveBrands(name, brands);
 	}
 </script>
 
@@ -243,7 +278,7 @@
 				names={kitchen.foods.map(({ item }) => item.name).sort()}
 				startName={newName}
 				places={kitchen.places}
-				onsave={(stock, name) => add(name, stock)}
+				onsave={(stock, name, _, brands) => add(name, stock, brands)}
 				oncancel={() => (open = null)}
 			/>
 		</div>
@@ -284,7 +319,12 @@
 									low={lowOf(food, levelOf(food.item, lowPercent))}
 									staple={labelOf(food)}
 									facts={factsOf(food)}
-									onsave={(stock, _, labels) => add(food.item.name, stock, food, labels)}
+									brands={food.item.brands}
+									urlOf={urlFor(food)}
+									loose={food.item.loose}
+									onloose={(on) => kitchen.setLoose(food.path, on)}
+									onsave={(stock, _, labels, brands) =>
+										add(food.item.name, stock, brands, food, labels)}
 									oncancel={() => (open = null)}
 									onopen={() => kitchen.open(food.path)}
 								/>
@@ -323,30 +363,37 @@
 						<div transition:slide={{ duration }}>
 							{#if open === row.key}
 								<div class="wfd-pantry__open" transition:slide={{ duration }}>
-									<!-- A row that the plugin can count opens as a bar that you drag. -->
-									{#if row.level && row.bar && form === null}
-										<StockGauge
+									<!-- A line that the plugin can count opens as its packages. -->
+									{#if canOpen(row) && form === null}
+										<PackageGauge
 											name={row.food.item.name}
-											stocks={row.food.item.stocks}
-											at={row.at}
+											place={row.place}
+											packages={row.packages}
+											loose={row.food.item.loose}
 											level={row.level}
-											onsave={(stocks) => save(row.food, stocks)}
+											last={lastPackage(row.food.item.stocks, row.place)}
+											onwrite={(changes, added, close) => write(row.food, changes, added, close)}
 											ondetails={(at) => (form = at)}
 											oncancel={() => (open = null)}
 										/>
 									{:else}
-										<!-- The form is for the place that was on in the bar. -->
-										{@const at = form ?? row.at}
+										<!-- The form is for one package of the line. -->
+										{@const at = form ?? row.packages[0].at}
 										<div in:fade={{ duration }}>
 											<StockEditor
 												title={row.food.item.name}
-												stock={row.food.item.stocks[at] ?? row.stock}
+												stock={row.food.item.stocks[at] ?? row.packages[0].stock}
 												places={kitchen.places}
 												low={lowOf(row.food, row.level)}
 												staple={labelOf(row.food)}
 												facts={factsOf(row.food)}
-												onsave={(stock, _, labels) => change(row.food, at, stock, labels)}
-												onusedup={() => change(row.food, at, null)}
+												brands={row.food.item.brands}
+												urlOf={urlFor(row.food)}
+												loose={row.food.item.loose}
+												onloose={(on) => kitchen.setLoose(row.food.path, on)}
+												onsave={(stock, _, labels, brands) =>
+													change(row.food, at, stock, labels, brands)}
+												onusedup={() => usedUp(row.food, at)}
 												oncancel={() => (open = null)}
 												onopen={() => kitchen.open(row.food.path)}
 											/>
@@ -361,10 +408,11 @@
 								<StockLine
 									name={row.food.item.name}
 									note={noteOf(row)}
-									amount={row.stock.amountText}
+									amount={row.total}
+									packages={row.packages.length}
 									bar={row.bar}
-									days={daysLeft(row.stock, kitchen.today)}
-									soon={isSoon(row.stock, kitchen.today, soonDays)}
+									days={daysLeft(row, kitchen.today)}
+									soon={isSoon(row, kitchen.today, soonDays)}
 									onclick={() => toggle(row.key)}
 								/>
 							{/if}

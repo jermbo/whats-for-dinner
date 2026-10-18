@@ -2,6 +2,7 @@
 title: Correct an amount with the bar
 summary: "The keeper drags the bar of a row to the amount that is really there."
 parent: pantry-stories.md
+updated: 2026-10-18
 persona: Keeper
 depends-on: [pantry-see-the-level.md]
 status: built
@@ -17,7 +18,7 @@ As the [keeper](../../personas.md), I want to drag the bar of a row to the amoun
 
 1. Tap a line to open the bar of its food item
    - a. Only for a row with an amount that the plugin can count
-2. The bar has one piece for each place of the food item
+2. The bar has one piece for each place of the food item. Changed in version 0.5.0: requirements 2 to 5 and 7 are replaced by [Set what is left in a package](../v0.5.0/packages-set-what-is-left-in-a-package.md)
    - a. The length of a piece is its amount divided by the full amount
    - b. The place of the line that you tapped is the selected place
 3. Tap an option to select a different place
@@ -43,7 +44,7 @@ As the [keeper](../../personas.md), I want to drag the bar of a row to the amoun
    - c. A row with an amount of 0 goes out of the table
    - d. With no change, the plugin does not write the note
    - e. The row closes
-8. Tap "Used up" to set the selected place to 0 and write the note
+8. Tap "Used up" to set the selected place to 0 and write the note. Changed in version 0.5.0: replaced by [Add and use up a package](../v0.5.0/packages-add-and-use-up-a-package.md)
 9. On a phone, a drag on the bar does not move Obsidian
    - a. A drag to the side does not open a side panel
    - b. A drag up or down scrolls the page

@@ -1,15 +1,21 @@
 // Writes the rows of a food item into the text of its note. All other text of the note stays.
 
 import { measure } from '../units';
-import { readStocks } from './food-item';
-import { withAmount } from './stock-amount';
+import { isEmpty } from './empty-row';
+import { makeStock, readStocks } from './food-item';
+import { amountText } from './stock-amount';
 import { formatMarkdownTable, replaceTable } from './table';
 import type { Stock } from './types';
 
-const COLUMNS = ['Place', 'Amount', 'Use by'];
+const COLUMNS = ['Place', 'Amount', 'Size', 'Use by'];
 
 export function showStocks(stocks: Stock[]): string {
-	const rows = stocks.map((stock) => [stock.place, stock.amountText, stock.useBy ?? '']);
+	const rows = stocks.map((stock) => [
+		stock.place,
+		stock.amountText,
+		stock.sizeText,
+		stock.useBy ?? ''
+	]);
 	return formatMarkdownTable(COLUMNS, rows);
 }
 
@@ -17,38 +23,36 @@ export function replaceStocks(text: string, stocks: Stock[]): string {
 	return replaceTable(text, showStocks(stocks));
 }
 
+// A new package is a new row, or it takes the empty row of its place: the empty row is the slot of
+// that place. It never adds to a row that has food, because each package has its own date. The
+// rows come from the text, so two writes one after the other do not lose a row.
+export function addPackage(text: string, stock: Stock): string {
+	return replaceStocks(text, withPackage(readStocks(text), stock));
+}
+
+export function withPackage(stocks: Stock[], stock: Stock): Stock[] {
+	const at = stocks.findIndex((row) => row.place === stock.place && isEmpty(row));
+	return at === -1 ? [...stocks, stock] : stocks.map((row, index) => (index === at ? stock : row));
+}
+
 const kindOf = (stock: Stock) => (stock.amount ? measure(stock.amount).kind : null);
 const valueOf = (stock: Stock) => (stock.amount ? measure(stock.amount).value : 0);
 
-// Two amounts are one row when they are in the same place, have the same use-by date, and compare.
-const isSameRow = (row: Stock, stock: Stock) =>
-	row.place === stock.place &&
-	row.useBy === stock.useBy &&
-	kindOf(row) !== null &&
-	kindOf(row) === kindOf(stock);
-
-// One row is one food item in one place: 800 g for a place that has 200 g makes one row of 1000 g.
-// The rows come from the text, so two writes one after the other do not lose a row.
-export function addStock(text: string, stock: Stock): string {
-	return addInto(text, stock, (row) => isSameRow(row, stock));
-}
-
-// Put away proposes the use-by date, so you did not choose to keep the new bag apart. It goes into
-// the row of its place that has no date, and that row gets the date. The form of the Pantry part
-// does not do this, because there you type a date on purpose.
-export function putAwayStock(text: string, stock: Stock): string {
-	return addInto(text, stock, (row) => {
-		const noDate = row.useBy === null || stock.useBy === null;
-		return isSameRow(row, noDate ? { ...stock, useBy: row.useBy } : stock);
-	});
-}
-
-function addInto(text: string, stock: Stock, fits: (row: Stock) => boolean): string {
+// Loose food has no packages: 6 apples go into the 2 apples of the fridge. The size of the row is
+// its new amount, so its bar is full.
+export function addLoose(text: string, stock: Stock): string {
 	const stocks = readStocks(text);
-	const at = stocks.findIndex(fits);
-	const sum = at === -1 ? null : withAmount(stocks[at], valueOf(stocks[at]) + valueOf(stock));
-
-	if (sum) stocks[at] = { ...sum, useBy: stocks[at].useBy ?? stock.useBy };
-	else stocks.push(stock);
+	const at = stocks.findIndex(
+		(row) => row.place === stock.place && kindOf(row) !== null && kindOf(row) === kindOf(stock)
+	);
+	if (at === -1) {
+		stocks.push(stock);
+		return replaceStocks(text, stocks);
+	}
+	const row = stocks[at];
+	const sum = amountText(isEmpty(row) ? stock : row, valueOf(row) + valueOf(stock));
+	// The date of an empty row does not count, so the new food gives its date.
+	const useBy = isEmpty(row) ? stock.useBy : (row.useBy ?? stock.useBy);
+	stocks[at] = makeStock(row.place, sum, useBy ?? '', sum);
 	return replaceStocks(text, stocks);
 }

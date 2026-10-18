@@ -3,13 +3,14 @@
 
 import type { IngredientMatch } from '../match/match';
 import type { FoodNote } from '../note';
+import { isOut } from '../pantry/empty-row';
 import { available, firstUseBy } from '../pantry/total';
 
 // The food items that a line can use: each food item of its name that the pantry has. With an
 // amount, only the rows that compare with it count, so that the last page can take the food out.
 // "Get out" and the last page both use this, so that they show the same options.
 export function optionsOf({ candidates, need }: IngredientMatch): FoodNote[] {
-	if (!need) return candidates.filter((food) => food.item.stocks.length);
+	if (!need) return candidates.filter((food) => !isOut(food.item));
 	return candidates.filter((food) => available(food.item.stocks, need.kind) > 0);
 }
 

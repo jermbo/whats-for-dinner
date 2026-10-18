@@ -28,19 +28,30 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Food item     | One food of the [pantry](architecture/pantry.md), as one note. Rice is a food item.                                       |
 | Other name    | A name that a recipe can use for a food item, such as "pasta" for elbow pasta.                                            |
 | Place         | Where food is, such as "Downstairs pantry". You give the places their names.                                              |
-| Row           | One food item in one place: one row of the table in its note.                                                             |
+| Row           | One package of a food item: one row of the table in its note, with its own size and its own use-by date. A loose food item has one row for each place. |
+| Package       | One container of a food item that you can hold in your hand: one gallon of milk, one carton of eggs.                      |
+| Package size  | The amount of a package when it is new: 1 gal for the milk, 12 for the carton of eggs. It is the column `Size` of a row. |
+| Left          | The amount that is still in one package: 1/2 gal, or 2 eggs. It is never more than the package size.                     |
+| Open package  | A package with less than its size left, and more than nothing: the carton with 2 eggs.                                   |
+| Sealed        | A package with its full size left.                                                                                        |
+| Empty row     | A row with nothing left. It keeps the place and the size of its package for the next put away. Its date does not count. |
+| Loose         | A food item with no packages, such as apples. Its note has `loose: true`, and new food goes into the row of its place.   |
+| Step          | The smallest change that one move of a bar makes: 1/8 of the package size for a measure, and 1 for a count.              |
 | Amount        | A number and a unit, such as "500 g". See [amounts](architecture/amounts.md). Some amounts have no number, such as "tap". |
 | Full amount   | The most that the pantry had of a food item.                                                                              |
 | Low line      | The amount at which a food item is low. Food at the line or below it is low.                                              |
 | Level         | What you have of a food item, against its full amount and its low line. See [level](architecture/level.md).               |
 | Low           | Below the low line, with all places together.                                                                             |
-| Out           | With no row. The food item is still a note.                                                                               |
+| Out           | With no row, or with only empty rows. The food item is still a note.                                                      |
 | Stub          | A food item note that [intake](architecture/intake.md) makes for an ingredient with no food item. It has no row, so the food item is out. |
 | Use soon      | With a [use-by date](architecture/use-soon.md) in 5 days or less. The number of days is a setting.                        |
 | Past its date | With a use-by date before today. The date of today is not past.                                                           |
 | Staple        | A food item that you always want, plan or no plan. Its note has the label [staple](architecture/staples.md).              |
 | Kind          | How often you buy a staple: "Often", "Sometimes", or "Seldom". It tells when the plugin asks about the staple again.      |
 | Purchase date | The day on which you put a food item away the last time.                                                                  |
+| Brand         | One package of a food item that you can buy, such as Brand A of taco seasoning. It has a name, a photo, or the two. See [brands](architecture/brands.md). |
+| Brand photo   | A photo of the package of one brand. It is in the section "Brands" of the food item note, below its brand.               |
+| Brands section | The heading "Brands" of a food item note, with one list item for each brand and its photos below it.                    |
 
 ## The recipes and the week
 
@@ -71,7 +82,8 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Stage         | One of the three moments of a trip in the Shop part: "Extras", "Shop", and "Put away". A strip at the top opens each [stage](architecture/shopping.md).                                                                                                                                   |
 | Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                                                                                                                          |
 | Put away      | The [third stage and its button](architecture/put-away.md) that add the cart to the pantry, and that end the trip.                                                                                                                                                                        |
-| Fact          | One of the five things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, and the mark "Sale".                                                                                                                   |
+| Fact          | One of the six things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, the mark "Sale", and the brand.                                                                                                       |
+| Bought brand  | The brand on a row of a receipt or a cart task: the brand that you took in the store, or that put away selected. The row links to its photo, or has its name.                                                                                                                         |
 | Price         | What you paid for the full amount of an item. It has no currency, and it is only in a receipt.                                                                                                                                                                                            |
 | Store         | Where you made a trip. A receipt can have one store.                                                                                                                                                                                                                                      |
 | Receipt       | The [note](architecture/receipt.md) of a trip, with each item that you bought. It starts as active when put away opens, and it is complete with the last item. Its name is the day on which it starts.                                                                                    |

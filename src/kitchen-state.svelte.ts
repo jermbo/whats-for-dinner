@@ -13,15 +13,23 @@ import {
 	saveRecipe as saveRecipeAction,
 	type IntakeActionsHost
 } from './kitchen/intake-actions';
+import {
+	addBrandPhoto as addBrandPhotoAction,
+	saveBrands as saveBrandsAction,
+	type BrandActionsHost,
+	type BrandDraft
+} from './kitchen/brand-actions';
 import { convertNote } from './intake/convert';
 import { editNote } from './intake/edit';
 import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
 	addStockTo,
+	changeStocks as changeStocksAction,
+	foodPath,
+	setLoose as setLooseAction,
 	setLow as setLowAction,
 	setStaple as setStapleAction,
-	setStocks as setStocksAction,
 	type PantryActionsHost
 } from './kitchen/pantry-actions';
 import {
@@ -41,6 +49,7 @@ import {
 	addToCart as addToCartAction,
 	changeFacts as changeFactsAction,
 	flushReceiptFacts,
+	addPackageLine as addPackageLineAction,
 	notBought as notBoughtAction,
 	putAway as putAwayAction,
 	putInCart as putInCartAction,
@@ -280,8 +289,8 @@ export class Kitchen {
 		if (file) void this.app.workspace.getLeaf('tab').openFile(file);
 	}
 
-	async setStocks(path: string, stocks: Stock[]) {
-		await setStocksAction(this.pantryHost, path, stocks);
+	async changeStocks(path: string, change: (stocks: Stock[]) => Stock[]) {
+		await changeStocksAction(this.pantryHost, path, change);
 	}
 
 	async addStock(name: string, stock: Stock) {
@@ -294,6 +303,10 @@ export class Kitchen {
 
 	async setStaple(path: string, label: StapleLabel) {
 		await setStapleAction(this.pantryHost, path, label);
+	}
+
+	async setLoose(path: string, loose: boolean) {
+		await setLooseAction(this.pantryHost, path, loose);
 	}
 
 	isPlanned(path: string) {
@@ -324,8 +337,26 @@ export class Kitchen {
 		await clearPlanAction(this.planHost);
 	}
 
-	async putInCart(key: string) {
-		await putInCartAction(this.shopHost, key);
+	async putInCart(key: string, brand?: string) {
+		await putInCartAction(this.shopHost, key, brand);
+	}
+
+	// The brands of the form of a food item, by the name of the food item. A new food item has its
+	// note from "Add to pantry" before this call.
+	saveBrands(name: string, drafts: BrandDraft[]): Promise<boolean> {
+		const path = foodPath(this.pantryHost, name);
+		return this.tried('The brands are not saved', () =>
+			saveBrandsAction(this.brandHost, path, drafts)
+		);
+	}
+
+	// A new brand with no name, from the camera tile. It gives the name of the photo, or null.
+	async addBrandPhoto(path: string, photo: Blob): Promise<string | null> {
+		let name: string | null = null;
+		await this.tried('The photo is not saved', async () => {
+			name = await addBrandPhotoAction(this.brandHost, path, photo);
+		});
+		return name;
 	}
 
 	async takeOutOfCart(key: string) {
@@ -389,7 +420,13 @@ export class Kitchen {
 	}
 
 	async notBought(key: string): Promise<boolean> {
+		this.writeFacts.cancel();
 		return notBoughtAction(this.shopHost, key);
+	}
+
+	async addPackageLine(key: string, facts: Facts) {
+		this.writeFacts.cancel();
+		await addPackageLineAction(this.shopHost, key, facts);
 	}
 
 	async finishCooking(path: string, result: CookResult) {
@@ -491,6 +528,14 @@ export class Kitchen {
 				return k.today;
 			},
 			makeFolderOf: (path) => k.makeFolderOf(path)
+		};
+	}
+
+	private get brandHost(): BrandActionsHost {
+		const k = this;
+		return {
+			...k.intakeHost,
+			fileAt: (path) => k.fileAt(path)
 		};
 	}
 
@@ -606,6 +651,9 @@ export class Kitchen {
 			get toPutAway() {
 				return k.toPutAway;
 			},
+			get activeLines() {
+				return k.active?.lines ?? [];
+			},
 			get hasPutAway() {
 				return k.hasPutAway;
 			},
@@ -625,7 +673,7 @@ export class Kitchen {
 				k.tripStore = store;
 			},
 			cancelTripStoreWrite: () => k.writeStore.cancel(),
-			addStockTo: (path, stock, add) => addStockTo(k.pantryHost, path, stock, add),
+			addStockTo: (path, stock) => addStockTo(k.pantryHost, path, stock),
 			setStaple: (path, label) => setStapleAction(k.pantryHost, path, label)
 		};
 	}

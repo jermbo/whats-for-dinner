@@ -5,11 +5,12 @@
 
 import { daysBetween, showDate } from '../dates';
 import type { FoodNote } from '../note';
+import { isOut } from '../pantry/empty-row';
 import { levelOf } from '../pantry/level';
 import { ASK_AFTER, showKind } from '../pantry/staple';
 import { firstUseBy, totalOf } from '../pantry/total';
 import type { FoodItem } from '../pantry/types';
-import { showMeasure } from '../units';
+import { showLike } from '../units';
 import { isPastDate } from './past-date';
 
 export type Reason =
@@ -70,7 +71,7 @@ export function showReason(reason: Reason): string {
 export function factsOf({ item }: FoodNote): string[] {
 	const useBy = firstUseBy(item.stocks);
 	const level = levelOf(item);
-	const show = (value: number) => showMeasure({ kind: level?.kind ?? '', value });
+	const show = (value: number) => showLike({ kind: level?.kind ?? '', value }, item.full?.unit ?? null);
 	return [
 		level && level.has > 0 ? `${show(level.has)} of ${show(level.full)}` : totalOf(item.stocks),
 		item.bought ? `Bought ${showDate(item.bought)}` : '',
@@ -81,7 +82,7 @@ export function factsOf({ item }: FoodNote): string[] {
 // A food item can have more than one reason. The first that is true is the one that shows.
 function reasonOf(item: FoodItem, { today, soonDays, lowPercent }: When): Reason | null {
 	// Also a food item that you never bought, such as a stub of intake: a recipe needs it.
-	if (!item.stocks.length) return { is: 'out' };
+	if (isOut(item)) return { is: 'out' };
 	if (levelOf(item, lowPercent)?.isLow) return { is: 'low' };
 	if (isPastDate(item, today)) return { is: 'past' };
 	const useBy = firstUseBy(item.stocks);

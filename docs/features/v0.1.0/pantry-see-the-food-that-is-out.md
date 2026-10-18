@@ -2,6 +2,7 @@
 title: See the food that is out
 summary: "The keeper still sees a food item that has no row, and can add it again with one tap."
 parent: pantry-stories.md
+updated: 2026-10-18
 persona: Keeper
 depends-on: [pantry-see-the-food-of-each-place.md, pantry-add-food.md]
 status: built
@@ -15,7 +16,7 @@ As the [keeper](../../personas.md), I want a food item with no row to stay in vi
 
 ## Requirements
 
-1. A food item with no row shows in the group "Out"
+1. A food item with no row shows in the group "Out". Changed in version 0.5.0: also a food item with only empty rows, as [Keep one row for each package](../v0.5.0/packages-keep-one-row-for-each-package.md) tells
    - a. Its line is dashed, and it shows "None" in the place of an amount
    - b. The lines are in the sequence of their names
    - c. The head of the group shows the number of its lines

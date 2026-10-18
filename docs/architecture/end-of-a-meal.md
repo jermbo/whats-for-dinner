@@ -20,11 +20,17 @@ The page uses the pantry as it was when the page opened.
 
 ## Food goes out of the pantry
 
-For each ingredient with a mark, the plugin takes the amount out of its food item. The row with the first [use-by date](use-soon.md) gives first. A row with nothing left goes out of the table.
+For each ingredient with a mark, the plugin takes the amount out of its food item, from as many packages as it needs. A recipe asks for an amount, not for packages. The packages give in this sequence:
 
-The chicken curry takes 500 g of chicken thighs, and the outside fridge has 500 g. The row goes out, and chicken thighs are out.
+1. The package with the first [use-by date](use-soon.md). A package with no date gives after each package with a date.
+2. With the same date, or no date, the open package before a sealed one.
+3. With the same date and the same state, the row that is higher in the table.
 
-A row keeps its unit, as the [amounts](amounts.md) page tells.
+The omelette needs 3 eggs. The open carton of 25 October gives 2 and is empty. The carton of 16 November gives 1 and has 11 left.
+
+A package that gives all that it has is an [empty row](food-item-note.md#the-empty-row): it keeps its place, its size, and its date. When its place has an empty row already, it goes out of the table. With less food than the meal needs, each package gives all that it has, and the food item is out. A loose food item gives from the row of its place in the same way.
+
+A package keeps its unit, as the [amounts](amounts.md) page tells: 1 gal less 1/4 gal is "3/4 gal".
 
 ## The recipe note gets a record
 
@@ -41,7 +47,7 @@ Each meal adds one line below the heading "Cooked", at the end of the note. The 
 
 A photo from a phone is 2 to 15 MB, and Obsidian Sync takes a file of 5 MB or less on the Standard plan. So the plugin draws the photo again as a JPEG with the quality 100%, with the longest side 1600 pixels or less. That is sharp on a phone, also full screen, and it is about 1 MB. A smaller photo keeps its size. The GPS location of the photo does not stay.
 
-The photo goes into the folder `Photos` of the recipes folder, with a name that the plugin gives: the recipe and the date, such as `Chicken curry 2026-10-11.jpg`. A step photo and a source photo use the same folder and the same size, with the part in the name: `Chicken curry - step 3 2026-10-11.jpg` and `Chicken curry - source 2026-10-11.jpg`. When a name is in use, the plugin adds a number: `Chicken curry 2026-10-11 1.jpg`.
+The photo goes into the folder `Photos` of the recipes folder, with a name that the plugin gives: the recipe and the date, such as `Chicken curry 2026-10-11.jpg`. A step photo and a source photo use the same folder and the same size, with the part in the name: `Chicken curry - step 3 2026-10-11.jpg` and `Chicken curry - source 2026-10-11.jpg`. When a name is in use, the plugin adds a number: `Chicken curry 2026-10-11 1.jpg`. The photo of a [brand](brands.md) has the same size, in the pantry folder.
 
 ## The plan and the next time
 

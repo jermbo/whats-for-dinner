@@ -1,1 +1,2 @@
 - [ ] [[Larder/Pantry/Onions|Onions]]
+- [ ] [[Larder/Pantry/Taco seasoning|Taco seasoning]]

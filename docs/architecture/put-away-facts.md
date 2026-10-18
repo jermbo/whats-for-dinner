@@ -1,6 +1,6 @@
 ---
 title: Facts of an item
-summary: "The five facts of an item at put away: what the plugin fills in for each one, why a sale price is never the start, and where each fact goes."
+summary: "The six facts of an item at put away: what the plugin fills in for each one, why a sale price is never the start, the price of each brand, and where each fact goes."
 parent: put-away.md
 ---
 
@@ -10,15 +10,16 @@ parent: put-away.md
 
 At [put away](put-away.md), you have the bag and the paper receipt in your hand. It is the only moment in which you know what you bought and what you paid. This page tells which facts the plugin fills in, and how it keeps your work to a check.
 
-## Five facts, and two places for them
+## Six facts, and two places for them
 
 | Fact        | Where it goes                                              |
 | ----------- | ---------------------------------------------------------- |
 | Amount      | The row of the food item, and the receipt.                 |
 | Place       | The row of the food item, and the receipt.                 |
 | Use-by date | The row of the food item, and the receipt.                 |
-| Price       | The receipt only. It is what you paid for the full amount. |
+| Price       | The receipt only. It is what you paid for one package.     |
 | "Sale"      | The receipt only, as `yes` in the column "Sale".           |
+| Brand       | The receipt only, in the column `Brand`.                   |
 
 The pantry has the state of now, and the [receipt](receipt.md) has the history. So a price is in no food item note.
 
@@ -28,11 +29,12 @@ You usually buy the same box of eggs, for about the same price, and you put it i
 
 | Fact        | From the receipts                                    | With no receipt, or with an empty cell                                 |
 | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| Amount      | The amount of the row on the list.                   | The full amount of the food item, and then 1.                          |
+| Amount      | The last size: the amount of the newest row.         | The amount of the row on the list, the full amount, and then 1.        |
 | Place       | The place of the last row.                           | The place of the first row of the food item.                           |
 | Use-by date | Today, plus the days that the food had then.         | Empty.                                                                 |
 | Price       | The regular price: the newest row with no sale mark. | Empty.                                                                 |
 | "Sale"      | Off.                                                 | Off.                                                                   |
+| Brand       | The brand of the cart task, then of the last row.    | The only brand of the food item, and then no brand.                    |
 
 The row on the list has the amount that you usually buy: the newest amount of the receipts in the unit of the food item, unless the meals need more. So put away and the list agree. An amount must be in the unit of the food item: the unit of its full amount, or of its first row. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the full amount of the food item, and then with 1. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
 
@@ -42,13 +44,23 @@ A sale ends. If the plugin proposed the price of a sale, a quick check puts the 
 
 You bought 12 eggs on 28 September for 3.99, and 12 on 4 October for 3.49, on sale, with the use-by date 25 October. That is 21 days. On 13 October, the line of the eggs starts with 12, "Outside fridge", 3.99, and the date 3 November. Eggs that you bought only on sale start with no price.
 
-## One row for one place
+## Each brand has its own price
 
-The amount goes into a row that the food item has, if three things are the same: the place, the use-by date, and the kind of unit. Flour has 200 g in the kitchen pantry, with no date. You bought 800 g, with no date. The row becomes 1000 g.
+Brand A costs 2.49 and Brand B costs 1.99. So the price starts from the regular price of the selected [brand](brands.md): the newest row of the item with that brand and no sale mark. With no such row, it starts from the regular price of any brand. A tap on a different brand changes the price, and the new price fades in. A price that you typed stays. After a tap on "Sale", the hint is the regular price of the selected brand.
 
-Put away also adds to the row of the same place that has no use-by date, and the row gets the date. Oats with no date and a new bag of oats with a date are one row. The form of the Pantry part does not do this, because there you type a date on purpose.
+A row has a brand when its cell `Brand` links to one of the photos of the brand, or when its text is the name of the brand, with no regard to capital letters. A cell that is no brand of the food item counts as no brand. The brand does not change if an item is known.
 
-If not, the food gets a new row. Milk with a new date is a second row, because the two cartons spoil on different days. The [amounts](amounts.md) page tells which units compare.
+## One line for each package
+
+The list asks for the amount that the meals need, and the pantry tells the packages. So put away divides the amount of the list row by the last size, rounds up, and makes that number of lines, at least 1. Each line starts with the last size as its amount. "Milk, 1 1/2 gal" and a last size of 1 gal give 2 lines of 1 gal. With no last size, or with a unit that does not [compare](amounts.md), the item has 1 line with the amount of the list row. A loose food item always has 1 line.
+
+The amount of a line is the size of its package. New quinoa of 1 lb gets the size 1 lb.
+
+## Each line is one row
+
+"Put away" on a line writes one package into the food item note. It writes over the [empty row](food-item-note.md#the-empty-row) of the place of the line, with the new amount, size, and date. A place with no empty row gets a new row. A line never adds to a row that has food: the new jug of milk is a second row, because the two jugs spoil on different days.
+
+Loose food is different. Its amount goes into the row of its place, and the size of the row becomes its new amount: 2 apples and 6 more apples are one row of 8, with the size 8. A place with no row of the loose food gets a new row.
 
 ## A price is a number
 

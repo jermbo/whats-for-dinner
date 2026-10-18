@@ -11,9 +11,15 @@ function noteName(name: string): string {
 }
 
 // The first path that the vault does not have, as Obsidian names a copy: "Pancakes.md", then
-// "Pancakes 1.md". A new note or photo never writes over a file.
-export function availablePath(base: string, extension: string, exists: (path: string) => boolean) {
+// "Pancakes 1.md". A new note or photo never writes over a file. The photo of a brand counts from
+// 2, as a second photo of the same package: "Taco seasoning - Brand A 2.jpg".
+export function availablePath(
+	base: string,
+	extension: string,
+	exists: (path: string) => boolean,
+	first = 1
+) {
 	let path = `${base}.${extension}`;
-	for (let number = 1; exists(path); number++) path = `${base} ${number}.${extension}`;
+	for (let number = first; exists(path); number++) path = `${base} ${number}.${extension}`;
 	return path;
 }

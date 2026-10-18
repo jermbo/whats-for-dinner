@@ -28,6 +28,8 @@ The [data file](notes-of-the-kitchen.md) keeps the step of setup. So you can clo
 
 Each step needs the step before it. The home must not hold the recipes, and food needs a folder and a place. Setup moves no note from a different folder.
 
+"Add to pantry" is the form of the Pantry part, so the button "Add brand" is there too. The packages are in the cupboard in front of you, so it is a good moment for the photo of each [brand](brands.md).
+
 "Finish setup" is active when the pantry has a food item, or when a staple of the checklist has an amount. A staple gets its note when you tap "Finish setup", in the place "Place for new food". A staple with no amount gets no note.
 
 ## A vault with notes of the kitchen

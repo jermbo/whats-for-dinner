@@ -13,7 +13,7 @@ export const isForMeal = (row: ShoppingRow) => row.recipes.length > 0;
 export function isFound(row: ShoppingRow, text: string): boolean {
 	const words = text.trim().toLowerCase();
 	const { aliases = [], brands = [] } = row.food?.item ?? {};
-	const names = [row.name, ...aliases, ...brands, ...row.recipes];
+	const names = [row.name, ...aliases, ...brands.map((brand) => brand.name), ...row.recipes];
 	return !words || names.some((name) => name.toLowerCase().includes(words));
 }
 

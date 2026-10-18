@@ -8,6 +8,8 @@
 		// The line below the name: the place, or the total of the food item.
 		note: string;
 		amount: string;
+		// The number of packages of the line. The line shows it with 2 or more.
+		packages?: number;
 		// The level of the food item. Null when the plugin cannot count the amount.
 		bar: Bar | null;
 		// The days until the use-by date. A badge shows only when the date is near.
@@ -15,7 +17,7 @@
 		soon: boolean;
 		onclick: () => void;
 	};
-	let { name, note, amount, bar, days, soon, onclick }: Props = $props();
+	let { name, note, amount, packages = 1, bar, days, soon, onclick }: Props = $props();
 
 	const badge = $derived.by(() => {
 		if (days === null || !soon) return null;
@@ -25,7 +27,7 @@
 	});
 </script>
 
-<!-- One food item in one place. A tap opens it, so that you can change it. -->
+<!-- One food item in one place, with all its packages there. A tap opens it, so that you can change it. -->
 <button class="wfd-line" class:wfd-line--none={!amount} type="button" {onclick}>
 	<span class="wfd-line__top">
 		<span class="wfd-line__text">
@@ -34,7 +36,9 @@
 		</span>
 		{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
 		<span class="wfd-line__amount wfd-number">
-			{amount || 'None'}{#if bar?.isLow}<span class="wfd-line__hidden">, low</span>{/if}
+			{amount || 'None'}{#if packages > 1}<span class="wfd-line__packages">
+					· {packages} packages</span
+				>{/if}{#if bar?.isLow}<span class="wfd-line__hidden">, low</span>{/if}
 		</span>
 	</span>
 	{#if bar || !amount}<LevelBar {bar} />{/if}
@@ -98,6 +102,14 @@
 
 	.wfd-line__amount {
 		font-size: 20px;
+		text-align: end;
+	}
+
+	.wfd-line__packages {
+		color: var(--wfd-ink-2);
+		font-family: var(--font-interface, inherit);
+		font-size: 14px;
+		white-space: nowrap;
 	}
 
 	/* Text for a screen reader: the colour of the bar is not the only sign of a low level. */

@@ -2,6 +2,7 @@
 title: Find a food item
 summary: "The shopper types a name, a brand, or a different name of a food, and sees at once if the pantry has it."
 parent: pantry-stories.md
+updated: 2026-10-18
 persona: Shopper
 depends-on:
   [
@@ -27,7 +28,7 @@ As the [shopper](../../personas.md), I want to type a name, a brand, or a differ
 2. The text finds a food item by its name, its other names, and its brands
    - a. The name of the note
    - b. Each text of the property `aliases`
-   - c. Each text of the property `brands`
+   - c. Each name of the section "Brands", with the rules of [See the brands of a food item as photos](../v0.5.0/brands-see-the-brands-as-photos.md) (changed in version 0.5.0)
 3. The text finds a food item that is out
    - a. Its line shows in the group "Out"
 4. Tap the cross in the field to remove the text
@@ -65,4 +66,4 @@ Each criterion starts with the test vault in the state in which it starts, and w
 
 ## Architecture
 
-- [Food item note](../../architecture/food-item-note.md): the properties with the other names and the brands.
+- [Food item note](../../architecture/food-item-note.md): the property with the other names, and the section "Brands".
