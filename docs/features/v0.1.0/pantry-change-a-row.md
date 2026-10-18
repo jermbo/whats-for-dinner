@@ -2,6 +2,7 @@
 title: Change a row
 summary: "The keeper changes the place, the amount, the use-by date, or the low line of one row in a form."
 parent: pantry-stories.md
+updated: 2026-10-18
 persona: Keeper
 depends-on:
   [
@@ -27,7 +28,7 @@ As the [keeper](../../personas.md), I want to change the place, the amount, the 
    - a. The place, the amount as text, and the use-by date of the row
    - b. The low line of the food item, as the text of the property `low`
    - c. With no `low`, the field is empty and shows the low line of the plugin as a hint
-   - d. The brands and the other names of the food item
+   - d. The brands of the food item, as [See the brands of a food item as photos](../v0.5.0/brands-see-the-brands-as-photos.md) shows them (changed in version 0.5.0), and its other names
 3. Select a different place
    - a. One tap selects a place that the pantry has
    - b. A text field takes a place that is new
@@ -53,7 +54,7 @@ Each criterion starts with the test vault in the state in which it starts, and w
 4. GIVEN the pantry shows rice WHEN the keeper opens the form of rice THEN the field "Low line" has "1 kg"
 5. GIVEN elbow pasta has `full: 2 kg` and no `low` WHEN the keeper opens the form of elbow pasta THEN the field "Low line" is empty
    - a. AND it shows the hint "500 g"
-6. GIVEN the pantry shows elbow pasta WHEN the keeper opens the form of elbow pasta THEN the form shows "Brands: Brand A, Store brand"
+6. GIVEN the pantry shows elbow pasta WHEN the keeper opens the form of elbow pasta THEN the form shows the chips "Brand A" and "Store brand"
    - a. AND "Other names: pasta, macaroni"
 7. GIVEN the form of rice in "Kitchen pantry" is open WHEN the keeper sets the use-by date to 2026-12-31 and taps "Save" THEN the row "Kitchen pantry" of the note has the date 2026-12-31
    - a. AND the row "Downstairs pantry" is the same as before
