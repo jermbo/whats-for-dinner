@@ -3,8 +3,15 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 
-	// The photos stay on the device until "Save", so that intake with no "Save" leaves nothing.
-	let { photos = $bindable() }: { photos: Blob[] } = $props();
+	type Props = {
+		// The photos stay on the device until "Save", so that intake with no "Save" leaves nothing.
+		photos: Blob[];
+		// The names of the source photos that the note has. "Remove" takes only the link away: the
+		// plugin does not delete a file.
+		kept: string[];
+		urlOf: (name: string) => string | null;
+	};
+	let { photos = $bindable(), kept = $bindable(), urlOf: keptUrlOf }: Props = $props();
 
 	const uid = $props.id();
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
@@ -31,11 +38,24 @@
 </script>
 
 <div class="wfd-sources">
-	{#if photos.length}
+	{#if kept.length || photos.length}
 		<ul class="wfd-sources__list" aria-label="Source photos">
+			{#each kept as name (name)}
+				{@const src = keptUrlOf(name.split('|')[0])}
+				<li class="wfd-sources__photo" transition:fade={{ duration }}>
+					{#if src}<img {src} alt={name} />{/if}
+					<button
+						class="wfd-sources__remove"
+						type="button"
+						onclick={() => (kept = kept.filter((one) => one !== name))}
+					>
+						Remove
+					</button>
+				</li>
+			{/each}
 			{#each photos as photo, at (photo)}
 				<li class="wfd-sources__photo" transition:fade={{ duration }} onoutroend={() => free(photo)}>
-					<img src={urlOf(photo)} alt="Source photo {at + 1}" />
+					<img src={urlOf(photo)} alt="New source photo {at + 1}" />
 					<button class="wfd-sources__remove" type="button" onclick={() => remove(photo)}>
 						Remove
 					</button>

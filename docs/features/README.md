@@ -70,7 +70,7 @@ You tell the plugin which folder has your recipes and which folder is your pantr
 
 A recipe is a plain [note](../architecture/notes-of-the-kitchen.md): a title, the ingredients, and the steps. Any text editor can open the file, with or without the plugin.
 
-You do not type the format yourself. ["Add recipe"](../architecture/intake.md) takes a recipe from a cookbook or a family card one line at a time, and each line shows the food item that it found. "Save" writes a correct note, with a link to each food item, and a new food item for each food that the pantry does not know. The source and a photo of the card stay below the title. An old note that is not a recipe gets the button ["Convert"](../architecture/convert.md), which takes it through the same flow.
+You do not type the format yourself. ["Add recipe"](../architecture/intake.md) takes a recipe from a cookbook or a family card one line at a time, and each line shows the food item that it found. "Save" writes a correct note, with a link to each food item, and a new food item for each food that the pantry does not know. The source and a photo of the card stay below the title. An old note that is not a recipe gets the button ["Convert"](../architecture/convert.md), which takes it through the same flow. ["Edit"](../architecture/edit.md) on a recipe card opens a recipe in intake again, and "Save" keeps its groups, its step photos, and its records.
 
 Each photo of a recipe goes into the folder `Photos` next to your recipes, sharp and small enough for Obsidian Sync. A recipe card shows the photo of your last meal, and a tap opens the [gallery](../architecture/gallery.md) of each meal, with its rating and its note.
 

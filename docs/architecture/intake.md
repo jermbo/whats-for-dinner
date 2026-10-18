@@ -16,6 +16,8 @@ You start intake with the button "Add recipe" in the Recipes part, or with the c
 
 The plugin does not divide a line. "salt and pepper" is one line, so type two lines.
 
+An ingredient line that ends with a colon, such as "Dry:", is a group. "Save" writes it as the heading `## Dry`, and the ingredients below it are in that group.
+
 ## Each line shows what the plugin read
 
 Below each ingredient line, the plugin shows its result while you type:
@@ -69,3 +71,4 @@ You type "Crepes", "6 crepes", "200 g flour", "2 eggs", and the step "Mix all th
 
 - [Recipe note](recipe-note.md): each part of the format that "Save" writes.
 - [Convert](convert.md): how intake starts with the text of a note that is not a recipe.
+- [Edit](edit.md): how intake starts with the text of a recipe, and what stays.

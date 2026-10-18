@@ -51,6 +51,13 @@ function withNote(amount: Amount | null, text: string, range: string): Ingredien
 	return { amount, name, extra: `${range}${note}` };
 }
 
+// A recipe card often says "For the dough:" above its ingredients. So a line that ends with a
+// colon is the title of a group, and not an ingredient. It gives null for a different line.
+export function groupOf(text: string): string | null {
+	const line = text.trim();
+	return line.length > 1 && line.endsWith(':') ? line.slice(0, -1).trim() : null;
+}
+
 // The food items of a line, with the rules of the match: its name, or one of their other names.
 export const foodsOf = (line: IngredientLine, index: FoodIndex): FoodNote[] =>
 	line.name ? (index.get(nameKey(line.name)) ?? []) : [];

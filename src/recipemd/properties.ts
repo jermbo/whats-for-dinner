@@ -4,7 +4,14 @@
 const EDGE = /^---[ \t]*$/;
 
 export function withoutProperties(lines: string[]): string[] {
-	if (!EDGE.test(lines[0] ?? '')) return lines;
+	return splitProperties(lines).body;
+}
+
+// The property block, with its two lines of "---", and the lines below it. "Convert" and "Edit"
+// write the block again as it was.
+export function splitProperties(lines: string[]): { properties: string[]; body: string[] } {
+	if (!EDGE.test(lines[0] ?? '')) return { properties: [], body: lines };
 	const end = lines.findIndex((line, i) => i > 0 && EDGE.test(line));
-	return end === -1 ? lines : lines.slice(end + 1);
+	if (end === -1) return { properties: [], body: lines };
+	return { properties: lines.slice(0, end + 1), body: lines.slice(end + 1) };
 }

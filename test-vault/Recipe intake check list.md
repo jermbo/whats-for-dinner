@@ -1,6 +1,6 @@
 # Check list: recipe intake
 
-This list tests the eleven stories of version 0.4.0, on the phone. Do the parts in sequence. Each part starts from the state that the part before it leaves. Each line has one action and what you must see. The text in brackets is the story and its criterion, from [Recipes stories](../docs/features/v0.4.0/recipes-stories.md).
+This list tests the twelve stories of version 0.4.0, on the phone. Do the parts in sequence. Each part starts from the state that the part before it leaves. Each line has one action and what you must see. The text in brackets is the story and its criterion, from [Recipes stories](../docs/features/v0.4.0/recipes-stories.md).
 
 ## Before you start
 
@@ -87,3 +87,17 @@ This list tests the eleven stories of version 0.4.0, on the phone. Do the parts 
 - [ ] The note starts with "# Old Fashioned Lemonade" and "Source: Source Link: [Divas Can Cook](…)", and it has `_#05-Recipe/Drink/Non-Alcoholic, #05-Recipe/Holiday/Summer_`, 3 ingredients, and 14 numbered steps. (Story 11: AC 3 to 3 d)
 - [ ] The ingredients have `_8_ [[Larder/Pantry/Lemons|lemons plus more for garnishing if desired]]` and `_1 1/2 cups_ [[Larder/Pantry/Sugar|sugar]] (1 1/2 - 2 cups)`. `Larder/Pantry` has `Lemons.md`, and no note whose name starts with "-".
 - [ ] In Obsidian, search for `tag:#05-Recipe/Holiday/Summer`. The search finds the note. (Story 11: AC 3 f)
+
+## I. Edit a recipe
+
+Do this part after part F, so that step 3 of Pancakes has photos, and after part G, so that Pancakes has records.
+
+- [ ] The card "Pancakes" has the buttons "Open note", "Edit", and "Cook →". Tap "Edit". The head says "Edit recipe". (Story 12: AC 1)
+- [ ] The title is "Pancakes", with no message that the title is in use, and the yield is "8 pancakes". (Story 12: AC 1 and 1 c)
+- [ ] The ingredient lines start with "Dry:", which shows "Group", and "200 g flour", which shows "200 g · Flour". The steps have 5 lines, and step 3 says that its photos stay. (Story 12: AC 1 a and 1 b)
+- [ ] Close with no "Save". The note did not change. (Story 12: AC 6)
+- [ ] Tap "Edit" again. Change "200 g flour" to "250 g flour", change the text of step 3, and tap "Save". The Recipes part shows "Pancakes", and not as a note that fails. (Story 12: AC 2 b)
+- [ ] Open `Recipes/Pancakes.md`. Below `## Dry` is `- _250 g_ [[Larder/Pantry/Flour|flour]]`. The group "Wet" still has `- *300 ml* milk`. (Story 12: AC 2 and 2 a)
+- [ ] Below the new text of step 3 are its photo links, with an indent, and the best photo still has `|best`. (Story 12: AC 3)
+- [ ] The note ends with the heading "Cooked" and the same records, with their photos. (Story 12: AC 4)
+- [ ] On the computer, open `Recipes/Pancakes.md` and run "Edit recipe". Intake opens with "Pancakes". Open `Recipe intake check list.md` instead: the command is not in the list. (Story 12: AC 5)

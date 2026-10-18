@@ -155,6 +155,7 @@
 						onweek={() => toggleWeek(entry.path)}
 						oncook={() => oncook(entry.path)}
 						onopen={() => kitchen.open(entry.path)}
+						onedit={() => kitchen.openPage({ is: 'edit', path: entry.path })}
 						photo={entry.photo ? kitchen.photoUrl(entry.photo, entry.path) : null}
 						ongallery={() => kitchen.openPage({ is: 'gallery', path: entry.path })}
 					/>

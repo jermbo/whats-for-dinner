@@ -8,7 +8,8 @@ import { readBlocks, type Block } from '../recipemd/blocks';
 import type { Ingredient, Recipe } from '../recipemd/types';
 
 // A photo of a step, in the note below the text of the step. The mark `|best` tells the best one.
-export type StepPhoto = { name: string; best: boolean };
+// `link` is the whole link, as the note has it, so that "Edit" can write it again.
+export type StepPhoto = { name: string; best: boolean; link: string };
 
 export type Step = {
 	text: string;
@@ -80,6 +81,7 @@ const PHOTO = /!\[\[([^\]|]+\.(?:jpe?g|png|webp|gif|heic|avif))(?:\|([^\]]*))?\]
 
 function withoutPhotos(text: string): { text: string; photos: StepPhoto[] } {
 	const photos = [...text.matchAll(PHOTO)].map((match) => ({
+		link: match[0],
 		name: match[1],
 		best: (match[2] ?? '').split('|').some((one) => one.trim().toLowerCase() === 'best')
 	}));

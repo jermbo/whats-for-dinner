@@ -1,6 +1,6 @@
 ---
 title: Recipes stories
-summary: "The user stories of recipe intake in version 0.4.0: eleven pieces of work, with the sequence in which they depend on each other."
+summary: "The user stories of recipe intake in version 0.4.0: twelve pieces of work, with the sequence in which they depend on each other."
 parent: ../README.md
 ---
 
@@ -31,18 +31,20 @@ The [spec](../../initiatives/recipe-intake/spec.md) has the scope that is agreed
 | 9. [Get out selects the food item](recipes-get-out-selects-the-food-item.md)                             | Cook    | Nothing              | `built`      |
 | 10. [See the meals of a recipe in a gallery](recipes-see-the-meals-in-a-gallery.md)                      | Planner | Nothing              | `built`      |
 | 11. [Convert a note that fails](recipes-convert-a-note-that-fails.md)                                    | Writer  | Stories 1, 2, and 6  | `built`      |
+| 12. [Edit a recipe in intake](recipes-edit-a-recipe-in-intake.md)                                       | Cook    | Stories 1 and 11     | `built`      |
 
 Story 4 is a story of version 0.2.0. Its rule for "Out" changed in this version. The [personas](../../personas.md) page tells who the cook, the planner, and the writer are.
 
 ## The sequence of the work
 
-A story can start when the stories that it depends on are done. This gives three steps. The stories of one step can be built at the same time.
+A story can start when the stories that it depends on are done. This gives four steps. The stories of one step can be built at the same time.
 
 | Step | Stories            | What you have after the step                                                                       |
 | ---- | ------------------ | -------------------------------------------------------------------------------------------------- |
 | 1    | 1, 4, 5, 9, and 10 | Intake that saves a correct recipe, each food with no row as "Out", photos in `Recipes/Photos`, the selected pasta, and the gallery. |
 | 2    | 2, 3, 6, and 7     | Tags, stubs, the source with its photos, and a photo for each step.                                |
 | 3    | 8 and 11           | The best photo of a step, and old notes that become recipes.                                       |
+| 4    | 12                 | A recipe that you change in intake, with its groups, photos, and records.                          |
 
 ## Architecture pages
 
@@ -52,7 +54,8 @@ Each story updates the wiki pages **before** its code, in the **Elevate** step o
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
 | [Intake](../../architecture/intake.md) (new)                         | 1: the fields, the result of a line, and "Save". 2, 3, and 6: the tags, the stub, and the source. 11: "Convert", with its own page [Convert](../../architecture/convert.md). |
 | [Gallery](../../architecture/gallery.md) (new)                       | 10: the records with a photo, and the card photo.                         |
-| [Recipes](../../architecture/recipes.md)                             | 1: the plugin writes the text of a recipe. 10: the photo of a card. 11: "Convert". |
+| [Recipes](../../architecture/recipes.md)                             | 1: the plugin writes the text of a recipe. 10: the photo of a card. 11: "Convert". 12: "Edit". |
+| [Edit](../../architecture/edit.md) (new)                             | 12: which part of a recipe goes into which field, and what stays.         |
 | [Recipe note](../../architecture/recipe-note.md)                     | 1: the links that intake makes. 6: the source line and the source photos. 7 and 8: the step photos and `\|best`. |
 | [Steps](../../architecture/steps.md)                                 | 7: a photo is not text of a step, in a list item and in a paragraph. 8: the best photo. |
 | [Cook Mode](../../architecture/cook-mode.md)                         | 7 and 8: the camera button and the photo of a step page. 9: the selected food item on "Get out". |

@@ -31,6 +31,7 @@ export type CookResult = {
 export type KitchenPage =
 	| { is: 'intake' }
 	| { is: 'convert'; path: string }
+	| { is: 'edit'; path: string }
 	| { is: 'gallery'; path: string };
 
 // What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped

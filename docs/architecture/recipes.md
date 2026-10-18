@@ -20,7 +20,7 @@ A recipe is a plain note in the [RecipeMD](https://recipemd.org/specification.ht
 - salt
 ```
 
-The format does not come from the plugin, so your recipes do not depend on it. The [recipe note](recipe-note.md) page gives its exact form. A note that does not follow the format is not lost. The end of the list shows it, with the reason, and "[Convert](convert.md)" makes it a recipe.
+The format does not come from the plugin, so your recipes do not depend on it. The [recipe note](recipe-note.md) page gives its exact form. A note that does not follow the format is not lost. The end of the list shows it, with the reason, and "[Convert](convert.md)" makes it a recipe. "[Edit](edit.md)" on a card opens a recipe in intake again.
 
 ## Each ingredient looks for its food
 

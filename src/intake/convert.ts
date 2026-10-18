@@ -5,17 +5,8 @@
 
 import { nameKey, showName } from '../match/names';
 import { readBlocks, type Block } from '../recipemd/blocks';
-
-export type ConvertedNote = {
-	// The property block as the note has it, with its two lines of "---", or empty.
-	properties: string;
-	title: string;
-	tags: string[];
-	source: string;
-	ingredients: string[];
-	steps: string[];
-	description: string;
-};
+import { splitProperties } from '../recipemd/properties';
+import type { IntakeStart } from './recipe-text';
 
 type Part = 'ingredients' | 'steps' | 'source';
 
@@ -29,7 +20,6 @@ const PARTS: Record<string, Part> = {
 	sources: 'source'
 };
 
-const EDGE = /^---[ \t]*$/;
 // A tag of Obsidian keeps its "#", so that the tag tree of the vault still finds the note.
 const TAG = /(^|\s)(#[\p{L}\p{N}_/-]*[\p{L}_/-][\p{L}\p{N}_/-]*)/gu;
 const WEB_LINK = /\[[^\]]*\]\(https?:\/\/[^)\s]+\)|https?:\/\/\S+/g;
@@ -44,13 +34,11 @@ const lineOf = (item: string) =>
 		.replace(/^\*(?!\*)([^*]+)\*|^_(?!_)([^_]+)_/, (_, a?: string, b?: string) => a ?? b ?? '')
 		.trim();
 
-export function convertNote(text: string, noteName: string): ConvertedNote {
-	const all = text.replace(/\r\n/g, '\n').split('\n');
-	const end = EDGE.test(all[0] ?? '') ? all.findIndex((line, at) => at > 0 && EDGE.test(line)) : -1;
-	const properties = end === -1 ? '' : all.slice(0, end + 1).join('\n');
+export function convertNote(text: string, noteName: string): IntakeStart {
+	const { properties, body } = splitProperties(text.replace(/\r\n/g, '\n').split('\n'));
 
 	const tags: string[] = [];
-	const lines = all.slice(end + 1).map((line) =>
+	const lines = body.map((line) =>
 		line.replace(TAG, (_, space: string, tag: string) => {
 			if (!tags.includes(tag)) tags.push(tag);
 			return space;
@@ -104,12 +92,15 @@ export function convertNote(text: string, noteName: string): ConvertedNote {
 	}
 
 	return {
-		properties,
+		properties: properties.join('\n'),
 		title: noteName,
 		tags,
+		yields: '',
 		source: result.source.join('\n\n'),
-		ingredients: result.ingredients.filter(Boolean),
-		steps: result.steps.filter(Boolean),
-		description: description.filter(Boolean).join('\n\n')
+		sourcePhotos: [],
+		description: description.filter(Boolean).join('\n\n'),
+		ingredients: result.ingredients.filter(Boolean).map((text) => ({ text, raw: null })),
+		steps: result.steps.filter(Boolean).map((text) => ({ text, photos: [] })),
+		after: ''
 	};
 }

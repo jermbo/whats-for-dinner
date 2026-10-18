@@ -32,6 +32,20 @@ export default class WhatsForDinnerPlugin extends Plugin {
 			}
 		});
 		this.addCommand({
+			id: 'edit-recipe',
+			name: 'Edit recipe',
+			checkCallback: (checking) => {
+				const path = this.app.workspace.getActiveFile()?.path;
+				const entry = kitchen.recipes.find((recipe) => recipe.path === path);
+				if (!entry) return false;
+				if (!checking) {
+					kitchen.openPage({ is: 'edit', path: entry.path });
+					void this.openKitchen();
+				}
+				return true;
+			}
+		});
+		this.addCommand({
 			id: 'open-gallery',
 			name: 'Open the gallery',
 			checkCallback: (checking) => {

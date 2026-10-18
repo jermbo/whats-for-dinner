@@ -18,11 +18,12 @@
 		onweek: () => void;
 		oncook: () => void;
 		onopen: () => void;
+		onedit: () => void;
 		// The photo of the newest meal, or null. A tap on it opens the gallery.
 		photo: string | null;
 		ongallery: () => void;
 	};
-	let { entry, planned, onweek, oncook, onopen, photo, ongallery }: Props = $props();
+	let { entry, planned, onweek, oncook, onopen, onedit, photo, ongallery }: Props = $props();
 
 	const uid = $props.id();
 	const { recipe, match } = $derived(entry);
@@ -102,6 +103,7 @@
 			<IngredientRows ingredients={recipe.ingredients} groups={recipe.groups} {statusOf} />
 			<div class="wfd-recipe__actions">
 				<Button onclick={onopen}>Open note</Button>
+				<Button onclick={onedit}>Edit</Button>
 				<Button kind="main" onclick={oncook}>Cook →</Button>
 			</div>
 		</div>
@@ -233,9 +235,10 @@
 		margin-block: 12px 4px;
 	}
 
+	/* "Cook" is the main button, so it keeps the widest place, at the end of the row. */
 	.wfd-recipe__actions {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: auto auto 1fr;
 		gap: 12px;
 		margin-block-start: 16px;
 	}

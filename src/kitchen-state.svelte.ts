@@ -9,11 +9,12 @@ import {
 	type CookActionsHost
 } from './kitchen/cook-actions';
 import {
-	convertRecipe as convertRecipeAction,
+	replaceRecipe as replaceRecipeAction,
 	saveRecipe as saveRecipeAction,
 	type IntakeActionsHost
 } from './kitchen/intake-actions';
-import { convertNote, type ConvertedNote } from './intake/convert';
+import { convertNote } from './intake/convert';
+import { editNote } from './intake/edit';
 import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
@@ -71,7 +72,7 @@ import {
 	tripSuggestions
 } from './kitchen/shop-read-model';
 import { indexFoods } from './match/match';
-import type { IntakeDraft } from './intake/recipe-text';
+import type { IntakeDraft, IntakeStart } from './intake/recipe-text';
 import type { FoodNote, Note } from './note';
 import type { StapleLabel } from './pantry/staple';
 import { placesOf } from './pantry/places';
@@ -426,30 +427,39 @@ export class Kitchen {
 		return notePathIn(this.where.pantry, name);
 	}
 
-	saveRecipe(draft: Omit<IntakeDraft, 'sourcePhotos'>, photos: Blob[]): Promise<boolean> {
+	saveRecipe(draft: IntakeDraft, photos: Blob[]): Promise<boolean> {
 		return this.tried('The recipe is not saved', () =>
 			saveRecipeAction(this.intakeHost, draft, photos)
 		);
 	}
 
-	// The fields of intake for a note that is not a recipe.
-	async readToConvert(path: string): Promise<ConvertedNote | null> {
-		const file = this.fileAt(path);
-		return file ? convertNote(await this.app.vault.read(file), file.basename) : null;
+	// The fields of intake for a note that is not a recipe, or for a recipe. Null when the note is
+	// gone, or when a recipe to edit is not a recipe now.
+	async readForIntake(page: { is: 'convert' | 'edit'; path: string }): Promise<IntakeStart | null> {
+		const file = this.fileAt(page.path);
+		if (!file) return null;
+		const text = await this.app.vault.read(file);
+		return page.is === 'convert' ? convertNote(text, file.basename) : editNote(text);
 	}
 
 	async convertRecipe(
 		path: string,
 		properties: string,
-		draft: Omit<IntakeDraft, 'sourcePhotos'>,
+		draft: IntakeDraft,
 		photos: Blob[]
 	): Promise<boolean> {
 		const line = this.rejected.find((one) => one.path === path) ?? null;
 		const done = await this.tried('The note is not converted', () =>
-			convertRecipeAction(this.intakeHost, path, properties, draft, photos)
+			replaceRecipeAction(this.intakeHost, path, properties, draft, photos)
 		);
 		if (done) this.converted = line;
 		return done;
+	}
+
+	editRecipe(path: string, properties: string, draft: IntakeDraft, photos: Blob[]): Promise<boolean> {
+		return this.tried('The recipe is not saved', () =>
+			replaceRecipeAction(this.intakeHost, path, properties, draft, photos)
+		);
 	}
 
 	takeConverted() {

@@ -24,7 +24,7 @@ Each person writes recipes in a different way, so the plugin has no rule for the
 | A tag of Obsidian, such as `#05-Recipe/Summer`      | The tags field, with its `#` |
 | All other text                                      | The description            |
 
-With no such heading, the first list gives the ingredients, and each later list gives the steps. With no heading "Source", each link to the web outside the lists goes into the source field. A heading inside a part, such as "Pie Dough", stays in the description, because intake has no groups.
+With no such heading, the first list gives the ingredients, and each later list gives the steps. With no heading "Source", each link to the web outside the lists goes into the source field. A heading inside a part, such as "Pie Dough", stays in the description: the plugin does not guess that it is a group. You can make it a group line, such as "Pie Dough:".
 
 ## Nothing is lost
 

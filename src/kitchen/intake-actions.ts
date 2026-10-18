@@ -9,7 +9,9 @@ export type IntakeActionsHost = PhotoActionsHost;
 // A stub is the note of a food item with no row, so the pantry knows the food and the Shop part
 // shows it as out. Two lines with the same new food make one stub.
 async function makeStubs(host: IntakeActionsHost, draft: Pick<IntakeDraft, 'ingredients'>) {
-	const paths = new Set(draft.ingredients.flatMap((one) => (one.isNew && one.link ? [one.link] : [])));
+	const paths = new Set(
+		draft.ingredients.flatMap((one) => (one.is === 'food' && one.isNew && one.link ? [one.link] : []))
+	);
 	for (const path of paths) {
 		if (pathInUse(host.app.vault, path)) continue;
 		await host.makeFolderOf(path);
@@ -22,7 +24,7 @@ async function makeStubs(host: IntakeActionsHost, draft: Pick<IntakeDraft, 'ingr
 // the vault only now: intake that you close with no "Save" leaves nothing.
 export async function saveRecipe(
 	host: IntakeActionsHost,
-	draft: Omit<IntakeDraft, 'sourcePhotos'>,
+	draft: IntakeDraft,
 	photos: Blob[]
 ): Promise<string> {
 	const wanted = notePathIn(host.where.recipes, draft.title).replace(/^\//, '');
@@ -31,7 +33,7 @@ export async function saveRecipe(
 	);
 	const name = path.slice(path.lastIndexOf('/') + 1, -'.md'.length);
 
-	const sourcePhotos: string[] = [];
+	const sourcePhotos = [...draft.sourcePhotos];
 	for (const photo of photos) sourcePhotos.push(await savePhoto(host, photo, name, { is: 'source' }));
 
 	await host.makeFolderOf(path);
@@ -40,19 +42,20 @@ export async function saveRecipe(
 	return path;
 }
 
-// "Convert" replaces the text of the same note. The note keeps its name, so each link to it still
-// works, and its property block stays. The core plugin "File recovery" keeps the old version.
-export async function convertRecipe(
+// "Convert" and "Edit" replace the text of the same note. The note keeps its name, so each link to
+// it still works, and its property block stays. The core plugin "File recovery" keeps the old
+// version. New source photos come after the photos that the note has.
+export async function replaceRecipe(
 	host: IntakeActionsHost,
 	path: string,
 	properties: string,
-	draft: Omit<IntakeDraft, 'sourcePhotos'>,
+	draft: IntakeDraft,
 	photos: Blob[]
 ) {
 	const file = host.app.vault.getAbstractFileByPath(path);
 	if (!(file instanceof TFile)) throw new Error(`The note "${path}" is not in the vault now.`);
 
-	const sourcePhotos: string[] = [];
+	const sourcePhotos = [...draft.sourcePhotos];
 	for (const photo of photos) {
 		sourcePhotos.push(await savePhoto(host, photo, file.basename, { is: 'source' }));
 	}

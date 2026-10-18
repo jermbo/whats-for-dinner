@@ -1,9 +1,14 @@
 <script lang="ts">
-	import type { ConvertedNote } from '../../intake/convert';
 	import { tagsOf, titleInUse } from '../../intake/known';
-	import { foodsOf, readLine } from '../../intake/line';
-	import { whyNotSave, type IntakeDraft, type IntakeIngredient } from '../../intake/recipe-text';
+	import { foodsOf, groupOf, readLine } from '../../intake/line';
+	import {
+		whyNotSave,
+		type IntakeDraft,
+		type IntakeIngredient,
+		type IntakeStart
+	} from '../../intake/recipe-text';
 	import type { Kitchen } from '../../kitchen-state.svelte';
+	import { foodNameOf } from '../../match/names';
 	import type { FoodNote } from '../../note';
 	import Button from '../parts/Button.svelte';
 	import PartHead from '../parts/PartHead.svelte';
@@ -15,24 +20,35 @@
 
 	type Props = {
 		kitchen: Kitchen;
-		// "Convert" starts with the text of a note that is not a recipe, and replaces that note.
-		convert?: { path: string; note: ConvertedNote };
+		// "Convert" starts with the text of a note that is not a recipe, and "Edit" with a recipe.
+		// Each replaces the text of that note.
+		replace?: { is: 'convert' | 'edit'; path: string; start: IntakeStart };
 		onclose: (saved: boolean) => void;
 	};
-	let { kitchen, convert, onclose }: Props = $props();
+	let { kitchen, replace, onclose }: Props = $props();
 
 	const uid = $props.id();
-	// The fields start once, with the note to convert or empty.
-	const start = (() => convert?.note)();
+	// The fields start once, with the note or empty.
+	const start = (() => replace?.start)();
+	const heading = (() => {
+		if (replace?.is === 'edit') return 'Edit recipe';
+		return replace ? 'Convert' : 'Add recipe';
+	})();
 
 	let title = $state(start?.title ?? '');
 	let tags = $state<string[]>(start?.tags ?? []);
-	let yields = $state('');
+	let yields = $state(start?.yields ?? '');
 	let source = $state(start?.source ?? '');
 	let description = $state(start?.description ?? '');
+	// The source photos that the note has, by name, and the new ones, which go into the vault at "Save".
+	let kept = $state<string[]>(start?.sourcePhotos ?? []);
 	let photos = $state<Blob[]>([]);
-	let ingredients = $state<Line[]>(linesOf(start?.ingredients ?? []));
-	let steps = $state<Line[]>(linesOf(start?.steps ?? []));
+	let ingredients = $state<Line[]>(linesOf((start?.ingredients ?? []).map((one) => one.text)));
+	let steps = $state<Line[]>(linesOf((start?.steps ?? []).map((one) => one.text)));
+	// "Edit" knows the text of the note for each first line, and the photos of each step. The ids
+	// of the first lines are their places, as `linesOf` gives them.
+	const starts = new Map((start?.ingredients ?? []).map((one, at) => [at + 1, one]));
+	const stepPhotos = new Map((start?.steps ?? []).map((one, at) => [at + 1, one.photos]));
 	let saving = $state(false);
 	// What you selected for a line with no food item, by the id of the line: a food item of the
 	// pantry, or a name for the new food. It is for the text of that moment: when you change the
@@ -42,15 +58,31 @@
 
 	const recipes = $derived(kitchen.recipes.map((entry) => entry.recipe));
 	const knownTags = $derived(tagsOf(recipes));
-	const inUse = $derived(titleInUse(title, recipes));
+	// The recipe that you edit does not count: its title is in use by itself.
+	const others = $derived(
+		kitchen.recipes.filter((entry) => entry.path !== replace?.path).map((entry) => entry.recipe)
+	);
+	const inUse = $derived(titleInUse(title, others));
 
 	const capital = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 	const foodAt = (path: string) => kitchen.foods.find((food) => food.path === path);
 
 	const choiceOf = (line: Line) => (chosen[line.id]?.text === line.text ? chosen[line.id] : null);
 
-	// The food items of a line: the one that you selected, or the ones of its name.
+	// The text of the note for a line that is as the note has it, or null.
+	function rawOf(line: Line): string | null {
+		const first = starts.get(line.id);
+		return first?.raw != null && first.text === line.text ? first.raw : null;
+	}
+
+	// The food items of a line: the one that you selected, or the ones of its name. A line as the
+	// note has it keeps its link, so its food is the food of the link.
 	function foodsOfLine(line: Line): FoodNote[] {
+		const raw = rawOf(line);
+		if (raw !== null) {
+			const name = foodNameOf(raw.replace(/^(?:\*[^*]+\*|_[^_]+_)\s*/, ''));
+			return foodsOf({ amount: null, name, extra: '' }, kitchen.foodIndex);
+		}
 		const choice = choiceOf(line);
 		if (choice?.is === 'new') return [];
 		const picked = choice?.is === 'food' ? foodAt(choice.path) : undefined;
@@ -65,22 +97,29 @@
 
 	// One food item: a link. Two or more: no link, and Cook Mode selects one. None: a stub.
 	function ingredientOf(line: Line): IntakeIngredient {
+		const group = groupOf(line.text);
+		if (group) return { is: 'group', title: group };
+		const food = { is: 'food', text: line.text, link: null, isNew: false, raw: null } as const;
+		const raw = rawOf(line);
+		if (raw !== null) return { ...food, raw };
 		const foods = foodsOfLine(line);
-		if (foods.length === 1) return { text: line.text, link: foods[0].path, isNew: false };
-		if (foods.length > 1) return { text: line.text, link: null, isNew: false };
+		if (foods.length === 1) return { ...food, link: foods[0].path };
+		if (foods.length > 1) return food;
 		const name = newNameOf(line);
-		if (!name) return { text: line.text, link: null, isNew: false };
-		return { text: line.text, link: kitchen.newFoodPath(name), isNew: true };
+		if (!name) return food;
+		return { ...food, link: kitchen.newFoodPath(name), isNew: true };
 	}
 
-	const draft = $derived<Omit<IntakeDraft, 'sourcePhotos'>>({
+	const draft = $derived<IntakeDraft>({
 		title,
 		tags,
 		yields,
 		source,
+		sourcePhotos: kept,
 		description,
 		ingredients: ingredients.map(ingredientOf),
-		steps: steps.map((line) => line.text)
+		steps: steps.map((line) => ({ text: line.text, photos: stepPhotos.get(line.id) ?? [] })),
+		after: start?.after ?? ''
 	});
 	const problem = $derived(whyNotSave(draft));
 
@@ -88,17 +127,21 @@
 		if (problem || saving) return;
 		saving = true;
 		// When the write fails, intake stays open with each field, and a notice tells why.
-		const saved = convert
-			? await kitchen.convertRecipe(convert.path, start?.properties ?? '', draft, photos)
-			: await kitchen.saveRecipe(draft, photos);
+		const properties = start?.properties ?? '';
+		const saved =
+			replace?.is === 'convert'
+				? await kitchen.convertRecipe(replace.path, properties, draft, photos)
+				: replace?.is === 'edit'
+					? await kitchen.editRecipe(replace.path, properties, draft, photos)
+					: await kitchen.saveRecipe(draft, photos);
 		saving = false;
 		if (saved) onclose(true);
 	}
 </script>
 
 <!-- No form: Enter in a field gives the next line, and only the button saves. -->
-<section class="wfd-intake" aria-label={convert ? 'Convert' : 'Add recipe'}>
-	<PartHead title={convert ? 'Convert' : 'Add recipe'}>
+<section class="wfd-intake" aria-label={heading}>
+	<PartHead title={heading}>
 		{#snippet side()}
 			<Button kind="link" onclick={() => onclose(false)}>Close</Button>
 		{/snippet}
@@ -124,11 +167,15 @@
 			placeholder="One Pan Wonders, page 46"
 			bind:value={source}
 		></textarea>
-		<SourcePhotos bind:photos />
+		<SourcePhotos
+			bind:photos
+			bind:kept
+			urlOf={(name) => (replace ? kitchen.photoUrl(name, replace.path) : null)}
+		/>
 	</div>
 
-	{#if convert}
-		<!-- Each text of the old note that has no field is here, so that nothing is lost. -->
+	{#if replace}
+		<!-- Each text of the note that has no other field is here, so that nothing is lost. -->
 		<label class="wfd-intake__field" for="{uid}-description">
 			<span class="wfd-label">Description</span>
 			<textarea id="{uid}-description" rows="4" bind:value={description}></textarea>
@@ -150,7 +197,10 @@
 		{#snippet result(line)}
 			{@const read = readLine(line.text)}
 			{@const foods = foodsOfLine(line)}
-			{#if foods.length}
+			{#if groupOf(line.text)}
+				<p class="wfd-intake__group">Group</p>
+			{:else if foods.length || rawOf(line) !== null}
+				<!-- A line as the note has it keeps its text, so "Save" makes no stub for it. -->
 				<IngredientResult line={read} {foods} />
 			{:else}
 				<NewFood
@@ -163,7 +213,16 @@
 		{/snippet}
 	</IntakeLines>
 
-	<IntakeLines label="Steps" hint="Mix the flour and the milk." bind:lines={steps} />
+	<IntakeLines label="Steps" hint="Mix the flour and the milk." bind:lines={steps}>
+		{#snippet result(line)}
+			{@const count = stepPhotos.get(line.id)?.length ?? 0}
+			{#if count}
+				<p class="wfd-intake__note">
+					{count === 1 ? '1 photo stays' : `${count} photos stay`} with this step.
+				</p>
+			{/if}
+		{/snippet}
+	</IntakeLines>
 
 	<div class="wfd-intake__end">
 		<!-- An empty title only turns "Save" off: a new intake starts with no title, and that is no problem. -->
@@ -199,6 +258,14 @@
 		gap: 8px;
 		padding-block-start: 8px;
 		border-block-start: var(--wfd-rule-4) solid var(--wfd-ink);
+	}
+
+	.wfd-intake__group {
+		margin: 0;
+		padding-inline: 4px;
+		color: var(--wfd-ink-2);
+		font-size: 14px;
+		font-weight: 600;
 	}
 
 	.wfd-intake__note {

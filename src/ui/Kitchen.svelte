@@ -91,9 +91,9 @@
 	const draft = new PutAwayDraft();
 </script>
 
-<!-- The note to convert is gone, or the vault cannot read it: you go back with one tap. -->
+<!-- The note is gone, or it is not a recipe now, or the vault cannot read it: one tap goes back. -->
 {#snippet gone(path: string)}
-	<PartHead title="Convert">
+	<PartHead title="Intake">
 		{#snippet side()}
 			<Button kind="link" onclick={() => kitchen.closePage()}>Close</Button>
 		{/snippet}
@@ -115,11 +115,11 @@
 	<div class="wfd-kitchen" in:fade={{ duration }}>
 		<Intake {kitchen} onclose={closePage} />
 	</div>
-{:else if page?.is === 'convert'}
+{:else if page?.is === 'convert' || page?.is === 'edit'}
 	<div class="wfd-kitchen" in:fade={{ duration }}>
-		{#await kitchen.readToConvert(page.path) then note}
-			{#if note}
-				<Intake {kitchen} convert={{ path: page.path, note }} onclose={closePage} />
+		{#await kitchen.readForIntake(page) then start}
+			{#if start}
+				<Intake {kitchen} replace={{ is: page.is, path: page.path, start }} onclose={closePage} />
 			{:else}
 				{@render gone(page.path)}
 			{/if}
