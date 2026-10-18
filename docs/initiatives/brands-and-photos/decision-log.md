@@ -58,7 +58,7 @@ The [shopping list](../shopping-list/decision-log.md) records each purchase as o
 2. **You can take the photo of a brand at each moment that shows the food item.** Each moment has its own reason:
    - a. In the first food step of [setup](../../architecture/setup.md), you verify: the packages are in the cupboard in front of you.
    - b. At [put away](../../architecture/put-away.md), you double check: the package that you bought is in your hand.
-   - c. In the store, you see what you want, and a new brand on the shelf can get its photo there.
+   - c. In the store, you see what you want, and a new brand on the shelf can get its photo there. The row of the stage Shop has a small camera tile after the photos of its brands. A row with no brand has only the tile. A tap opens the camera, and the photo is a new brand with no name. It then shows large with the button "In cart", as a tap on a photo does (decision 16). The reason: the row is where you look for the item, a tile takes less room than a button, and you buy a new brand as you buy a brand that you know. An option that was rejected: the camera only in the large photo, which a row with no brand does not have.
    - d. In the Pantry, in the form of "Add food" and in the form that opens with a tap on a food item. This is the main place to add a brand, to give it a name, and to change its photo later.
 
    An option that was rejected: only put away and the Pantry form. The reason: the owner wants no moment where a photo is not possible.
@@ -102,6 +102,8 @@ The [shopping list](../shopping-list/decision-log.md) records each purchase as o
 13. **Put away records the brand that you bought, but it never stops you.** The open line shows the photos of the brands, and one tap selects one. The receipt gets the column `Brand`. The reason: put away is the moment to double check, with the package in your hand. An option that was rejected: put away that asks for a brand before "Put away".
    - a. The plugin selects the brand for you: the brand of the last receipt of the item. With one brand, that brand.
    - b. A line with no brand goes into the pantry as today, and its cell `Brand` is empty.
+   - c. The cell `Brand` has the link to the photo of the brand: `[[Taco seasoning - Brand A.jpg]]`. A brand with more than one photo gives its first photo. A brand with no photo gives its name. The reason: the photo never gets a new name (decision 11), and Obsidian keeps the link correct, so the receipt still finds the brand after you give it a name or a new name. Two options were rejected: the name of the brand, which a new name breaks; and the plugin that writes each receipt again at a new name, which changes many notes for a rare event.
+   - d. A cell is the brand when it links to one of the photos of the brand, or when its text is the name of the brand. So a brand with only a name keeps its receipts when it gets a photo. A brand with only a name that gets a new name starts with no receipts.
 
 14. **A row of the pantry has no brand.** The row keeps its place, its amount, and its use-by date. The receipt keeps the brand. Two bags of taco seasoning from two brands in one place are one row. The reason: a brand on a row adds work to each change of the pantry, and the goal is to know what to buy, not what is on the shelf. An option that was rejected: a column `Brand` in the table of the food item note.
 
@@ -109,7 +111,7 @@ The [shopping list](../shopping-list/decision-log.md) records each purchase as o
 
 16. **The store records the brand that you take.** A tap on the photo of a brand shows it large, with the button "In cart". That button ticks the row with that brand. Put away then starts from that brand, before the brand of the last receipt. A tap on the row ticks it as today, with no brand. The reason: in the store you look at the package, so the choice is made there, and put away has less to check. An option that was rejected: a brand only at put away.
 
-17. **The task of the cart keeps the brand as text after the link:** `- [x] [[Taco seasoning]] · Brand A`. A brand with no name uses the name of its photo. The reason: the cart is in the shopping note, so the brand must be there for put away on a different device.
+17. **The task of the cart keeps the brand after the link, in the form of the cell `Brand` (decision 13 c):** `- [x] [[Taco seasoning]] · [[Taco seasoning - Brand A.jpg]]`. The reason: the cart is in the shopping note, so the brand must be there for put away on a different device, and the brand has one form in the cart and in the receipt. An option that was rejected: the name of the brand as text, which a new name breaks.
 
 ## Further reading
 
