@@ -26,13 +26,13 @@ Low is a fact of the food item, not of one shelf. Rice has 500 g in the kitchen 
 
 ## The plugin learns the full amount
 
-You do not have to set these amounts. When the pantry has more of a food than `full` tells, the plugin writes the larger amount. With no `low`, the line is at 25% of the full amount. The percentage is a [setting](settings.md).
+You do not have to set these amounts. When the pantry has more of a food than `full` tells, the plugin writes the larger amount, in the unit of the note: two jugs and a half jug of milk make `full: 2 1/2 gal`. The full amount is only for the level. No bar of a package stops at it: the bar of a package is as long as its size, as the [amount bar](amount-bar.md) tells. With no `low`, the line is at 25% of the full amount. The percentage is a [setting](settings.md).
 
-## What the bar shows
+## What the bar of a line shows
 
-The length of the bar is the full amount. The dark part is the food in this place. The light part is the food in the other places. A tick marks the low line.
+The Pantry part has one line for each food item in each place. The length of its bar is the full amount. The dark part is the food of the line: all packages in this place. The light part is the food in the other places. A tick marks the low line.
 
-On the row "Kitchen pantry" of rice, the dark part is 10% of the bar and the light part is 40%. The tick is at 20%. When all places together have less than 1 kg, each bar of rice is amber.
+On the line "Kitchen pantry" of rice, the dark part is 10% of the bar and the light part is 40%. The tick is at 20%. When all places together have less than 1 kg, each bar of rice is amber.
 
 ## When the plugin cannot count
 
@@ -42,6 +42,10 @@ The plugin adds two [amounts](amounts.md) only if their units compare. Grams and
 - If the full amount is "2 kg" and each row is in bags, the food item has no level.
 
 A food item with no level is never low.
+
+## An empty row and out
+
+An [empty row](food-item-note.md#the-empty-row) adds nothing. A food item is out when each of its rows is an empty row, or when the note has no row. So the last gallon that you finish puts milk on the list, although its row stays.
 
 ## Further reading
 

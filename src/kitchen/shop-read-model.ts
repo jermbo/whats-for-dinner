@@ -4,7 +4,7 @@ import { lastRows } from '../shop/last-receipt';
 import { pastDateRows } from '../shop/past-date';
 import type { Receipt } from '../shop/read-receipt';
 import { lineOf, type ReceiptLine } from '../shop/receipt';
-import { isLineOf } from '../shop/receipt-line';
+import { isAllDone, isLineOf } from '../shop/receipt-line';
 import { needsOf, shoppingList } from '../shop/shopping-list';
 import { suggestionsOf } from '../shop/suggestions';
 import { storeOrderOf } from '../shop/store-order';
@@ -28,14 +28,6 @@ export function calculatedList(needs: ReturnType<typeof needsOf>, lowPercent: nu
 	};
 }
 
-export function receiptLineFor(
-	active: { lines: ReceiptLine[] } | null,
-	item: TripItem,
-	pathOf: (link: string) => string
-): ReceiptLine | undefined {
-	return active?.lines.find((line) => isLineOf(line, item, pathOf));
-}
-
 export function cartItems(
 	calculated: ReturnType<typeof calculatedList>,
 	trip: TripItem[],
@@ -45,7 +37,7 @@ export function cartItems(
 	active: { lines: ReceiptLine[] } | null
 ) {
 	const bought = lastRows(receipts, pathOf);
-	const inCart = trip.filter((item) => !receiptLineFor(active, item, pathOf)?.done);
+	const inCart = trip.filter((item) => !active || !isAllDone(active.lines, item, pathOf));
 	return {
 		bought,
 		list: listOf(calculated, trip, foods, bought),
@@ -67,8 +59,11 @@ export function putAwayCartItems(
 		const inPantry = item !== undefined && isPantryItem(item, pantryFolder);
 		const known = { row, inPantry, last: bought.get(row.key) ?? null, brand: item?.brand ?? '' };
 		const proposed = cartItemOf(known, now);
-		const line = item && receiptLineFor(active, item, pathOf);
-		return line ? { ...proposed, start: line.facts } : proposed;
+		// The receipt keeps the work: once the item has rows, each row that is not done is a line.
+		const rows = item && active ? active.lines.filter((line) => isLineOf(line, item, pathOf)) : [];
+		if (!rows.length) return proposed;
+		const lines = rows.flatMap((line, at) => (line.done ? [] : [{ at, start: line.facts }]));
+		return { ...proposed, start: lines[0]?.start ?? proposed.start, lines };
 	});
 }
 

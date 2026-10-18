@@ -2,12 +2,11 @@ import type { TFile } from 'obsidian';
 import { nameKey } from '../match/names';
 import type { FoodNote } from '../note';
 import { notePathIn } from '../note-path';
-import { fullAfter } from '../pantry/level';
-import { readFoodItem } from '../pantry/food-item';
+import { fullTextAfter } from '../pantry/level';
+import { readFoodItem, readStocks } from '../pantry/food-item';
 import type { StapleLabel } from '../pantry/staple';
 import type { FoodItem, Stock } from '../pantry/types';
-import { addStock, putAwayStock, replaceStocks, showStocks } from '../pantry/write';
-import { showMeasure } from '../units';
+import { addLoose, addPackage, replaceStocks, showStocks } from '../pantry/write';
 import type { KitchenWhere } from './note-kind';
 
 export type PantryActionsHost = {
@@ -34,24 +33,28 @@ async function keepFull(
 	item: FoodItem,
 	stocks: Stock[]
 ) {
-	const full = fullAfter(item, stocks);
+	const full = fullTextAfter(item, stocks);
 	if (!full) return;
 	await host.processFrontMatter(file.path, (properties) => {
-		properties.full = showMeasure(full);
+		properties.full = full;
 	});
 }
 
-export async function addStockTo(
-	host: PantryActionsHost,
-	path: string,
-	stock: Stock,
-	add: (text: string, stock: Stock) => string = addStock
-) {
+// A package goes into its own row. Loose food goes into the row of its place.
+export async function addStockTo(host: PantryActionsHost, path: string, stock: Stock) {
 	const file = host.fileAt(path);
 	const food = host.foods.find((food) => food.path === path);
 	if (file) {
-		await host.processFile(path, (text) => add(text, stock));
-		if (food) await keepFull(host, file, food.item, [...food.item.stocks, stock]);
+		const add = food?.item.loose ? addLoose : addPackage;
+		// Put away writes the packages of an item one after the other, so the full amount comes
+		// from the text, and not from the rows that the screen read before.
+		let stocks: Stock[] = [];
+		await host.processFile(path, (text) => {
+			const next = add(text, stock);
+			stocks = readStocks(next);
+			return next;
+		});
+		if (food) await keepFull(host, file, food.item, stocks);
 		return;
 	}
 	await host.makeFolderOf(path);
@@ -67,6 +70,24 @@ export async function setStocks(host: PantryActionsHost, path: string, stocks: S
 	if (item) await keepFull(host, file, item, stocks);
 }
 
+// The new rows come from the rows of the text, so a second tap that comes before the screen
+// reads the note again does not lose the first one.
+export async function changeStocks(
+	host: PantryActionsHost,
+	path: string,
+	change: (stocks: Stock[]) => Stock[]
+) {
+	const file = host.fileAt(path);
+	if (!file) return;
+	const item = host.foods.find((food) => food.path === path)?.item;
+	let stocks: Stock[] = [];
+	await host.processFile(path, (text) => {
+		stocks = change(readStocks(text));
+		return replaceStocks(text, stocks);
+	});
+	if (item) await keepFull(host, file, item, stocks);
+}
+
 export async function addStockByName(host: PantryActionsHost, name: string, stock: Stock) {
 	await addStockTo(host, foodPath(host, name), stock);
 }
@@ -76,6 +97,14 @@ export async function setLow(host: PantryActionsHost, path: string, low: string)
 	await host.processFrontMatter(path, (properties) => {
 		if (low.trim()) properties.low = low.trim();
 		else delete properties.low;
+	});
+}
+
+export async function setLoose(host: PantryActionsHost, path: string, loose: boolean) {
+	if (!host.fileAt(path)) return;
+	await host.processFrontMatter(path, (properties) => {
+		if (loose) properties.loose = true;
+		else delete properties.loose;
 	});
 }
 

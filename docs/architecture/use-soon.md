@@ -12,7 +12,9 @@ Food that spoils is money in the bin. A date in a note does not help if nobody l
 
 ## The date is on the row, not on the food
 
-A row of the pantry can have a use-by date. Spinach has two rows: 200 g in the kitchen fridge until 13 October, and 300 g in the outside fridge until 18 October. They are two bags, so they have two dates.
+A row of the pantry is one package, and it can have a use-by date. Spinach has two rows: 200 g in the kitchen fridge until 13 October, and 300 g in the outside fridge until 18 October. They are two bags, so they have two dates.
+
+An [empty row](food-item-note.md#the-empty-row) keeps its date in the note until put away writes over it, but the date does not count: no badge, not soon, and not past its date. The empty slot of the eggs makes no suggestion for eggs that you do not have.
 
 ## Soon is 5 days or less
 
@@ -22,7 +24,7 @@ On 11 October, the spinach of the kitchen fridge is soon: 2 days are left. The o
 
 ## What the pantry shows
 
-A row that is soon gets a badge.
+The Pantry part has one line for each food item in each place. The first date of its packages counts, and a line that is soon gets a badge.
 
 | The date is   | Badge           |
 | ------------- | --------------- |
@@ -30,7 +32,7 @@ A row that is soon gets a badge.
 | Today         | "Use today"     |
 | 1 day or more | "2 days"        |
 
-The head of the pantry counts the rows that are soon. The filter "Use soon" shows only them. The sequence "Use first" puts them at the top, in the groups "Use first", "Later", and "No date".
+The head of the pantry counts the lines that are soon. The filter "Use soon" shows only them. The sequence "Use first" puts them at the top, in the groups "Use first", "Later", and "No date".
 
 ## What the recipes show
 
@@ -38,7 +40,7 @@ Here the first date of a food item counts. A recipe that [finds](match.md) the s
 
 ## What Cook Mode does
 
-At the end of a meal, the row with the first date gives its food first. The omelette takes its spinach from the kitchen fridge. A row with no date is the last to give.
+At the end of a meal, the package with the first date gives its food first. The omelette takes its spinach from the kitchen fridge. With the same date, the open package gives before a sealed one, so the carton with 2 eggs is used before a new carton. A package with no date is the last to give.
 
 ## What the Shop part shows
 

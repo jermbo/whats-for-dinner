@@ -25,10 +25,11 @@ import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
 	addStockTo,
+	changeStocks as changeStocksAction,
 	foodPath,
+	setLoose as setLooseAction,
 	setLow as setLowAction,
 	setStaple as setStapleAction,
-	setStocks as setStocksAction,
 	type PantryActionsHost
 } from './kitchen/pantry-actions';
 import {
@@ -48,6 +49,7 @@ import {
 	addToCart as addToCartAction,
 	changeFacts as changeFactsAction,
 	flushReceiptFacts,
+	addPackageLine as addPackageLineAction,
 	notBought as notBoughtAction,
 	putAway as putAwayAction,
 	putInCart as putInCartAction,
@@ -287,8 +289,8 @@ export class Kitchen {
 		if (file) void this.app.workspace.getLeaf('tab').openFile(file);
 	}
 
-	async setStocks(path: string, stocks: Stock[]) {
-		await setStocksAction(this.pantryHost, path, stocks);
+	async changeStocks(path: string, change: (stocks: Stock[]) => Stock[]) {
+		await changeStocksAction(this.pantryHost, path, change);
 	}
 
 	async addStock(name: string, stock: Stock) {
@@ -301,6 +303,10 @@ export class Kitchen {
 
 	async setStaple(path: string, label: StapleLabel) {
 		await setStapleAction(this.pantryHost, path, label);
+	}
+
+	async setLoose(path: string, loose: boolean) {
+		await setLooseAction(this.pantryHost, path, loose);
 	}
 
 	isPlanned(path: string) {
@@ -414,7 +420,13 @@ export class Kitchen {
 	}
 
 	async notBought(key: string): Promise<boolean> {
+		this.writeFacts.cancel();
 		return notBoughtAction(this.shopHost, key);
+	}
+
+	async addPackageLine(key: string, facts: Facts) {
+		this.writeFacts.cancel();
+		await addPackageLineAction(this.shopHost, key, facts);
 	}
 
 	async finishCooking(path: string, result: CookResult) {
@@ -639,6 +651,9 @@ export class Kitchen {
 			get toPutAway() {
 				return k.toPutAway;
 			},
+			get activeLines() {
+				return k.active?.lines ?? [];
+			},
 			get hasPutAway() {
 				return k.hasPutAway;
 			},
@@ -658,7 +673,7 @@ export class Kitchen {
 				k.tripStore = store;
 			},
 			cancelTripStoreWrite: () => k.writeStore.cancel(),
-			addStockTo: (path, stock, add) => addStockTo(k.pantryHost, path, stock, add),
+			addStockTo: (path, stock) => addStockTo(k.pantryHost, path, stock),
 			setStaple: (path, label) => setStapleAction(k.pantryHost, path, label)
 		};
 	}

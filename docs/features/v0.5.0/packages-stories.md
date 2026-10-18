@@ -21,13 +21,13 @@ The [spec](../../initiatives/one-row-for-each-package/spec.md) has the scope tha
 
 | Story                                                                                              | Persona | Depends on | Status  |
 | -------------------------------------------------------------------------------------------------- | ------- | ---------- | ------- |
-| 1. [Keep one row for each package](packages-keep-one-row-for-each-package.md)                      | Keeper  | Nothing    | `ready` |
-| 2. [See a food item in each place](packages-see-a-food-item-in-each-place.md)                      | Keeper  | Story 1    | `ready` |
-| 3. [Set what is left in a package](packages-set-what-is-left-in-a-package.md)                      | Keeper  | Story 2    | `ready` |
-| 4. [Add and use up a package](packages-add-and-use-up-a-package.md)                                | Keeper  | Story 3    | `ready` |
-| 5. [A meal takes from each package](packages-a-meal-takes-from-each-package.md)                    | Cook    | Story 1    | `ready` |
-| 6. [Put away one line for each package](packages-put-away-one-line-for-each-package.md)            | Keeper  | Story 1    | `ready` |
-| 7. [Keep loose food in one row](packages-keep-loose-food-in-one-row.md)                            | Keeper  | Stories 3 and 6 | `ready` |
+| 1. [Keep one row for each package](packages-keep-one-row-for-each-package.md)                      | Keeper  | Nothing    | `built` |
+| 2. [See a food item in each place](packages-see-a-food-item-in-each-place.md)                      | Keeper  | Story 1    | `built` |
+| 3. [Set what is left in a package](packages-set-what-is-left-in-a-package.md)                      | Keeper  | Story 2    | `built` |
+| 4. [Add and use up a package](packages-add-and-use-up-a-package.md)                                | Keeper  | Story 3    | `built` |
+| 5. [A meal takes from each package](packages-a-meal-takes-from-each-package.md)                    | Cook    | Story 1    | `built` |
+| 6. [Put away one line for each package](packages-put-away-one-line-for-each-package.md)            | Keeper  | Story 1    | `built` |
+| 7. [Keep loose food in one row](packages-keep-loose-food-in-one-row.md)                            | Keeper  | Stories 3 and 6 | `built` |
 | [See the food of each place](../v0.1.0/pantry-see-the-food-of-each-place.md) (changed)            | Keeper  | Story 2    | `built` |
 | [See the food that is out](../v0.1.0/pantry-see-the-food-that-is-out.md) (changed)                | Keeper  | Story 1    | `built` |
 | [Correct an amount with the bar](../v0.1.0/pantry-correct-an-amount.md) (changed)                 | Keeper  | Story 3    | `built` |

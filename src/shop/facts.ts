@@ -11,6 +11,7 @@ import type { Stock } from '../pantry/types';
 import type { LastRow } from './last-receipt';
 import { readPrice, showPrice } from './price';
 import type { ShoppingRow } from './shopping-list';
+import { packagesOf } from './package-lines';
 import { countsFor } from './usual';
 
 export type Facts = {
@@ -21,18 +22,24 @@ export type Facts = {
 	place: string;
 	// The use-by date as year-month-day, or no text.
 	useBy: string;
-	// What you paid for the full amount, as you typed it.
+	// What you paid for one package, as you typed it.
 	price: string;
 	onSale: boolean;
 	// The bought brand, as the cell of the receipt has it, or no text. Only the receipt keeps it.
 	brand: string;
 };
 
+// One package of an item: its number among the rows of the item in the receipt, and its facts.
+export type PackageStart = { at: number; start: Facts };
+
 // An item of the cart on the screen of put away, with the facts that it starts with.
 export type CartItem = {
 	key: string;
 	name: string;
+	// The facts of one package, as the plugin proposes them.
 	start: Facts;
+	// The lines of the item: one for each package that is not in the pantry yet.
+	lines: PackageStart[];
 	// The amounts that one tap selects: the amount that the item starts with, and what you bought
 	// before.
 	amounts: string[];
@@ -43,6 +50,8 @@ export type CartItem = {
 	known: boolean;
 	// The brands of its food item. Null: the item has no food item note.
 	brands: Brand[] | null;
+	// The food item has no packages. Null: the item has no food item note.
+	loose: boolean | null;
 	// The regular rows of its receipts, the newest first, for the price of each brand.
 	regulars: RegularRow[];
 };
@@ -67,25 +76,35 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 	const { row, last } = known;
 	const start = startFactsOf(known, now);
 	const fits = (amount: string) => countsFor(row.food?.item ?? null, amount);
+	const count = row.food?.item.loose ? 1 : packagesOf(row.amount, lastSizeOf(known));
 	return {
 		key: row.key,
 		name: row.name,
 		start,
+		lines: Array.from({ length: count }, (_, at) => ({ at, start })),
 		amounts: [...new Set([start.amount, ...(last?.amounts ?? []).filter(fits)])].slice(0, 3),
 		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place,
 		known: Boolean(last?.amounts.length && last.place && readPrice(last.regular) !== null),
 		brands: row.food?.item.brands ?? null,
+		loose: row.food?.item.loose ?? null,
 		regulars: last?.regulars ?? []
 	};
+}
+
+// The last size: the amount of the newest receipt row, in the unit of the food item. Loose food
+// has no packages, so it has no size to copy.
+function lastSizeOf({ row, last }: Known): string | null {
+	if (row.food?.item.loose || !last?.amount) return null;
+	return countsFor(row.food?.item ?? null, last.amount) ? last.amount : null;
 }
 
 // The price of a line with this brand: the regular price of the brand, or of any brand.
 export const priceOfBrand = (item: CartItem, brand: string) =>
 	showPrice(regularOfBrand(item.regulars, item.brands ?? [], brand));
 
-// A fact of the last receipt comes first: you usually buy the same amount, for about the same
-// price, and you put it in the same place. The row of the cart already has the amount that you
-// usually buy, so put away and the list agree. An item always starts with an amount and a place, so
+// A fact of the last receipt comes first: you usually buy the same package, for about the same
+// price, and you put it in the same place. So a line starts with the last size, and with no last
+// size, with the amount of the list row. An item always starts with an amount and a place, so
 // that no line needs an entry before the button. A sale ends, so "Sale" starts off, and the
 // price is the regular price of the brand.
 function startFactsOf(known: Known, { today, newPlace }: Now): Facts {
@@ -94,7 +113,7 @@ function startFactsOf(known: Known, { today, newPlace }: Now): Facts {
 	const brand = startBrandOf(brands, known.brand, last);
 	return {
 		intoPantry: inPantry,
-		amount: row.amount || row.food?.item.full?.text || '1',
+		amount: lastSizeOf(known) || row.amount || row.food?.item.full?.text || '1',
 		place: last?.place || row.food?.item.stocks[0]?.place || newPlace,
 		useBy: last ? useByAfter(last, today) : '',
 		price: showPrice(regularOfBrand(last?.regulars ?? [], brands, brand)),

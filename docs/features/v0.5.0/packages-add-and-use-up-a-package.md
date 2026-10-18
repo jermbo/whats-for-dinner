@@ -5,7 +5,7 @@ parent: packages-stories.md
 updated: 2026-10-18
 persona: Keeper
 depends-on: [packages-set-what-is-left-in-a-package.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Packages stories](packages-stories.md) / Add and use up a package

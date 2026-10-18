@@ -5,7 +5,7 @@ parent: packages-stories.md
 updated: 2026-10-18
 persona: Keeper
 depends-on: []
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Packages stories](packages-stories.md) / Keep one row for each package

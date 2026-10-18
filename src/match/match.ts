@@ -2,6 +2,7 @@
 
 import { daysBetween } from '../dates';
 import type { FoodNote } from '../note';
+import { isOut } from '../pantry/empty-row';
 import { available, firstUseBy } from '../pantry/total';
 import type { Ingredient, IngredientGroup, Recipe } from '../recipemd/types';
 import { measure, type Measure } from '../units';
@@ -49,7 +50,7 @@ function matchIngredient(ingredient: Ingredient, index: FoodIndex): IngredientMa
 	const key = nameKey(foodNameOf(ingredient.name));
 	const candidates = index.get(key) ?? [];
 	const need = ingredient.amount ? measure(ingredient.amount) : null;
-	const stocked = candidates.filter((food) => food.item.stocks.length);
+	const stocked = candidates.filter((food) => !isOut(food.item));
 
 	// The plugin does not assume that a food is there. Only a row in the pantry says so, and that
 	// is the rule for water too.

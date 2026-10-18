@@ -1,7 +1,6 @@
 import type { App, TFile } from 'obsidian';
 import type { FoodNote } from '../note';
 import { notePathIn } from '../note-path';
-import { putAwayStock } from '../pantry/write';
 import type { StapleLabel } from '../pantry/staple';
 import type { Stock } from '../pantry/types';
 import { stocksOf, type CartItem, type Facts } from '../shop/facts';
@@ -15,7 +14,8 @@ import {
 	withLines,
 	type ReceiptLine
 } from '../shop/receipt';
-import { isLineOf } from '../shop/receipt-line';
+import { lineKey, partsOfLineKey } from '../shop/package-lines';
+import { isAllDone, isLineOf, rowsOf } from '../shop/receipt-line';
 import {
 	addExtra as addExtraLine,
 	putInCart as putInCartNote,
@@ -49,6 +49,8 @@ export type ShopActionsHost = {
 	calculated: { missing: ShoppingRow[] };
 	cart: { key: string }[];
 	toPutAway: CartItem[];
+	// The rows of the active receipt, as the stage read them.
+	activeLines: ReceiptLine[];
 	hasPutAway: boolean;
 	foods: FoodNote[];
 	mutable: ShopMutable;
@@ -62,7 +64,7 @@ export type ShopActionsHost = {
 	save(): Promise<void>;
 	setTripStoreValue(store: string): void;
 	cancelTripStoreWrite(): void;
-	addStockTo(path: string, stock: Stock, add?: (text: string, stock: Stock) => string): Promise<void>;
+	addStockTo(path: string, stock: Stock): Promise<void>;
 	setStaple(path: string, label: StapleLabel): Promise<void>;
 };
 
@@ -92,7 +94,7 @@ async function buy(host: ShopActionsHost, item: TripItem, facts: Facts): Promise
 
 	const own = !isPantryItem(item, host.where.pantry);
 	const path = own ? foodPath(host, item.name) : item.key;
-	for (const stock of stocksOf(facts)) await host.addStockTo(path, stock, putAwayStock);
+	for (const stock of stocksOf(facts)) await host.addStockTo(path, stock);
 
 	const file = host.fileAt(path);
 	if (file) {
@@ -103,16 +105,26 @@ async function buy(host: ShopActionsHost, item: TripItem, facts: Facts): Promise
 	return own ? path.replace(/\.md$/, '') : item.link;
 }
 
+// The facts wait by the key of their line: the item and the number of its row.
 export function flushReceiptFacts(host: ShopActionsHost) {
 	const pending = new Map(host.mutable.pendingFacts);
 	host.mutable.pendingFacts.clear();
 	if (!pending.size) return Promise.resolve();
-	return changeReceipt(host, (lines) =>
-		lines.map((line) => {
-			const key = [...pending.keys()].find((key) => keyOf(line, host.pathOf) === key);
-			return key && !line.done ? { ...line, facts: pending.get(key) ?? line.facts } : line;
-		})
-	);
+	return changeReceipt(host, (lines) => {
+		const next = [...lines];
+		for (const [key, facts] of pending) {
+			const index = rowOfLine(next, host, key);
+			if (index !== undefined && !next[index].done) next[index] = { ...next[index], facts };
+		}
+		return next;
+	});
+}
+
+// The number in the table of the row of a line, or undefined.
+function rowOfLine(lines: ReceiptLine[], host: ShopActionsHost, key: string): number | undefined {
+	const { item, at } = partsOfLineKey(key);
+	const trip = host.trip.find((one) => one.key === item);
+	return trip ? rowsOf(lines, trip, host.pathOf)[at] : undefined;
 }
 
 // With a brand, the task keeps the brand that you took, as the cell of a receipt has it.
@@ -181,21 +193,20 @@ export function startPutAway(host: ShopActionsHost) {
 		const file = host.vault.activePath ? host.fileAt(host.vault.activePath) : null;
 		const text = file ? await host.app.vault.read(file) : '';
 		const lines = linesIn(text);
-		const isDone = (item: TripItem) =>
-			lines.some((line) => line.done && isLineOf(line, item, host.pathOf));
-		const cart = itemsOf(tasks, host.pathOf).filter((item) => item.inCart && !isDone(item));
+		const cart = itemsOf(tasks, host.pathOf).filter(
+			(item) => item.inCart && !isAllDone(lines, item, host.pathOf)
+		);
 
-		const facts = new Map(host.toPutAway.map((item) => [item.key, item.start]));
-		const lineOfItem = (item: TripItem): ReceiptLine => ({
-			link: item.link,
-			name: item.name,
-			facts:
-				facts.get(item.key) ??
-				fallbackPutAwayFacts(item, host.where.pantry, host.newPlace),
-			done: false
-		});
+		// One row for each package that the stage proposes.
+		const proposed = new Map(host.toPutAway.map((item) => [item.key, item.lines]));
+		const linesOfItem = (item: TripItem): ReceiptLine[] => {
+			const starts = proposed.get(item.key)?.map(({ start }) => start) ?? [
+				fallbackPutAwayFacts(item, host.where.pantry, host.newPlace)
+			];
+			return starts.map((facts) => ({ link: item.link, name: item.name, facts, done: false }));
+		};
 		if (!file) {
-			if (cart.length) await makeReceipt(host, cart.map(lineOfItem));
+			if (cart.length) await makeReceipt(host, cart.flatMap(linesOfItem));
 			return;
 		}
 		const kept = lines.filter(
@@ -205,38 +216,43 @@ export function startPutAway(host: ShopActionsHost) {
 			(item) => !lines.some((line) => isLineOf(line, item, host.pathOf))
 		);
 		if (kept.length === lines.length && !added.length) return;
-		await host.app.vault.modify(file, withLines(text, [...kept, ...added.map(lineOfItem)]));
+		await host.app.vault.modify(file, withLines(text, [...kept, ...added.flatMap(linesOfItem)]));
 	});
 }
 
+// `given` has the facts of each line that goes into the pantry, by the key of its line.
 export async function putAway(host: ShopActionsHost, given: Map<string, Facts>) {
-	const items = host.trip.filter((item) => item.inCart && given.has(item.key));
-	if (host.mutable.puttingAway || !items.length) return false;
-	const isLast = host.cart.every((row) => given.has(row.key));
+	const lines = [...given].flatMap(([key, facts]) => {
+		const { item: itemKey, at } = partsOfLineKey(key);
+		const item = host.trip.find((one) => one.inCart && one.key === itemKey);
+		return item ? [{ key, item, at, facts }] : [];
+	});
+	if (host.mutable.puttingAway || !lines.length) return false;
+	const isLast = host.toPutAway.every((item) =>
+		item.lines.every(({ at }) => given.has(lineKey(item.key, at)))
+	);
 	host.mutable.puttingAway = true;
 	try {
 		await flushReceiptFacts(host);
-		const done: { item: TripItem; line: ReceiptLine }[] = [];
-		for (const item of items) {
-			const facts =
-				given.get(item.key) ??
-				fallbackPutAwayFacts(item, host.where.pantry, host.newPlace);
+		const done: { item: TripItem; at: number; line: ReceiptLine }[] = [];
+		for (const { item, at, facts } of lines) {
 			const link = await buy(host, item, facts);
-			done.push({ item, line: { link, name: item.name, facts, done: true } });
+			done.push({ item, at, line: { link, name: item.name, facts, done: true } });
 		}
-		await changeReceipt(host, (lines) => {
-			const next = [...lines];
-			for (const { item, line } of done) {
-				const at = next.findIndex((other) => isLineOf(other, item, host.pathOf));
-				if (at === -1) next.push(line);
-				else next[at] = line;
+		await changeReceipt(host, (rows) => {
+			const next = [...rows];
+			for (const { item, at, line } of done) {
+				const index = rowsOf(next, item, host.pathOf)[at];
+				if (index === undefined) next.push(line);
+				else next[index] = line;
 			}
 			return next;
 		});
 
-		const inPantry = done.filter(({ line }) => line.facts.intoPantry);
-		if (inPantry.length === 1) host.notify(`${inPantry[0].item.name} is in the pantry.`);
-		if (inPantry.length > 1) host.notify(`${inPantry.length} items are in the pantry.`);
+		const items = new Set(done.filter(({ line }) => line.facts.intoPantry).map(({ item }) => item));
+		const names = [...items].map((item) => item.name);
+		if (names.length === 1) host.notify(`${names[0]} is in the pantry.`);
+		if (names.length > 1) host.notify(`${names.length} items are in the pantry.`);
 		if (isLast) await completeTrip(host);
 		return isLast;
 	} finally {
@@ -244,10 +260,38 @@ export async function putAway(host: ShopActionsHost, given: Map<string, Facts>) 
 	}
 }
 
+// "+ package": a copy of the open line, as a new row after the rows of its item.
+export async function addPackageLine(host: ShopActionsHost, key: string, facts: Facts) {
+	await flushReceiptFacts(host);
+	const item = host.trip.find((one) => one.key === partsOfLineKey(key).item);
+	if (!item) return;
+	await changeReceipt(host, (lines) => {
+		const last = rowsOf(lines, item, host.pathOf).at(-1);
+		const copy = { link: item.link, name: item.name, facts, done: false };
+		if (last === undefined) return [...lines, copy];
+		return [...lines.slice(0, last + 1), copy, ...lines.slice(last + 1)];
+	});
+}
+
+// "Not bought" takes one line out. The task stays in the cart while its item has a line, or a
+// package in the pantry. The last line of an item takes the item out of the cart.
 export async function notBought(host: ShopActionsHost, key: string) {
-	const isLast = host.cart.every((row) => row.key === key);
-	const ends = isLast && host.hasPutAway;
-	await takeOutOfCart(host, key);
+	const { item: itemKey, at } = partsOfLineKey(key);
+	const item = host.trip.find((one) => one.key === itemKey);
+	const cartItem = host.toPutAway.find((one) => one.key === itemKey);
+	const left = host.toPutAway.flatMap((one) => one.lines.map((line) => lineKey(one.key, line.at)));
+	const ends = left.every((other) => other === key) && host.hasPutAway;
+	const others = host.activeLines.filter((line) => item && isLineOf(line, item, host.pathOf)).length > 1;
+
+	await flushReceiptFacts(host);
+	if (item && cartItem && others) {
+		await changeReceipt(host, (lines) => {
+			const index = rowsOf(lines, item, host.pathOf)[at];
+			return lines.filter((line, other) => other !== index || line.done);
+		});
+	} else {
+		await takeOutOfCart(host, itemKey);
+	}
 	if (ends) await completeTrip(host);
 	return ends;
 }

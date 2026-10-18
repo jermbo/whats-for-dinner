@@ -44,11 +44,11 @@ The phone is where you use the plugin, and a function with no test there is not 
 | The brand at put away         | The line of taco seasoning starts with Brand A, and the receipt gets it in the column `Brand`.  |
 | A price for each brand        | A tap on Brand B changes the price to 1.99.                                                     |
 | A photo at put away           | The camera tile of the open line makes a new brand, and selects it.                             |
-
-## The pantry bar has two limits
-
-- **The full amount.** The bar stops at the full amount, and a larger amount needs the form. A shopping trip can bring more than before, so the bar must let you add more.
-- **A change of place.** When you select a different place, its piece jumps to the end of the bar. It must slide, so that you see which piece moved.
+| One row for each package      | Milk shows "1 1/2 gal · 2 packages". The open jug moves to 1/4 gal, and the note gets the row.  |
+| Add and use up a package      | "+" on "5 sealed" of the beans makes 6, and "Used up" on the open can leaves an empty row.      |
+| A meal from each package      | The omelette takes 2 eggs from the open carton and 1 from the sealed carton.                    |
+| Put away each package         | "Milk, 1 1/2 gal" gives 2 lines, and each jug gets its own row and its own date.                |
+| Loose food                    | 6 apples with the chip "Loose" go into the row of 2 apples, which becomes 8.                    |
 
 ## More settings come after the first use
 

@@ -5,6 +5,7 @@ import type { IngredientMatch } from '../match/match';
 import { foodNameOf, nameKey, showName } from '../match/names';
 import type { FoodNote } from '../note';
 import { notePathIn } from '../note-path';
+import { withFood } from '../pantry/empty-row';
 import { levelOf } from '../pantry/level';
 import { available } from '../pantry/total';
 import { addTo, showMeasure, type Measure } from '../units';
@@ -69,7 +70,8 @@ export function needsOf(
 export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
 	const rows: ShoppingRow[] = [];
 	for (const need of needs) {
-		const stocks = need.food?.item.stocks ?? [];
+		// An empty row has nothing, so a food item with only empty rows is out.
+		const stocks = withFood(need.food?.item.stocks ?? []);
 		const short: Measure[] = [];
 
 		for (const [kind, value] of need.sums) {

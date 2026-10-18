@@ -20,7 +20,7 @@ You record your food one time, with its place: a full bag of rice in the downsta
 
 The plugin does not assume that a food is there. Water is a food item too: you record it one time, with an amount such as "tap".
 
-Each food has a bar that shows its [level](../architecture/level.md): how much is left of the full amount. A tick on the bar is the low line. Below the line, the bar is amber, so you see what gets low before it is out. To correct an amount, you drag the bar to what is really there.
+Each package is one row, with its own size and its own use-by date, so the half jug and the new jug of milk each keep their date. The pantry shows one line for each food in each place, such as "Beans · 112.5 oz · 8 packages", with a bar that shows its [level](../architecture/level.md): how much is left of the full amount. A tick on the bar is the low line. Below the line, the bar is amber, so you see what gets low before it is out. To correct a package, you open the line and drag the [bar of the package](../architecture/amount-bar.md) to what is really there, in steps of 1/8 or of 1. One tap adds a package or uses one up.
 
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
 
@@ -56,7 +56,7 @@ You add an item of your own on any day, such as batteries. The cart is a note of
 
 ## The trip goes into the pantry, with its prices
 
-At home, [put away](../architecture/put-away.md) shows each item of the cart filled in with its amount, its place, its use-by date, and its regular price, in groups by place. You check the lines, and one tap corrects a fact, marks a sale, or selects the brand in your hand. Each brand has its own price. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that item into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
+At home, [put away](../architecture/put-away.md) shows one line for each package of the cart, filled in with its amount, its place, its use-by date, and its regular price, in groups by place. Each jug of milk gets its own row and its own date in the pantry, and loose food such as apples goes into the row that you have. You check the lines, and one tap corrects a fact, marks a sale, or selects the brand in your hand. Each brand has its own price. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that package into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
 
 The note of the trip becomes its [receipt](../architecture/receipt.md): what you bought, in which store, and what you paid. Thus the vault has the price of each item over time.
 

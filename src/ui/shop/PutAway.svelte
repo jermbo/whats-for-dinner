@@ -5,7 +5,13 @@
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { priceOfBrand, type CartItem, type Facts } from '../../shop/facts';
-	import { putAwayGroups, putAwayKnown, putAwayPlaceGroup } from '../../shop/put-away-view';
+	import { lineKey } from '../../shop/package-lines';
+	import {
+		putAwayGroups,
+		putAwayKnown,
+		putAwayPlaceGroup,
+		type PutAwayLine as Line
+	} from '../../shop/put-away-view';
 	import { readPrice } from '../../shop/price';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -24,11 +30,18 @@
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
-	const lines = $derived(kitchen.toPutAway.map((item) => ({ item, facts: draft.factsOf(item) })));
+	// One line for each package of the cart.
+	const lines = $derived(
+		kitchen.toPutAway.flatMap((item) =>
+			item.lines.map(({ at, start }): Line => {
+				const key = lineKey(item.key, at);
+				return { key, at, item, start, facts: draft.factsOf(key, item, start) };
+			})
+		)
+	);
 	const missing = $derived(lines.filter(({ facts }) => readPrice(facts.price) === null).length);
 	// The cost of the trip, from the prices of the lines. A missing price adds nothing.
 	const total = $derived(lines.reduce((sum, { facts }) => sum + (readPrice(facts.price) ?? 0), 0));
-	type Line = (typeof lines)[number];
 
 	// The items that the plugin knows are in one closed group, so the lines that you see are the
 	// items that need you.
@@ -60,44 +73,49 @@
 	const placesFor = ({ start }: CartItem) => [...new Set([...kitchen.places, start.place])];
 
 	// A place that you select is yours, so the line does not ask for a look any more.
-	const placeIsGuess = ({ key, placeIsGuess }: CartItem) =>
-		placeIsGuess && !draft.changed(key, 'place');
+	const placeIsGuess = ({ key, item }: Line) => item.placeIsGuess && !draft.changed(key, 'place');
 
 	function toggle(line: Line) {
-		open = open?.key === line.item.key ? null : { key: line.item.key, group: placeGroup(line) };
+		open = open?.key === line.key ? null : { key: line.key, group: placeGroup(line) };
 	}
 
 	// A line needs a place. With no option and no text, it is the place that the plugin proposes.
-	function change(item: CartItem, changed: Partial<Facts>) {
-		update(item, changed.place === '' ? { place: item.start.place } : changed);
+	function change(line: Line, changed: Partial<Facts>) {
+		update(line, changed.place === '' ? { place: line.item.start.place } : changed);
 	}
 
-	// The screen shows the change at once, and the receipt gets it when you stop typing.
-	function update(item: CartItem, changed: Partial<Facts>) {
-		draft.change(item.key, changed);
-		kitchen.changeFacts(item.key, draft.factsOf(item));
+	// The screen shows the change at once, and the receipt gets it when you stop typing. A
+	// correction of one line does not change the other lines of the item.
+	function update({ key, item, start }: Line, changed: Partial<Facts>) {
+		draft.change(key, changed);
+		kitchen.changeFacts(key, draft.factsOf(key, item, start));
 	}
 
 	// A sale has its own price, so the regular price goes out of the field, and the field shows it
 	// as a hint. A price that you typed stays. A sale that you put off with no price in the field
 	// gives the regular price back.
 	function sale(line: Line) {
-		const { item, facts } = line;
+		const { key, item, facts } = line;
 		const regular = priceOfBrand(item, facts.brand);
 		if (facts.onSale) {
-			if (!facts.price.trim()) draft.forget(item.key, 'price');
-			update(item, { onSale: false });
+			if (!facts.price.trim()) draft.forget(key, 'price');
+			update(line, { onSale: false });
 			return;
 		}
 		const price = facts.price === regular ? { price: '' } : {};
-		update(item, { onSale: true, ...price });
-		if (open?.key !== item.key) open = { key: item.key, group: placeGroup(line) };
+		update(line, { onSale: true, ...price });
+		if (open?.key !== key) open = { key, group: placeGroup(line) };
 	}
 
 	// A photo of the package in your hand is a new brand, and the brand of the line.
-	async function takeBrand(item: CartItem, photo: Blob) {
-		const name = await kitchen.addBrandPhoto(item.key, photo);
-		if (name) update(item, { brand: `[[${name}]]` });
+	async function takeBrand(line: Line, photo: Blob) {
+		const name = await kitchen.addBrandPhoto(line.item.key, photo);
+		if (name) update(line, { brand: `[[${name}]]` });
+	}
+
+	// A package that the plugin did not expect: a copy of the open line, below it.
+	function addPackage(line: Line) {
+		return kitchen.addPackageLine(line.key, line.facts);
 	}
 
 	// The lines go one by one while the items go into the pantry. The stage does not say that the
@@ -106,18 +124,19 @@
 
 	// The open line stays open while its item goes into the pantry, so that it slides out as you
 	// left it. The last item ends the trip.
-	function putOne({ item, facts }: Line) {
-		return run(() => kitchen.putAway(new Map([[item.key, facts]])));
+	function putOne({ key, facts }: Line) {
+		return run(() => kitchen.putAway(new Map([[key, facts]])));
 	}
 
 	function putKnown() {
-		return run(() => kitchen.putAway(new Map(known.map(({ item, facts }) => [item.key, facts]))));
+		return run(() => kitchen.putAway(new Map(known.map(({ key, facts }) => [key, facts]))));
 	}
 
 	// The last line of a trip that has food in the pantry already ends it. With no such food, the
 	// trip stays open, and the cart is empty.
-	function notBought(key: string) {
+	function notBought({ key, item }: Line) {
 		if (open?.key === key) open = null;
+		draft.forgetItem(item.key);
 		return run(() => kitchen.notBought(key));
 	}
 
@@ -138,23 +157,25 @@
 	{@const { item, facts } = line}
 	<li
 		class="wfd-away__line"
-		in:receive={{ key: item.key, duration }}
-		out:send={{ key: item.key, duration }}
+		in:receive={{ key: line.key, duration }}
+		out:send={{ key: line.key, duration }}
 	>
 		<PutAwayLine
 			{item}
 			{facts}
 			places={placesFor(item)}
-			placeIsGuess={placeIsGuess(item)}
+			placeIsGuess={placeIsGuess(line)}
 			today={kitchen.today}
-			open={open?.key === item.key}
+			open={open?.key === line.key}
 			ontoggle={() => toggle(line)}
 			onsale={() => sale(line)}
-			onchange={(changed) => change(item, changed)}
+			onchange={(changed) => change(line, changed)}
 			regular={priceOfBrand(item, facts.brand)}
 			urlOf={(photo) => kitchen.photoUrl(photo, item.key)}
-			ontake={(photo) => takeBrand(item, photo)}
-			onnotbought={() => notBought(item.key)}
+			ontake={(photo) => takeBrand(line, photo)}
+			onaddpackage={() => addPackage(line)}
+			onloose={item.loose === null ? null : (on) => kitchen.setLoose(item.key, on)}
+			onnotbought={() => notBought(line)}
 			onputaway={() => putOne(line)}
 			{busy}
 		/>
@@ -201,7 +222,7 @@
 					</button>
 					{#if knownOpen}
 						<ul class="wfd-away__lines" id="wfd-away-known" transition:slide={{ duration }}>
-							{#each known as line (line.item.key)}
+							{#each known as line (line.key)}
 								{@render lineOf(line)}
 							{/each}
 						</ul>
@@ -212,7 +233,7 @@
 				<section class="wfd-away__group" transition:slide={{ duration }}>
 					<GroupHead title={group.title} note={String(group.lines.length)} />
 					<ul class="wfd-away__lines">
-						{#each group.lines as line (line.item.key)}
+						{#each group.lines as line (line.key)}
 							{@render lineOf(line)}
 						{/each}
 					</ul>

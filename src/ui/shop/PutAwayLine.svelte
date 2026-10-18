@@ -34,8 +34,12 @@
 		urlOf: (photo: string) => string | null;
 		// A photo of the camera tile: a new brand for the line.
 		ontake: (photo: Blob) => Promise<unknown>;
+		// A copy of this line, for a package that the plugin did not expect.
+		onaddpackage: () => void;
+		// The chip "Loose" writes the food item note at once. Null: the item has no food item note.
+		onloose: ((on: boolean) => void) | null;
 		onnotbought: () => void;
-		// You checked the line, and only this item goes into the pantry.
+		// You checked the line, and only this package goes into the pantry.
 		onputaway: () => void;
 		// An item is on its way into the pantry, so a second tap waits.
 		busy: boolean;
@@ -53,6 +57,8 @@
 		regular,
 		urlOf,
 		ontake,
+		onaddpackage,
+		onloose,
 		onnotbought,
 		onputaway,
 		busy
@@ -184,6 +190,14 @@
 						onclick={() => onchange({ intoPantry: !facts.intoPantry })}
 					/>
 				{/if}
+				{#if onloose && facts.intoPantry}
+					<Chip
+						label="Loose"
+						name="Loose: {item.name}"
+						on={item.loose ?? false}
+						onclick={() => onloose(!item.loose)}
+					/>
+				{/if}
 			</div>
 			{#if facts.intoPantry}
 				<PickOne
@@ -210,6 +224,11 @@
 					Not bought
 				</Button>
 			</div>
+			{#if facts.intoPantry}
+				<Button kind="link" aria-label="One more package: {item.name}" disabled={busy} onclick={onaddpackage}>
+					+ package
+				</Button>
+			{/if}
 		</div>
 	{/if}
 </div>

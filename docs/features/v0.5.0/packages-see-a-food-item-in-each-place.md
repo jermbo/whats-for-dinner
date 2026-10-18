@@ -5,7 +5,7 @@ parent: packages-stories.md
 updated: 2026-10-18
 persona: Keeper
 depends-on: [packages-keep-one-row-for-each-package.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Packages stories](packages-stories.md) / See a food item in each place

@@ -1,7 +1,7 @@
 // The level of a food item: what the pantry has, against the full amount and the low line. All
 // places count together, because "low" is a fact of the food item, not of one shelf.
 
-import { measure, type Measure } from '../units';
+import { measure, showLike, type Measure } from '../units';
 import { available } from './total';
 import type { FoodItem, Stock } from './types';
 
@@ -39,7 +39,7 @@ export function fillOf(item: FoodItem): Measure | null {
 	return { kind: level.kind, value: level.full - level.has };
 }
 
-// The parts of the bar of one row, each as a part of the full amount: the food in this place, the
+// The parts of the bar of one line, each as a part of the full amount: the food in this place, the
 // food in the other places, and the low line.
 export type Bar = { here: number; others: number; low: number; isLow: boolean };
 
@@ -49,8 +49,9 @@ export function partOf(stock: Stock, level: Level): number {
 	return own?.kind === level.kind ? own.value : 0;
 }
 
-export function barOf(stock: Stock, level: Level | null): Bar | null {
-	const here = level ? partOf(stock, level) : 0;
+// The bar of a line: all packages of the food item in one place.
+export function barOf(stocks: Stock[], level: Level | null): Bar | null {
+	const here = level ? stocks.reduce((sum, stock) => sum + partOf(stock, level), 0) : 0;
 	if (!level || here <= 0) return null;
 	return {
 		here: here / level.full,
@@ -71,4 +72,12 @@ export function fullAfter(item: FoodItem, stocks: Stock[]): Measure | null {
 	// The note has the amount as round text, such as "1.23 kg". A difference that small is no change.
 	const set = item.full ? measure(item.full) : null;
 	return set?.kind === kind && set.value >= most * 0.99 ? null : { kind, value: most };
+}
+
+// The text of the full amount to write, in the unit of the note: "2 1/2 gal", and not "9.46 l".
+export function fullTextAfter(item: FoodItem, stocks: Stock[]): string | null {
+	const full = fullAfter(item, stocks);
+	if (!full) return null;
+	const unit = item.full?.unit ?? stocks.find((stock) => stock.amount?.unit)?.amount?.unit ?? null;
+	return showLike(full, unit);
 }

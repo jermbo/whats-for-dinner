@@ -20,11 +20,17 @@ The page uses the pantry as it was when the page opened.
 
 ## Food goes out of the pantry
 
-For each ingredient with a mark, the plugin takes the amount out of its food item. The row with the first [use-by date](use-soon.md) gives first. A row with nothing left goes out of the table.
+For each ingredient with a mark, the plugin takes the amount out of its food item, from as many packages as it needs. A recipe asks for an amount, not for packages. The packages give in this sequence:
 
-The chicken curry takes 500 g of chicken thighs, and the outside fridge has 500 g. The row goes out, and chicken thighs are out.
+1. The package with the first [use-by date](use-soon.md). A package with no date gives after each package with a date.
+2. With the same date, or no date, the open package before a sealed one.
+3. With the same date and the same state, the row that is higher in the table.
 
-A row keeps its unit, as the [amounts](amounts.md) page tells.
+The omelette needs 3 eggs. The open carton of 25 October gives 2 and is empty. The carton of 16 November gives 1 and has 11 left.
+
+A package that gives all that it has is an [empty row](food-item-note.md#the-empty-row): it keeps its place, its size, and its date. When its place has an empty row already, it goes out of the table. With less food than the meal needs, each package gives all that it has, and the food item is out. A loose food item gives from the row of its place in the same way.
+
+A package keeps its unit, as the [amounts](amounts.md) page tells: 1 gal less 1/4 gal is "3/4 gal".
 
 ## The recipe note gets a record
 

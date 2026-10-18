@@ -5,7 +5,7 @@ parent: packages-stories.md
 updated: 2026-10-18
 persona: Keeper
 depends-on: [packages-put-away-one-line-for-each-package.md, packages-set-what-is-left-in-a-package.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Packages stories](packages-stories.md) / Keep loose food in one row
@@ -52,5 +52,6 @@ Each criterion starts with the vault of the [list page](packages-stories.md#what
 
 - [Food item note](../../architecture/food-item-note.md): the property `loose`.
 - [Put away](../../architecture/put-away.md): the chip "Loose" on the open line.
+- [Pantry](../../architecture/pantry.md): the chip "Loose" in the form.
 - [Facts of an item](../../architecture/put-away-facts.md): loose food goes into the row of its place.
 - [Spec: one row for each package](../../initiatives/one-row-for-each-package/spec.md): scope 3 and 10 a.

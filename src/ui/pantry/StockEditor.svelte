@@ -5,6 +5,7 @@
 	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
 	import Button from '../parts/Button.svelte';
+	import Chip from '../parts/Chip.svelte';
 	import BrandFields from './BrandFields.svelte';
 
 	type Props = {
@@ -30,6 +31,10 @@
 		// has no brand yet.
 		brands?: Brand[];
 		urlOf?: (photo: string) => string | null;
+		// The food item has no packages. With no value here, the editor does not show the chip.
+		loose?: boolean;
+		// The chip writes the note at once, as a chip does.
+		onloose?: (on: boolean) => void;
 		onsave: (
 			stock: Stock,
 			name: string,
@@ -52,6 +57,8 @@
 		facts = [],
 		brands = [],
 		urlOf = () => null,
+		loose,
+		onloose,
 		onsave,
 		oncancel,
 		onusedup,
@@ -69,6 +76,8 @@
 	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
+	// The form of one package shows its size. New food gets its amount as its size.
+	let size = $state(first()?.sizeText ?? '');
 	let place = $state(firstPlace());
 	let useBy = $state(first()?.useBy ?? '');
 	// A place that the pantry does not have yet.
@@ -97,7 +106,7 @@
 		event.preventDefault();
 		if (!ready) return;
 		onsave(
-			makeStock(where, amount, useBy),
+			makeStock(where, amount, useBy, size),
 			name.trim(),
 			{ low: lowText.trim(), staple: kind },
 			drafts
@@ -153,6 +162,12 @@
 			<span class="wfd-label">How much</span>
 			<input type="text" placeholder="500 g" bind:value={amount} />
 		</label>
+		{#if stock}
+			<label class="wfd-editor__field">
+				<span class="wfd-label">Size</span>
+				<input type="text" placeholder={amount || '1 gal'} bind:value={size} />
+			</label>
+		{/if}
 		<label class="wfd-editor__field">
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />
@@ -186,6 +201,12 @@
 				{/each}
 			</div>
 		</fieldset>
+	{/if}
+
+	{#if loose !== undefined && onloose}
+		<div class="wfd-editor__options">
+			<Chip label="Loose" on={loose} onclick={() => onloose(!loose)} />
+		</div>
 	{/if}
 
 	<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />

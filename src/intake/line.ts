@@ -34,7 +34,11 @@ export function readLine(text: string): IngredientLine {
 	const high = range?.[1];
 	if (range) rest = range[2];
 
-	const [word = '', ...others] = rest.split(/\s+/);
+	const [first = '', ...after] = rest.split(/\s+/);
+	// "fl oz" is one unit in two words.
+	const isFluid = /^fl\.?$/i.test(first) && /^oz\.?$/i.test(after[0] ?? '');
+	const word = isFluid ? `${first} ${after[0]}` : first;
+	const others = isFluid ? after.slice(1) : after;
 	const hasUnit = isUnit(word) && others.length > 0;
 	const name = (hasUnit ? others.join(' ') : rest).trim();
 	// A line that is only a number, such as "2", is a name. An ingredient needs a name.
