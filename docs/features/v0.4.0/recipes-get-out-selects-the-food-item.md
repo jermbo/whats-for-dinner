@@ -4,7 +4,8 @@ summary: "When an ingredient fits two food items, the page Get out selects the o
 parent: recipes-stories.md
 persona: Cook
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Get out selects the food item

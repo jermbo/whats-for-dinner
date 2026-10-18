@@ -4,7 +4,8 @@ summary: "The cook types where a recipe comes from and takes photos of the card 
 parent: recipes-stories.md
 persona: Cook
 depends-on: [recipes-add-a-recipe-one-line-at-a-time.md, recipes-keep-each-photo-with-the-recipe.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Keep the source and its photos at intake
@@ -57,5 +58,6 @@ Each criterion starts with the recipe vault of the [list page](recipes-stories.m
 
 ## Architecture
 
+- [Intake](../../architecture/intake.md): the source field, the source photos, and where "Save" puts them.
 - [Recipe note](../../architecture/recipe-note.md): the description, which is zero or more paragraphs.
 - [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 2 f and 3 a.

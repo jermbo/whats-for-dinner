@@ -4,7 +4,8 @@ summary: "A recipe card shows the photo of its newest meal, and a tap opens a ga
 parent: recipes-stories.md
 persona: Planner
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / See the meals of a recipe in a gallery
@@ -61,4 +62,5 @@ Nothing. This story can start now. The records with a photo are there today.
 
 - [End of a meal](../../architecture/end-of-a-meal.md): the record, with its date, rating, note, and photo.
 - [Recipes](../../architecture/recipes.md): the recipe list and its cards.
-- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 10. This story writes the new architecture page "Gallery".
+- [Gallery](../../architecture/gallery.md): the card photo, and the records that the gallery shows.
+- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 10.

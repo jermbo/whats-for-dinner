@@ -4,7 +4,8 @@ summary: "On a step page of Cook Mode, the cook takes a photo, and it goes into 
 parent: recipes-stories.md
 persona: Cook
 depends-on: [recipes-keep-each-photo-with-the-recipe.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Take a photo of a step

@@ -33,6 +33,19 @@ So in a recipe with a list, a paragraph between the items is not a step. Use it 
 
 A heading at the start of the instructions, such as "Method", is permitted. The text below each later heading is not a step.
 
+## A photo in a step is not text
+
+A [step photo](cook-mode.md) is in the note, below the text of its step. In a list item, it is a line with an indent, so it continues the item:
+
+```markdown
+3. Add the wet mix to the dry mix. Stir until there are no large lumps.
+   ![[Pancakes - step 3 2026-10-18.jpg]]
+```
+
+In a recipe with paragraphs, the photo is the line directly below the text, with no blank line. A photo below a blank line is a new paragraph, and thus one more step.
+
+The plugin takes each link to an image out of the text of the step. So the page does not show the link, and a timer or an ingredient comes from the text only. A step keeps each of its photos. The mark `|best` in a link, such as `![[Pancakes - step 3 2026-10-11.jpg|best]]`, tells the best one. For an image, Obsidian reads that text as the alternative text, so the mark shows nothing in the note. A link can have other options, such as a width: `![[Pancakes - step 3 2026-10-11.jpg|best|300]]`. When the mark moves, the other options stay.
+
 ## Each step shows its ingredients
 
 A step such as "Add the garlic and the ginger" does not tell how much. So the page shows the ingredients that the text names, each with its amount.

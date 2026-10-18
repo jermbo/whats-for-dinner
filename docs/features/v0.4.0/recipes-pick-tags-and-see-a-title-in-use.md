@@ -4,7 +4,8 @@ summary: "The cook adds tags to a new recipe with one tap on a chip, and intake 
 parent: recipes-stories.md
 persona: Cook
 depends-on: [recipes-add-a-recipe-one-line-at-a-time.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Pick tags and see a title in use
@@ -51,6 +52,7 @@ Each criterion starts with the recipe vault of the [list page](recipes-stories.m
 
 ## Architecture
 
+- [Intake](../../architecture/intake.md): the tags, the title, and the stub of a new food.
 - [Recipe note](../../architecture/recipe-note.md): the tags paragraph.
 - [Recipes](../../architecture/recipes.md): the type of a recipe is its first tag.
 - [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 2 d and 2 e.

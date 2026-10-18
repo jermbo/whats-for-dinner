@@ -30,6 +30,22 @@
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
+	// After "Convert", the line of that note is in the list for the first frame, and then it goes
+	// out with a motion. The list is open, so that you see it.
+	const converted = (() => kitchen.takeConverted())();
+	const openAtStart = converted !== null;
+	let leaving = $state(converted);
+	const reasons = $derived(
+		leaving && !kitchen.rejected.some((one) => one.path === leaving?.path)
+			? [...kitchen.rejected, leaving].sort((a, b) => a.path.localeCompare(b.path))
+			: kitchen.rejected
+	);
+	$effect(() => {
+		if (!leaving) return;
+		const frame = requestAnimationFrame(() => (leaving = null));
+		return () => cancelAnimationFrame(frame);
+	});
+
 	const sorts: { value: Sort; label: string }[] = [
 		{ value: 'match', label: 'Best for the pantry' },
 		{ value: 'type', label: 'By type' },
@@ -75,7 +91,10 @@
 <section class="wfd-recipes" aria-label="Recipes">
 	<PartHead title="Recipes">
 		{#snippet side()}
-			<Count have={readyCount} of={kitchen.recipes.length} label="ready" />
+			<div class="wfd-recipes__side">
+				<Count have={readyCount} of={kitchen.recipes.length} label="ready" />
+				<Button onclick={() => kitchen.openPage({ is: 'intake' })}>Add recipe</Button>
+			</div>
 		{/snippet}
 	</PartHead>
 
@@ -136,23 +155,30 @@
 						onweek={() => toggleWeek(entry.path)}
 						oncook={() => oncook(entry.path)}
 						onopen={() => kitchen.open(entry.path)}
+						photo={entry.photo ? kitchen.photoUrl(entry.photo, entry.path) : null}
+						ongallery={() => kitchen.openPage({ is: 'gallery', path: entry.path })}
 					/>
 				</li>
 			{/each}
 		</ul>
 	{/each}
 
-	{#if kitchen.rejected.length}
-		<details class="wfd-recipes__rejected">
+	{#if reasons.length}
+		<details
+			class="wfd-recipes__rejected"
+			open={openAtStart || undefined}
+			transition:slide={{ duration }}
+		>
 			<summary class="wfd-recipes__rejected-summary wfd-label">
-				{kitchen.rejected.length}
-				{kitchen.rejected.length === 1 ? 'note is not a recipe' : 'notes are not recipes'}
+				{reasons.length}
+				{reasons.length === 1 ? 'note is not a recipe' : 'notes are not recipes'}
 			</summary>
 			<ul class="wfd-recipes__reasons">
-				{#each kitchen.rejected as { path, reason } (path)}
-					<li class="wfd-recipes__reason">
+				{#each reasons as { path, reason } (path)}
+					<li class="wfd-recipes__reason" transition:slide={{ duration }}>
 						<span class="wfd-recipes__path">{path}</span>
 						<span class="wfd-recipes__why">{reason}</span>
+						<Button onclick={() => kitchen.openPage({ is: 'convert', path })}>Convert</Button>
 					</li>
 				{/each}
 			</ul>
@@ -165,6 +191,13 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		gap: 12px;
+	}
+
+	.wfd-recipes__side {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		align-items: center;
 	}
 
 	.wfd-recipes__none {
@@ -214,6 +247,7 @@
 	.wfd-recipes__reason {
 		display: grid;
 		gap: 2px;
+		justify-items: start;
 		padding-block: 8px;
 		border-block-end: 1px solid var(--wfd-line);
 		font-size: 14px;

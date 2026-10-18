@@ -4,7 +4,8 @@ summary: "The cook types a recipe one line at a time, sees the food item of each
 parent: recipes-stories.md
 persona: Cook
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Add a recipe one line at a time
@@ -82,4 +83,5 @@ Nothing. This story can start now.
 - [Recipe note](../../architecture/recipe-note.md): the form that "Save" writes.
 - [Match](../../architecture/match.md): how a line finds its food item.
 - [Amounts](../../architecture/amounts.md): the forms of an amount at the start of a line.
-- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 1, 2 a to 2 c, 3, and 3 b to 3 d. This story writes the new architecture page "Intake".
+- [Intake](../../architecture/intake.md): how a line is read, and what "Save" writes.
+- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 1, 2 a to 2 c, 3, and 3 b to 3 d.

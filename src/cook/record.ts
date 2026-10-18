@@ -6,7 +6,7 @@ export type CookRecord = {
 	date: string;
 	rating: number | null;
 	note: string;
-	// The path of the photo in the vault, or null.
+	// The name of the photo in the folder of the photos, or null.
 	photo: string | null;
 };
 
@@ -54,4 +54,31 @@ export function lastRating(instructions: string | null): number | null {
 		if (stars) return [...stars].filter((star) => star === '★').length || null;
 	}
 	return null;
+}
+
+// A record with its photo, for the gallery. The photo is the link below the line of the record.
+export type PhotoRecord = { date: string; rating: number | null; note: string; photo: string };
+
+const EMBED = /^!\[\[([^\]|]+)(?:\|[^\]]*)?\]\]$/;
+
+// The records that have a photo, newest first.
+export function photoRecords(instructions: string | null): PhotoRecord[] {
+	const lines = (instructions ?? '').split(/\r?\n/);
+	const start = lines.findIndex((line) => new RegExp(`^#+ ${RECORD_HEADING}\\s*$`).test(line));
+	if (start === -1) return [];
+
+	const records: PhotoRecord[] = [];
+	let last: Omit<PhotoRecord, 'photo'> | null = null;
+	for (const line of lines.slice(start + 1)) {
+		if (line.startsWith('- ')) {
+			const [date, ...parts] = line.slice(2).split(' · ');
+			const stars = parts.find((part) => STARS.test(part));
+			const rating = stars ? [...stars].filter((star) => star === '★').length || null : null;
+			last = { date, rating, note: parts.filter((part) => !STARS.test(part)).join(' · ') };
+			continue;
+		}
+		const photo = EMBED.exec(line.trim());
+		if (photo && last) records.push({ ...last, photo: photo[1] });
+	}
+	return records.reverse();
 }

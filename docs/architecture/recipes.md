@@ -20,7 +20,7 @@ A recipe is a plain note in the [RecipeMD](https://recipemd.org/specification.ht
 - salt
 ```
 
-The format does not come from the plugin, so your recipes do not depend on it. The [recipe note](recipe-note.md) page gives its exact form. A note that does not follow the format is not lost. The end of the list shows it, with the reason.
+The format does not come from the plugin, so your recipes do not depend on it. The [recipe note](recipe-note.md) page gives its exact form. A note that does not follow the format is not lost. The end of the list shows it, with the reason, and "[Convert](convert.md)" makes it a recipe.
 
 ## Each ingredient looks for its food
 
@@ -40,9 +40,9 @@ Thus the spinach that spoils on Tuesday moves the spinach omelette to the top, b
 
 You can select a different sequence, such as by rating. A filter shows only the recipes that you can cook now, or one type. The type of a recipe is its first tag, such as "dinner".
 
-## What the plugin adds to a recipe note
+## What the plugin writes in a recipe note
 
-The plugin does not change your recipe. After a meal, it adds a record at the end of the note: the date, your rating, your note, and the photo. [Cook Mode](cook-mode.md) writes it.
+You can write a recipe by hand, or the plugin writes it for you at [intake](intake.md), from what you type one line at a time. After that, the plugin does not change the text of your recipe. It adds only photos: a [step photo](steps.md) below its step, and its mark "best". After a meal, it adds a record at the end of the note: the date, your rating, your note, and the photo. [Cook Mode](cook-mode.md) writes it, and the [gallery](gallery.md) shows each record with a photo.
 
 A recipe can also tell its [preparation](preparation.md): the work that it needs before the day of the meal.
 

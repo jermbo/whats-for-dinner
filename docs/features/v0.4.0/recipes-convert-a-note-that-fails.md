@@ -4,7 +4,8 @@ summary: "A note that is not a recipe gets a button Convert, which opens intake 
 parent: recipes-stories.md
 persona: Writer
 depends-on: [recipes-add-a-recipe-one-line-at-a-time.md, recipes-pick-tags-and-see-a-title-in-use.md, recipes-keep-the-source-and-its-photos.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Convert a note that fails
@@ -82,4 +83,5 @@ Each criterion starts with the recipe vault of the [list page](recipes-stories.m
 
 - [Recipe note](../../architecture/recipe-note.md): why a note is not a recipe, and the properties that the plugin permits.
 - [Recipes](../../architecture/recipes.md): the list of the notes that fail.
-- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 11. This story adds "Convert" to the architecture page "Intake".
+- [Convert](../../architecture/convert.md): which text goes into which field, and what stays.
+- [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 11.

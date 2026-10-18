@@ -65,7 +65,7 @@ The plugin reads the first table of the note. It finds each column by its name, 
 | `Amount` | An [amount](amounts.md): `500 g`, `1 1/2 kg`, or `6`. Text with no number, such as `tap`, is permitted. |
 | `Use by` | A date as year-month-day, or nothing.                                                                   |
 
-A note with no row is a food item that is out.
+A note with no row is a food item that is out. [Intake](intake.md) makes such a note for a new ingredient: a stub, with no property and no row, which the Shop part shows as out until you buy the food.
 
 ## What the plugin changes
 

@@ -1,4 +1,4 @@
-import { lastRating } from '../cook/record';
+import { lastRating, photoRecords } from '../cook/record';
 import { indexFoods, matchRecipe } from '../match/match';
 import type { FoodNote, Note } from '../note';
 import { readPrep } from '../recipes/prep';
@@ -20,7 +20,8 @@ export function recipesOf(
 			const { recipe } = result;
 			const match = matchRecipe(recipe, index, today, soonDays);
 			const rating = lastRating(recipe.instructions);
-			return [{ path, recipe, rating, match, prep: readPrep(recipe) }];
+			const photo = photoRecords(recipe.instructions)[0]?.photo ?? null;
+			return [{ path, recipe, rating, match, prep: readPrep(recipe), photo }];
 		})
 		.sort(
 			(a, b) =>

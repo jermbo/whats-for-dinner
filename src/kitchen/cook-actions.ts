@@ -1,14 +1,16 @@
 import type { App, TFile } from 'obsidian';
-import { shrinkPhoto } from '../cook/photo';
 import { addRecord } from '../cook/record';
+import { addStepPhoto as addPhotoLine, markBest } from '../cook/step-photo';
 import type { CookResult, RecipeEntry } from './types';
 import { markCooked } from './plan-actions';
 import type { PlanActionsHost } from './plan-actions';
 import { setStocks } from './pantry-actions';
 import type { PantryActionsHost } from './pantry-actions';
+import { savePhoto, type PhotoActionsHost } from './photo-actions';
 
 export type CookActionsHost = PantryActionsHost &
-	PlanActionsHost & {
+	PlanActionsHost &
+	PhotoActionsHost & {
 		app: App;
 		today: string;
 		recipes: RecipeEntry[];
@@ -16,20 +18,15 @@ export type CookActionsHost = PantryActionsHost &
 		isPlanned(path: string): boolean;
 	};
 
-async function savePhoto(host: CookActionsHost, photo: Blob, recipe: TFile): Promise<string> {
-	const name = `${recipe.basename} ${host.today}.jpg`;
-	const path = await host.app.fileManager.getAvailablePathForAttachment(name, recipe.path);
-	await host.app.vault.createBinary(path, await shrinkPhoto(photo));
-	return path;
-}
-
 export async function finishCooking(host: CookActionsHost, path: string, result: CookResult) {
 	for (const [foodPath, stocks] of result.stocks) await setStocks(host, foodPath, stocks);
 
 	const file = host.fileAt(path);
 	const entry = host.recipes.find((recipe) => recipe.path === path);
 	if (file && entry) {
-		const photo = result.photo ? await savePhoto(host, result.photo, file) : null;
+		const photo = result.photo
+			? await savePhoto(host, result.photo, file.basename, { is: 'meal' })
+			: null;
 		const { rating, note } = result;
 		const hasInstructions = entry.recipe.instructions !== null;
 		const record = { date: host.today, rating, note, photo };
@@ -37,4 +34,18 @@ export async function finishCooking(host: CookActionsHost, path: string, result:
 	}
 
 	if (host.isPlanned(path)) await markCooked(host, path);
+}
+
+// A step photo goes into the vault at once, so that it stays when you close Cook Mode early.
+export async function addStepPhoto(host: CookActionsHost, path: string, step: number, photo: Blob) {
+	const file = host.fileAt(path);
+	if (!file) throw new Error(`The note "${path}" is not in the vault now.`);
+	const name = await savePhoto(host, photo, file.basename, { is: 'step', step });
+	await host.app.vault.process(file, (text) => addPhotoLine(text, step, name));
+}
+
+export async function setBestPhoto(host: CookActionsHost, path: string, step: number, name: string | null) {
+	const file = host.fileAt(path);
+	if (!file) throw new Error(`The note "${path}" is not in the vault now.`);
+	await host.app.vault.process(file, (text) => markBest(text, step, name));
 }

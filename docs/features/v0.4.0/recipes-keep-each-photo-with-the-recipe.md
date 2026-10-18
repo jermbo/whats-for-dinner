@@ -4,7 +4,8 @@ summary: "Each photo of a recipe goes into the folder Photos of the recipes fold
 parent: recipes-stories.md
 persona: Writer
 depends-on: []
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Keep each photo of a recipe with the recipe

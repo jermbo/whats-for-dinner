@@ -1,8 +1,9 @@
 <script lang="ts">
+	import { optionsOf } from '../../cook/pick-food';
 	import type { CookResult, RecipeEntry } from '../../kitchen/types';
 	import { showName } from '../../match/names';
 	import type { FoodNote } from '../../note';
-	import { available, takeOut } from '../../pantry/total';
+	import { takeOut } from '../../pantry/total';
 	import type { Stock } from '../../pantry/types';
 	import { showMeasure, type Measure } from '../../units';
 
@@ -10,29 +11,33 @@
 		// The button that sends this form is in the navigation of Cook Mode. It finds the form by this.
 		id: string;
 		entry: RecipeEntry;
+		// The food item that "Get out" selected for each ingredient, by its place in the matches.
+		picked: (string | null)[];
 		ondone: (result: CookResult) => Promise<void>;
 		// True while the notes of the vault change.
 		busy?: boolean;
 	};
-	let { id, entry, ondone, busy = $bindable(false) }: Props = $props();
+	let { id, entry, picked, ondone, busy = $bindable(false) }: Props = $props();
 
 	const uid = $props.id();
 
 	// An ingredient that the plugin can take out of the pantry: it has an amount, and one or more
 	// food items have an amount that compares.
-	type Counted = { name: string; need: Measure; options: FoodNote[]; first: string };
+	type Counted = { name: string; need: Measure; options: FoodNote[]; first: FoodNote };
 
 	// The pantry as it is when this page opens. A change of a note after that does not move the rows.
 	function count(): { counted: Counted[]; others: string[] } {
 		const counted: Counted[] = [];
 		const others: string[] = [];
-		for (const { ingredient, candidates, food, need } of entry.match.ingredients) {
-			const options = need
-				? candidates.filter((option) => available(option.item.stocks, need.kind) > 0)
-				: [];
+		for (const [at, match] of entry.match.ingredients.entries()) {
+			const { ingredient, food, need } = match;
+			const options = need ? optionsOf(match) : [];
 			if (need && options.length) {
-				const first = options.find((option) => option.path === food?.path) ?? options[0];
-				counted.push({ name: showName(ingredient.name), need, options, first: first.path });
+				const first =
+					options.find((option) => option.path === picked[at]) ??
+					options.find((option) => option.path === food?.path) ??
+					options[0];
+				counted.push({ name: showName(ingredient.name), need, options, first });
 			} else {
 				others.push(showName(ingredient.name));
 			}
@@ -41,8 +46,8 @@
 	}
 	const { counted, others } = count();
 
-	// For each counted ingredient: if you used it, and from which food item.
-	let choices = $state(counted.map((row) => ({ used: true, food: row.first })));
+	// For each counted ingredient: if you used it. The food item is the one of "Get out".
+	let used = $state(counted.map(() => true));
 	let rating = $state<number | null>(null);
 	let note = $state('');
 	let photos = $state<FileList | null>(null);
@@ -54,8 +59,8 @@
 		// Two ingredients can use the same food item, so each one starts with the rows that are left.
 		const stocks = new Map<string, Stock[]>();
 		counted.forEach((row, at) => {
-			const food = row.options.find((option) => option.path === choices[at].food);
-			if (!choices[at].used || !food) return;
+			if (!used[at]) return;
+			const food = row.first;
 			stocks.set(food.path, takeOut(stocks.get(food.path) ?? food.item.stocks, row.need));
 		});
 
@@ -76,15 +81,11 @@
 		{#each counted as row, at}
 			<div class="wfd-finish__row">
 				<label class="wfd-finish__used">
-					<input type="checkbox" bind:checked={choices[at].used} />
+					<input type="checkbox" bind:checked={used[at]} />
 					<span class="wfd-finish__name">{row.name}</span>
 				</label>
 				{#if row.options.length > 1}
-					<select aria-label="The food item for {row.name}" bind:value={choices[at].food}>
-						{#each row.options as option}
-							<option value={option.path}>{option.item.name}</option>
-						{/each}
-					</select>
+					<span class="wfd-finish__food">{row.first.item.name}</span>
 				{/if}
 				<span class="wfd-finish__amount wfd-number">{showMeasure(row.need)}</span>
 			</div>
@@ -182,9 +183,9 @@
 		font-weight: 500;
 	}
 
-	.wfd-finish__row :global(select) {
-		min-block-size: 40px;
-		font-size: 14px;
+	.wfd-finish__food {
+		color: var(--wfd-ink-2);
+		font-size: 15px;
 	}
 
 	.wfd-finish__amount {

@@ -60,7 +60,7 @@ The note of the trip becomes its [receipt](../architecture/receipt.md): what you
 
 ## Cook Mode shows one step at a time
 
-Before the first step, [Cook Mode](../architecture/cook-mode.md) lists what to get out, in the groups of the recipe, such as "Dry" and "Wet". Then it shows one step in large type, with the ingredients of that step. The buttons are large, because your hands are dirty. The screen stays on, and a step with a time has its timer. The timer rings until you stop it. When you finish, the plugin takes the food out of the pantry. You can add a photo, a rating, and a note for the next time.
+Before the first step, [Cook Mode](../architecture/cook-mode.md) lists what to get out, in the groups of the recipe, such as "Dry" and "Wet". When a line such as "pasta" fits two food items, it selects the one to use first, and you only check it. Then it shows one step in large type, with the ingredients of that step, and the best photo of that step from an earlier meal. A camera button keeps a new one. The buttons are large, because your hands are dirty. The screen stays on, and a step with a time has its timer. The timer rings until you stop it. When you finish, the plugin takes the food out of the pantry. You can add a photo, a rating, and a note for the next time.
 
 ## The settings fit the plugin to your vault
 
@@ -68,7 +68,11 @@ You tell the plugin which folder has your recipes and which folder is your pantr
 
 ## Your recipes are notes that last
 
-A recipe is a plain [note](../architecture/notes-of-the-kitchen.md): a title, the ingredients, and the steps. You type it, or you copy it from a cookbook or a family card. Any text editor can open the file, with or without the plugin.
+A recipe is a plain [note](../architecture/notes-of-the-kitchen.md): a title, the ingredients, and the steps. Any text editor can open the file, with or without the plugin.
+
+You do not type the format yourself. ["Add recipe"](../architecture/intake.md) takes a recipe from a cookbook or a family card one line at a time, and each line shows the food item that it found. "Save" writes a correct note, with a link to each food item, and a new food item for each food that the pantry does not know. The source and a photo of the card stay below the title. An old note that is not a recipe gets the button ["Convert"](../architecture/convert.md), which takes it through the same flow.
+
+Each photo of a recipe goes into the folder `Photos` next to your recipes, sharp and small enough for Obsidian Sync. A recipe card shows the photo of your last meal, and a tap opens the [gallery](../architecture/gallery.md) of each meal, with its rating and its note.
 
 ## Your phone and your computer, with no account
 

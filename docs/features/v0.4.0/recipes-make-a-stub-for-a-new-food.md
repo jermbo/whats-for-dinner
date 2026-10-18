@@ -4,7 +4,8 @@ summary: "An ingredient with no food item shows a chip; a tap finds an existing 
 parent: recipes-stories.md
 persona: Cook
 depends-on: [recipes-add-a-recipe-one-line-at-a-time.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Make a stub for a new food
@@ -48,6 +49,7 @@ Each criterion starts with the recipe vault of the [list page](recipes-stories.m
 
 ## Architecture
 
+- [Intake](../../architecture/intake.md): the tags, the title, and the stub of a new food.
 - [Food item note](../../architecture/food-item-note.md): a note with no row is a food item that is out.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): the pantry folder.
 - [Spec: recipe intake](../../initiatives/recipe-intake/spec.md): scope 4.

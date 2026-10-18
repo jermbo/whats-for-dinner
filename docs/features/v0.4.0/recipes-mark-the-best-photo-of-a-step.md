@@ -4,7 +4,8 @@ summary: "A tap on the photo of a step shows its other photos, and Best moves th
 parent: recipes-stories.md
 persona: Cook
 depends-on: [recipes-take-a-photo-of-a-step.md]
-status: ready
+status: built
+updated: 2026-10-18
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Recipes stories](recipes-stories.md) / Mark the best photo of a step

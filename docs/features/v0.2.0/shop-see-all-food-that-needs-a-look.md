@@ -5,7 +5,7 @@ parent: shop-stories.md
 updated: 2026-10-18
 persona: Planner
 depends-on: [shop-decide-the-extras.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Shop stories](shop-stories.md) / See all food that needs a look

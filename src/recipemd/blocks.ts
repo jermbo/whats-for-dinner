@@ -4,7 +4,8 @@
 export type Block =
 	| { type: 'heading'; level: number; text: string; start: number; end: number }
 	| { type: 'rule'; start: number; end: number }
-	| { type: 'list'; items: string[]; start: number; end: number }
+	// `starts` has the first line of each item.
+	| { type: 'list'; items: string[]; starts: number[]; start: number; end: number }
 	| { type: 'paragraph'; text: string; start: number; end: number }
 	| { type: 'other'; start: number; end: number };
 
@@ -97,9 +98,11 @@ function readParagraph(lines: string[], start: number): Block {
 
 function readList(lines: string[], start: number): Block {
 	const items: string[] = [];
+	const starts: number[] = [];
 	let i = start;
 
 	while (i < lines.length && isItem(lines[i])) {
+		starts.push(i);
 		const [, indent, marker, first = ''] = ITEM.exec(lines[i])!;
 		// The text of an item continues on lines with an indent to this column or more.
 		const column = indent.length + marker.length + 1;
@@ -123,5 +126,5 @@ function readList(lines: string[], start: number): Block {
 		const next = nextText(lines, i);
 		if (next < lines.length && isItem(lines[next])) i = next;
 	}
-	return { type: 'list', items, start, end: i };
+	return { type: 'list', items, starts, start, end: i };
 }

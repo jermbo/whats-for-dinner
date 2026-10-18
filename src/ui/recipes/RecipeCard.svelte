@@ -18,8 +18,11 @@
 		onweek: () => void;
 		oncook: () => void;
 		onopen: () => void;
+		// The photo of the newest meal, or null. A tap on it opens the gallery.
+		photo: string | null;
+		ongallery: () => void;
 	};
-	let { entry, planned, onweek, oncook, onopen }: Props = $props();
+	let { entry, planned, onweek, oncook, onopen, photo, ongallery }: Props = $props();
 
 	const uid = $props.id();
 	const { recipe, match } = $derived(entry);
@@ -40,7 +43,17 @@
 </script>
 
 <article class="wfd-recipe">
-	<div class="wfd-recipe__top">
+	<div class="wfd-recipe__top" class:wfd-recipe__top--photo={photo}>
+		{#if photo}
+			<button
+				class="wfd-recipe__photo"
+				type="button"
+				aria-label="The meals of {recipe.title}"
+				onclick={ongallery}
+			>
+				<img src={photo} alt="" />
+			</button>
+		{/if}
 		<button
 			class="wfd-recipe__main"
 			type="button"
@@ -107,6 +120,45 @@
 		gap: 12px;
 		align-items: center;
 		padding: 14px 14px 14px 16px;
+	}
+
+	.wfd-recipe__top--photo {
+		grid-template-columns: auto 1fr auto auto;
+	}
+
+	/* The photo of the newest meal: a small square, so that the list stays compact. */
+	button.wfd-recipe__photo {
+		inline-size: 56px;
+		block-size: 56px;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		border-radius: var(--wfd-radius-button);
+		background: var(--wfd-track);
+		box-shadow: none;
+		cursor: pointer;
+		transition: scale 0.1s ease-out;
+
+		& img {
+			inline-size: 100%;
+			block-size: 100%;
+			object-fit: cover;
+		}
+
+		&:active {
+			scale: 0.95;
+		}
+
+		&:focus-visible {
+			outline: 2px solid var(--wfd-ink);
+			outline-offset: 2px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		button.wfd-recipe__photo {
+			transition: none;
+		}
 	}
 
 	/* Obsidian puts the content of each button in the center. This button starts at the left. */

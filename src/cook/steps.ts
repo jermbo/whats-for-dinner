@@ -2,13 +2,20 @@
 // the plugin has its own rule: each item of a list is a step. With no list, each paragraph is a step.
 
 import { allIngredients } from '../match/match';
-import { nameKey } from '../match/names';
+import { foodNameOf, nameKey } from '../match/names';
 import { parseAmount } from '../recipemd/amount';
-import { readBlocks } from '../recipemd/blocks';
+import { readBlocks, type Block } from '../recipemd/blocks';
 import type { Ingredient, Recipe } from '../recipemd/types';
+
+// A photo of a step, in the note below the text of the step. The mark `|best` tells the best one.
+export type StepPhoto = { name: string; best: boolean };
 
 export type Step = {
 	text: string;
+	// In the sequence of the note: the newest photo is the last.
+	photos: StepPhoto[];
+	// The photo that the step page shows: the best photo, or the newest.
+	photo: string | null;
 	// The ingredients that the text of the step names.
 	ingredients: Ingredient[];
 	// The first time in the text, in seconds, for the timer.
@@ -50,10 +57,10 @@ function secondsIn(text: string): number | null {
 	return Math.round(seconds);
 }
 
-export function readSteps(recipe: Recipe): Step[] {
-	if (!recipe.instructions) return [];
-
-	const all = readBlocks(recipe.instructions.split(/\r?\n/));
+// The blocks of the instructions that have the steps: the lists, or with no list, the paragraphs.
+// The writer of a step photo uses the same blocks, so that a photo goes to the step that you see.
+export function stepBlocks(lines: string[]): { kind: 'list' | 'paragraph'; blocks: Block[] } {
+	const all = readBlocks(lines);
 	const record = all.findIndex(
 		(block) => block.type === 'heading' && block.text === RECORD_HEADING
 	);
@@ -62,23 +69,51 @@ export function readSteps(recipe: Recipe): Step[] {
 	const heading = own.findIndex((block, at) => block.type === 'heading' && at > 0);
 	const blocks = heading === -1 ? own : own.slice(0, heading);
 
-	const items = blocks.flatMap((block) => (block.type === 'list' ? block.items : []));
-	const paragraphs = blocks.flatMap((block) =>
-		block.type === 'paragraph' ? [block.text.replace(/\n/g, ' ')] : []
-	);
-	const texts = items.length ? items : paragraphs;
+	const lists = blocks.filter((block) => block.type === 'list');
+	if (lists.length) return { kind: 'list', blocks: lists };
+	return { kind: 'paragraph', blocks: blocks.filter((block) => block.type === 'paragraph') };
+}
+
+// A photo in a step is a link to an image. It is not text of the step, so the step page does not
+// show it, and a timer or an ingredient does not come from it.
+const PHOTO = /!\[\[([^\]|]+\.(?:jpe?g|png|webp|gif|heic|avif))(?:\|([^\]]*))?\]\]/gi;
+
+function withoutPhotos(text: string): { text: string; photos: StepPhoto[] } {
+	const photos = [...text.matchAll(PHOTO)].map((match) => ({
+		name: match[1],
+		best: (match[2] ?? '').split('|').some((one) => one.trim().toLowerCase() === 'best')
+	}));
+	return { text: text.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim(), photos };
+}
+
+export function readSteps(recipe: Recipe): Step[] {
+	if (!recipe.instructions) return [];
+
+	const { kind, blocks } = stepBlocks(recipe.instructions.split(/\r?\n/));
+	const texts = blocks.flatMap((block) => {
+		if (block.type === 'list' && kind === 'list') return block.items;
+		return block.type === 'paragraph' ? [block.text.replace(/\n/g, ' ')] : [];
+	});
 
 	const ingredients = allIngredients(recipe).map((ingredient) => {
-		const key = nameKey(ingredient.name);
+		const key = nameKey(foodNameOf(ingredient.name));
 		return { ingredient, key, lastWord: key.split(' ').pop() ?? '' };
 	});
 
-	return texts.map((text) => {
+	return texts.map((source) => {
+		const { text, photos } = withoutPhotos(source);
+		const best = photos.find((photo) => photo.best) ?? photos.at(-1);
 		const words = ` ${nameKey(text)} `;
 		const named = ingredients.filter(
 			({ key, lastWord }) =>
 				words.includes(` ${key} `) || (lastWord.length >= 4 && words.includes(` ${lastWord} `))
 		);
-		return { text, ingredients: named.map(({ ingredient }) => ingredient), seconds: secondsIn(text) };
+		return {
+			text,
+			photos,
+			photo: best?.name ?? null,
+			ingredients: named.map(({ ingredient }) => ingredient),
+			seconds: secondsIn(text)
+		};
 	});
 }

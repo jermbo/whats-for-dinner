@@ -20,19 +20,19 @@ The [spec](../../initiatives/recipe-intake/spec.md) has the scope that is agreed
 
 | Story                                                                                                    | Persona | Depends on           | Status       |
 | -------------------------------------------------------------------------------------------------------- | ------- | -------------------- | ------------ |
-| 1. [Add a recipe one line at a time](recipes-add-a-recipe-one-line-at-a-time.md)                         | Cook    | Nothing              | `ready`      |
-| 2. [Pick tags and see a title in use](recipes-pick-tags-and-see-a-title-in-use.md)                       | Cook    | Story 1              | `ready`      |
-| 3. [Make a stub for a new food](recipes-make-a-stub-for-a-new-food.md)                                   | Cook    | Story 1              | `ready`      |
-| 4. [See all food that needs a look](../v0.2.0/shop-see-all-food-that-needs-a-look.md) (changed)          | Planner | Nothing              | `ready`      |
-| 5. [Keep each photo of a recipe with the recipe](recipes-keep-each-photo-with-the-recipe.md)             | Writer  | Nothing              | `ready`      |
-| 6. [Keep the source and its photos at intake](recipes-keep-the-source-and-its-photos.md)                 | Cook    | Stories 1 and 5      | `ready`      |
-| 7. [Take a photo of a step](recipes-take-a-photo-of-a-step.md)                                           | Cook    | Story 5              | `ready`      |
-| 8. [Mark the best photo of a step](recipes-mark-the-best-photo-of-a-step.md)                             | Cook    | Story 7              | `ready`      |
-| 9. [Get out selects the food item](recipes-get-out-selects-the-food-item.md)                             | Cook    | Nothing              | `ready`      |
-| 10. [See the meals of a recipe in a gallery](recipes-see-the-meals-in-a-gallery.md)                      | Planner | Nothing              | `ready`      |
-| 11. [Convert a note that fails](recipes-convert-a-note-that-fails.md)                                    | Writer  | Stories 1, 2, and 6  | `ready`      |
+| 1. [Add a recipe one line at a time](recipes-add-a-recipe-one-line-at-a-time.md)                         | Cook    | Nothing              | `built`      |
+| 2. [Pick tags and see a title in use](recipes-pick-tags-and-see-a-title-in-use.md)                       | Cook    | Story 1              | `built`      |
+| 3. [Make a stub for a new food](recipes-make-a-stub-for-a-new-food.md)                                   | Cook    | Story 1              | `built`      |
+| 4. [See all food that needs a look](../v0.2.0/shop-see-all-food-that-needs-a-look.md) (changed)          | Planner | Nothing              | `built`      |
+| 5. [Keep each photo of a recipe with the recipe](recipes-keep-each-photo-with-the-recipe.md)             | Writer  | Nothing              | `built`      |
+| 6. [Keep the source and its photos at intake](recipes-keep-the-source-and-its-photos.md)                 | Cook    | Stories 1 and 5      | `built`      |
+| 7. [Take a photo of a step](recipes-take-a-photo-of-a-step.md)                                           | Cook    | Story 5              | `built`      |
+| 8. [Mark the best photo of a step](recipes-mark-the-best-photo-of-a-step.md)                             | Cook    | Story 7              | `built`      |
+| 9. [Get out selects the food item](recipes-get-out-selects-the-food-item.md)                             | Cook    | Nothing              | `built`      |
+| 10. [See the meals of a recipe in a gallery](recipes-see-the-meals-in-a-gallery.md)                      | Planner | Nothing              | `built`      |
+| 11. [Convert a note that fails](recipes-convert-a-note-that-fails.md)                                    | Writer  | Stories 1, 2, and 6  | `built`      |
 
-Story 4 is a story of version 0.2.0. Its rule for "Out" changes, so its status is `ready` again. The [personas](../../personas.md) page tells who the cook, the planner, and the writer are.
+Story 4 is a story of version 0.2.0. Its rule for "Out" changed in this version. The [personas](../../personas.md) page tells who the cook, the planner, and the writer are.
 
 ## The sequence of the work
 
@@ -50,8 +50,8 @@ Each story updates the wiki pages **before** its code, in the **Elevate** step o
 
 | Page                                                                 | Stories that update it                                                    |
 | -------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| Intake (new)                                                         | 1: the fields, the result of a line, and "Save". 2, 3, and 6: the tags, the stub, and the source. 11: "Convert". |
-| Gallery (new)                                                        | 10: the records with a photo, and the card photo.                         |
+| [Intake](../../architecture/intake.md) (new)                         | 1: the fields, the result of a line, and "Save". 2, 3, and 6: the tags, the stub, and the source. 11: "Convert", with its own page [Convert](../../architecture/convert.md). |
+| [Gallery](../../architecture/gallery.md) (new)                       | 10: the records with a photo, and the card photo.                         |
 | [Recipes](../../architecture/recipes.md)                             | 1: the plugin writes the text of a recipe. 10: the photo of a card. 11: "Convert". |
 | [Recipe note](../../architecture/recipe-note.md)                     | 1: the links that intake makes. 6: the source line and the source photos. 7 and 8: the step photos and `\|best`. |
 | [Steps](../../architecture/steps.md)                                 | 7: a photo is not text of a step, in a list item and in a paragraph. 8: the best photo. |

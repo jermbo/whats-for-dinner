@@ -1,7 +1,7 @@
 node_modules
 
 _archive
-recipes
+test-vault/Recipes/
 _old
 
 # Output
