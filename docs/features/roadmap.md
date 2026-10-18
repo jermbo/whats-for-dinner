@@ -62,11 +62,12 @@ The plugin has a fixed value for each of these. A value becomes a setting when i
 | The heading of the cook record       | "Cooked"                                                         |
 | The units that the plugin shows      | g, kg, ml, and l                                                 |
 
-## Three ideas have no decision
+## Four ideas have no decision
 
 - **A drag on a closed row.** The first design sets an amount with no tap to open the row.
 - **Preparation from the pantry.** Food in a place with the name "Freezer" needs time before you can cook it. The plugin does not tell you this: only the callout of a recipe is a preparation.
 - **Groups by store.** You go to more than one store, and one store can be cheaper for some items. The list does not tell you which item to buy in which store, and it has no group for each store.
+- **Standard units.** A typo in a unit, such as "1 gall", makes a new count that compares with nothing. A fixed list of units, with a chip in place of typed text, is a later initiative for the pantry and the recipes together. See decision 30 of [one row for each package](../initiatives/one-row-for-each-package/decision-log.md).
 
 The first version also has choices that you did not confirm, such as how the name in a recipe finds a food item. They are in the table "Choices that are not decided" of the [build plan](../../PLAN.md).
 

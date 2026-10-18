@@ -92,6 +92,17 @@ These answers came when the list showed packages. After decision 16, the owner c
 23. **The first fill of the pantry in setup is not part of this work.** It gets its own discussion. The owner confirmed this with the spec.
 24. **A row of the pantry has no brand.** Decision 14 of [brands and photos](../brands-and-photos/decision-log.md) stays. The owner confirmed this with the spec.
 
+### The units and the gaps that the stories found
+
+The stories found five gaps in the spec. The owner confirmed each of these answers: "Your choices look good."
+
+25. **Gallons, quarts, pints, and fluid ounces are volumes, and the plugin converts them.** Before this work, the plugin read "1 gal" as a count of a thing with the name "gal", so a step of milk was 1/2, and 300 ml of milk for the pancakes did not compare with the milk of the pantry. The units are `gal` (3785.41 ml), `qt` (946.35 ml), `pt` (473.18 ml), and `fl oz` (29.57 ml). `oz` with no "fl" stays a mass. The reason, in the words of the owner: "place in what the package says, then do the conversion automatically. Like if I add gallon but the recipe calls for millileters, we should be able to get it converted. I am not looking for exact perfection, close is good."
+26. **An eighth that is not round with 2 decimals shows as a fraction.** A step of milk is 1/8 gal, and 0.125 gal shows as 0.13 gal. So the bar and the note show "3/8 gal" and "1 1/2 gal". A metric unit keeps the rule of today: 0.625 kg is "625 g". The reason: you read a gallon, a cup, or a pint in fractions on the package.
+27. **An empty row has no use-by date that counts.** An empty row gets no badge, is not "use soon", and is not past its date. Its date in the note stays until put away writes over the row. The reason: the empty slot of the eggs must not make a suggestion for food that you do not have. An option that was rejected: put away clears the date when the row becomes empty, which changes the slot.
+28. **A tap on a sealed count opens one package of it.** You open a new can and use half. A tap on "5 sealed" shows a bar for one can, full, and the count becomes "4 sealed". With no change, the can stays sealed. The reason: a sealed package has no bar, and you can use half a can with no recipe. An option that was rejected: a package opens only through a meal.
+29. **"−" on a sealed count makes one package of that date an empty row, and "+" adds one sealed package with that size and date.** So "−" acts as "Used up" on one sealed package. The reason: "one package less" has one result, and "−" corrects a wrong "+". An option that was rejected: "−" takes the row out of the table.
+30. **A fixed list of units is a later initiative.** The owner: "I want to make it easy to enter and be correct. I dont want to have a typo that throws the whole thing off." The proposal: a screen gives the unit as a chip, never as typed text, the plugin writes only the short name, and a unit that is not on the list shows a warning. The owner wants it later, for the recipes and the pantry together: "I think we need to make it a later initiative because I want to have things synced properly." In this work, a unit stays text, as before.
+
 ## Questions that are open
 
 No question is open. The [spec](spec.md) has the scope.

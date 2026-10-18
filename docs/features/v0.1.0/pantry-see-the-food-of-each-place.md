@@ -2,6 +2,7 @@
 title: See the food of each place
 summary: "The keeper sees each food in the group of its place, with its amount."
 parent: pantry-stories.md
+updated: 2026-10-18
 persona: Keeper
 depends-on: []
 status: built
@@ -15,7 +16,7 @@ As the [keeper](../../personas.md), I want to see my food in a group for each pl
 
 ## Requirements
 
-1. The pantry shows one line for each row of each food item
+1. The pantry shows one line for each row of each food item. Changed in version 0.5.0: one line for each food item in each place, as [See a food item in each place](../v0.5.0/packages-see-a-food-item-in-each-place.md) tells
    - a. A food item is a note in the pantry folder
    - b. A line shows the name of the food item and the amount of its row
    - c. An amount with no number shows as its text

@@ -38,6 +38,7 @@ An example: milk has two rows in the kitchen fridge: 1/2 of 1 gal until 22 Octob
 4. A package that is used up keeps its row, with nothing left (decision 17)
    - a. One empty row stays for each place of a food item. The next empty package of that place goes out of the table (decision 20)
    - b. A food item is out when each row has nothing left, or when the note has no row (decision 19)
+   - c. An empty row has no use-by date that counts (decision 27)
 
 ### The bar and the level
 
@@ -57,6 +58,8 @@ An example: milk has two rows in the kitchen fridge: 1/2 of 1 gal until 22 Octob
    - c. An empty row does not show (decision 22)
    - d. "Add package" copies the size of the last package, with an empty date (decision 13)
    - e. "Used up" on a package sets it to nothing (decisions 13 and 17)
+   - f. A tap on a sealed count opens one package of it (decision 28)
+   - g. "−" on a sealed count makes one package an empty row, and "+" adds one sealed package (decision 29)
 
 ### Put away and the receipt
 
@@ -78,6 +81,11 @@ An example: milk has two rows in the kitchen fridge: 1/2 of 1 gal until 22 Octob
     - a. The list never asks for a size (answer a)
     - b. A row of the list shows the price of the newest receipt row, as today (answer c)
 
+### The units
+
+14. Gallons, quarts, pints, and fluid ounces are volumes, and the plugin converts them (decision 25)
+15. An eighth that is not round with 2 decimals shows as a fraction, such as "3/8 gal" (decision 26)
+
 ## Out of scope
 
 1. One row for each place with one date, and one row for sealed packages that are the same (decisions 1 and 2)
@@ -88,12 +96,14 @@ An example: milk has two rows in the kitchen fridge: 1/2 of 1 gal until 22 Octob
 6. A list that shows or counts packages, such as "2 × 1 gal" (decision 16)
 7. The first fill of the pantry in setup (decision 23)
 8. A brand on a row of the pantry (decision 24)
+9. A fixed list of units, with a unit chip in place of typed text. It is a later initiative (decision 30)
 
 ## What changes in the system
 
 Architecture pages that change:
 
 - [Food item note](../../architecture/food-item-note.md): the column `Size`, the property `loose`, and the empty row.
+- [Amounts](../../architecture/amounts.md): gallons, quarts, pints, and fluid ounces, and eighths as fractions.
 - [Amount bar](../../architecture/amount-bar.md): one bar for each open package, the steps, and the count of the sealed packages.
 - [Level](../../architecture/level.md): the full amount only for the level, and out with empty rows.
 - [Pantry](../../architecture/pantry.md): one line for each food item in each place, "Add package", and "Used up".

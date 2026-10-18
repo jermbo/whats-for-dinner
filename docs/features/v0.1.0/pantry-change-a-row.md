@@ -25,7 +25,7 @@ As the [keeper](../../personas.md), I want to change the place, the amount, the 
    - a. The link "Place, date, and low line" of an open bar opens the form of the selected place
    - b. A tap on a line with an amount that the plugin cannot count opens the form directly
 2. The form shows the row as it is
-   - a. The place, the amount as text, and the use-by date of the row
+   - a. The place, the amount as text, and the use-by date of the row. Changed in version 0.5.0: and the size, as [Add and use up a package](../v0.5.0/packages-add-and-use-up-a-package.md) tells
    - b. The low line of the food item, as the text of the property `low`
    - c. With no `low`, the field is empty and shows the low line of the plugin as a hint
    - d. The brands of the food item, as [See the brands of a food item as photos](../v0.5.0/brands-see-the-brands-as-photos.md) shows them (changed in version 0.5.0), and its other names
@@ -38,7 +38,7 @@ As the [keeper](../../personas.md), I want to change the place, the amount, the 
    - c. The plugin writes `low` only when the low line changed
    - d. An empty low line takes `low` out of the note
    - e. The row closes
-5. Tap "Used up" to take the row out of the table
+5. Tap "Used up" to take the row out of the table. Changed in version 0.5.0: the row becomes an empty row, as [Add and use up a package](../v0.5.0/packages-add-and-use-up-a-package.md) tells
 6. Tap "Cancel" to close the form with no change
 7. Tap "Open note" to open the food item note in a new tab
 
