@@ -1,13 +1,13 @@
-import { addTo, measure, sameUnit, showLike, showMeasure, type Measure } from '../units';
+import { addTo, compares, measure, sameUnit, showLike, showMeasure, type Measure } from '../units';
 import { changeRows, isEmpty, withFood } from './empty-row';
 import { withAmount } from './stock-amount';
 import type { Stock } from './types';
 
-// How much of a food item the pantry has, in one kind of measure.
+// How much of a food item the pantry has, in one kind of measure. Grams count as millilitres.
 export function available(stocks: Stock[], kind: string): number {
 	return stocks
 		.flatMap((stock) => (stock.amount ? [measure(stock.amount)] : []))
-		.filter((quantity) => quantity.kind === kind)
+		.filter((quantity) => compares(quantity.kind, kind))
 		.reduce((sum, quantity) => sum + quantity.value, 0);
 }
 
@@ -67,7 +67,7 @@ export function takeOut(stocks: Stock[], need: Measure): Stock[] {
 	for (const { stock, at } of sequence) {
 		if (left <= 0 || !stock.amount) continue;
 		const has = measure(stock.amount);
-		if (has.kind !== need.kind || has.value <= 0) continue;
+		if (!compares(has.kind, need.kind) || has.value <= 0) continue;
 
 		const taken = Math.min(left, has.value);
 		left -= taken;

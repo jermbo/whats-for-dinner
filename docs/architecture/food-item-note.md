@@ -67,9 +67,11 @@ The plugin reads the first table of the note. It finds each column by its name, 
 | Column   | Value                                                                                                   |
 | -------- | ------------------------------------------------------------------------------------------------------- |
 | `Place`  | Where the food is. A row with no place is not a row of the pantry.                                      |
-| `Amount` | What is left: an [amount](amounts.md), such as `500 g`, `1/2 gal`, or `6`. Text with no number, such as `tap`, is permitted. |
+| `Amount` | What is left: an [amount](amounts.md) in the unit system of the vault, such as `500 g`, or a plain count, such as `6`. Text with no number, such as `tap`, is permitted. |
 | `Size`   | The package size: the amount of the package when it is new.                                             |
 | `Use by` | A date as year-month-day, or nothing.                                                                   |
+
+The plugin writes each amount that you type in the unit system of the vault. In a metric vault, a label of 26 oz gives the row `737 g`. A container word, such as `1 jar`, is not permitted, because it compares with nothing. A row that you type into the note yourself is read as it is.
 
 Each row has a size, and the plugin fills it in. A row with an empty size, a size with no number, or a size in a unit that does not compare with the amount gets its own amount as its size. An amount that is more than the size makes the size the same as the amount. A row with no number, such as `tap`, has no size.
 

@@ -274,6 +274,7 @@
 	{#if open === 'new'}
 		<div transition:slide={{ duration }}>
 			<StockEditor
+				units={kitchen.settings.units}
 				title="Add to pantry"
 				names={kitchen.foods.map(({ item }) => item.name).sort()}
 				startName={newName}
@@ -314,6 +315,7 @@
 						{#if open === food.path}
 							<div class="wfd-pantry__open" transition:slide={{ duration }}>
 								<StockEditor
+									units={kitchen.settings.units}
 									title={food.item.name}
 									places={kitchen.places}
 									low={lowOf(food, levelOf(food.item, lowPercent))}
@@ -381,6 +383,7 @@
 										{@const at = form ?? row.packages[0].at}
 										<div in:fade={{ duration }}>
 											<StockEditor
+												units={kitchen.settings.units}
 												title={row.food.item.name}
 												stock={row.food.item.stocks[at] ?? row.packages[0].stock}
 												places={kitchen.places}

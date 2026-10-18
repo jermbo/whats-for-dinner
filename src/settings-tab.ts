@@ -5,6 +5,7 @@ import { AbstractInputSuggest, PluginSettingTab, Setting, type App, type Plugin 
 import { Alarm, type Sound } from './cook/alarm';
 import type { Kitchen } from './kitchen-state.svelte';
 import { addPlace, removePlace, renamePlace } from './pantry/places';
+import type { UnitSystem } from './pantry/unit-system';
 import type { Settings } from './settings';
 
 // Proposes paths of the vault, or other texts, while you type.
@@ -198,6 +199,17 @@ export class KitchenSettingTab extends PluginSettingTab {
 			50,
 			5
 		);
+		new Setting(containerEl)
+			.setName('Units')
+			.setDesc(
+				'Each amount that you type for the pantry goes into this system: "8 oz" is "227 g" in metric. The rows that exist do not change.'
+			)
+			.addDropdown((list) =>
+				list
+					.addOptions({ metric: 'Metric', imperial: 'Imperial' })
+					.setValue(kitchen.settings.units)
+					.onChange((value) => this.change({ units: value as UnitSystem }))
+			);
 	}
 
 	hide() {

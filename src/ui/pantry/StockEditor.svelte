@@ -1,15 +1,20 @@
 <script lang="ts">
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { slide } from 'svelte/transition';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Brand } from '../../pantry/brands';
 	import { makeStock } from '../../pantry/food-item';
 	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
+	import { entryIn, refusal, type UnitSystem } from '../../pantry/unit-system';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import BrandFields from './BrandFields.svelte';
 
 	type Props = {
 		title: string;
+		// Each amount that you type goes into this system.
+		units: UnitSystem;
 		// With a list of names, the editor asks for the name of the food item.
 		names?: string[];
 		// The name that the field starts with, such as the text that found no food.
@@ -47,6 +52,7 @@
 	};
 	let {
 		title,
+		units,
 		names,
 		startName = '',
 		stock,
@@ -66,6 +72,7 @@
 	}: Props = $props();
 
 	const uid = $props.id();
+	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	// The fields start with the row as it is. After that, they are yours.
 	const first = () => stock;
 	const firstName = () => startName;
@@ -101,16 +108,22 @@
 
 	const where = $derived(newPlace.trim() || place);
 	const ready = $derived(Boolean(where) && (!names || Boolean(name.trim())));
+	// The amounts as the rows get them, or null for an amount that the vault does not permit.
+	const entries = $derived({
+		amount: entryIn(units, amount),
+		size: entryIn(units, size),
+		low: entryIn(units, lowText)
+	});
+	const refused = $derived(Object.values(entries).some((entry) => entry === null));
+	// The message waits for "Save", so that "1 j" does not get an error while you type "1 jar".
+	let tried = $state(false);
 
 	function save(event: SubmitEvent) {
 		event.preventDefault();
-		if (!ready) return;
-		onsave(
-			makeStock(where, amount, useBy, size),
-			name.trim(),
-			{ low: lowText.trim(), staple: kind },
-			drafts
-		);
+		tried = true;
+		const { amount, size, low } = entries;
+		if (!ready || amount === null || size === null || low === null) return;
+		onsave(makeStock(where, amount, useBy, size), name.trim(), { low, staple: kind }, drafts);
 	}
 </script>
 
@@ -160,12 +173,22 @@
 	<div class="wfd-editor__pair">
 		<label class="wfd-editor__field">
 			<span class="wfd-label">How much</span>
-			<input type="text" placeholder="500 g" bind:value={amount} />
+			<input
+				type="text"
+				placeholder={units === 'metric' ? '500 g' : '16 oz'}
+				aria-invalid={tried && entries.amount === null}
+				bind:value={amount}
+			/>
 		</label>
 		{#if stock}
 			<label class="wfd-editor__field">
 				<span class="wfd-label">Size</span>
-				<input type="text" placeholder={amount || '1 gal'} bind:value={size} />
+				<input
+					type="text"
+					placeholder={amount || (units === 'metric' ? '3.79 l' : '1 gal')}
+					aria-invalid={tried && entries.size === null}
+					bind:value={size}
+				/>
 			</label>
 		{/if}
 		<label class="wfd-editor__field">
@@ -175,10 +198,18 @@
 		{#if low}
 			<label class="wfd-editor__field">
 				<span class="wfd-label">Low line</span>
-				<input type="text" placeholder={low.hint} bind:value={lowText} />
+				<input
+					type="text"
+					placeholder={low.hint}
+					aria-invalid={tried && entries.low === null}
+					bind:value={lowText}
+				/>
 			</label>
 		{/if}
 	</div>
+	{#if tried && refused}
+		<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal(units)}</p>
+	{/if}
 
 	{#if staple !== undefined}
 		<!--
@@ -227,6 +258,16 @@
 </form>
 
 <style>
+	.wfd-editor__refused {
+		margin: 0;
+		color: var(--wfd-tomato);
+		font-size: 14px;
+	}
+
+	.wfd-editor__field input[aria-invalid='true'] {
+		border-color: var(--wfd-tomato);
+	}
+
 	.wfd-editor {
 		display: grid;
 		gap: 14px;

@@ -166,6 +166,7 @@
 			places={placesFor(item)}
 			placeIsGuess={placeIsGuess(line)}
 			today={kitchen.today}
+			units={kitchen.settings.units}
 			open={open?.key === line.key}
 			ontoggle={() => toggle(line)}
 			onsale={() => sale(line)}

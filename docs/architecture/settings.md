@@ -69,6 +69,7 @@ The button "Test" plays the sound, so that you can select it before you cook.
 | -------- | --------- | ---------------------------------------------------------------------------------- |
 | Use soon | 5 days    | Food with a use-by date in this number of days, or less, is food to use soon.      |
 | Low line | 25%       | A food item with no low line of its own is low below this part of its full amount. |
+| Units    | Metric    | The [unit system](amounts.md#the-unit-system-of-the-vault) of the rows: metric or imperial. A change does not change the rows that exist. |
 
 ## Where the settings are
 

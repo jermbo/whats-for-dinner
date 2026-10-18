@@ -636,6 +636,9 @@ export class Kitchen {
 			get newPlace() {
 				return k.newPlace;
 			},
+			get units() {
+				return k.settings.units;
+			},
 			get tripStore() {
 				return k.tripStore;
 			},

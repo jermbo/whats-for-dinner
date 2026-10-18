@@ -2,6 +2,7 @@
 // pantry. The values are in the data file of the plugin.
 
 import type { AlarmOptions } from './cook/alarm';
+import type { UnitSystem } from './pantry/unit-system';
 
 export type Settings = AlarmOptions & {
 	// Only the notes in this folder are recipes. With no folder, the plugin tries each note that is
@@ -35,6 +36,8 @@ export type Settings = AlarmOptions & {
 	soonDays: number;
 	// With no low line of its own, a food item is low below this percentage of its full amount.
 	lowPercent: number;
+	// Each amount that you type for the pantry goes into this system. The rows that exist stay.
+	units: UnitSystem;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -53,7 +56,8 @@ export const DEFAULT_SETTINGS: Settings = {
 	vibrate: true,
 	keepScreenOn: true,
 	soonDays: 5,
-	lowPercent: 25
+	lowPercent: 25,
+	units: 'metric'
 };
 
 // The path of a folder as the vault has it: "Recipes/" and " Recipes " are "Recipes".

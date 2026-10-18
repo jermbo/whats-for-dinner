@@ -1,7 +1,7 @@
 // The level of a food item: what the pantry has, against the full amount and the low line. All
 // places count together, because "low" is a fact of the food item, not of one shelf.
 
-import { measure, showLike, type Measure } from '../units';
+import { compares, measure, showLike, type Measure } from '../units';
 import { available } from './total';
 import type { FoodItem, Stock } from './types';
 
@@ -18,7 +18,7 @@ export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null 
 	const kind = fullSet?.kind ?? kinds[0];
 	if (kind === undefined) return null;
 	// The full amount is "2 kg" and the rows are "3 bags": the plugin cannot count this food item.
-	if (kinds.length && !kinds.includes(kind)) return null;
+	if (kinds.length && !kinds.some((one) => compares(one, kind))) return null;
 
 	const has = available(item.stocks, kind);
 	// The pantry can have more than it had before. Then that amount is the full amount.
@@ -26,7 +26,10 @@ export function levelOf(item: FoodItem, lowPercent = LOW_PERCENT): Level | null 
 	if (full <= 0) return null;
 
 	const lowSet = item.low ? measure(item.low) : null;
-	const low = lowSet?.kind === kind ? Math.min(lowSet.value, full) : (full * lowPercent) / 100;
+	const low =
+		lowSet && compares(lowSet.kind, kind)
+			? Math.min(lowSet.value, full)
+			: (full * lowPercent) / 100;
 	// Food at its low line is low: the line is where you want more.
 	return { kind, has, full, low, isLow: has <= low };
 }
@@ -46,7 +49,7 @@ export type Bar = { here: number; others: number; low: number; isLow: boolean };
 // The amount of one row, in the kind of measure of the level. A row that does not compare has 0.
 export function partOf(stock: Stock, level: Level): number {
 	const own = stock.amount ? measure(stock.amount) : null;
-	return own?.kind === level.kind ? own.value : 0;
+	return own && compares(own.kind, level.kind) ? own.value : 0;
 }
 
 // The bar of a line: all packages of the food item in one place.

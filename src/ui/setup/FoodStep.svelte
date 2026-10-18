@@ -5,6 +5,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Stock } from '../../pantry/types';
+	import { entryIn, refusal } from '../../pantry/unit-system';
 	import { STAPLES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
 	import StockEditor from '../pantry/StockEditor.svelte';
@@ -20,7 +21,10 @@
 
 	const names = $derived(kitchen.foods.map(({ item }) => item.name).sort());
 	const given = $derived([...picked.values()].some((amount) => amount.trim()));
-	const ready = $derived(given || kitchen.foods.length > 0);
+	// An amount such as "1 jar" stops "Finish setup", and its field says why.
+	const isRefused = (amount: string) => entryIn(kitchen.settings.units, amount) === null;
+	const refused = $derived([...picked.values()].some(isRefused));
+	const ready = $derived(!refused && (given || kitchen.foods.length > 0));
 
 	function toggle(name: string) {
 		if (picked.has(name)) picked.delete(name);
@@ -60,6 +64,7 @@
 						type="text"
 						aria-label="How much {name}"
 						placeholder="No amount"
+						aria-invalid={isRefused(picked.get(name) ?? '')}
 						value={picked.get(name)}
 						oninput={(event) => picked.set(name, event.currentTarget.value)}
 						transition:slide={{ axis: 'x', duration }}
@@ -68,10 +73,16 @@
 			</li>
 		{/each}
 	</ul>
+	{#if refused}
+		<p class="wfd-food__refused" role="alert" transition:slide={{ duration }}>
+			{refusal(kitchen.settings.units)}
+		</p>
+	{/if}
 
 	{#if adding}
 		<div transition:slide={{ duration }}>
 			<StockEditor
+				units={kitchen.settings.units}
 				title="Add to pantry"
 				{names}
 				places={kitchen.places}
@@ -90,6 +101,16 @@
 </StepFrame>
 
 <style>
+	.wfd-food__refused {
+		margin: 0;
+		color: var(--wfd-tomato);
+		font-size: 14px;
+	}
+
+	.wfd-food__row :global(input.wfd-food__amount[aria-invalid='true']) {
+		border-color: var(--wfd-tomato);
+	}
+
 	.wfd-food__note {
 		margin: 0;
 		color: var(--wfd-ink-2);

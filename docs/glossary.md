@@ -38,6 +38,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Loose         | A food item with no packages, such as apples. Its note has `loose: true`, and new food goes into the row of its place.   |
 | Step          | The smallest change that one move of a bar makes: 1/8 of the package size for a measure, and 1 for a count.              |
 | Amount        | A number and a unit, such as "500 g". See [amounts](architecture/amounts.md). Some amounts have no number, such as "tap". |
+| Unit system   | Metric or imperial: the units of each row of the pantry in one vault. It is a setting. |
 | Full amount   | The most that the pantry had of a food item.                                                                              |
 | Low line      | The amount at which a food item is low. Food at the line or below it is low.                                              |
 | Level         | What you have of a food item, against its full amount and its low line. See [level](architecture/level.md).               |
@@ -60,6 +61,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Recipe      | A note in the RecipeMD format. The [recipes](architecture/recipes.md) page tells more.                    |
 | Type        | The first tag of a recipe, such as "dinner".                                                              |
 | Ready       | A recipe is ready when the pantry has each of its ingredients.                                            |
+| Check       | The sticker of an ingredient that the pantry has, but that the plugin cannot [count](architecture/match.md), such as 1 onion against 500 g. |
 | Preparation | [Work](architecture/preparation.md) that a recipe needs before you can cook, such as food that must thaw. |
 | Intake      | The [work](architecture/intake.md) that makes a recipe note from a source, such as a card or a cookbook, up to "Save". |
 | Line        | One ingredient or one step in a field of intake. It is not a row of the pantry.                           |

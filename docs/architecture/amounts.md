@@ -34,21 +34,33 @@ A unit with a period, a capital letter, or a plural is the same unit: "Cups" is 
 
 The American volumes are close, not exact: `gal` is 3785.41 ml, `qt` is 946.35 ml, `pt` is 473.18 ml, and `fl oz` is 29.57 ml. `oz` with no "fl" is a mass.
 
-Each other unit is a count of that unit: cans, cloves, bags. A number with no unit is a plain count, such as 6 eggs.
+Each other unit is a count of that unit, such as cloves in a recipe. A number with no unit is a plain count, such as 6 eggs.
 
 ## What compares
 
-Two amounts compare only if they are in the same family, or are counts of the same unit.
+Two amounts compare if they are in the same family, or are counts of the same unit.
 
 - 300 g and 2 kg compare. So do 2 tablespoons and 500 ml, and 1 gal and 4 qt.
-- 200 g and 1 cup do not compare. The plugin does not know the weight of a cup of flour.
-- 2 cans and 1 jar do not compare.
+- 2 cans and 2 cans compare. 2 cans and 1 jar do not.
 
-When two amounts do not compare, the plugin does not calculate. The [match](match.md) page tells what it does in that case.
+A mass and a volume compare by one rough rule: 1 ml is 1 g, for each food. A tablespoon of sugar is 15 g, against a bag of 250 g. The real weight is near 12 g, and a cup of flour is far from 240 g. That is good enough for a cook, and a baking recipe is in grams. The rule is always the same, so the plugin counts the line, with no mark.
+
+A count does not compare with a mass or a volume. The [match](match.md) page tells what the plugin does in that case.
+
+## The unit system of the vault
+
+Each vault has one unit system, from the [settings](settings.md): metric or imperial. Each row of the pantry is in that system, or is a plain count.
+
+| System   | Mass      | Volume                 |
+| -------- | --------- | ---------------------- |
+| Metric   | g, kg     | ml, l                  |
+| Imperial | oz, lb    | fl oz, cup, qt, gal    |
+
+An amount that you type for the pantry goes into the system at entry. In a metric vault, "8 oz" becomes "227 g", rounded to a whole gram or millilitre. A container word such as "jar" or "bag" is not a unit there: you give the weight or the volume from the label. A recipe can be in either system, because the two families convert.
 
 ## An amount with no number
 
-A pantry row can have text with no number, such as "tap" or "a full bag". The food is there, but the plugin cannot count it. In a recipe, an amount with no number is an error, and the note is not a recipe.
+A pantry row can have text with no number, such as "tap". The food is there, but the plugin cannot count it. In a recipe, an amount with no number is an error, and the note is not a recipe.
 
 ## How the plugin writes an amount
 

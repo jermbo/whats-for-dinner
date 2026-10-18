@@ -1,6 +1,6 @@
 ---
-full: "2"
+full: 1 kg
 ---
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 0.5    |        |
+| Kitchen pantry | 500 g  |        |

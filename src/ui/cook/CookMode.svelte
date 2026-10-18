@@ -212,6 +212,8 @@
 													<Sticker label="None" kind="dashed" />
 												{:else if status === 'short'}
 													<Sticker label="Low" kind="amber" />
+												{:else if status === 'unknown'}
+													<Sticker label="Check" />
 												{/if}
 												<span class="wfd-cook__amount wfd-number">
 													{ingredient.amount?.text ?? ''}

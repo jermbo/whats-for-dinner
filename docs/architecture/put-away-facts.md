@@ -64,7 +64,7 @@ Loose food is different. Its amount goes into the row of its place, and the size
 
 ## A price is a number
 
-A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price. If you remove the text of an amount, the item goes in as 1.
+A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price. If you remove the text of an amount, the item goes in as 1. "Another amount" goes into the unit system of the vault, as each amount of the [pantry](food-item-note.md) does: "1 gal" is "3.79 l" in a metric vault. A container word, such as "1 bag", stops "Put away" on that line, and the field asks for the weight or the volume from the label.
 
 ## Further reading
 

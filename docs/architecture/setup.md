@@ -21,12 +21,12 @@ The [data file](notes-of-the-kitchen.md) keeps the step of setup. So you can clo
 
 | Step        | You do                                                                  | The plugin writes                                                                  |
 | ----------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
-| Recipes     | Select or type the recipes folder. It cannot be in the plugin home.     | The setting, and the folder when it is new.                                        |
+| Recipes     | Select or type the recipes folder. It cannot be in the plugin home. Select the unit system: "Metric" or "Imperial". | The two settings, and the folder when it is new. |
 | Plugin home | Keep the name `Larder`, or type a different name.                       | `Pantry`, `Shopping`, and `Shopping/Items` in it, an empty `Meal plan.md`, and the four path [settings](settings.md). |
 | Places      | Rename, remove, or add places. Select "Place for new food".             | The place list and "Place for new food".                                           |
 | First food  | Give an amount to staples of the checklist, or use "Add to pantry".     | A [food item note](food-item-note.md) for each.                                    |
 
-Each step needs the step before it. The home must not hold the recipes, and food needs a folder and a place. Setup moves no note from a different folder.
+The unit system comes first, because the first food step writes rows in it. Each step needs the step before it. The home must not hold the recipes, and food needs a folder and a place. Setup moves no note from a different folder.
 
 "Add to pantry" is the form of the Pantry part, so the button "Add brand" is there too. The packages are in the cupboard in front of you, so it is a good moment for the photo of each [brand](brands.md).
 

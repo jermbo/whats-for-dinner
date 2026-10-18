@@ -1,11 +1,11 @@
 ---
-full: 1 bag
+full: 28 g
 bought: 2026-10-17
 ---
 
 | Place          | Amount | Use by |
 | -------------- | ------ | ------ |
-| Kitchen pantry | 1 bag  |        |
+| Kitchen pantry | 28 g   |        |
 
 ## Brands
 

@@ -4,19 +4,21 @@ This list tests the seven package stories of version 0.5.0, on the phone. Do the
 
 "Reset" a note means: copy its text again from the section "What the vault needs" of that page.
 
+Since version 0.6.0 the test vault is metric. A jug of milk is 3.79 l, not 1 gal, and a can of beans is 425 g, not 15 oz. The lines below that name gallons or ounces for a bar or a step are from before: read 1 gal as 3.79 l and 15 oz as 425 g. The amounts that the bar shows are then in litres or grams.
+
 ## Before you start
 
-- [ ] `Larder/Pantry/Milk.md` has `full: 2 gal`, `low: 1/2 gal`, and two rows in "Fridge": `1/2 gal | 1 gal | 2026-10-22` and `1 gal | 1 gal | 2026-10-29`.
+- [ ] `Larder/Pantry/Milk.md` has `full: 7.57 l`, `low: 1.89 l`, and two rows in "Fridge": `1.89 l | 3.79 l | 2026-10-22` and `3.79 l | 3.79 l | 2026-10-29`.
 - [ ] `Eggs.md` has `full: "24"` and the rows `2 | 12 | 2026-10-25` and `12 | 12 | 2026-11-16`, in "Fridge".
-- [ ] `Black beans.md` has 8 rows in "Kitchen pantry": 5 of `15 oz` with 2027-03-01, 2 of `15 oz` with 2027-06-01, and the last row `7.5 oz | 15 oz | 2027-03-01`.
+- [ ] `Black beans.md` has 8 rows in "Kitchen pantry": 5 of `425 g` with 2027-03-01, 2 of `425 g` with 2027-06-01, and the last row `213 g | 425 g | 2027-03-01`.
 - [ ] `Apples.md` has no property and the row `Fridge | 2 | | 2026-10-28`. `Flour.md` has one row of `1000 g` with no size.
-- [ ] `Larder/Shopping/2026-10-14.md` has a row of milk (1 gal, 3.99) and a row of eggs (12, 3.49).
+- [ ] `Larder/Shopping/2026-10-14.md` has a row of milk (3.79 l, 3.99) and a row of eggs (12, 3.49).
 - [ ] The build made `main.js` again. Put the plugin off and on, or restart Obsidian.
 
 ## A. One line for each food item in each place
 
-- [ ] Open the Pantry part, "By place". The group "Kitchen pantry" has one line of black beans: "112.5 oz · 8 packages". (Story 2: AC 1 and 1 a)
-- [ ] The group "Fridge" has one line of milk: "1 1/2 gal · 2 packages". (Story 1: AC 1 and 1 a. Story 2: AC 2 and 2 a)
+- [ ] Open the Pantry part, "By place". The group "Kitchen pantry" has one line of black beans: "3.19 kg · 8 packages". (Story 2: AC 1 and 1 a)
+- [ ] The group "Fridge" has one line of milk: "5.68 l · 2 packages". (Story 1: AC 1 and 1 a. Story 2: AC 2 and 2 a)
 - [ ] The line of flour shows "1000 g", with no number of packages. (Story 2: AC 3)
 - [ ] The line of milk has a badge with the days to 22 October: "4 days" on 18 October, "2 days" on 20 October. (Story 2: AC 4)
 - [ ] Tap the filter "Use soon". The list has one line of milk, not two. Tap the filter again to put it off. (Story 2: AC 7)

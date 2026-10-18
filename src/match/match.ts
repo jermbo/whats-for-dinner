@@ -8,8 +8,9 @@ import type { Ingredient, IngredientGroup, Recipe } from '../recipemd/types';
 import { measure, type Measure } from '../units';
 import { foodNameOf, nameKey } from './names';
 
-// enough: the pantry has the amount. unknown: the pantry has the food, but the units do not
-// compare. short: the pantry has less than the amount. missing: the pantry has none.
+// enough: the pantry has the amount. unknown: the pantry has the food, but the plugin cannot count
+// it, such as 1 onion against 500 g, or a row of "tap". The screens show "Check" for it. short:
+// the pantry has less than the amount. missing: the pantry has none.
 export type Status = 'enough' | 'unknown' | 'short' | 'missing';
 
 export type IngredientMatch = {

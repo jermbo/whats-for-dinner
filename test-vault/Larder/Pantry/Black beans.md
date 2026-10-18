@@ -1,14 +1,14 @@
 ---
-full: 120 oz
+full: 3.4 kg
 ---
 
 | Place          | Amount | Size  | Use by     |
 | -------------- | ------ | ----- | ---------- |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-03-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-03-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-03-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-03-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-03-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-06-01 |
-| Kitchen pantry | 15 oz  | 15 oz | 2027-06-01 |
-| Kitchen pantry | 7.5 oz | 15 oz | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-03-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-06-01 |
+| Kitchen pantry | 425 g  | 425 g | 2027-06-01 |
+| Kitchen pantry | 213 g  | 425 g | 2027-03-01 |

@@ -12,11 +12,11 @@ The plugin makes your vault a kitchen that knows what it has. This page tells wh
 
 ## The first open sets up the vault
 
-The first time that you open the kitchen in a new vault, [setup](../architecture/setup.md) asks four things: where your recipes are, the name of the folder for the notes of the plugin, the places of your kitchen, and the first food. A checklist of staples adds food with a tap and an amount. Then the four parts open, and the pantry has your food.
+The first time that you open the kitchen in a new vault, [setup](../architecture/setup.md) asks five things: where your recipes are, metric or imperial, the name of the folder for the notes of the plugin, the places of your kitchen, and the first food. A checklist of staples adds food with a tap and an amount. Then the four parts open, and the pantry has your food.
 
 ## The pantry knows what you have, and where
 
-You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the [pantry](../architecture/pantry.md) keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
+You record your food one time, with its place and the weight or volume from the label, in the unit system of your vault: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the [pantry](../architecture/pantry.md) keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
 
 The plugin does not assume that a food is there. Water is a food item too: you record it one time, with an amount such as "tap".
 
@@ -26,7 +26,7 @@ In the store, you ask "do I have this?". You type a name, a brand, or a differen
 
 ## The recipes that use your food come first
 
-The [recipe list](../architecture/recipes.md) sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". Food that spoils soon moves its recipes up, so you use the spinach before it is waste.
+The [recipe list](../architecture/recipes.md) sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". A spoon of sugar counts against the grams in the bag. A line that the plugin cannot count, such as 1 onion against 500 g, shows "Check", so you look at the shelf. Food that spoils soon moves its recipes up, so you use the spinach before it is waste.
 
 You find a recipe by its name or by an ingredient. A filter shows only the recipes that you can cook now, or the recipes of one type, such as dinner.
 
