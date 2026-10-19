@@ -36,6 +36,8 @@ export type KitchenPage =
 	| { is: 'edit'; path: string }
 	| { is: 'gallery'; path: string };
 
+export type Part = 'pantry' | 'recipes' | 'plan' | 'shop';
+
 // What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped
 // for this trip, the settings, and the step of setup. The cart is not here. It is in the note of
 // the trip, which Obsidian moves to your other device.
