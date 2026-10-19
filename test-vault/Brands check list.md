@@ -25,7 +25,7 @@ This list tests the seven stories of version 0.5.0, on the phone. Do the parts i
 
 - [ ] Open the Pantry part. Type "brand c" in "Find food". The pantry shows only taco seasoning. (Story 1: AC 8)
 - [ ] Type "gold". The pantry shows no line. Clear the field. (Story 1: AC 9)
-- [ ] Open elbow pasta, and tap "Place, date, and low line" for the form. The form shows the chips "Brand A" and "Store brand", and no text "Brands:". (Story 1: AC 6)
+- [ ] Open elbow pasta, and tap "Place, date, and size" for the form. The form shows the chips "Brand A" and "Store brand", and no text "Brands:". (Story 1: AC 6)
 - [ ] Tap "Cancel". Open the form of taco seasoning. Tap the photo of Brand B. It shows large, with a field "Name", "New photo", and "Remove", and no "In cart". Tap "Close". (Story 1: AC 7. Story 3: AC 6)
 
 ## C. Add a brand with the camera

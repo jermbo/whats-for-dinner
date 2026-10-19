@@ -1,11 +1,10 @@
 ---
-full: 28 g
 bought: 2026-10-17
 ---
 
-| Place          | Amount | Use by |
-| -------------- | ------ | ------ |
-| Kitchen pantry | 28 g   |        |
+| Place          | Left | Size | Use by |
+| -------------- | ---- | ---- | ------ |
+| Kitchen pantry | full | 28 g |        |
 
 ## Brands
 

@@ -4,7 +4,7 @@ import { addStepPhoto as addPhotoLine, markBest } from '../cook/step-photo';
 import type { CookResult, RecipeEntry } from './types';
 import { markCooked } from './plan-actions';
 import type { PlanActionsHost } from './plan-actions';
-import { setStocks } from './pantry-actions';
+import { setCheck, setStocks } from './pantry-actions';
 import type { PantryActionsHost } from './pantry-actions';
 import { savePhoto, type PhotoActionsHost } from './photo-actions';
 
@@ -20,6 +20,7 @@ export type CookActionsHost = PantryActionsHost &
 
 export async function finishCooking(host: CookActionsHost, path: string, result: CookResult) {
 	for (const [foodPath, stocks] of result.stocks) await setStocks(host, foodPath, stocks);
+	for (const foodPath of result.check) await setCheck(host, foodPath, true);
 
 	const file = host.fileAt(path);
 	const entry = host.recipes.find((recipe) => recipe.path === path);

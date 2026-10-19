@@ -9,7 +9,9 @@ status: agreed
 
 # Spec: units of the vault
 
-This page has the scope of the work, with no reasons. Each line names the decision of the [decision log](decision-log.md) that it comes from, and the reason is there. Only decisions 2, 3, and 4 change the plugin. Each other decision keeps what is built.
+This page has the scope of the work, with no reasons. Each line names the decision of the [decision log](decision-log.md) that it comes from, and the reason is there.
+
+> **Replaced in part.** The [simple pantry](../simple-pantry/spec.md) of the same version replaces the unit system, the bar in round steps, and the field "Package size". The rough rule and the mark "Check" stay. Only decisions 2, 3, and 4 change the plugin. Each other decision keeps what is built.
 
 ## The problem
 

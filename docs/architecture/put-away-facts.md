@@ -29,14 +29,14 @@ You usually buy the same box of eggs, for about the same price, and you put it i
 
 | Fact        | From the receipts                                    | With no receipt, or with an empty cell                                 |
 | ----------- | ---------------------------------------------------- | ---------------------------------------------------------------------- |
-| Amount      | The last size: the amount of the newest row.         | The amount of the row on the list, the full amount, and then 1.        |
+| Amount      | The last size: the amount of the newest row.         | The amount of the row on the list, the size of the newest package, and then 1. |
 | Place       | The place of the last row.                           | The place of the first row of the food item.                           |
 | Use-by date | Today, plus the days that the food had then.         | Empty.                                                                 |
 | Price       | The regular price: the newest row with no sale mark. | Empty.                                                                 |
 | "Sale"      | Off.                                                 | Off.                                                                   |
 | Brand       | The brand of the cart task, then of the last row.    | The only brand of the food item, and then no brand.                    |
 
-The row on the list has the amount that you usually buy: the newest amount of the receipts in the unit of the food item, unless the meals need more. So put away and the list agree. An amount must be in the unit of the food item: the unit of its full amount, or of its first row. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the full amount of the food item, and then with 1. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
+The row on the list has the amount that you usually buy: the newest amount of the receipts in the unit of the food item, unless the meals need more. So put away and the list agree. An amount must be in the unit of the food item: the unit of its first package. Oats count in grams, so a receipt with "1" bag does not count, and "How much" does not offer it. A "1" does not add to 50 g, so the oats would stay low after the trip. With no such amount, the line starts with the list row, then with the size of the newest package, and then with 1. A size must have a unit of the [unit list](amounts.md#the-units-of-a-package-size), or be a plain count: "1 gall" keeps the line open with "Select a size", and "Put away" waits. An item that is not in the pantry, or that the pantry cannot count, takes the newest amount of its receipts. A food item with no row starts in the place for new food of the [settings](settings.md). A price that you do not change goes into the receipt, because your check is the confirmation.
 
 ## A sale price is never the start
 
@@ -58,9 +58,7 @@ The amount of a line is the size of its package. New quinoa of 1 lb gets the siz
 
 ## Each line is one row
 
-"Put away" on a line writes one package into the food item note. It writes over the [empty row](food-item-note.md#the-empty-row) of the place of the line, with the new amount, size, and date. A place with no empty row gets a new row. A line never adds to a row that has food: the new jug of milk is a second row, because the two jugs spoil on different days.
-
-Loose food is different. Its amount goes into the row of its place, and the size of the row becomes its new amount: 2 apples and 6 more apples are one row of 8, with the size 8. A place with no row of the loose food gets a new row.
+"Put away" on a line writes one package into the [food item note](food-item-note.md): a new row with the place, the size, and the date of the line, and full. A line never adds to a row that has food: the new jug of milk is a second row, because the two jugs spoil on different days. Six apples are one package of 6, next to the 2 of 6 that you have.
 
 ## A price is a number
 
@@ -68,4 +66,4 @@ A price has no currency. A point or a comma is its decimal mark, and the receipt
 
 ## Further reading
 
-- [Level](level.md): the full amount, which tells what makes a food item full.
+- [Level](level.md): when a food item is low.

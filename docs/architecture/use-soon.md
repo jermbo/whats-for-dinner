@@ -14,7 +14,7 @@ Food that spoils is money in the bin. A date in a note does not help if nobody l
 
 A row of the pantry is one package, and it can have a use-by date. Spinach has two rows: 200 g in the kitchen fridge until 13 October, and 300 g in the outside fridge until 18 October. They are two bags, so they have two dates.
 
-An [empty row](food-item-note.md#the-empty-row) keeps its date in the note until put away writes over it, but the date does not count: no badge, not soon, and not past its date. The empty slot of the eggs makes no suggestion for eggs that you do not have.
+A package that is empty goes out of the [note](food-item-note.md#an-empty-package-goes-out), with its date. So the carton of eggs that you finished makes no suggestion for eggs that you do not have.
 
 ## Soon is 5 days or less
 

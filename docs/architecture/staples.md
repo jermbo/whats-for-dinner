@@ -38,7 +38,7 @@ Food that is low and that is not a staple is a suggestion "Low" too. When a meal
 
 ## A staple on the list fills
 
-The amount of a staple on the list is what makes the food item full again: the full amount less what you have. Flour has 200 g of 1 kg, so the row says "Flour, 800 g". If the meals need more than that, the row has the amount of the meals.
+The amount of a staple on the list is one package: the size of its newest package. Flour has one bag of 1 kg at 1/4, so the row says "Flour, 1 kg". If the meals need more than that, the row has the amount of the meals. Your last receipt comes first: when it has an amount for the food, the row has that amount.
 
 This rule does not ask how the staple got on the list. So the amount of a row does not change when you tap it.
 
@@ -46,4 +46,4 @@ A staple that the plugin cannot count, such as salt with the row "1 box", has a 
 
 ## Further reading
 
-- [Level](level.md): the full amount, and how the plugin decides that a food item is low.
+- [Level](level.md): how the plugin decides that a food item is low.

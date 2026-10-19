@@ -2,13 +2,13 @@
 // of the brands change. The other text of the note, and the text of the section that is not a list
 // item, stays.
 
-import { brandLines, findSection, PHOTO } from './brands';
+import { brandLines, brandText, findSection, PHOTO, type Verdict } from './brands';
 
 // `at` is the number of a brand in the section, as `readBrands` gives it. `photo` is the name of a
 // new file, which replaces the first photo of the brand.
 export type BrandChange =
-	| { is: 'add'; name: string; photo: string }
-	| { is: 'change'; at: number; name: string; photo: string | null }
+	| { is: 'add'; name: string; verdict: Verdict | null; photo: string }
+	| { is: 'change'; at: number; name: string; verdict: Verdict | null; photo: string | null }
 	| { is: 'remove'; at: number };
 
 const ITEM = /^(\s*(?:[-+*]|\d{1,9}[.)])\s+)(.*)$/;
@@ -32,9 +32,13 @@ export function changeBrands(text: string, changes: BrandChange[]): string {
 	return adds.length ? withNew(lines, adds) : lines.join('\n');
 }
 
-// A name goes on the line of the item, and each photo on a line below it. A brand with no name has
-// its first photo on the line of the item.
-function changed(own: string[], indent: string, { name, photo }: { name: string; photo: string | null }) {
+// A name and a verdict go on the line of the item, and each photo on a line below it. A brand with
+// neither has its first photo on the line of the item.
+function changed(
+	own: string[],
+	indent: string,
+	{ name, verdict, photo }: { name: string; verdict: Verdict | null; photo: string | null }
+) {
 	const [, marker, text] = ITEM.exec(own[0]) ?? ['', `${indent}- `, ''];
 	const below = ' '.repeat(marker.length);
 	const lines = [...[...text.matchAll(PHOTO)].map((link) => `${below}${link[0]}`), ...own.slice(1)];
@@ -46,7 +50,8 @@ function changed(own: string[], indent: string, { name, photo }: { name: string;
 		else lines[at] = lines[at].replace(new RegExp(PHOTO.source, 'i'), link);
 	}
 
-	if (name.trim()) return [`${marker}${name.trim()}`, ...lines];
+	const line = brandText(name, verdict);
+	if (line) return [`${marker}${line}`, ...lines];
 	const first = lines.findIndex((line) => ONLY_PHOTO.test(line));
 	if (first === -1) return [];
 	const [link] = lines.splice(first, 1);
@@ -54,10 +59,14 @@ function changed(own: string[], indent: string, { name, photo }: { name: string;
 }
 
 // Each new brand goes at the end of the section. A note with no section gets it at its end.
-function withNew(lines: string[], adds: { name: string; photo: string }[]): string {
-	const items = adds.flatMap(({ name, photo }) =>
-		name.trim() ? [`- ${name.trim()}`, `  ![[${photo}]]`] : [`- ![[${photo}]]`]
-	);
+function withNew(
+	lines: string[],
+	adds: { name: string; verdict: Verdict | null; photo: string }[]
+): string {
+	const items = adds.flatMap(({ name, verdict, photo }) => {
+		const text = brandText(name, verdict);
+		return text ? [`- ${text}`, `  ![[${photo}]]`] : [`- ![[${photo}]]`];
+	});
 	const section = findSection(lines);
 	if (!section) return `${lines.join('\n').trimEnd()}\n\n## Brands\n\n${items.join('\n')}\n`;
 

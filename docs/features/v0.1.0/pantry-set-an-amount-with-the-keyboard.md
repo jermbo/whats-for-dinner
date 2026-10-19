@@ -57,4 +57,4 @@ Each criterion starts with the rice of the test vault: a full amount of 5 kg, 50
 
 ## Architecture
 
-- [Amount bar](../../architecture/amount-bar.md): how the bar and its steps work.
+- [Amount bar](../../architecture/card.md): how the bar and its steps work.

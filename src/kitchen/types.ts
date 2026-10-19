@@ -22,6 +22,8 @@ export type Meal = PlannedMeal & { entry: RecipeEntry | null };
 export type CookResult = {
 	// The new rows of each food item that the meal used, by the path of its note.
 	stocks: Map<string, Stock[]>;
+	// The food items that the meal could not take food from, by the path of the note.
+	check: string[];
 	rating: number | null;
 	note: string;
 	photo: Blob | null;

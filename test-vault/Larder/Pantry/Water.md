@@ -1,3 +1,3 @@
-| Place   | Amount | Use by |
-| ------- | ------ | ------ |
-| Kitchen | tap    |        |
+| Place          | Left | Size | Use by |
+| -------------- | ---- | ---- | ------ |
+| Kitchen pantry | tap  |      |        |

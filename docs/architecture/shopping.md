@@ -20,9 +20,9 @@ The plugin adds and compares [amounts](amounts.md) only if their units compare. 
 
 ## A low staple that a meal needs is on the list
 
-A [staple](staples.md) is food that you always want. When a meal needs a staple that is [low](level.md) or out, the meal uses what is left. So the plugin puts the staple on the list with no action from you, also when the pantry has enough for the meal. The row asks for the larger of two amounts: what the meals need, and what makes the staple full.
+A [staple](staples.md) is food that you always want. When a meal needs a staple that is [low](level.md) or out, the meal uses what is left. So the plugin puts the staple on the list with no action from you, also when the pantry has enough for the meal. The row asks for the larger of two amounts: what the meals need, and one package of the staple.
 
-The boiled eggs need 4 eggs. The pantry has 2, the low line is 4, and the full amount is 30. The list has one row: "Eggs, 28", for the boiled eggs.
+The boiled eggs need 4 eggs. The pantry has one carton with 2 of 12, so eggs are low. The list has one row: "Eggs, 12", for the boiled eggs.
 
 ## Your extras are on the list too
 

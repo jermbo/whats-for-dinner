@@ -94,6 +94,6 @@ Each criterion starts with the rice of the test vault: a full amount of 5 kg, a 
 
 ## Architecture
 
-- [Amount bar](../../architecture/amount-bar.md): why the bar is there, and how its pieces and steps work.
+- [Amount bar](../../architecture/card.md): why the bar is there, and how its pieces and steps work.
 - [Amounts](../../architecture/amounts.md): which units compare.
 - [Food item note](../../architecture/food-item-note.md): the table that "Done" writes.

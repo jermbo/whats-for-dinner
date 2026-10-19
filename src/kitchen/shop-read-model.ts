@@ -21,9 +21,9 @@ export function mealNeeds(meals: Meal[], pantryFolder: string) {
 	);
 }
 
-export function calculatedList(needs: ReturnType<typeof needsOf>, lowPercent: number, today: string) {
+export function calculatedList(needs: ReturnType<typeof needsOf>, today: string) {
 	return {
-		missing: shoppingList(needs, lowPercent),
+		missing: shoppingList(needs),
 		past: pastDateRows(needs, today)
 	};
 }
@@ -69,7 +69,7 @@ export function putAwayCartItems(
 
 export function tripSuggestions(
 	foods: FoodNote[],
-	when: { today: string; soonDays: number; lowPercent: number },
+	when: { today: string; soonDays: number },
 	skipped: string[],
 	trip: TripItem[],
 	missingKeys: string[]

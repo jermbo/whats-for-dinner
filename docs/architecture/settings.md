@@ -35,7 +35,7 @@ When you change a folder or the plan note, the kitchen reads the vault again.
 
 ## The places
 
-A place needs a name before food is there: you name the garage freezer, and then you put food into it. So the data file keeps a list of place names. The place chips of add food, the place filters of the pantry, and the places of put away show each name of the list and each place that a row has. A name shows one time, and the names are sorted A to Z.
+A place needs a name before food is there: you name the garage freezer, and then you put food into it. So the data file keeps a list of place names. The place chips of add food, the place filters of the pantry, and the places of put away show each name of the list and each place that a row has. A name shows one time, and the names are sorted A to Z. The data file also keeps the last place that the [audit](audit.md) finished, so that the next audit starts at the place after it.
 
 You add, rename, and remove a name in the plugin settings tab. The list keeps one name at the minimum. A change of the list does not change a note. So a rename changes only the list, and a row with the old name keeps it. The old name stays in the chips until no row has it.
 
@@ -68,8 +68,6 @@ The button "Test" plays the sound, so that you can select it before you cook.
 | Setting  | Starts as | What it does                                                                       |
 | -------- | --------- | ---------------------------------------------------------------------------------- |
 | Use soon | 5 days    | Food with a use-by date in this number of days, or less, is food to use soon.      |
-| Low line | 25%       | A food item with no low line of its own is low below this part of its full amount. |
-| Units    | Metric    | The [unit system](amounts.md#the-unit-system-of-the-vault) of the rows: metric or imperial. A change does not change the rows that exist. |
 
 ## Where the settings are
 
@@ -81,4 +79,3 @@ The data file also keeps the step of setup, and records when setup is complete. 
 
 - [Notes of the kitchen](notes-of-the-kitchen.md): what is in a note and what is in the data file.
 - [Timers](timers.md): how the alarm uses the sound, the volume, and the vibration.
-- [Level](level.md): how the plugin uses the percentage of the low line.

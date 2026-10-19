@@ -1,9 +1,8 @@
 ---
-full: 1 kg
 staple: seldom
 bought: 2026-09-30
 ---
 
-| Place          | Amount | Use by |
-| -------------- | ------ | ------ |
-| Kitchen pantry | 250 g  |        |
+| Place          | Left | Size | Use by |
+| -------------- | ---- | ---- | ------ |
+| Kitchen pantry | 1/4  | 1 kg |        |

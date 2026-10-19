@@ -5,7 +5,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Stock } from '../../pantry/types';
-	import { entryIn, refusal } from '../../pantry/unit-system';
+	import { entryOf, refusal } from '../../pantry/unit-list';
 	import { STAPLES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
 	import StockEditor from '../pantry/StockEditor.svelte';
@@ -23,7 +23,7 @@
 	const names = $derived(kitchen.foods.map(({ item }) => item.name).sort());
 	const given = $derived([...picked.values()].some((amount) => amount.trim()));
 	// An amount such as "1 jar" stops "Finish setup", and its field says why.
-	const isRefused = (amount: string) => entryIn(kitchen.settings.units, amount) === null;
+	const isRefused = (amount: string) => entryOf(amount) === null;
 	const refused = $derived([...picked.values()].some(isRefused));
 	const ready = $derived(!refused && (given || kitchen.foods.length > 0));
 
@@ -79,14 +79,13 @@
 	</ul>
 	{#if refused}
 		<p class="wfd-food__refused" role="alert" transition:slide={{ duration }}>
-			{refusal(kitchen.settings.units)}
+			{refusal}
 		</p>
 	{/if}
 
 	{#if adding}
 		<div transition:slide={{ duration }}>
 			<StockEditor
-				units={kitchen.settings.units}
 				title="Add to pantry"
 				{names}
 				places={kitchen.places}

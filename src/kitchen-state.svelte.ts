@@ -27,8 +27,8 @@ import {
 	addStockTo,
 	changeStocks as changeStocksAction,
 	foodPath,
-	setLoose as setLooseAction,
-	setLow as setLowAction,
+	setCheck as setCheckAction,
+	setSize as setSizeAction,
 	setStaple as setStapleAction,
 	type PantryActionsHost
 } from './kitchen/pantry-actions';
@@ -141,9 +141,7 @@ export class Kitchen {
 	meals = $derived(mealsOf(this.plan, this.recipes));
 
 	private needs = $derived(mealNeeds(this.meals, this.where.pantry));
-	private calculated = $derived(
-		calculatedList(this.needs, this.settings.lowPercent, this.today)
-	);
+	private calculated = $derived(calculatedList(this.needs, this.today));
 	private shopLists = $derived.by(() =>
 		cartItems(
 			this.calculated,
@@ -176,8 +174,7 @@ export class Kitchen {
 			this.foods,
 			{
 				today: this.today,
-				soonDays: this.settings.soonDays,
-				lowPercent: this.settings.lowPercent
+				soonDays: this.settings.soonDays
 			},
 			this.skipped,
 			this.trip,
@@ -297,16 +294,16 @@ export class Kitchen {
 		await addStockByName(this.pantryHost, name, stock);
 	}
 
-	async setLow(path: string, low: string) {
-		await setLowAction(this.pantryHost, path, low);
+	async setCheck(path: string, check: boolean) {
+		await setCheckAction(this.pantryHost, path, check);
+	}
+
+	async setSize(path: string, size: string) {
+		await setSizeAction(this.pantryHost, path, size);
 	}
 
 	async setStaple(path: string, label: StapleLabel) {
 		await setStapleAction(this.pantryHost, path, label);
-	}
-
-	async setLoose(path: string, loose: boolean) {
-		await setLooseAction(this.pantryHost, path, loose);
 	}
 
 	isPlanned(path: string) {
@@ -635,9 +632,6 @@ export class Kitchen {
 			},
 			get newPlace() {
 				return k.newPlace;
-			},
-			get units() {
-				return k.settings.units;
 			},
 			get tripStore() {
 				return k.tripStore;

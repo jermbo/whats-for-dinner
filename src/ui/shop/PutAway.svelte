@@ -169,7 +169,6 @@
 			places={placesFor(item)}
 			placeIsGuess={placeIsGuess(line)}
 			today={kitchen.today}
-			units={kitchen.settings.units}
 			open={open?.key === line.key}
 			ontoggle={() => toggle(line)}
 			onsale={() => sale(line)}
@@ -178,7 +177,6 @@
 			urlOf={(photo) => kitchen.photoUrl(photo, item.key)}
 			ontake={(photo) => takeBrand(line, photo)}
 			onaddpackage={() => addPackage(line)}
-			onloose={item.loose === null ? null : (on) => kitchen.setLoose(item.key, on)}
 			onnotbought={() => notBought(line)}
 			onputaway={() => putOne(line)}
 			{busy}

@@ -6,15 +6,12 @@
 	import { makeStock } from '../../pantry/food-item';
 	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
-	import { entryIn, refusal, type UnitSystem } from '../../pantry/unit-system';
+	import { entryOf, refusal } from '../../pantry/unit-list';
 	import Button from '../parts/Button.svelte';
-	import Chip from '../parts/Chip.svelte';
 	import BrandFields from './BrandFields.svelte';
 
 	type Props = {
 		title: string;
-		// Each amount that you type goes into this system.
-		units: UnitSystem;
 		// With a list of names, the editor asks for the name of the food item.
 		names?: string[];
 		// The name that the field starts with, such as the text that found no food.
@@ -24,9 +21,6 @@
 		places: string[];
 		// The place that a new row starts with, such as "Place for new food".
 		startPlace?: string;
-		// The low line of the food item, as text. The hint is the line that the plugin sets when the
-		// field is empty. With no low line here, the editor does not ask for it.
-		low?: { text: string; hint: string };
 		// The kind of the food item, "never" when the Shop part never asks about it, or null. With no
 		// value here, the editor does not ask for it.
 		staple?: StapleLabel;
@@ -36,14 +30,10 @@
 		// has no brand yet.
 		brands?: Brand[];
 		urlOf?: (photo: string) => string | null;
-		// The food item has no packages. With no value here, the editor does not show the chip.
-		loose?: boolean;
-		// The chip writes the note at once, as a chip does.
-		onloose?: (on: boolean) => void;
 		onsave: (
 			stock: Stock,
 			name: string,
-			labels: { low: string; staple: StapleLabel },
+			labels: { staple: StapleLabel },
 			brands: BrandDraft[]
 		) => void;
 		oncancel: () => void;
@@ -52,19 +42,15 @@
 	};
 	let {
 		title,
-		units,
 		names,
 		startName = '',
 		stock,
 		places,
 		startPlace = '',
-		low,
 		staple,
 		facts = [],
 		brands = [],
 		urlOf = () => null,
-		loose,
-		onloose,
 		onsave,
 		oncancel,
 		onusedup,
@@ -77,10 +63,8 @@
 	const first = () => stock;
 	const firstName = () => startName;
 	const firstPlace = () => first()?.place ?? startPlace;
-	const firstLow = () => low?.text ?? '';
 	const firstKind = (): StapleLabel => staple ?? null;
 	let name = $state(firstName());
-	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
 	// The size of the package. Food that is already open needs it, so that its bar ends at the size
@@ -96,6 +80,8 @@
 			at,
 			start: brand.name,
 			name: brand.name,
+			startVerdict: brand.verdict,
+			verdict: brand.verdict,
 			photo: null,
 			removed: false
 		}))
@@ -111,9 +97,8 @@
 	const ready = $derived(Boolean(where) && (!names || Boolean(name.trim())));
 	// The amounts as the rows get them, or null for an amount that the vault does not permit.
 	const entries = $derived({
-		amount: entryIn(units, amount),
-		size: entryIn(units, size),
-		low: entryIn(units, lowText)
+		amount: entryOf(amount),
+		size: entryOf(size)
 	});
 	const refused = $derived(Object.values(entries).some((entry) => entry === null));
 	// The message waits for "Save", so that "1 j" does not get an error while you type "1 jar".
@@ -122,9 +107,9 @@
 	function save(event: SubmitEvent) {
 		event.preventDefault();
 		tried = true;
-		const { amount, size, low } = entries;
-		if (!ready || amount === null || size === null || low === null) return;
-		onsave(makeStock(where, amount, useBy, size), name.trim(), { low, staple: kind }, drafts);
+		const { amount, size } = entries;
+		if (!ready || amount === null || size === null) return;
+		onsave(makeStock(where, amount, useBy, size), name.trim(), { staple: kind }, drafts);
 	}
 </script>
 
@@ -176,7 +161,7 @@
 			<span class="wfd-label">How much</span>
 			<input
 				type="text"
-				placeholder={units === 'metric' ? '500 g' : '16 oz'}
+				placeholder="1/2 gal"
 				aria-invalid={tried && entries.amount === null}
 				bind:value={amount}
 			/>
@@ -185,7 +170,7 @@
 			<span class="wfd-label">Package size</span>
 			<input
 				type="text"
-				placeholder={amount || (units === 'metric' ? '1 l' : '1 gal')}
+				placeholder={amount || '1 gal'}
 				aria-invalid={tried && entries.size === null}
 				bind:value={size}
 			/>
@@ -194,20 +179,9 @@
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />
 		</label>
-		{#if low}
-			<label class="wfd-editor__field">
-				<span class="wfd-label">Low line</span>
-				<input
-					type="text"
-					placeholder={low.hint}
-					aria-invalid={tried && entries.low === null}
-					bind:value={lowText}
-				/>
-			</label>
-		{/if}
 	</div>
 	{#if tried && refused}
-		<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal(units)}</p>
+		<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal}</p>
 	{/if}
 
 	{#if staple !== undefined}
@@ -231,12 +205,6 @@
 				{/each}
 			</div>
 		</fieldset>
-	{/if}
-
-	{#if loose !== undefined && onloose}
-		<div class="wfd-editor__options">
-			<Chip label="Loose" on={loose} onclick={() => onloose(!loose)} />
-		</div>
 	{/if}
 
 	<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />

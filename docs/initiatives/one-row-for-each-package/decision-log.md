@@ -11,6 +11,8 @@ updated: 2026-10-18
 
 You have two gallons of milk with two dates, and two cartons of eggs with 2 eggs and 12 eggs. The pantry keeps each of them as one row with one amount and one date, and the bar cannot show what you see. This page records each decision that makes one row one [package](glossary.md), and the reason for it.
 
+> **Replaced in part.** The [simple pantry](../simple-pantry/decision-log.md) of version 0.6.0 replaces decisions 4, 5, 8, 10, 11, 13, 17, 20 to 22, and 27 to 30: a package has a level or a count, an empty package goes out, a meal takes from the open package first, the card replaces the open line, and the unit list is there. The other decisions stay.
+
 ## The words of the owner
 
 > The full line doesn't make sense. For example, I buy milk when I am halfway low. But since the full line is 1 gallon, it does not represent the correct amount of 1.5 gallons. Similar issue with eggs. I have two cartons one has 2 the other has 12. So I need to track that properly.
@@ -109,6 +111,6 @@ No question is open. The [spec](spec.md) has the scope.
 
 ## Further reading
 
-- [Amount bar](../../architecture/amount-bar.md): the bar of an open row today.
+- [Amount bar](../../architecture/card.md): the bar of an open row today.
 - [Level](../../architecture/level.md): how the full amount and the low line make a food item low.
 - [Workflow](../../standards/workflow.md): the step of the work that this page is in.

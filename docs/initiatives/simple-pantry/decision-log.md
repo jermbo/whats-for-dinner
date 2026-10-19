@@ -91,7 +91,7 @@ The model is correct: a food item has packages, and each package has a place. Th
 7. **A meal takes food out as a part of a package, and the level rounds.** The pancakes need 1 cup of milk. A jug of 1 gal at 1/2 has 8 cups, so 7 are left: 7/16 gal, which rounds to the level 1/2. The reason: the owner's answer 1 a. The plugin knows the size of each package, so it can subtract.
 8. **An open package is never full.** When a meal takes food from a full package and the level rounds to full, the level becomes 3/4. The reason: without this rule, a cup at a time never changes a full jug. This is a choice of Claude: the audit corrects the error.
 9. **A meal takes from the open package first.** Then from the package with the first use-by date. Then from the package that is higher in the table. The 4 eggs of the open carton go before the new carton. The reason, in the words of the owner: "use the quarter gallon first, then break into the whole gallon". This changes the rule of today, which takes the first date first.
-10. **Food that the plugin cannot convert is "to check".** A recipe asks for 2 cups of flour, and the bag is 2 lb. The plugin changes nothing, and it marks flour "to check". The audit shows it first. The reason: a volume against a weight needs a density, and a guess is worse than a question. A table of densities was rejected: it is much work for a weekly error.
+10. **Food that the plugin cannot convert is "to check".** A recipe asks for 2 cups of flour, and the bag is 2 lb. The plugin changes nothing, and it marks flour "to check". The audit shows it first. The reason: a volume against a weight needs a density, and a guess is worse than a question. A table of densities was rejected: it is much work for a weekly error. *Changed by decision 33: the rough rule of version 0.6.0 stays, so only a count against a measure is "to check".*
 
 ### Packages and the level
 
@@ -145,6 +145,13 @@ The question: which way to set a package on the new pantry bar works on the phon
 30. **A drag stops at one stop, and "Empty" takes the package away.** The reason: a drag that goes a little too far must not remove a package. This is a choice of Claude.
 31. **A metric amount shows as on its label, and other units show in quarters.** 425 g, 2.7 kg, and 58 ml, but 1 1/4 gal. The reason: the prototype showed "2656 1/4 g", which no label has. This is a choice of Claude.
 32. **The place and the date open inside the card.** The place is a group of chips that wrap, so that each chip stays inside the card, and the date is one field. The reason: decision 21, and in the prototype a row of chips that scrolled was cut at the border.
+
+### The stories
+
+33. **The rough rule 1 ml = 1 g stays.** A meal compares a volume with a weight by this rule, as in version 0.6.0. So 2 cups of flour take 473 g from the bag. Only an amount that compares with nothing is "to check": 1 onion against a bag of 1 kg. The reason: the owner agreed to this rule in version 0.6.0, and the audit corrects the error each week. Decision 10 asked for "to check" in its place, but it did not know of the rule. This is a choice of Claude, made when the stories were written.
+34. **The note keeps a verdict in the list item of the brand, after a middle dot.** `- Brand A · buy again` and `- Brand B · avoid`. The reason: the section "Brands" is the place of each fact of a brand, and the line stays easy to read and to type. A property for each brand was rejected. This is a choice of Claude.
+35. **"To check" is the property `check: true` of the food item note.** A meal writes it, and "Right" in the audit, or a change in the card, removes it. The reason: each fact of the kitchen is in a note, so the phone and the computer show the same list. This is a choice of Claude.
+36. **The audit keeps the last place that it finished in the data of the plugin.** The reason: it is a fact of the plugin, not of the food. This is a choice of Claude.
 
 ## Further reading
 

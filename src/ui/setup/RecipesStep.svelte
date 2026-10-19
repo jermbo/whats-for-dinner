@@ -1,9 +1,7 @@
 <script lang="ts">
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { folderPath } from '../../settings';
-	import type { UnitSystem } from '../../pantry/unit-system';
 	import { areApart, HOME } from '../../setup/home';
-	import Chip from '../parts/Chip.svelte';
 	import StepFrame from './StepFrame.svelte';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
@@ -18,12 +16,6 @@
 	// The home gets its name in the next step. Until then, it is the name that it starts with.
 	const apart = $derived(areApart(path, HOME));
 	const isNew = $derived(Boolean(path) && !folders.includes(path));
-
-	// The first food step writes rows, so the unit system comes before it.
-	const systems: { value: UnitSystem; label: string }[] = [
-		{ value: 'metric', label: 'Metric' },
-		{ value: 'imperial', label: 'Imperial' }
-	];
 </script>
 
 <StepFrame
@@ -48,18 +40,6 @@
 			<span class="wfd-recipes__note">Only the notes in this folder are recipes.</span>
 		{/if}
 	</label>
-	<fieldset class="wfd-recipes wfd-recipes__units">
-		<legend class="wfd-label">Units of the pantry</legend>
-		<div class="wfd-recipes__chips">
-			{#each systems as system (system.value)}
-				<Chip
-					label={system.label}
-					on={kitchen.settings.units === system.value}
-					onclick={() => kitchen.changeSettings({ units: system.value })}
-				/>
-			{/each}
-		</div>
-	</fieldset>
 </StepFrame>
 
 <style>
@@ -77,14 +57,5 @@
 		font-size: 14px;
 	}
 
-	.wfd-recipes__units {
-		margin: 16px 0 0;
-		padding: 0;
-		border: 0;
-	}
 
-	.wfd-recipes__chips {
-		display: flex;
-		gap: 8px;
-	}
 </style>

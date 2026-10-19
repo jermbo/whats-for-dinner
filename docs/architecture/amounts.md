@@ -47,16 +47,16 @@ A mass and a volume compare by one rough rule: 1 ml is 1 g, for each food. A tab
 
 A count does not compare with a mass or a volume. The [match](match.md) page tells what the plugin does in that case.
 
-## The unit system of the vault
+## The units of a package size
 
-Each vault has one unit system, from the [settings](settings.md): metric or imperial. Each row of the pantry is in that system, or is a plain count.
+The size of a pantry package has a unit from one fixed list, or no unit for a plain count. You select the unit, so a typo such as "1 gall" cannot get into the pantry.
 
-| System   | Mass      | Volume                 |
-| -------- | --------- | ---------------------- |
-| Metric   | g, kg     | ml, l                  |
-| Imperial | oz, lb    | fl oz, cup, qt, gal    |
+| Family | Units of the list                    |
+| ------ | ------------------------------------ |
+| Volume | tsp, tbsp, cup, fl oz, pt, qt, gal, ml, l |
+| Mass   | oz, lb, g, kg                        |
 
-An amount that you type for the pantry goes into the system at entry. In a metric vault, "8 oz" becomes "227 g", rounded to a whole gram or millilitre. A container word such as "jar" or "bag" is not a unit there: you give the weight or the volume from the label. A recipe can be in either system, because the two families convert.
+A package keeps the unit of its label: a jug of milk is `1 gal`, and a can of beans is `425 g`. The vault has no unit system, because each unit of the list converts. A container word such as "jar" or "bag" is not on the list: you give the weight or the volume from the label.
 
 ## An amount with no number
 
@@ -68,9 +68,9 @@ The plugin shows 2 decimals at most. It shows 1000 g or more as kilograms, and 1
 
 You read a gallon, a pint, or a cup in fractions on the package. So an amount in `gal`, `qt`, `pt`, `cup`, `tsp`, or `tbsp` that is a number of eighths shows as a fraction: 0.375 gal is "3/8 gal", and 1.5 gal is "1 1/2 gal". Each other unit keeps decimals: 7.5 oz, and 0.625 kg is "625 g". The note gets the same text as the screen.
 
-A pantry row keeps the unit that you gave it. After a change, 2 kg less 300 g is "1.7 kg", and 1 gal less 1/8 gal is "7/8 gal". If the result is not round in that unit, the row gets grams or millilitres: 1 kg less 4 g is "996 g".
+A pantry row has no amount of its own: it has a [level](level.md) or a count. Its amount is the level times its size, and the plugin uses it only to compare and to add.
 
-The total of the rows of a food item is in their unit when each row has the same unit: eight cans of 15 oz less half a can are "112.5 oz". Rows in different units of one family add up in grams or millilitres.
+The total of the packages of a food item is in their unit when each package has the same unit: two jugs of 1 gal at 1/4 and full are "1 1/4 gal". Packages in different units of one family add up in grams or millilitres.
 
 ## Further reading
 

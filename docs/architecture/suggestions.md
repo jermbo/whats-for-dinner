@@ -17,7 +17,7 @@ A food item is a suggestion when the pantry is out of it, low on it, or has it n
 | The food item                                 | The reason that shows | The group   |
 | --------------------------------------------- | --------------------- | ----------- |
 | Has no row                                    | "Out"                 | Out         |
-| Is at or below its [low line](level.md)       | "Low"                 | Low         |
+| Is [low](level.md): one package at 1/4 is left | "Low"                 | Low         |
 | Has a row with a use-by date that is past     | "Past its date"       | Use-by date |
 | Has a row to [use soon](use-soon.md)          | "Use by 15 Oct"       | Use-by date |
 
@@ -45,7 +45,7 @@ A suggestion shows the level, such as "150 ml of 1 l", the purchase date, and th
 
 ## An example
 
-Butter has 40 g of 250 g, and its low line is 50 g. Butter is a suggestion in the group "Low". Potatoes are "Sometimes", and you bought them on 12 October. On 19 October they are not a suggestion. On 2 November they are: "Bought 3 weeks ago".
+Butter has one package of 250 g at 1/4. Butter is a suggestion in the group "Low". Potatoes are "Sometimes", and you bought them on 12 October. On 19 October they are not a suggestion. On 2 November they are: "Bought 3 weeks ago".
 
 ## You accept, you skip, or you never ask
 

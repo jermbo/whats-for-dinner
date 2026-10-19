@@ -2,9 +2,14 @@
 // the lines with an indent below it. This is the form of a step photo, so you see each brand with
 // its photo in Obsidian with no plugin.
 
+// What you think of a brand, for the question in the store: take it, or not.
+export type Verdict = 'buy again' | 'avoid';
+
 export type Brand = {
 	// No text: the brand has only a photo, and you can give it a name later.
 	name: string;
+	// Null: you did not decide.
+	verdict: Verdict | null;
 	// The names of the image files, as the links have them. The first photo is the photo that shows.
 	photos: string[];
 };
@@ -51,10 +56,23 @@ export function brandLines(lines: string[]): (BrandLines & { brand: Brand })[] {
 
 const photosIn = (text: string) => [...text.matchAll(PHOTO)].map((match) => match[1].trim());
 
+// The verdict is the text after the last middle dot, on the line of the item.
+const VERDICT = /(?:^|\s)·\s*(buy again|avoid)\s*$/i;
+
 function brandOf(own: string, below: string[]): Brand | null {
-	const name = own.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim();
+	const text = own.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim();
+	const found = VERDICT.exec(text);
+	const verdict = found ? (found[1].toLowerCase() as Verdict) : null;
+	const name = found ? text.slice(0, found.index).trim() : text;
 	const photos = [own, ...below].flatMap(photosIn);
-	return name || photos.length ? { name, photos } : null;
+	return name || photos.length || verdict ? { name, verdict, photos } : null;
+}
+
+// The text of the line of a brand: its name, and its verdict after a middle dot.
+export function brandText(name: string, verdict: Verdict | null): string {
+	const own = name.trim();
+	if (!verdict) return own;
+	return own ? `${own} · ${verdict}` : `· ${verdict}`;
 }
 
 export const readBrands = (text: string): Brand[] =>

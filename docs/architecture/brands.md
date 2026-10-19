@@ -33,6 +33,14 @@ The plugin renames no photo and deletes no photo. The link in the note is the co
 | The row of the stage Shop             | A brand with no name, shown large with "In cart".       |
 | The open line of put away             | A brand with no name, selected for the line.            |
 
+## A verdict tells you what to take
+
+Some brands you want again, and some you never want again. In the store, the question is yes or no. So a brand can have a verdict: "Buy again" or "Avoid". The large view of a brand in the Pantry part has two chips for it, and "Save" writes it.
+
+Each photo of a brand with a verdict has a small mark: an olive check for "Buy again", and a tomato cross for "Avoid". The mark shows in the Shop part and at put away, so you see it on the shelf in one look. A brand with no verdict has no mark.
+
+The note keeps the verdict after a middle dot, on the line of the brand: `- Brand A · buy again`, and `- Brand B · avoid`. The [food item note](food-item-note.md) page has the full form.
+
 ## The brand that you bought
 
 In the [stage Shop](shopping.md), a tap on a photo shows it large, and "In cart" ticks the row with that brand. The [shopping note](shopping-note.md) keeps it after the link of the task. [Put away](put-away.md) starts from it, and the [receipt](receipt.md) keeps it with its own price.

@@ -1,5 +1,5 @@
 import { makeStock } from '../pantry/food-item';
-import { entryIn } from '../pantry/unit-system';
+import { entryOf } from '../pantry/unit-list';
 import type { Stock } from '../pantry/types';
 import type { Settings } from '../settings';
 import { folderPath } from '../settings';
@@ -62,7 +62,7 @@ export async function finishSetup(
 	staples: Map<string, string>
 ): Promise<boolean> {
 	const given = [...staples].flatMap(([name, typed]) => {
-		const amount = entryIn(host.settings.units, typed);
+		const amount = entryOf(typed);
 		return amount ? [[name, amount] as const] : [];
 	});
 	for (const [name, amount] of given) {

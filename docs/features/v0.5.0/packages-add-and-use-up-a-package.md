@@ -61,6 +61,6 @@ Each criterion starts with the vault of the [list page](packages-stories.md#what
 
 ## Architecture
 
-- [Amount bar](../../architecture/amount-bar.md): the counts and their buttons.
+- [Amount bar](../../architecture/card.md): the counts and their buttons.
 - [Pantry](../../architecture/pantry.md): the form of one package.
 - [Spec: one row for each package](../../initiatives/one-row-for-each-package/spec.md): scope 4 a and 8 d to g.

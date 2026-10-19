@@ -41,7 +41,8 @@ An example: milk has a jug at 1/4 and a full jug in the fridge. The bar is 2 gal
 8. A meal takes food from the open package first, then the first use-by date, then the higher row (decision 9)
 9. A meal converts the amount of the recipe to a part of the package, and the level rounds to the nearest level (decision 7)
    - a. A full package that a meal takes from is 3/4 or less (decision 8)
-   - b. Food that the plugin cannot convert does not change, and it is "to check" (decision 10)
+   - b. A volume and a weight compare by the rule 1 ml = 1 g (decision 33)
+   - c. Food that compares with nothing does not change, and it is "to check" (decisions 10 and 33)
 
 ### The pantry bar
 
@@ -107,7 +108,7 @@ An example: milk has a jug at 1/4 and a full jug in the fridge. The bar is 2 gal
 | [Pantry](../../architecture/pantry.md)                        | The new model, the bar, the two forms, and the audit.                      |
 | [Food item note](../../architecture/food-item-note.md)        | The new table: `Left` is a level or a count. Fewer properties.             |
 | [Level](../../architecture/level.md)                          | A level of a package, and the new rule for low.                            |
-| [Amount bar](../../architecture/amount-bar.md)                | Replaced by the pantry bar.                                                |
+| [Card](../../architecture/card.md)                | Replaced by the pantry bar.                                                |
 | [End of a meal](../../architecture/end-of-a-meal.md)          | The open package first, the rounding, and "to check".                      |
 | [Brands](../../architecture/brands.md)                        | The verdict.                                                               |
 | [Amounts](../../architecture/amounts.md), [Convert](../../architecture/convert.md) | The unit list, and no unit system.                    |
@@ -138,7 +139,7 @@ On the phone:
 4. "+ Add package" on eggs, two times, gives three cartons. A drag of the first can of beans to full does not move the handle to a different can.
 5. A new food item "Oat milk" gets the package size "64 fl oz" with a chip, and no unit is typed.
 6. The omelette takes 3 eggs: the 4 of the open carton become 1, and the new carton stays 12.
-7. The pancakes ask for 2 cups of flour against a bag of 2 lb, and the audit shows flour first.
+7. The pasta asks for 1 onion against a bag of 1 kg, and the audit shows onions first (decision 33).
 8. The audit stops after "Fridge", and it continues at the next place.
 9. Brand A with "Avoid" shows the mark on its photo in the Shop part.
 

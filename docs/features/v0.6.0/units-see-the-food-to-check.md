@@ -2,7 +2,7 @@
 title: See the food to check
 summary: "Food that the plugin cannot count is in the pantry, with the mark Check on the recipe card, in Get out, and on the meal card."
 parent: units-stories.md
-updated: 2026-10-18
+updated: 2026-10-19
 persona: Cook
 depends-on: []
 status: built
@@ -17,7 +17,7 @@ As the [cook](../../personas.md), I want to see which ingredients the plugin did
 ## Requirements
 
 1. Food that the plugin cannot count is "in the pantry", with the mark "Check"
-   - a. A count against a mass or a volume: "1 onion" against a row of 500 g
+   - a. A count against a mass or a volume: "1 onion" against a bag of 1 kg at 1/2
    - b. A row with no number against an amount: "1 l water" against a row "tap"
    - c. The line counts in "7 of 9", and it is not on the shopping list, as before
 2. The recipe card shows the sticker "Check" on the line, in place of the mark of "in the pantry"
@@ -27,13 +27,13 @@ As the [cook](../../personas.md), I want to see which ingredients the plugin did
 
 ## Acceptance criteria
 
-Each criterion starts with the vault of the [list page](units-stories.md#what-the-vault-needs).
+Each criterion starts with the vault of the [pantry stories](pantry-stories.md#what-the-vault-needs).
 
-1. GIVEN `Onions.md` has `500 g` WHEN the cook opens "Pasta with tomato sauce" in Recipes THEN the line of onion has the sticker "Check"
+1. GIVEN `Onions.md` has `Kitchen pantry | 1/2 | 1 kg |` WHEN the cook opens "Pasta with tomato sauce" in Recipes THEN the line of onion has the sticker "Check"
    - a. AND the count of the recipe has the onion in the pantry
 2. GIVEN `Water.md` has `tap` WHEN the cook opens "Boiled eggs" in Cook Mode THEN Get out shows the sticker "Check" on the line of water
 3. GIVEN "Pasta with tomato sauce" is a meal of the plan WHEN the planner opens the plan THEN its meal card says "1 to check"
-4. GIVEN `Onions.md` has `500 g` and the pasta is a meal of the plan WHEN the shopper opens the stage "Shop" THEN the list has no row of onions
+4. GIVEN `Onions.md` has `Kitchen pantry | 1/2 | 1 kg |` and the pasta is a meal of the plan WHEN the shopper opens the stage "Shop" THEN the list has no row of onions
 
 ## Depends on
 

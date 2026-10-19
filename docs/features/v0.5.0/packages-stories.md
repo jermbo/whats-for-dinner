@@ -57,7 +57,7 @@ Each story updates the wiki pages **before** its code, in the **Elevate** step o
 | [Level](../../architecture/level.md)                       | 1: the full amount only for the level, and out with empty rows.                       |
 | [Use soon](../../architecture/use-soon.md)                 | 1: an empty row has no date that counts. 5: the open package on the same date.        |
 | [Pantry](../../architecture/pantry.md)                     | 2: one line for each food item in each place. 4: the packages in the form.            |
-| [Amount bar](../../architecture/amount-bar.md)             | 3: one bar for each open package, and its steps. 4: the count of sealed packages.     |
+| [Amount bar](../../architecture/card.md)             | 3: one bar for each open package, and its steps. 4: the count of sealed packages.     |
 | [End of a meal](../../architecture/end-of-a-meal.md)       | 5: a meal that takes from more than one package, and the empty row.                   |
 | [Put away](../../architecture/put-away.md)                 | 6: one line for each package, and "+ package". 7: the chip "Loose".                   |
 | [Facts of an item](../../architecture/put-away-facts.md)   | 6: the number of lines, the size, and the row that a line writes. 7: loose food.      |

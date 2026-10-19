@@ -44,14 +44,12 @@ The phone is where you use the plugin, and a function with no test there is not 
 | The brand at put away         | The line of taco seasoning starts with Brand A, and the receipt gets it in the column `Brand`.  |
 | A price for each brand        | A tap on Brand B changes the price to 1.99.                                                     |
 | A photo at put away           | The camera tile of the open line makes a new brand, and selects it.                             |
-| One row for each package      | Milk shows "1 1/2 gal · 2 packages". The open jug moves to 1/4 gal, and the note gets the row.  |
-| Add and use up a package      | "+" on "5 sealed" of the beans makes 6, and "Used up" on the open can leaves an empty row.      |
-| A meal from each package      | The omelette takes 2 eggs from the open carton and 1 from the sealed carton.                    |
-| Put away each package         | "Milk, 1 1/2 gal" gives 2 lines, and each jug gets its own row and its own date.                |
-| Loose food                    | 6 apples with the chip "Loose" go into the row of 2 apples, which becomes 8.                    |
-| A spoon against grams         | The pancakes find 1 tablespoon of sugar in 250 g, and the end of the meal leaves 235 g.          |
-| Food to check                 | The onion of the pasta shows "Check" against 500 g, and the meal card says "1 to check".        |
-| One unit system               | "26 oz" of salt becomes "737 g", and "1 jar" gets the message of the field.                     |
+| A spoon against grams         | The pancakes find 1 tablespoon of sugar in a bag of 1 kg at 1/4, and count it.                   |
+| Food to check                 | The onion of the pasta shows "Check" against a bag of 1 kg, and the meal card says "1 to check".        |
+
+## The simple pantry is the next work
+
+The pantry is the weakest part on the phone. Version 0.6.0 makes it simple: a level or a count for each package, one card with a bar that you drag, meals that take from the open package, a verdict for each brand, and a weekly audit. The [pantry stories](v0.6.0/pantry-stories.md) have the 11 stories and their sequence. They replace the unit system, loose food, the empty row, and the drag in round steps of the first work of this version, so those tests are off this page.
 
 ## More settings come after the first use
 
@@ -63,15 +61,12 @@ The plugin has a fixed value for each of these. A value becomes a setting when i
 | The sequence that a part starts with | "By place" for the pantry, "Best for the pantry" for the recipes |
 | The sequence of the places           | A to Z                                                           |
 | The heading of the cook record       | "Cooked"                                                         |
-| The units that the plugin shows      | g, kg, ml, and l                                                 |
 
-## Five ideas have no decision
+## Three ideas have no decision
 
-- **A drag on a closed row.** The first design sets an amount with no tap to open the row.
 - **Preparation from the pantry.** Food in a place with the name "Freezer" needs time before you can cook it. The plugin does not tell you this: only the callout of a recipe is a preparation.
 - **Groups by store.** You go to more than one store, and one store can be cheaper for some items. The list does not tell you which item to buy in which store, and it has no group for each store.
-- **Standard units in a recipe.** The pantry refuses a typo such as "1 gall", because each row is in the unit system of the vault. A recipe does not: "1 gall" in a recipe makes a count that compares with nothing. A fixed list of units for intake is a later initiative. See decision 30 of [one row for each package](../initiatives/one-row-for-each-package/decision-log.md).
-- **A toggle for the units.** The pantry is in the unit system of the vault, but a recipe can be in the other system. A toggle shows a recipe in the system of the vault. See decision 3 of [open choices of the first version](../initiatives/open-choices-of-the-first-version/decision-log.md).
+- **Standard units in a recipe.** The pantry takes only a unit of its [unit list](../architecture/amounts.md#the-units-of-a-package-size), so a typo such as "1 gall" cannot get in. A recipe can: "1 gall" in a recipe makes a count that compares with nothing. The unit list for intake is a later initiative.
 
 The choices of the first version have a decision. See the [decision log of the open choices](../initiatives/open-choices-of-the-first-version/decision-log.md).
 

@@ -10,6 +10,8 @@ parent: ../../README.md
 
 The eight slices of the [build plan](../../../PLAN.md) were built before each choice had a decision, so that the full loop could be tested. The plan has a table "Choices that are not decided". This page closes that table, one choice at a time, and records each decision with its reason.
 
+> **Replaced in part.** The [simple pantry](../simple-pantry/decision-log.md) of the same version replaces decisions 3, 6, 7, and 9: the vault has no unit system, and the card with its stops replaces the bar in round steps and the field "Package size". Decisions 1, 2, 4, 5, and 8 stay.
+
 ## The state of today
 
 The table has 47 rows. Fourteen of them are not open now.

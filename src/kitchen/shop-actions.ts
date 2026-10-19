@@ -31,7 +31,7 @@ import type { VaultBuffer } from './vault-buffer';
 import type { KitchenWhere } from './note-kind';
 import { fallbackPutAwayFacts } from './shop-read-model';
 import { foodPath } from './pantry-actions';
-import { entriesIn, type UnitSystem } from '../pantry/unit-system';
+import { entriesOf } from '../pantry/unit-list';
 
 export type ShopMutable = {
 	puttingAway: boolean;
@@ -45,7 +45,6 @@ export type ShopActionsHost = {
 	openNote: string;
 	today: string;
 	newPlace: string;
-	units: UnitSystem;
 	tripStore: string;
 	trip: TripItem[];
 	calculated: { missing: ShoppingRow[] };
@@ -97,7 +96,7 @@ async function buy(host: ShopActionsHost, item: TripItem, facts: Facts): Promise
 	const own = !isPantryItem(item, host.where.pantry);
 	const path = own ? foodPath(host, item.name) : item.key;
 	// The line can only put away an amount that the vault permits, so each part has a text here.
-	const amount = entriesIn(host.units, facts.amount) ?? facts.amount;
+	const amount = entriesOf(facts.amount) ?? facts.amount;
 	for (const stock of stocksOf({ ...facts, amount })) await host.addStockTo(path, stock);
 
 	const file = host.fileAt(path);
