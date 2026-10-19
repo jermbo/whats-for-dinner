@@ -4,7 +4,7 @@ This list tests the seven package stories of version 0.5.0, on the phone. Do the
 
 "Reset" a note means: copy its text again from the section "What the vault needs" of that page.
 
-Since version 0.6.0 the test vault is metric. A jug of milk is 3.79 l, not 1 gal, and a can of beans is 425 g, not 15 oz. The lines below that name gallons or ounces for a bar or a step are from before: read 1 gal as 3.79 l and 15 oz as 425 g. The amounts that the bar shows are then in litres or grams.
+Since version 0.6.0 the test vault is metric, and a bar moves in round steps of about 1/40 of the package, such as 100 ml for a jug of milk: the [Units check list](Units%20check%20list.md) tests that. A line with no open package shows the bar of its first sealed package with no tap. A jug of milk is 3.79 l, not 1 gal, and a can of beans is 425 g, not 15 oz. The lines below that name gallons or ounces for a bar or a step are from before: read 1 gal as 3.79 l and 15 oz as 425 g. The amounts that the bar shows are then in litres or grams.
 
 ## Before you start
 
@@ -45,7 +45,7 @@ Start from the open line of black beans.
 - [ ] Tap "Add package". The open line shows "1 sealed · No date", and the empty row of the note is now `Kitchen pantry | 15 oz | 15 oz |`. (Story 4: AC 4 and 4 a)
 - [ ] Tap "Used up" on the bar of 7.5 oz. The bar slides to 0 and goes out. The row of that can is `Kitchen pantry | 0 | 15 oz | 2027-03-01`. (Story 4: AC 5 and 5 a)
 - [ ] With "Reduce motion" on in the phone settings, "+" changes the count with no pop, and "Used up" removes the bar with no slide. Put it off again.
-- [ ] Open the line of eggs, and tap "Edit" next to the carton with 3. The form shows "Size" with "12". Type "18", and tap "Save". `Eggs.md` has `Fridge | 3 | 18 | 2026-10-25`. (Story 4: AC 7 and 8)
+- [ ] Open the line of eggs, and tap "Edit" next to the carton with 3. The form shows "Package size" with "12". Type "18", and tap "Save". `Eggs.md` has `Fridge | 3 | 18 | 2026-10-25`. (Story 4: AC 7 and 8)
 - [ ] Open milk. Tap "Used up" on the open jug, and then "−" on "1 sealed". Milk is a dashed line in the group "Out", and the group "Fridge" has no line of milk. `Milk.md` has one row, an empty row. (Story 1: AC 13. Story 2: AC 6 and 6 a. Story 4: AC 6 and 6 a)
 - [ ] Open Shop. Milk is on the list, with the reason "Out". (Spec, test 6)
 

@@ -1,12 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	// The side is the answer of the part, such as "2 use soon" or "3/9 in the cart".
-	let { title, side }: { title: string; side?: Snippet } = $props();
+	// The side is the answer of the part, such as "2 use soon" or "3/9 in the cart". The id names
+	// the section of the part: Obsidian shows each aria-label as a tooltip, so the name comes from
+	// the title on screen.
+	let { title, id, side }: { title: string; id?: string; side?: Snippet } = $props();
 </script>
 
 <header class="wfd-head">
-	<h2 class="wfd-head__title wfd-display">{title}</h2>
+	<h2 class="wfd-head__title wfd-display" {id}>{title}</h2>
 	{#if side}
 		<div class="wfd-head__side">{@render side()}</div>
 	{/if}

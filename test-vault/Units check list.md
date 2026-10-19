@@ -1,6 +1,6 @@
 # Check list: units of the vault
 
-This list tests the three units stories of version 0.6.0, on the phone. Do the parts in sequence. Each line has one action and what you must see. The text in brackets is the story and its criterion, from [Units stories](../docs/features/v0.6.0/units-stories.md).
+This list tests the four units stories of version 0.6.0, on the phone. Do the parts in sequence. Each line has one action and what you must see. The text in brackets is the story and its criterion, from [Units stories](../docs/features/v0.6.0/units-stories.md).
 
 ## Before you start
 
@@ -31,3 +31,19 @@ This list tests the three units stories of version 0.6.0, on the phone. Do the p
 - [ ] At put away, open a line of eggs. Select "Another amount", type "12", and tap "Put away". The new row of eggs has `12`. Type "1 carton" on a second line: the line shows the message, and "Put away" does nothing. (Story 3: AC 5)
 - [ ] Set "Units" to "Imperial". Add "Rice" with "500 g". `Rice.md` has a row `17.64 oz`. Set "Units" back to "Metric". (Story 3: AC 6)
 - [ ] Run "Start setup again" in a copy of the vault. The first step has the chips "Metric" and "Imperial", with "Metric" on. (Story 3: AC 7)
+
+## D. Set a package with one drag
+
+Before this part, reset `Larder/Pantry/Milk.md` to the rows `1.89 l | 3.79 l | 2026-10-22` and `3.79 l | 3.79 l | 2026-10-29`, and `Black beans.md` to the rows of the [list page](../docs/features/v0.6.0/units-stories.md#what-the-vault-needs).
+
+- [ ] Open the line of milk. Put the focus on the bar of 2026-10-22 with Tab, and press the right arrow key. The amount is "2 l". Tap "Cancel" or close the line. (Story 4: AC 4)
+- [ ] Open the line of black beans. Press the right arrow key on the bar of the open can (213 g). The amount is "240 g". The counts "5 sealed · 2027-03-01" and "2 sealed · 2027-06-01" are as before. (Story 4: AC 5 and 5 a)
+- [ ] In `Milk.md`, set the row of 2026-10-22 to `0`. Open the line of milk. It shows one bar with the date 2026-10-29 at "3.79 l", and no count. (Story 4: AC 1 and 1 a)
+- [ ] Tap "Done" with no change. `Milk.md` does not change. (Story 4: AC 2)
+- [ ] Open milk again. Press the bar at a quarter of its length. The amount is "900 ml". Tap "Done". `Milk.md` has `Fridge | 900 ml | 3.79 l | 2026-10-29`. (Story 4: AC 3 and 3 a)
+- [ ] Drag the bar slowly from one end to the other. It stops each 100 ml, and the last stop is "3.79 l". Tap "Cancel" with no write.
+- [ ] Open "Add to pantry". Type "Olive oil", select "Kitchen pantry", the amount "300 ml", the package size "1 l", and tap "Save". `Olive oil.md` has `Kitchen pantry | 300 ml | 1 l |`. Open its line: the bar shows "300 ml", and its end says "1 l". (Story 4: AC 6 and 6 a)
+- [ ] Open "Add to pantry". Type "Rice", the amount "1 kg", no package size, and tap "Save". `Rice.md` has a row with `1 kg` as the amount and the size. (Story 4: AC 7)
+- [ ] Open "Add to pantry". Type the package size "1 gal" for any food, and tap "Save". The row has the size `3.79 l`. (Story 4: AC 8)
+- [ ] On the computer, make the tab narrow, so that the groups are in one column, then wide, so that they are in two. Open milk each time. "Add package" and "Done" are each on one line. The text of a count never goes below "−" or "+". (Story 4: AC 9, requirement 5 a)
+- [ ] On the computer, put the pointer on an empty part of the Pantry part, on a bar, and between the filter chips. No tooltip shows. (Story 4: AC 10)

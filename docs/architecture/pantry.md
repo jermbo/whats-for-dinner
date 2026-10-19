@@ -22,7 +22,9 @@ You name the places before food is there. The [settings](settings.md) keep the l
 
 The pantry screen shows one line for each food item in each place, in a group for each place: eight cans of beans are one line, "112.5 oz · 8 packages". The badge of the line comes from the first date of its packages. You see what is in the outside fridge and you do not have to go there.
 
-A tap on a line opens its packages: a count for the sealed packages of each date, with "−" and "+", and a [bar](amount-bar.md) for each open package, with "Used up". "Add package" adds a sealed package with the size of the last one. "Place, date, and low line" opens the form of one package, with its size. You find a food item by its name, by a different name of the food, or by the name of one of its [brands](brands.md). "brand c" finds taco seasoning.
+A tap on a line opens its packages: a count for the sealed packages of each date, with "−" and "+", and a [bar](amount-bar.md) for each open package, with "Used up". A line with no open package shows the bar of its first sealed package, so the bar is always there. "Add package" adds a sealed package with the size of the last one. "Place, date, and low line" opens the form of one package, with its package size.
+
+The form "Add to pantry" asks for the amount and, if you want, the package size. You add a bottle of olive oil of 1 l with 300 ml left: the row is `300 ml | 1 l`, and its bar ends at 1 l. With no package size, the amount is the size, as at put away. You find a food item by its name, by a different name of the food, or by the name of one of its [brands](brands.md). "brand c" finds taco seasoning.
 
 The form also has the chip "Loose", which writes `loose: true` into the note at once. The form of a food item shows its brands: the photo of each package, small, and a chip for a brand with no photo. A tap on a brand shows it large, with its name, "New photo", and "Remove". "Add brand" opens the camera, and the photo is a new brand. "Save" writes the brands into the note, and "Cancel" writes nothing.
 

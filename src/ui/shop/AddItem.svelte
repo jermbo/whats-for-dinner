@@ -4,6 +4,7 @@
 	import type { FoodNote } from '../../note';
 	import { proposalsFor } from '../../shop/proposals';
 	import Button from '../parts/Button.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
 		foods: FoodNote[];
@@ -37,6 +38,8 @@
 		onaddnew(text.trim());
 		done();
 	}
+
+	const uid = $props.id();
 </script>
 
 <!--
@@ -58,7 +61,8 @@
 	</div>
 
 	{#if proposals.length}
-		<ul class="wfd-add__proposals" aria-label="Notes with this name" transition:slide={{ duration }}>
+		<HiddenName id="{uid}-proposals" text="Notes with this name" />
+		<ul class="wfd-add__proposals" aria-labelledby="{uid}-proposals" transition:slide={{ duration }}>
 			{#each proposals as proposal (proposal.path)}
 				<li transition:slide={{ duration }}>
 					<button class="wfd-add__proposal" type="button" onclick={() => add(proposal.path)}>

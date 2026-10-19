@@ -2,6 +2,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { folderPath } from '../../settings';
 	import { areApart, HOME, homePaths } from '../../setup/home';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import StepFrame from './StepFrame.svelte';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
@@ -16,6 +17,8 @@
 		const paths = homePaths(home || HOME);
 		return [paths.pantryFolder, paths.shoppingFolder, paths.itemsFolder, paths.planNote];
 	});
+
+	const uid = $props.id();
 </script>
 
 <StepFrame title="Plugin home" at={2} ready={apart} oncontinue={() => kitchen.makeHome(home)}>
@@ -29,7 +32,8 @@
 		{/if}
 	</label>
 
-	<ul class="wfd-home__made" aria-label="The plugin makes">
+	<HiddenName id="{uid}-made" text="The plugin makes" />
+	<ul class="wfd-home__made" aria-labelledby="{uid}-made">
 		{#each made as path}
 			<li>{path}</li>
 		{/each}

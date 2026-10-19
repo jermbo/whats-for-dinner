@@ -15,6 +15,7 @@
 	import { readPrice } from '../../shop/price';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import type { PutAwayDraft } from './put-away-draft.svelte';
 	import PutAwayLine from './PutAwayLine.svelte';
@@ -150,6 +151,8 @@
 			busy = false;
 		}
 	}
+
+	const uid = $props.id();
 </script>
 
 <!-- One item of the cart. A line moves between the groups, so it has the same form in each. -->
@@ -183,7 +186,8 @@
 	</li>
 {/snippet}
 
-<section class="wfd-away" aria-label="Put away">
+<section class="wfd-away" aria-labelledby="{uid}-name">
+	<HiddenName id="{uid}-name" text="Put away" />
 	{#if !lines.length && !busy}
 		<p class="wfd-away__empty">The cart is empty.</p>
 	{:else}

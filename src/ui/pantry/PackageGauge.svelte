@@ -7,13 +7,14 @@
 		barOf,
 		openLineOf,
 		sealedLike,
+		showLeft,
 		snap,
 		stockAt,
 		type Package,
 		type PackageBar
 	} from '../../pantry/open-line';
 	import type { Stock } from '../../pantry/types';
-	import { measure, showAmount } from '../../units';
+	import { measure } from '../../units';
 	import Button from '../parts/Button.svelte';
 
 	type Props = {
@@ -36,6 +37,7 @@
 	let { name, place, packages, loose, level, onwrite, last, ondetails, oncancel }: Props =
 		$props();
 
+	const uid = $props.id();
 	const duration = $derived(prefersReducedMotion.current ? 0 : 250);
 
 	// What you dragged, by the number of the row, and the sealed packages that you opened. A write
@@ -68,7 +70,7 @@
 	const leftOf = (bar: PackageBar) => dragged.get(bar.at) ?? bar.left;
 	const show = (bar: PackageBar) => {
 		const left = leftOf(bar);
-		return left > 0 ? showAmount(left, bar.unit) : 'None';
+		return left > 0 ? showLeft(left, bar.unit) : 'None';
 	};
 
 	// All rows of the food item together, with your drags, against the low line.
@@ -171,12 +173,12 @@
 -->
 <div class="wfd-gauge" class:wfd-gauge--low={isLow}>
 	<div class="wfd-gauge__top">
-		<h3 class="wfd-gauge__name">{name}</h3>
+		<h3 class="wfd-gauge__name" id="{uid}-name">{name}</h3>
 		<p class="wfd-gauge__note">{place}</p>
 	</div>
 
 	{#if sealed.length}
-		<ul class="wfd-gauge__list" aria-label="Sealed packages">
+		<ul class="wfd-gauge__list">
 			{#each sealed as count (`${count.useBy}|${count.sizeText}`)}
 				<li class="wfd-gauge__count" transition:slide={{ duration }}>
 					<button
@@ -188,7 +190,10 @@
 						{#key count.ats.length}
 							<span class="wfd-gauge__number wfd-number">{count.ats.length}</span>
 						{/key}
-						<span>sealed · {showDate(count.useBy)}</span>
+						<span class="wfd-gauge__what">
+							<span>sealed</span>
+							<span class="wfd-gauge__when">{showDate(count.useBy)}</span>
+						</span>
 					</button>
 					<button
 						class="wfd-gauge__step"
@@ -216,15 +221,18 @@
 	{#each bars as bar (bar.at)}
 		<div class="wfd-gauge__package" transition:slide={{ duration }}>
 			<div class="wfd-gauge__head">
-				<span class="wfd-gauge__date wfd-label">{showDate(bar.useBy)}</span>
+				<span class="wfd-gauge__date wfd-label" id="{uid}-{bar.at}">{showDate(bar.useBy)}</span>
 				<output class="wfd-gauge__amount wfd-number">{show(bar)}</output>
 			</div>
-			<!-- A drag to the side on a phone must not open the side panel of Obsidian. -->
+			<!--
+				A drag to the side on a phone must not open the side panel of Obsidian. The name comes from
+				the text on screen, because Obsidian shows each aria-label as a tooltip.
+			-->
 			<div
 				class="wfd-gauge__track"
 				role="slider"
 				tabindex="0"
-				aria-label="Left in the package of {name}, {showDate(bar.useBy)}"
+				aria-labelledby="{uid}-name {uid}-{bar.at}"
 				aria-valuemin={0}
 				aria-valuemax={bar.size}
 				aria-valuenow={leftOf(bar)}
@@ -248,7 +256,7 @@
 					aria-label="Place, date, and low line, {showDate(bar.useBy)}"
 					onclick={() => ondetails(bar.at)}>Edit</button
 				>
-				<span aria-hidden="true">{showAmount(bar.size, bar.unit)}</span>
+				<span aria-hidden="true">{showLeft(bar.size, bar.unit)}</span>
 			</div>
 		</div>
 	{/each}
@@ -339,14 +347,28 @@
 
 	button.wfd-gauge__open {
 		display: flex;
-		gap: 8px;
-		align-items: baseline;
+		gap: 10px;
+		align-items: center;
 		justify-content: start;
 		min-inline-size: 0;
 		padding: 0;
 		font-size: 15px;
 		font-weight: 600;
+		line-height: 1.2;
 		text-align: start;
+		white-space: normal;
+	}
+
+	.wfd-gauge__what {
+		display: grid;
+		min-inline-size: 0;
+	}
+
+	.wfd-gauge__when {
+		font-size: 13px;
+		font-weight: 400;
+		opacity: 0.8;
+		overflow-wrap: anywhere;
 	}
 
 	.wfd-gauge__number {
@@ -356,7 +378,9 @@
 	}
 
 	button.wfd-gauge__step {
+		flex: none;
 		inline-size: 44px;
+		padding: 0;
 		border: 2px solid var(--gauge-line);
 		font-size: 22px;
 		font-weight: 700;
@@ -447,11 +471,17 @@
 		justify-content: space-between;
 	}
 
+	/* Two buttons side by side, each on one line. A narrow column puts them one below the other. */
 	.wfd-gauge__actions {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
 		gap: 12px;
 		margin-block-start: 4px;
+	}
+
+	.wfd-gauge__actions :global(button.wfd-button) {
+		padding-inline: 12px;
+		white-space: nowrap;
 	}
 
 	/* On ink, a quiet button has the colour of the text. */

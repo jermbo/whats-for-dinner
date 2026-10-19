@@ -38,6 +38,7 @@
 	import StockLine from './StockLine.svelte';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
+	const headId = $props.id();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -219,8 +220,8 @@
 	}
 </script>
 
-<section class="wfd-pantry" aria-label="Pantry">
-	<PartHead title="Pantry">
+<section class="wfd-pantry" aria-labelledby={headId}>
+	<PartHead id={headId} title="Pantry">
 		{#snippet side()}
 			{#if low}
 				<span class="wfd-pantry__fact">

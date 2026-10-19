@@ -32,6 +32,7 @@
 		bar: BarState<Sort, Only>;
 	};
 	let { kitchen, oncook, onbrowse, bar }: Props = $props();
+	const headId = $props.id();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -124,8 +125,8 @@
 	}
 </script>
 
-<section class="wfd-plan" aria-label="Plan of the week">
-	<PartHead title="Plan">
+<section class="wfd-plan" aria-labelledby={headId}>
+	<PartHead id={headId} title="Plan">
 		{#snippet side()}
 			{#if kitchen.meals.length}
 				<Count have={cooked.length} of={kitchen.meals.length} label="cooked" />

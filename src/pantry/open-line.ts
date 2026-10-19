@@ -1,8 +1,9 @@
 // The packages of an open line: one count for the sealed packages of each date, and one bar for
 // each open package. A sealed package has nothing to drag, so it is a number, and you seldom need
-// the date of each sealed can apart.
+// the date of each sealed can apart. But you open a line to set what is left, so a line with no
+// open package shows its first sealed package as a bar.
 
-import { isCount, measure, showAmount } from '../units';
+import { isCount, isFraction, isMetric, measure, showAmount, showMeasure } from '../units';
 import { isEmpty } from './empty-row';
 import { makeStock } from './food-item';
 import type { Stock } from './types';
@@ -42,12 +43,38 @@ export function openLineOf(packages: Package[], loose: boolean) {
 		else sealed.push({ useBy: stock.useBy, ats: [at], sizeText: stock.sizeText });
 	}
 	const bars = sorted.filter(({ stock }) => loose || !isSealed(stock)).map(barOf);
+	const first = sealed[0];
+	if (!bars.length && first) {
+		const one = sorted.find(({ at }) => at === first.ats[0]);
+		if (one) bars.push(barOf(one));
+		first.ats.shift();
+		if (!first.ats.length) sealed.shift();
+	}
 	return { sealed, bars };
 }
 
-// A step is 1/8 of the size for a measure, so each quarter of a jug is a stop, and 1 for a count.
+// A thumb on a phone hits about 40 stops on a bar. A round step gives "1.2 l", and not "1.42 l".
+const STOPS = 40;
+const ROUND = [0.1, 0.2, 0.25, 0.5, 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 2500, 5000];
+
+// The step of a bar, in the unit of its size. A metric step is round in grams or millilitres, so
+// a jug of 3.79 l moves by 100 ml. A gallon moves by eighths, as its label reads.
 export function stepOf(size: number, unit: string | null): number {
-	return isCount(measure({ factor: 1, unit, text: '' }).kind) ? 1 : size / 8;
+	const { kind, value: per } = measure({ factor: 1, unit, text: '' });
+	if (isCount(kind)) return 1;
+	if (isFraction(unit)) return 1 / 8;
+	const scale = isMetric(unit) ? per : 1;
+	const least = (size * scale) / STOPS;
+	const round = ROUND.find((step) => step >= least && (step >= 1 || scale === 1)) ?? least;
+	return round / scale;
+}
+
+// An amount of a bar as the label shows it: 300 ml, and not 0.3 l. Other units keep the unit of
+// the package, with eighths as fractions.
+export function showLeft(value: number, unit: string | null): string {
+	if (!isMetric(unit)) return showAmount(value, unit);
+	const { kind, value: per } = measure({ factor: 1, unit, text: '' });
+	return showMeasure({ kind, value: value * per });
 }
 
 export function barOf({ stock, at }: Package): PackageBar {
@@ -69,7 +96,7 @@ export function snap(value: number, bar: PackageBar): number {
 
 // The row of a bar after a drag: at 0 it is an empty row, and at its size it is sealed.
 export function stockAt(stock: Stock, bar: PackageBar, left: number): Stock {
-	const text = left > 0 ? showAmount(left, bar.unit) : '0';
+	const text = left > 0 ? showLeft(left, bar.unit) : '0';
 	return makeStock(stock.place, text, stock.useBy ?? '', stock.sizeText);
 }
 

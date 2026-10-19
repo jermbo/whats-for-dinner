@@ -1,6 +1,6 @@
 ---
 title: Units stories
-summary: "The user stories of the units of the vault in version 0.6.0: three pieces of work that can each start now."
+summary: "The user stories of the units of the vault in version 0.6.0: three pieces of work that can each start now, and a fourth that fixes the open line after the first test."
 parent: ../README.md
 updated: 2026-10-18
 ---
@@ -24,12 +24,13 @@ The [spec](../../initiatives/open-choices-of-the-first-version/spec.md) has the 
 | 1. [Compare grams and millilitres](units-compare-grams-and-millilitres.md)                   | Planner | Nothing    | `built` |
 | 2. [See the food to check](units-see-the-food-to-check.md)                                   | Cook    | Nothing    | `built` |
 | 3. [Keep the pantry in one unit system](units-keep-the-pantry-in-one-unit-system.md)         | Keeper  | Nothing    | `built` |
+| 4. [Set a package with one drag](units-set-a-package-with-one-drag.md)                       | Keeper  | Story 3    | `built` |
 
 The [personas](../../personas.md) page tells who the planner, the cook, and the keeper are.
 
 ## The sequence of the work
 
-No story depends on another, so the three stories are one step and can be built at the same time.
+Stories 1 to 3 do not depend on each other, so they are one step and can be built at the same time. Story 4 came after the first test: the metric rows of story 3 made the bar of a package hard to use. It is the second step.
 
 ## Architecture pages
 
@@ -45,7 +46,9 @@ Each story updates the wiki pages **before** its code, in the **Elevate** step o
 | [Setup](../../architecture/setup.md)                     | 3: the question of the first step.             |
 | [Food item note](../../architecture/food-item-note.md)   | 3: a row in the unit system.                   |
 | [Facts of an item](../../architecture/put-away-facts.md) | 3: the amount at put away.                     |
-| [Glossary](../../glossary.md)                            | 2: check. 3: unit system.                      |
+| [Amount bar](../../architecture/amount-bar.md)           | 4: the bar that is always there, and the steps. |
+| [Pantry](../../architecture/pantry.md)                   | 4: the package size in "Add to pantry".        |
+| [Glossary](../../glossary.md)                            | 2: check. 3: unit system. 4: step.             |
 
 ## What the vault needs
 

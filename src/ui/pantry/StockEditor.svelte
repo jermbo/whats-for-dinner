@@ -83,7 +83,8 @@
 	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
-	// The form of one package shows its size. New food gets its amount as its size.
+	// The size of the package. Food that is already open needs it, so that its bar ends at the size
+	// of the bottle. With no size, the amount is the size.
 	let size = $state(first()?.sizeText ?? '');
 	let place = $state(firstPlace());
 	let useBy = $state(first()?.useBy ?? '');
@@ -180,17 +181,15 @@
 				bind:value={amount}
 			/>
 		</label>
-		{#if stock}
-			<label class="wfd-editor__field">
-				<span class="wfd-label">Size</span>
-				<input
-					type="text"
-					placeholder={amount || (units === 'metric' ? '3.79 l' : '1 gal')}
-					aria-invalid={tried && entries.size === null}
-					bind:value={size}
-				/>
-			</label>
-		{/if}
+		<label class="wfd-editor__field">
+			<span class="wfd-label">Package size</span>
+			<input
+				type="text"
+				placeholder={amount || (units === 'metric' ? '1 l' : '1 gal')}
+				aria-invalid={tried && entries.size === null}
+				bind:value={size}
+			/>
+		</label>
 		<label class="wfd-editor__field">
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />

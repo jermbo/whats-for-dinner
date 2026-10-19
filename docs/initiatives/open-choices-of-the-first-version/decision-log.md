@@ -94,6 +94,23 @@ The owner asked for the rest of the table to be decided with no question: each o
 | Accent colour    | Olive, or the accent colour of your theme. The default is olive.                                        | Olive is the colour of the Larder look.                                                      |
 | Settings         | The look of Obsidian. The values are in the data file.                                                  | A settings screen of a plugin looks like Obsidian.                                           |
 
+### The open line in a metric vault
+
+Decision 3 made the vault metric. A jug of milk became 3.79 l, and the bar of [one row for each package](../one-row-for-each-package/decision-log.md) did not follow. A step of 1/8 of the jug is 0.47 l, and the bar showed "0.3 l" where the bottle says 300 ml. The owner, after the first test of version 0.6.0:
+
+> I dont think the edit sliders are working as expected. And there are a lot of style issues
+>
+> Where did my slider go? why is it behind an extra tap? Why can I not take things in smaller steps. The milk does 2 gallons to 1 gallon to empty. The olive oil is only to .3 ml when the full is 1 l. Etc
+>
+> I feel like the pantry addition and modification has regressed. Please take a careful look at this and make sure it does what we need it to.
+
+The owner asked for a fix, so these four decisions are choices of the build. Each one keeps what the owner decided before, and changes only what the test showed to be wrong.
+
+6. **An open line always has a bar.** When no package of the line is open, the first sealed package shows as a bar, full, and its count is 1 less. With no change, it stays sealed. The other sealed packages stay counts, and a tap on a count still opens one more. The reason: you open the line to set what is left, so the bar must be there with no second tap. Decision 10 of the packages stays: 8 cans do not give 8 bars. This replaces the extra tap of decision 28 of the packages for the first package.
+7. **A step is a round amount, about 1/40 of the package.** In grams or millilitres, the step is the smallest of 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, and so on that is 1/40 of the package or more. A jug of 3.79 l moves by 100 ml, a bottle of 1 l by 25 ml, and a can of 425 g by 20 g. Ounces and pounds use the same list in their own unit. A gallon, a quart, a pint, and a cup move by 1/8 of one unit, so a 2 gal jug moves by 1/8 gal and not by 1/4 gal. A count moves by 1. The reason: about 40 stops is a small step for a thumb on a phone, and a round step gives an amount such as "1.2 l" and not "1.42 l". This replaces decision 4 of the packages.
+8. **A metric amount shows as the label shows it.** Less than 1000 is in g or ml, and 1000 or more in kg or l, as decision 3 tells for entry. The bar of a bottle of 1 l shows "300 ml", and the row gets `300 ml`. The reason: you read the label, and the label says 300 ml.
+9. **The form "Add to pantry" asks for the package size.** The field "Package size" is next to "How much". It is optional: with no size, the amount is the size, as decision 14 of the packages tells. So a bottle of olive oil of 1 l with 300 ml left is `300 ml | 1 l`, and its bar ends at 1 l. The reason: you add food that is already open, and with no size the bar of that bottle ended at 300 ml. Put away does not change: there, you bought the package, so its amount is its size.
+
 ## What this grill changes
 
 Only decisions 2, 3, and 4 change the plugin of today:
@@ -101,6 +118,8 @@ Only decisions 2, 3, and 4 change the plugin of today:
 - The match converts ml and g with 1 ml = 1 g.
 - The vault has a unit system. Entry writes each row in it, and a container word is not a unit.
 - A line with no count gets the mark "check" in the recipe card, the plan, and Get out.
+
+Decisions 6 to 9 came after the first test, and change the open line of the Pantry part and the form "Add to pantry".
 
 Each other decision keeps what is built.
 

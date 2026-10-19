@@ -9,6 +9,7 @@
 	import { STAPLES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
 	import StockEditor from '../pantry/StockEditor.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import StepFrame from './StepFrame.svelte';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
@@ -37,6 +38,8 @@
 		await kitchen.addStock(name, stock);
 		if (brands.length) await kitchen.saveBrands(name, brands);
 	}
+
+	const uid = $props.id();
 </script>
 
 <StepFrame
@@ -50,7 +53,8 @@
 		Tap what you have, and type how much. Staples go to "{kitchen.settings.newPlace}".
 	</p>
 
-	<ul class="wfd-food" aria-label="Staples">
+	<HiddenName id="{uid}-staples" text="Staples" />
+	<ul class="wfd-food" aria-labelledby="{uid}-staples">
 		{#each STAPLES as name (name)}
 			{@const on = picked.has(name)}
 			<li class="wfd-food__row" class:wfd-food__row--on={on}>

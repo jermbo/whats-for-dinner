@@ -66,7 +66,9 @@
 						{/each}
 					</select>
 
-					<div class="wfd-bar__chips" role="group" aria-label="Filters">
+					<!-- The name is hidden text, because Obsidian shows each aria-label as a tooltip. -->
+					<div class="wfd-bar__chips" role="group" aria-labelledby="{more}-chips">
+						<span class="wfd-bar__hidden" id="{more}-chips">Filters</span>
 						{@render chips()}
 					</div>
 				</div>
@@ -80,6 +82,15 @@
 </div>
 
 <style>
+	.wfd-bar__hidden {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
 	/* The bar asks its own width: a phone gets two rows, and a wide tab gets one row. */
 	.wfd-bar {
 		container-type: inline-size;

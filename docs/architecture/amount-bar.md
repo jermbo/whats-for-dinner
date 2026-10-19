@@ -24,13 +24,22 @@ A tap on a line of the Pantry part opens it, if the plugin can count its amount.
 | Open    | One bar with its date, and "Used up".                                         |
 | Loose   | One bar for the row of the place.                                             |
 
-A tap on a count opens one package of it: a bar shows, full, and the count is 1 less. With no change, the package stays sealed.
+You open a line to set what is left, so a line always has a bar. When no package is open, the first sealed package shows as a bar, full, and its count is 1 less. A tap on a count opens one more package in the same way. With no change, the package stays sealed. So the milk with one sealed jug opens as one bar of 3.79 l, and the beans with seven sealed cans open as their open can and two counts.
 
 ## The bar is as long as the package
 
 The end of a bar is the size of its package, and not the full amount of the food item. So the half jug of milk shows half of a gallon. The amount is not less than 0 and not more than the size.
 
-The amount snaps to a step. For a measure, a step is 1/8 of the size: 1/8 gal for a gallon, so each quarter is a stop. For a count, a step is 1: 3 eggs is possible. The amount goes to the nearest step, and the middle of two steps goes up. It shows in the unit of the package, with eighths as fractions.
+The amount snaps to a step. A thumb on a phone can hit about 40 stops on a bar, so a step is a round amount of about 1/40 of the package. Round, because "1.2 l" is easy to read and "1.42 l" is not.
+
+| Package               | Step                                                                    | Example                                |
+| --------------------- | ----------------------------------------------------------------------- | -------------------------------------- |
+| g or ml               | The smallest of 1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, … that is 1/40 of the size or more. | 3.79 l moves by 100 ml. 1 l by 25 ml. 425 g by 20 g. |
+| oz, lb, or fl oz      | The same list in that unit, with 0.1, 0.2, 0.25, and 0.5 too.           | 15 oz moves by 0.5 oz.                 |
+| gal, qt, pt, or cup   | 1/8 of one unit, because you read these in fractions.                   | 2 gal moves by 1/8 gal.                |
+| A count               | 1.                                                                      | 3 eggs is possible.                    |
+
+The amount goes to the nearest step, and the middle of two steps goes up. The size is always a stop, so a jug of 3.79 l can be full again. A metric amount shows as the label shows it: less than 1000 in g or ml, and more in kg or l. So a bottle of 1 l at a quarter shows "250 ml", and the row gets `250 ml`. Other units show in the unit of the package, with eighths as fractions.
 
 When all rows of the food item together are at or below the low line of its [level](level.md), each bar is amber. The arrow keys move the bar that has the focus by one step.
 

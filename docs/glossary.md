@@ -36,7 +36,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Sealed        | A package with its full size left.                                                                                        |
 | Empty row     | A row with nothing left. It keeps the place and the size of its package for the next put away. Its date does not count. |
 | Loose         | A food item with no packages, such as apples. Its note has `loose: true`, and new food goes into the row of its place.   |
-| Step          | The smallest change that one move of a bar makes: 1/8 of the package size for a measure, and 1 for a count.              |
+| Step          | The smallest change that one move of a bar makes: a round amount, about 1/40 of the package, 1/8 of a gallon, or 1 for a count. |
 | Amount        | A number and a unit, such as "500 g". See [amounts](architecture/amounts.md). Some amounts have no number, such as "tap". |
 | Unit system   | Metric or imperial: the units of each row of the pantry in one vault. It is a setting. |
 | Full amount   | The most that the pantry had of a food item.                                                                              |
