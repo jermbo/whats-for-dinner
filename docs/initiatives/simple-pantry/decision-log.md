@@ -142,7 +142,7 @@ The question: which way to set a package on the new pantry bar works on the phon
 27. **The open line is the card of the first design, and you drag its bar (variant E).** A tap on a line opens a card: the name, the place, the count of packages here and the count of places, and a large total of all places. The card has one bar of 44 pixels, with one part for each package, as long as its size. The packages of this place are dark, the packages of other places are grey, and a thin line of the card is between two packages. A drag on a package puts the olive handle on it, and the fill snaps to a stop: a quarter for a measure, one for a count. Below the bar, the scale shows 0, the package under the handle ("1/4 of 1 gal"), and the size of all packages. The buttons are "+ Add package" and "Done", and the links are "Empty" and "Place and date". The reason, in the words of the owner: "I still like the sliders, over the plus and minus buttons" and "I like the option e the most." Variants A, B, C, and D were rejected. The eggs of C, one stop for each egg, stay in E.
 28. **"+ Add package" adds a full package next to the others.** It copies the size of the newest package of this place, and the new package gets the handle, so that you can set its date at once. Three taps make three cartons of eggs. The reason, in the words of the owner: "I might get 3 cartons of eggs depending on the season. So we need to make it easy to add extras."
 29. **The sequence of the packages stays fixed while the card is open.** The card sorts the packages in the sequence of use when it opens. A package that you add goes at the end. The reason: in the prototype, a can of beans that you dragged to full stopped being open, and it moved behind the other cans under the thumb. In the words of the owner: "the green bar jumps around."
-30. **A drag stops at one stop, and "Empty" takes the package away.** The reason: a drag that goes a little too far must not remove a package. This is a choice of Claude.
+30. **A drag stops at one stop, and "Empty" takes the package away.** The reason: a drag that goes a little too far must not remove a package. This is a choice of Claude. *Replaced by decision 37.*
 31. **A metric amount shows as on its label, and other units show in quarters.** 425 g, 2.7 kg, and 58 ml, but 1 1/4 gal. The reason: the prototype showed "2656 1/4 g", which no label has. This is a choice of Claude.
 32. **The place and the date open inside the card.** The place is a group of chips that wrap, so that each chip stays inside the card, and the date is one field. The reason: decision 21, and in the prototype a row of chips that scrolled was cut at the border.
 
@@ -152,6 +152,12 @@ The question: which way to set a package on the new pantry bar works on the phon
 34. **The note keeps a verdict in the list item of the brand, after a middle dot.** `- Brand A · buy again` and `- Brand B · avoid`. The reason: the section "Brands" is the place of each fact of a brand, and the line stays easy to read and to type. A property for each brand was rejected. This is a choice of Claude.
 35. **"To check" is the property `check: true` of the food item note.** A meal writes it, and "Right" in the audit, or a change in the card, removes it. The reason: each fact of the kitchen is in a note, so the phone and the computer show the same list. This is a choice of Claude.
 36. **The audit keeps the last place that it finished in the data of the plugin.** The reason: it is a fact of the plugin, not of the food. This is a choice of Claude.
+
+### After the first build
+
+> The only tweak I would make is, I cannot drag the thing to 0. Milk only goes to 1/4
+
+37. **A drag goes down to empty.** The left end of a package is a stop: 0. The part stays on the bar until the card closes, so the sequence does not change, and "Done" takes its row out of the note. The handle snaps to the nearest stop, so the first eighth of a jug is empty. "Empty" stays as a tap for the same result. The reason, in the words of the owner: "I cannot drag the thing to 0." "Done" is the step that writes, so a drag that goes too far is undone with a drag back or "Cancel".
 
 ## Further reading
 

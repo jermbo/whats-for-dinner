@@ -80,7 +80,7 @@ Reset the notes of the stories page before this part.
 - [ ] Drag the full jug to the middle of its part. It is at 1/2, and the total is "3/4 gal". Tap "Done". `Milk.md` has `Fridge | 1/2 | 1 gal | 2026-10-29`. (Story 6: AC 2 and 2 a)
 - [ ] Open eggs, and drag the first carton to a third of its part. The scale shows "4 of 12". Tap "Cancel". (Story 6: AC 3)
 - [ ] Open black beans, and drag the first can to full. The handle stays on that can, and the can stays the first part. Tap "Cancel". (Story 6: AC 4 and 4 a)
-- [ ] Open milk, and drag the jug at 1/4 to the left end. It stays at 1/4. (Story 6: AC 5)
+- [ ] Open milk, and drag the jug at 1/4 to the left end. The scale shows "Empty · 1 gal", and the total is "1 gal". Tap "Done". `Milk.md` has only the row of 2026-10-29. Reset `Milk.md`. (Story 6: AC 5 and 5 a)
 - [ ] Tap "Empty" and "Done". `Milk.md` has only the row of 2026-10-29. Reset `Milk.md`. (Story 6: AC 6)
 - [ ] Open milk and tap "Done" with no change. The note does not change. (Story 6: AC 7)
 - [ ] Add `check: true` to `Onions.md`. Open onions, drag them to 1/4, and tap "Done". `Onions.md` has no property `check`. (Story 6: AC 8)

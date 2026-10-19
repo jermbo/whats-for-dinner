@@ -26,10 +26,10 @@ A press on the bar puts the olive handle on the package under your thumb. A drag
 
 | Package  | Stops                         | Example                      |
 | -------- | ----------------------------- | ---------------------------- |
-| Measured | 1/4, 1/2, 3/4, full           | A jug of 1 gal at 1/2        |
-| Counted  | One for each, from 1 to the size | A carton of 12 at 4      |
+| Measured | 0, 1/4, 1/2, 3/4, full        | A jug of 1 gal at 1/2        |
+| Counted  | One for each, from 0 to the size | A carton of 12 at 4      |
 
-A drag stops at the first stop, so a drag that goes too far does not remove a package. The arrow keys move the package with the handle by one stop. Below the bar, the scale shows 0, the package with the handle, such as "1/4 of 1 gal", and the size of all packages.
+The handle snaps to the nearest stop. At the left end, a package is empty: its part stays on the bar until the card closes, and "Done" takes its row out of the note. Nothing is written before "Done", so a drag back or "Cancel" undoes a drag that went too far. The arrow keys move the package with the handle by one stop. Below the bar, the scale shows 0, the package with the handle, such as "1/4 of 1 gal", and the size of all packages.
 
 ## The buttons and the links
 

@@ -54,7 +54,7 @@ An example: milk has a jug at 1/4 and a full jug in the fridge. The bar is 2 gal
     - a. The card shows the name, the place, the count of packages here and of places, and a large total (decision 27)
     - b. The bar of the card is 44 pixels high, with a thin line between two packages (decision 27)
     - c. A drag on a package puts the olive handle on it, and the fill snaps to a quarter or to one (decision 27)
-    - d. A drag stops at one stop. The link "Empty" takes the package away (decision 30)
+    - d. A drag goes down to empty, and "Done" takes an empty package out. The link "Empty" does the same (decisions 30 and 37)
     - e. The scale shows 0, the package under the handle, and the size of all packages (decision 27)
     - f. The sequence of the packages stays fixed while the card is open (decision 29)
     - g. "Done" closes the card (decision 27)

@@ -69,8 +69,10 @@
 	const low = $derived(levelOf({ ...item, stocks })?.isLow ?? false);
 
 	const isCounted = (stock: Stock) => stock.size !== null && isCount(measure(stock.size).kind);
-	const leftText = (stock: Stock) =>
-		isCounted(stock) ? `${filledOf(stock)} of ${stock.sizeText}` : `${stock.left} of ${stock.sizeText}`;
+	const leftText = (stock: Stock) => {
+		if (!filledOf(stock)) return `Empty · ${stock.sizeText}`;
+		return `${isCounted(stock) ? filledOf(stock) : stock.left} of ${stock.sizeText}`;
+	};
 	const sizes = $derived(totalOf(stocks.map((stock) => fullPackage(stock.place, stock.sizeText))));
 	const here = $derived(stocks.filter((stock) => stock.place === place).length);
 	const placeCount = $derived(new Set(stocks.map((stock) => stock.place)).size);
@@ -96,11 +98,11 @@
 		packages = packages.map((one) => (one.key === key ? { ...one, stock: next(one.stock) } : one));
 	}
 
-	// A drag stops at the first stop. "Empty" takes a package away, so a drag cannot do it by error.
+	// A drag goes down to empty. The part stays until the card closes, and "Done" takes its row out.
 	function setStop(key: string, stop: number) {
 		const one = packages.find((each) => each.key === key);
 		if (!one) return;
-		const clamped = Math.min(stopsOf(one.stock), Math.max(1, stop));
+		const clamped = Math.min(stopsOf(one.stock), Math.max(0, stop));
 		if (clamped !== filledOf(one.stock)) change(key, (stock) => withStop(stock, clamped));
 	}
 
@@ -109,8 +111,9 @@
 		const box = (event.currentTarget as HTMLElement).getBoundingClientRect();
 		return (event.clientX - box.left) / box.width;
 	};
+	// The nearest stop, so that the first eighth of a jug is empty.
 	const stopAt = (part: Part, x: number) =>
-		Math.ceil(((x - part.start) / part.width) * stopsOf(part.stock));
+		Math.round(((x - part.start) / part.width) * stopsOf(part.stock));
 
 	function down(event: PointerEvent) {
 		(event.currentTarget as HTMLElement).setPointerCapture(event.pointerId);
@@ -161,7 +164,7 @@
 			role="slider"
 			tabindex="0"
 			aria-labelledby="{uid}-name"
-			aria-valuemin={1}
+			aria-valuemin={0}
 			aria-valuemax={on ? stopsOf(on.stock) : 1}
 			aria-valuenow={on ? filledOf(on.stock) : 0}
 			aria-valuetext={on ? `${leftText(on.stock)}, ${on.stock.place}` : ''}

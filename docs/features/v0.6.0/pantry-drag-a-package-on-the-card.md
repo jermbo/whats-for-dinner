@@ -25,10 +25,10 @@ As the [keeper](../../personas.md), I want to open a food item and drag each pac
 4. The sequence of the parts stays fixed while the card is open (decision 29)
 5. A press on the bar puts the olive handle on the package under the thumb (decision 27)
    - a. When the card opens, the handle is on the first package
-6. A drag moves only the package with the handle, and it snaps to a stop (decision 27)
-   - a. A measure has the stops 1/4, 1/2, 3/4, and full
-   - b. A count has one stop for each, from 1 to the size
-   - c. A drag stops at the first stop (decision 30)
+6. A drag moves only the package with the handle, and it snaps to the nearest stop (decisions 27 and 37)
+   - a. A measure has the stops 0, 1/4, 1/2, 3/4, and full
+   - b. A count has one stop for each, from 0 to the size
+   - c. A drag goes down to 0, which is empty. The part stays until the card closes, and "Done" takes its row out (decision 37)
    - d. A drag to the side moves the handle, and a drag up or down scrolls the list
    - e. The fill follows the thumb with no delay, and the handle grows a little while you drag
 7. The arrow keys move the package with the handle by one stop
@@ -53,7 +53,8 @@ Each criterion starts with the vault of the [list page](pantry-stories.md#what-t
 3. GIVEN the card of eggs WHEN the keeper drags the first carton to 1/3 of its part THEN the scale shows "4 of 12"
 4. GIVEN the card of black beans WHEN the keeper drags the first can to full THEN the handle stays on that can
    - a. AND the can stays the first part until the card closes
-5. GIVEN the card of milk WHEN the keeper drags the jug at 1/4 to the left end THEN the jug stays at 1/4
+5. GIVEN the card of milk WHEN the keeper drags the jug at 1/4 to the left end THEN the jug is empty, and the total is "1 gal"
+   - a. AND after "Done", `Milk.md` has only the row of 2026-10-29
 6. GIVEN the card of milk WHEN the keeper taps "Empty" and "Done" THEN `Milk.md` has only the row of 2026-10-29
 7. GIVEN the card of milk WHEN the keeper taps "Done" with no change THEN the plugin does not write `Milk.md`
 8. GIVEN `Onions.md` with `check: true` WHEN the keeper drags the onions to 1/4 and taps "Done" THEN `Onions.md` has no property `check`
