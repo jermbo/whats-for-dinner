@@ -1,6 +1,8 @@
 <script module lang="ts">
-	// One brand as the strip shows it: its first photo, or its name as a chip.
-	export type BrandTile = { key: string; name: string; url: string | null };
+	import type { Verdict } from '../../pantry/brands';
+
+	// One brand as the strip shows it: its first photo, or its name as a chip, and its verdict.
+	export type BrandTile = { key: string; name: string; verdict: Verdict | null; url: string | null };
 </script>
 
 <script lang="ts">
@@ -58,6 +60,16 @@
 	const nameOf = (brand: BrandTile) => `${brand.name || 'Brand with no name'} of ${of}`;
 </script>
 
+<!-- The mark of a verdict: an olive check or a tomato cross, with its words for a screen reader. -->
+{#snippet mark(brand: BrandTile)}
+	{#if brand.verdict}
+		<span class="wfd-brands__mark wfd-brands__mark--{brand.verdict === 'avoid' ? 'avoid' : 'again'}">
+			<span aria-hidden="true">{brand.verdict === 'avoid' ? '✕' : '✓'}</span>
+			<span class="wfd-brands__hidden">, {brand.verdict === 'avoid' ? 'avoid' : 'buy again'}</span>
+		</span>
+	{/if}
+{/snippet}
+
 <!-- The row has its own button for the keyboard. A tap on the strip is only a larger target. -->
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div class="wfd-brands" onclick={rest}>
@@ -67,13 +79,14 @@
 			<button
 				class="wfd-brands__photo"
 				type="button"
-				aria-label={nameOf(brand)}
 				aria-pressed={selected === undefined ? undefined : on}
 				bind:this={tiles[at]}
 				onclick={(event) => ontap(at, event.currentTarget)}
 				in:scale={{ duration, start: 0.6 }}
 			>
 				<img src={brand.url} alt="" />
+				<span class="wfd-brands__hidden">{nameOf(brand)}</span>
+				{@render mark(brand)}
 			</button>
 		{:else if tapChips}
 			<button
@@ -85,10 +98,12 @@
 				in:scale={{ duration, start: 0.6 }}
 			>
 				{brand.name}
+				{@render mark(brand)}
 			</button>
 		{:else}
 			<span class="wfd-brands__chip" bind:this={tiles[at]} in:scale={{ duration, start: 0.6 }}>
 				{brand.name}
+				{@render mark(brand)}
 			</span>
 		{/if}
 	{/each}
@@ -137,9 +152,55 @@
 		align-items: center;
 	}
 
+	/* The mark sits on the corner of the photo, so that the photo stays whole. */
+	.wfd-brands__mark {
+		position: absolute;
+		inset-block-start: 2px;
+		inset-inline-end: 2px;
+		display: grid;
+		place-items: center;
+		inline-size: 20px;
+		block-size: 20px;
+		border: 2px solid var(--wfd-card);
+		border-radius: 50%;
+		color: #fff;
+		font-size: 11px;
+		font-weight: 800;
+		line-height: 1;
+		animation: wfd-mark-in 0.2s ease-out;
+	}
+
+	/* On a chip, the mark follows the name. */
+	.wfd-brands__chip .wfd-brands__mark {
+		position: static;
+		margin-inline-start: 6px;
+	}
+
+	.wfd-brands__mark--again {
+		background: var(--wfd-olive);
+		color: var(--wfd-on-olive);
+	}
+
+	.wfd-brands__mark--avoid {
+		background: var(--wfd-tomato);
+	}
+
+	@keyframes wfd-mark-in {
+		from {
+			scale: 0.4;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.wfd-brands__mark {
+			animation: none;
+		}
+	}
+
 	/* A photo is small and square: enough to know a package, and a target for the thumb. */
 	button.wfd-brands__photo,
 	.wfd-brands__camera {
+		position: relative;
 		display: grid;
 		place-items: center;
 		inline-size: 48px;

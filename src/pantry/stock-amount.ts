@@ -12,7 +12,7 @@ import type { Stock } from './types';
 const NOTHING = 0.005;
 
 // `value` is the new amount in the measure of the row: grams, millilitres, or a count. The row
-// keeps its place, its size, and its date. With nothing left, it is an empty row.
+// keeps its place, its size, and its date. With nothing left, it is empty.
 export function withAmount(stock: Stock, value: number): Stock {
 	return makeStock(stock.place, amountText(stock, value), stock.useBy ?? '', stock.sizeText);
 }

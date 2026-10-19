@@ -34,7 +34,7 @@ type TextKey =
 	| 'itemsFolder'
 	| 'newPlace'
 	| 'fontName';
-type NumberKey = 'volume' | 'soonDays' | 'lowPercent';
+type NumberKey = 'volume' | 'soonDays';
 type SwitchKey = 'vibrate' | 'keepScreenOn';
 
 const days = (count: number) => `${count} ${count === 1 ? 'day' : 'days'}`;
@@ -189,14 +189,6 @@ export class KitchenSettingTab extends PluginSettingTab {
 			1,
 			14,
 			1
-		);
-		this.slider(
-			'lowPercent',
-			'Low line',
-			(value) => `A food item with no low line of its own is low below ${value}% of its full amount.`,
-			5,
-			50,
-			5
 		);
 	}
 

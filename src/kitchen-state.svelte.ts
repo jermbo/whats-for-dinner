@@ -27,8 +27,8 @@ import {
 	addStockTo,
 	changeStocks as changeStocksAction,
 	foodPath,
-	setLoose as setLooseAction,
-	setLow as setLowAction,
+	setCheck as setCheckAction,
+	setSize as setSizeAction,
 	setStaple as setStapleAction,
 	type PantryActionsHost
 } from './kitchen/pantry-actions';
@@ -69,7 +69,7 @@ import {
 	startAgain as startAgainAction,
 	type SetupActionsHost
 } from './kitchen/setup-actions';
-import type { CookResult, Disk, KitchenPage, Meal } from './kitchen/types';
+import type { CookResult, Disk, KitchenPage, Meal, Part } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import {
 	calculatedList,
@@ -96,7 +96,10 @@ import { notePathIn } from './note-path';
 import { openNotePath } from './shop/shopping-note';
 import { today } from './dates';
 
-export type { CookResult, KitchenPage, Meal, RecipeEntry } from './kitchen/types';
+export type { CookResult, KitchenPage, Meal, Part, RecipeEntry } from './kitchen/types';
+
+const PART_KEY = 'whats-for-dinner-part';
+const PARTS: unknown[] = ['pantry', 'recipes', 'plan', 'shop'];
 
 export class Kitchen {
 	notes = $state.raw<Note[]>([]);
@@ -118,6 +121,9 @@ export class Kitchen {
 	// A page that covers the four parts, such as intake. A command of Obsidian can open it, so it is
 	// here and not in a screen.
 	page = $state.raw<KitchenPage | null>(null);
+	// The part on the screen. It is here so that it stays when the tab closes, and the local storage
+	// keeps it after a restart. That storage is per device, so Sync does not move it.
+	part = $state<Part>('pantry');
 	// The line of the note that you converted last. The Recipes part shows it once more when it opens,
 	// so that you see the line go out of the list of notes that fail.
 	private converted: { path: string; reason: string } | null = null;
@@ -141,9 +147,7 @@ export class Kitchen {
 	meals = $derived(mealsOf(this.plan, this.recipes));
 
 	private needs = $derived(mealNeeds(this.meals, this.where.pantry));
-	private calculated = $derived(
-		calculatedList(this.needs, this.settings.lowPercent, this.today)
-	);
+	private calculated = $derived(calculatedList(this.needs, this.today));
 	private shopLists = $derived.by(() =>
 		cartItems(
 			this.calculated,
@@ -176,8 +180,7 @@ export class Kitchen {
 			this.foods,
 			{
 				today: this.today,
-				soonDays: this.settings.soonDays,
-				lowPercent: this.settings.lowPercent
+				soonDays: this.settings.soonDays
 			},
 			this.skipped,
 			this.trip,
@@ -198,6 +201,13 @@ export class Kitchen {
 		this.app = app;
 		this.disk = disk;
 		this.register = register;
+		const part = app.loadLocalStorage(PART_KEY);
+		if (PARTS.includes(part)) this.part = part;
+	}
+
+	showPart(part: Part) {
+		this.part = part;
+		this.app.saveLocalStorage(PART_KEY, part);
 	}
 
 	async loadSaved() {
@@ -297,16 +307,16 @@ export class Kitchen {
 		await addStockByName(this.pantryHost, name, stock);
 	}
 
-	async setLow(path: string, low: string) {
-		await setLowAction(this.pantryHost, path, low);
+	async setCheck(path: string, check: boolean) {
+		await setCheckAction(this.pantryHost, path, check);
+	}
+
+	async setSize(path: string, size: string) {
+		await setSizeAction(this.pantryHost, path, size);
 	}
 
 	async setStaple(path: string, label: StapleLabel) {
 		await setStapleAction(this.pantryHost, path, label);
-	}
-
-	async setLoose(path: string, loose: boolean) {
-		await setLooseAction(this.pantryHost, path, loose);
 	}
 
 	isPlanned(path: string) {

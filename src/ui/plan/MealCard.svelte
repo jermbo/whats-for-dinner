@@ -31,7 +31,10 @@
 	<div class="wfd-meal__facts">
 		{#if entry}
 			{@const toBuy = entry.match.ingredients.length - entry.match.inPantry}
-			<span class="wfd-label">{toBuy ? `${toBuy} to buy` : 'All in the pantry'}</span>
+			{@const toCheck = entry.match.ingredients.filter((one) => one.status === 'unknown').length}
+			<span class="wfd-label">
+				{toBuy ? `${toBuy} to buy` : 'All in the pantry'}{toCheck ? ` · ${toCheck} to check` : ''}
+			</span>
 			{#if entry.match.useSoon.length}
 				<Sticker label="Uses {entry.match.useSoon.join(' · ')}" kind="tomato" />
 			{/if}

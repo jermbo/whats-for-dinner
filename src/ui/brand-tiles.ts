@@ -7,5 +7,6 @@ export const tilesOf = (brands: Brand[], urlOf: (photo: string) => string | null
 	brands.map((brand, at) => ({
 		key: String(at),
 		name: brand.name,
+		verdict: brand.verdict,
 		url: brand.photos[0] ? urlOf(brand.photos[0]) : null
 	}));

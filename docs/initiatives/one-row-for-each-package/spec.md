@@ -12,6 +12,8 @@ status: agreed
 
 This page has the scope of the work, with no reasons. Each line names the decision of the [decision log](decision-log.md) that it comes from, and the reason is there.
 
+> **Replaced in part.** The [simple pantry](../simple-pantry/spec.md) of version 0.6.0 replaces the exact amounts, the full amount, loose food, the empty row, and the open line. One row for each package, with its own size and date, stays.
+
 ## The problem
 
 The keeper stands at the fridge with two gallons of milk: one is half full, and one is new, each with its own date. The pantry has one row "1.5 gal" with one date, and its bar stops at the full amount of 1 gal. The bar moves by half a gallon, and eggs move by 2, so the keeper cannot set what is in front of them.
@@ -104,7 +106,7 @@ Architecture pages that change:
 
 - [Food item note](../../architecture/food-item-note.md): the column `Size`, the property `loose`, and the empty row.
 - [Amounts](../../architecture/amounts.md): gallons, quarts, pints, and fluid ounces, and eighths as fractions.
-- [Amount bar](../../architecture/amount-bar.md): one bar for each open package, the steps, and the count of the sealed packages.
+- [Amount bar](../../architecture/card.md): one bar for each open package, the steps, and the count of the sealed packages.
 - [Level](../../architecture/level.md): the full amount only for the level, and out with empty rows.
 - [Pantry](../../architecture/pantry.md): one line for each food item in each place, "Add package", and "Used up".
 - [Put away](../../architecture/put-away.md) and [facts of an item](../../architecture/put-away-facts.md): one line for each package, "+ package", the chip "Loose", and the empty row.

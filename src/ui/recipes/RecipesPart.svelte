@@ -27,6 +27,7 @@
 		bar: BarState<Sort, Only>;
 	};
 	let { kitchen, oncook, bar }: Props = $props();
+	const headId = $props.id();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 
@@ -88,8 +89,8 @@
 		kitchen.isPlanned(path) ? kitchen.removeFromPlan(path) : kitchen.addToPlan(path);
 </script>
 
-<section class="wfd-recipes" aria-label="Recipes">
-	<PartHead title="Recipes">
+<section class="wfd-recipes" aria-labelledby={headId}>
+	<PartHead id={headId} title="Recipes">
 		{#snippet side()}
 			<div class="wfd-recipes__side">
 				<Count have={readyCount} of={kitchen.recipes.length} label="ready" />

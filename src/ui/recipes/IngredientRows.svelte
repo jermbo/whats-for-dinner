@@ -28,6 +28,8 @@
 						<Sticker label="None" kind="dashed" />
 					{:else if status === 'short'}
 						<Sticker label="Low" kind="amber" />
+					{:else if status === 'unknown'}
+						<Sticker label="Check" />
 					{:else if status}
 						<span class="wfd-rows__have" role="img" aria-label="In the pantry">✓</span>
 					{/if}

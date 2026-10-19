@@ -28,21 +28,21 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Food item     | One food of the [pantry](architecture/pantry.md), as one note. Rice is a food item.                                       |
 | Other name    | A name that a recipe can use for a food item, such as "pasta" for elbow pasta.                                            |
 | Place         | Where food is, such as "Downstairs pantry". You give the places their names.                                              |
-| Row           | One package of a food item: one row of the table in its note, with its own size and its own use-by date. A loose food item has one row for each place. |
+| Row           | One package of a food item: one row of the table in its note, with its own size and its own use-by date. |
 | Package       | One container of a food item that you can hold in your hand: one gallon of milk, one carton of eggs.                      |
 | Package size  | The amount of a package when it is new: 1 gal for the milk, 12 for the carton of eggs. It is the column `Size` of a row. |
-| Left          | The amount that is still in one package: 1/2 gal, or 2 eggs. It is never more than the package size.                     |
+| Card          | The open line of a food item: its total, one bar with a part for each package, and an olive handle that you drag. See [card](architecture/card.md). |
+| Handle        | The olive mark on the package that you drag. It snaps to a quarter, or to one egg.                                     |
+| Audit         | The weekly walk through each place, in which you confirm or correct each food item. See [audit](architecture/audit.md). |
+| To check      | A food item that a meal could not take food from. Its note has `check: true`, and the audit shows it first.          |
+| Verdict       | What you think of a brand: "Buy again" or "Avoid". The photo of the brand shows it in the store.                      |
+| Left          | What is still in one package: a level, such as 1/4, or a count, such as 4 eggs. It is the column `Left` of a row. |
 | Open package  | A package with less than its size left, and more than nothing: the carton with 2 eggs.                                   |
 | Sealed        | A package with its full size left.                                                                                        |
-| Empty row     | A row with nothing left. It keeps the place and the size of its package for the next put away. Its date does not count. |
-| Loose         | A food item with no packages, such as apples. Its note has `loose: true`, and new food goes into the row of its place.   |
-| Step          | The smallest change that one move of a bar makes: 1/8 of the package size for a measure, and 1 for a count.              |
 | Amount        | A number and a unit, such as "500 g". See [amounts](architecture/amounts.md). Some amounts have no number, such as "tap". |
-| Full amount   | The most that the pantry had of a food item.                                                                              |
-| Low line      | The amount at which a food item is low. Food at the line or below it is low.                                              |
-| Level         | What you have of a food item, against its full amount and its low line. See [level](architecture/level.md).               |
-| Low           | Below the low line, with all places together.                                                                             |
-| Out           | With no row, or with only empty rows. The food item is still a note.                                                      |
+| Level         | What is left in one measured package, as you see it: full, 3/4, 1/2, or 1/4. See [level](architecture/level.md). |
+| Low           | One package is left, and it is at 1/4, or at 1/4 of its count or less.                                                  |
+| Out           | With no package. The food item is still a note.                                                                         |
 | Stub          | A food item note that [intake](architecture/intake.md) makes for an ingredient with no food item. It has no row, so the food item is out. |
 | Use soon      | With a [use-by date](architecture/use-soon.md) in 5 days or less. The number of days is a setting.                        |
 | Past its date | With a use-by date before today. The date of today is not past.                                                           |
@@ -60,6 +60,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Recipe      | A note in the RecipeMD format. The [recipes](architecture/recipes.md) page tells more.                    |
 | Type        | The first tag of a recipe, such as "dinner".                                                              |
 | Ready       | A recipe is ready when the pantry has each of its ingredients.                                            |
+| Check       | The sticker of an ingredient that the pantry has, but that the plugin cannot [count](architecture/match.md), such as 1 onion against 500 g. |
 | Preparation | [Work](architecture/preparation.md) that a recipe needs before you can cook, such as food that must thaw. |
 | Intake      | The [work](architecture/intake.md) that makes a recipe note from a source, such as a card or a cookbook, up to "Save". |
 | Line        | One ingredient or one step in a field of intake. It is not a row of the pantry.                           |

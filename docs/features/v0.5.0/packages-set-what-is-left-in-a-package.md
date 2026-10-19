@@ -74,6 +74,6 @@ Each criterion starts with the vault of the [list page](packages-stories.md#what
 
 ## Architecture
 
-- [Amount bar](../../architecture/amount-bar.md): the bars of the open line, their length, and their steps.
+- [Amount bar](../../architecture/card.md): the bars of the open line, their length, and their steps.
 - [Level](../../architecture/level.md): the low line that makes a bar amber.
 - [Spec: one row for each package](../../initiatives/one-row-for-each-package/spec.md): scope 5, 6, 8 a to c, and 8 f.

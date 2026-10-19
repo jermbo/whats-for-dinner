@@ -5,6 +5,7 @@
 	import { showDate } from '../../dates';
 	import { prefersReducedMotion as reduced } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import { entriesOf, refusal } from '../../pantry/unit-list';
 	import { brandAt, brandCell } from '../../shop/bought-brand';
 	import { amountOf, type CartItem, type Facts } from '../../shop/facts';
 	import { readPrice, showPrice } from '../../shop/price';
@@ -23,6 +24,7 @@
 		// The place is still the guess of the plugin.
 		placeIsGuess: boolean;
 		today: string;
+		// The amount goes into the pantry in this system.
 		// The line shows all its facts.
 		open: boolean;
 		ontoggle: () => void;
@@ -36,8 +38,6 @@
 		ontake: (photo: Blob) => Promise<unknown>;
 		// A copy of this line, for a package that the plugin did not expect.
 		onaddpackage: () => void;
-		// The chip "Loose" writes the food item note at once. Null: the item has no food item note.
-		onloose: ((on: boolean) => void) | null;
 		onnotbought: () => void;
 		// You checked the line, and only this package goes into the pantry.
 		onputaway: () => void;
@@ -58,7 +58,6 @@
 		urlOf,
 		ontake,
 		onaddpackage,
-		onloose,
 		onnotbought,
 		onputaway,
 		busy
@@ -77,6 +76,8 @@
 			.join(' · ')
 	);
 	// Text that is not a number is not a price. The line and the field show it.
+	// "1 bag" is not an amount of the pantry, so the line waits for the weight from the label.
+	const badAmount = $derived(facts.intoPantry && entriesOf(facts.amount) === null);
 	const badPrice = $derived(facts.price.trim() !== '' && readPrice(facts.price) === null);
 	const price = $derived(showPrice(facts.price) || (badPrice ? facts.price.trim() : '–'));
 	// On a sale, the field is empty, and the price that you usually pay for the brand is its hint.
@@ -190,14 +191,6 @@
 						onclick={() => onchange({ intoPantry: !facts.intoPantry })}
 					/>
 				{/if}
-				{#if onloose && facts.intoPantry}
-					<Chip
-						label="Loose"
-						name="Loose: {item.name}"
-						on={item.loose ?? false}
-						onclick={() => onloose(!item.loose)}
-					/>
-				{/if}
 			</div>
 			{#if facts.intoPantry}
 				<PickOne
@@ -216,8 +209,18 @@
 					onchange={(place) => onchange({ place })}
 				/>
 			{/if}
+			{#if badAmount}
+				<p class="wfd-away-line__refused" role="alert" transition:slide={{ duration }}>
+					Select a size. {refusal}
+				</p>
+			{/if}
 			<div class="wfd-away-line__actions">
-				<Button kind="olive" aria-label="Put away: {item.name}" disabled={busy} onclick={onputaway}>
+				<Button
+					kind="olive"
+					aria-label="Put away: {item.name}"
+					disabled={busy || badAmount}
+					onclick={onputaway}
+				>
 					Put away
 				</Button>
 				<Button aria-label="Not bought: {item.name}" disabled={busy} onclick={onnotbought}>
@@ -234,6 +237,12 @@
 </div>
 
 <style>
+	.wfd-away-line__refused {
+		margin: 0;
+		color: var(--wfd-tomato);
+		font-size: 14px;
+	}
+
 	/* The text and the price are one button. The chip of a sale is at the right of it. */
 	.wfd-away-line {
 		display: grid;

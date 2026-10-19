@@ -67,10 +67,10 @@ export function needsOf(
 	return [...needs.values()];
 }
 
-export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
+export function shoppingList(needs: Need[]): ShoppingRow[] {
 	const rows: ShoppingRow[] = [];
 	for (const need of needs) {
-		// An empty row has nothing, so a food item with only empty rows is out.
+		// An empty package has nothing, so a food item with only empty packages is out.
 		const stocks = withFood(need.food?.item.stocks ?? []);
 		const short: Measure[] = [];
 
@@ -81,7 +81,7 @@ export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
 			if (value > has) short.push({ kind, value: value - has });
 		}
 
-		if (short.length || !stocks.length || isLowStaple(need.food, lowPercent)) {
+		if (short.length || !stocks.length || isLowStaple(need.food)) {
 			rows.push(rowFor(need, short));
 		}
 	}
@@ -90,8 +90,8 @@ export function shoppingList(needs: Need[], lowPercent: number): ShoppingRow[] {
 
 // The meal uses what is left of a low staple, so you need more of it, also when the pantry has
 // enough for the meal. The list fills the row of a staple.
-function isLowStaple(food: FoodNote | null, lowPercent: number): boolean {
-	return Boolean(food?.item.staple && levelOf(food.item, lowPercent)?.isLow);
+function isLowStaple(food: FoodNote | null): boolean {
+	return Boolean(food?.item.staple && levelOf(food.item)?.isLow);
 }
 
 // The row of a need, with what to buy of it.

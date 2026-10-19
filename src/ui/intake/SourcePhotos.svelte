@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
 		// The photos stay on the device until "Save", so that intake with no "Save" leaves nothing.
@@ -39,7 +40,8 @@
 
 <div class="wfd-sources">
 	{#if kept.length || photos.length}
-		<ul class="wfd-sources__list" aria-label="Source photos">
+		<HiddenName id="{uid}-list" text="Source photos" />
+		<ul class="wfd-sources__list" aria-labelledby="{uid}-list">
 			{#each kept as name (name)}
 				{@const src = keptUrlOf(name.split('|')[0])}
 				<li class="wfd-sources__photo" transition:fade={{ duration }}>

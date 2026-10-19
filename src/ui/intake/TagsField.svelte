@@ -2,6 +2,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { crossfade, scale } from 'svelte/transition';
 	import Chip from '../parts/Chip.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
 		// The tags of the recipes of the vault, from A to Z.
@@ -40,14 +41,16 @@
 <fieldset class="wfd-tags">
 	<legend class="wfd-tags__label wfd-label">Tags</legend>
 	<!-- The two lists stay when they are empty, so that a chip always has a list to move to. -->
-	<ul class="wfd-tags__chips" aria-label="Tags of this recipe">
+	<HiddenName id="{uid}-this" text="Tags of this recipe" />
+	<ul class="wfd-tags__chips" aria-labelledby="{uid}-this">
 		{#each tags as tag (tag)}
 			<li in:receive={{ key: tag, duration }} out:send={{ key: tag, duration }}>
 				<Chip label={tag} on={true} name="Take away {tag}" onclick={() => remove(tag)} />
 			</li>
 		{/each}
 	</ul>
-	<ul class="wfd-tags__chips" aria-label="Tags of your recipes">
+	<HiddenName id="{uid}-yours" text="Tags of your recipes" />
+	<ul class="wfd-tags__chips" aria-labelledby="{uid}-yours">
 		{#each others as tag (tag)}
 			<li in:receive={{ key: tag, duration }} out:send={{ key: tag, duration }}>
 				<Chip label={tag} on={false} name="Add {tag}" onclick={() => add(tag)} />

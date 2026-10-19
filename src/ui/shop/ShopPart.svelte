@@ -21,6 +21,7 @@
 		stage: Stage | null;
 	};
 	let { kitchen, bar, draft, stage = $bindable() }: Props = $props();
+	const headId = $props.id();
 
 	// The stage with work is decided one time, when the part opens. If it followed the kitchen, the
 	// last "Add" in Extras would move you to Shop under your thumb.
@@ -43,8 +44,8 @@
 	}
 </script>
 
-<section class="wfd-shop-part" aria-label="Shopping list">
-	<PartHead title="Shop" />
+<section class="wfd-shop-part" aria-labelledby={headId}>
+	<PartHead id={headId} title="Shop" />
 	<StageStrip {counts} value={shown} onchange={open} />
 
 	{#key shown}

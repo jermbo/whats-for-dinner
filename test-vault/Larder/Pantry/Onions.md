@@ -1,6 +1,3 @@
----
-full: "2"
----
-| Place          | Amount | Use by |
-| -------------- | ------ | ------ |
-| Kitchen pantry | 0.5    |        |
+| Place          | Left | Size | Use by |
+| -------------- | ---- | ---- | ------ |
+| Kitchen pantry | 1/2  | 1 kg |        |

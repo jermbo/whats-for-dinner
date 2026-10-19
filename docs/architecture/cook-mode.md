@@ -12,7 +12,7 @@ When you cook, your hands are dirty and your eyes are on the pan. So Cook Mode s
 
 ## One page at a time
 
-1. **Get out.** The ingredients, in the groups of the recipe, such as "Dry" and "Wet". You mark what is on the counter.
+1. **Get out.** The ingredients, in the groups of the recipe, such as "Dry" and "Wet". You mark what is on the counter. A line that the pantry does not have shows "None", a line with too little shows "Low", and a line that the plugin cannot count shows "Check", as the [match](match.md) tells.
 2. **The steps.** One page for each step, with its text and the ingredients that the text names.
 3. **Done.** You confirm what you used. You can add a rating, a note, and a photo.
 

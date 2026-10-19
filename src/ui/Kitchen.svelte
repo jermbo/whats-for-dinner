@@ -2,7 +2,7 @@
 	import './fonts.css';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
-	import type { Kitchen } from '../kitchen-state.svelte';
+	import type { Kitchen, Part } from '../kitchen-state.svelte';
 	import type { Only as PantryOnly, Sort as PantrySort } from '../pantry/views';
 	import type { Only as PlanOnly, Sort as PlanSort } from '../plan/browse';
 	import type { Only as RecipeOnly, Sort as RecipeSort } from '../recipes/browse';
@@ -25,7 +25,6 @@
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
-	type Part = 'pantry' | 'recipes' | 'plan' | 'shop';
 	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop'];
 
 	const toCook = $derived(kitchen.meals.filter((meal) => !meal.cooked).length);
@@ -36,7 +35,7 @@
 		{ value: 'shop' as const, label: 'Shop', count: kitchen.list.length }
 	]);
 
-	let part = $state<Part>('pantry');
+	const part = $derived(kitchen.part);
 	// The new part comes in from the side of its option in the navigation.
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
@@ -57,7 +56,7 @@
 
 	function show(next: Part) {
 		from = sequence.indexOf(next) > sequence.indexOf(part) ? 16 : -16;
-		part = next;
+		kitchen.showPart(next);
 	}
 
 	// The plan asks for the recipes of one type, to add a meal of that type. Only that filter is

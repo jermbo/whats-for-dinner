@@ -25,10 +25,15 @@
 	// food items have an amount that compares.
 	type Counted = { name: string; need: Measure; options: FoodNote[]; first: FoodNote };
 
+	// Food that the pantry counts, but in an amount that compares with nothing, such as 1 onion
+	// against a bag of 1 kg. Water with the row "tap" has no amount, so it is never to check.
+	const isCounted = (food: FoodNote) => food.item.stocks.some((stock) => stock.amount?.factor);
+
 	// The pantry as it is when this page opens. A change of a note after that does not move the rows.
-	function count(): { counted: Counted[]; others: string[] } {
+	function count(): { counted: Counted[]; others: string[]; check: string[] } {
 		const counted: Counted[] = [];
 		const others: string[] = [];
+		const check: string[] = [];
 		for (const [at, match] of entry.match.ingredients.entries()) {
 			const { ingredient, food, need } = match;
 			const options = need ? optionsOf(match) : [];
@@ -40,11 +45,12 @@
 				counted.push({ name: showName(ingredient.name), need, options, first });
 			} else {
 				others.push(showName(ingredient.name));
+				if (need && food && isCounted(food)) check.push(food.path);
 			}
 		}
-		return { counted, others };
+		return { counted, others, check };
 	}
-	const { counted, others } = count();
+	const { counted, others, check } = count();
 
 	// For each counted ingredient: if you used it. The food item is the one of "Get out".
 	let used = $state(counted.map(() => true));
@@ -65,7 +71,7 @@
 		});
 
 		try {
-			await ondone({ stocks, rating, note, photo: photos?.[0] ?? null });
+			await ondone({ stocks, check, rating, note, photo: photos?.[0] ?? null });
 		} finally {
 			busy = false;
 		}

@@ -12,6 +12,7 @@
 	} from '../../shop/suggestions';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 
 	type Props = {
@@ -75,10 +76,13 @@
 	}
 
 	onDestroy(() => clearTimeout(timer));
+
+	const uid = $props.id();
 </script>
 
 <!-- The food items that need a look. You accept or skip each line, and then it is gone. -->
-<section class="wfd-suggest" aria-label="Suggestions">
+<section class="wfd-suggest" aria-labelledby="{uid}-name">
+	<HiddenName id="{uid}-name" text="Suggestions" />
 	<div aria-live="polite">
 		{#if skipped}
 			{@const { path, name } = skipped}

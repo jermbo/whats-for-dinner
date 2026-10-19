@@ -6,6 +6,7 @@
 	import { firstNewPlace, FIRST_PLACES, MORE_PLACES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import StepFrame from './StepFrame.svelte';
 
@@ -43,6 +44,8 @@
 		event.preventDefault();
 		add(added);
 	}
+
+	const uid = $props.id();
 </script>
 
 <StepFrame
@@ -53,7 +56,8 @@
 >
 	<p class="wfd-places__note">Where your food is. Rename, remove, or add a place: the list is yours.</p>
 
-	<ul class="wfd-places" aria-label="Places">
+	<HiddenName id="{uid}-places" text="Places" />
+	<ul class="wfd-places" aria-labelledby="{uid}-places">
 		{#each places as name (name)}
 			<li class="wfd-places__row" transition:slide={{ duration }}>
 				<input
@@ -78,7 +82,8 @@
 	</form>
 
 	{#if more.length}
-		<div class="wfd-places__more" aria-label="More places">
+		<div class="wfd-places__more" role="group" aria-labelledby="{uid}-more">
+			<HiddenName id="{uid}-more" text="More places" />
 			{#each more as name (name)}
 				<Chip label="+ {name}" on={false} name="Add {name}" onclick={() => add(name)} />
 			{/each}

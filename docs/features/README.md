@@ -16,17 +16,17 @@ The first time that you open the kitchen in a new vault, [setup](../architecture
 
 ## The pantry knows what you have, and where
 
-You record your food one time, with its place: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the [pantry](../architecture/pantry.md) keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
+You record your food one time, with its place and the size from the label: a full bag of rice in the downstairs pantry, 6 eggs in the outside fridge. From then on, the [pantry](../architecture/pantry.md) keeps the count for each place. You do not look into each cupboard before you plan, and you do not buy rice that is downstairs.
 
 The plugin does not assume that a food is there. Water is a food item too: you record it one time, with an amount such as "tap".
 
-Each package is one row, with its own size and its own use-by date, so the half jug and the new jug of milk each keep their date. The pantry shows one line for each food in each place, such as "Beans · 112.5 oz · 8 packages", with a bar that shows its [level](../architecture/level.md): how much is left of the full amount. A tick on the bar is the low line. Below the line, the bar is amber, so you see what gets low before it is out. To correct a package, you open the line and drag the [bar of the package](../architecture/amount-bar.md) to what is really there, in steps of 1/8 or of 1. One tap adds a package or uses one up.
+Each package is one row, with its own size and its own use-by date, so the half jug and the new jug of milk each keep their date. The pantry shows one line for each food in each place, such as "Beans · 3.2 kg · 8 packages", with one bar that has a part for each package, in all places. Each package has a [level](../architecture/level.md), such as 1/4, or a count, such as 4 of 12 eggs. When one package is left and it is nearly empty, the bar is amber, so you see what gets low before it is out. To correct a package, you open the [card](../architecture/card.md) of the line and drag the package to what you see: a quarter of a jug, or 4 eggs. One tap adds a carton. Once a week, the [audit](../architecture/audit.md) walks each place with you, and the food that a meal could not count comes first.
 
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
 
 ## The recipes that use your food come first
 
-The [recipe list](../architecture/recipes.md) sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". Food that spoils soon moves its recipes up, so you use the spinach before it is waste.
+The [recipe list](../architecture/recipes.md) sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". A spoon of sugar counts against the grams in the bag. A line that the plugin cannot count, such as 1 onion against 500 g, shows "Check", so you look at the shelf. Food that spoils soon moves its recipes up, so you use the spinach before it is waste.
 
 You find a recipe by its name or by an ingredient. A filter shows only the recipes that you can cook now, or the recipes of one type, such as dinner.
 
@@ -56,7 +56,7 @@ You add an item of your own on any day, such as batteries. The cart is a note of
 
 ## The trip goes into the pantry, with its prices
 
-At home, [put away](../architecture/put-away.md) shows one line for each package of the cart, filled in with its amount, its place, its use-by date, and its regular price, in groups by place. Each jug of milk gets its own row and its own date in the pantry, and loose food such as apples goes into the row that you have. You check the lines, and one tap corrects a fact, marks a sale, or selects the brand in your hand. Each brand has its own price. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that package into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
+At home, [put away](../architecture/put-away.md) shows one line for each package of the cart, filled in with its amount, its place, its use-by date, and its regular price, in groups by place. Each jug of milk gets its own row and its own date in the pantry, and 6 apples are a package of 6 next to the apples that you have. You check the lines, and one tap corrects a fact, marks a sale, or selects the brand in your hand. Each brand has its own price. The items that the plugin knows are in one closed group with one button. You see only the other items as lines, and "Put away" in an open line puts that package into the pantry. The receipt note keeps each fact from the start, so you can stop and continue on a different device.
 
 The note of the trip becomes its [receipt](../architecture/receipt.md): what you bought, in which store, and what you paid. Thus the vault has the price of each item over time.
 

@@ -1,6 +1,6 @@
 ---
 title: Level
-summary: "How the plugin decides that a food item is low: the amount that you have, the full amount, and the low line."
+summary: "What is left in a package as you see it, full to 1/4, and the two simple rules for low and out."
 parent: pantry.md
 ---
 
@@ -8,45 +8,41 @@ parent: pantry.md
 
 # Level
 
-The level of a food item tells how much is left. It makes a bar amber, and it can put a food item on the shopping list. This page tells how the plugin calculates it.
+You do not know that a jug has 0.95 l in it. You see that it is a quarter full. So the pantry keeps a level for each package, as you see it, and it tells from the levels when a food item is low.
 
-## A number alone tells little
+## A level is what you see
 
-Is 500 g of rice much or little? The answer depends on how much rice you usually have. So the level compares three amounts.
+A measured package, such as a jug of milk or a bag of rice, has one of four levels: `full`, `3/4`, `1/2`, or `1/4`. A package with nothing left is not a package: it goes out of the [note](food-item-note.md).
 
-| Amount        | Meaning                                   | Where it comes from                                    |
-| ------------- | ----------------------------------------- | ------------------------------------------------------ |
-| What you have | The sum of all rows of the food item      | The table of the [food item note](food-item-note.md)   |
-| Full amount   | The most that the pantry had of this food | The property `full`                                    |
-| Low line      | At this amount, the food item is low      | The property `low`, or a percentage of the full amount |
+A counted package, such as a carton of eggs, has a count in place of a level: 4 of 12. You think of eggs as a count, so the pantry does too.
 
-## All places count together
+A small error in a level is not a problem. You check the pantry each week, and you correct it then.
 
-Low is a fact of the food item, not of one shelf. Rice has 500 g in the kitchen pantry and 2 kg in the downstairs pantry, so you have 2.5 kg. The full amount is 5 kg, and the low line is 1 kg. Rice is not low, although the kitchen pantry has little.
+## The amount behind a level
 
-## The plugin learns the full amount
+The recipes and the shopping list need an amount, not a level. The amount of a package is its level times its size: `1/4` of `1 gal` is 1/4 gal. The amount of a counted package is its count. All packages of a food item, in all places, add up to what you have.
 
-You do not have to set these amounts. When the pantry has more of a food than `full` tells, the plugin writes the larger amount, in the unit of the note: two jugs and a half jug of milk make `full: 2 1/2 gal`. The full amount is only for the level. No bar of a package stops at it: the bar of a package is as long as its size, as the [amount bar](amount-bar.md) tells. With no `low`, the line is at 25% of the full amount. The percentage is a [setting](settings.md).
+When food goes out, the plugin calculates the new amount and writes the nearest level. The [end of a meal](end-of-a-meal.md) tells how.
 
-## What the bar of a line shows
+## Low: one package is left, and it is nearly empty
 
-The Pantry part has one line for each food item in each place. The length of its bar is the full amount. The dark part is the food of the line: all packages in this place. The light part is the food in the other places. A tick marks the low line.
+A food item is low when it has one package, and that package is at `1/4`. For a counted package, it is a count of 1/4 of its size or less: 3 eggs of 12.
 
-On the line "Kitchen pantry" of rice, the dark part is 10% of the bar and the light part is 40%. The tick is at 20%. When all places together have less than 1 kg, each bar of rice is amber.
+| Packages of milk          | Low? |
+| ------------------------- | ---- |
+| A jug at 1/4              | Yes  |
+| A jug at 1/4, a full jug  | No   |
+| A jug at 1/2              | No   |
 
-## When the plugin cannot count
+The rule needs no setting and no property. A second package is your reserve, so food with a reserve is not low. A low food item has an amber bar, and a [staple](staples.md) that is low gets on the shopping list.
 
-The plugin adds two [amounts](amounts.md) only if their units compare. Grams and kilograms compare. Bags and kilograms do not.
+## Out: no package
 
-- A row such as "a full bag" has no number, so it has no bar.
-- If the full amount is "2 kg" and each row is in bags, the food item has no level.
+A food item with no package is out. The note stays, so that the Shop part shows the food and you buy it again.
 
-A food item with no level is never low.
-
-## An empty row and out
-
-An [empty row](food-item-note.md#the-empty-row) adds nothing. A food item is out when each of its rows is an empty row, or when the note has no row. So the last gallon that you finish puts milk on the list, although its row stays.
+A row with a text such as `tap` is a package that the plugin cannot count. Water with that row is never out, and never low.
 
 ## Further reading
 
 - [Staples](staples.md): how a food item that is low gets on the list.
+- [Amounts](amounts.md): the units of a package size.

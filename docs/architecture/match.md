@@ -26,16 +26,16 @@ With no link, the name stops at a comma or a parenthesis. "salt, to taste" is sa
 
 ## Then the amount
 
-The plugin compares the [amount](amounts.md) of the ingredient with all rows of the food item.
+The plugin compares the amount of the ingredient with all rows of the food item.
 
-| The pantry has                            | The ingredient is |
-| ----------------------------------------- | ----------------- |
-| No food item, or a food item with no row  | Missing           |
-| The amount, or more                       | In the pantry     |
-| Less than the amount                      | Low               |
-| The food, in a unit that does not compare | In the pantry     |
+| The pantry has                                  | The ingredient is      |
+| ----------------------------------------------- | ---------------------- |
+| No food item, or a food item with no row        | Missing                |
+| The amount, or more                             | In the pantry          |
+| Less than the amount                            | Low                    |
+| The food, but the plugin cannot count it        | In the pantry: "Check" |
 
-The last row is a decision. The recipe wants 2 tablespoons of curry paste, and the pantry has "1 jar". The plugin cannot know how much is in the jar. It does not ask you to buy a second jar.
+A spoon of sugar against a bag in grams is a count: the [amounts](amounts.md) page has the rough rule that compares them. The plugin cannot count two cases. A recipe wants "1 onion", and the row is "500 g": a count against a mass. Or the recipe wants "1 l water", and the row is "tap": a row with no number. The food is there, so it counts in "7 of 9" and it is not on the list. But the recipe card and Get out show the sticker "Check" on the line, and the meal card of the plan says "1 to check". You see that this line is not a count, and you look at the shelf.
 
 An ingredient with no amount, such as salt, is in the pantry when its food item has a row. The plugin does not assume that a food is there: only a row tells it.
 

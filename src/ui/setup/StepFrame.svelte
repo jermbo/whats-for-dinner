@@ -14,6 +14,7 @@
 		children: Snippet;
 	};
 	let { title, at, ready, action = 'Continue', oncontinue, children }: Props = $props();
+	const headId = $props.id();
 
 	// A second tap while the plugin writes does not write two times.
 	let busy = $state(false);
@@ -29,8 +30,8 @@
 </script>
 
 <!-- One step of setup: the title, what you give, and the one button that goes on. -->
-<section class="wfd-step" aria-label={title}>
-	<PartHead {title}>
+<section class="wfd-step" aria-labelledby={headId}>
+	<PartHead id={headId} {title}>
 		{#snippet side()}
 			<span class="wfd-label">Step {at} of 4</span>
 		{/snippet}

@@ -26,8 +26,6 @@ The open line stays in its group while you correct it, so it does not move under
 
 The open line has "+ package". It adds a line with the amount, the place, the date, and the price of the open line, for a package that the plugin did not expect. The new line slides in below the open line. A correction of one line does not change the other lines of the item.
 
-The open line of a food item also has the chip "Loose". It writes `loose: true` into the [food item note](food-item-note.md) at once: the food has no packages, so the next put away adds it to the row of its place.
-
 "Not bought" takes one line out, for a wrong tap in the store. The task stays in the cart while the item has a line. "Not bought" on the last line of an item takes the item out of the cart. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store when it is complete.
 
 ## The brand is one tap
@@ -70,7 +68,7 @@ Batteries are not food, so their line has only the price and "Sale", in the last
 
 ## What changes when food goes into the pantry
 
-- The [level](level.md) of each food item goes up. If you have more than the full amount, the plugin writes the new full amount.
+- Each food item gets a new package for each line, full. Food that was [low](level.md) is not low any more.
 - Each food item that got food has the day of its put away as its purchase date.
 - At the end of the trip, the receipt is complete, and the note "Next trip" keeps only the extras that you did not buy.
 - A [suggestion](suggestions.md) that you skipped shows again, if its food item still needs a look.

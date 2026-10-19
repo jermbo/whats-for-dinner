@@ -140,8 +140,8 @@
 </script>
 
 <!-- No form: Enter in a field gives the next line, and only the button saves. -->
-<section class="wfd-intake" aria-label={heading}>
-	<PartHead title={heading}>
+<section class="wfd-intake" aria-labelledby="{uid}-head">
+	<PartHead id="{uid}-head" title={heading}>
 		{#snippet side()}
 			<Button kind="link" onclick={() => onclose(false)}>Close</Button>
 		{/snippet}

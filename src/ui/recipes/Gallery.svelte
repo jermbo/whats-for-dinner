@@ -4,6 +4,7 @@
 	import { photoRecords } from '../../cook/record';
 	import { showDate } from '../../dates';
 	import type { Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
 	let { kitchen, entry, onclose }: Props = $props();
@@ -49,17 +50,20 @@
 		else if (event.key === 'ArrowRight') go(at + 1);
 		else if (event.key === 'Escape') onclose();
 	}
+
+	const uid = $props.id();
 </script>
 
 <!-- The arrow keys are the keyboard form of the swipe, so the whole gallery listens for them. -->
 <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <article
 	class="wfd-gallery"
-	aria-label="Meals of {entry.recipe.title}"
+	aria-labelledby="{uid}-name"
 	tabindex="-1"
 	bind:this={gallery}
 	{onkeydown}
 >
+	<HiddenName id="{uid}-name" text="Meals of {entry.recipe.title}" />
 	<header class="wfd-gallery__bar">
 		<p class="wfd-gallery__title wfd-label">{entry.recipe.title}</p>
 		<span class="wfd-gallery__count wfd-number">{at + 1}/{records.length}</span>

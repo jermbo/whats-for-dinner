@@ -23,6 +23,7 @@
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import AddToCart from './AddToCart.svelte';
 	import CartLine from './CartLine.svelte';
@@ -188,9 +189,12 @@
 		duration,
 		css: (t: number) => `flex-grow: ${t}`
 	});
+
+	const uid = $props.id();
 </script>
 
-<section class="wfd-shop" aria-label="Shop">
+<section class="wfd-shop" aria-labelledby="{uid}-name">
+	<HiddenName id="{uid}-name" text="Shop" />
 	<TripStore store={kitchen.tripStore} stores={kitchen.stores} onchange={pickStore} />
 
 	<Bar

@@ -1,4 +1,4 @@
-// The settings of the plugin: where your notes are, the look, Cook Mode, and two rules of the
+// The settings of the plugin: where your notes are, the look, Cook Mode, and one rule of the
 // pantry. The values are in the data file of the plugin.
 
 import type { AlarmOptions } from './cook/alarm';
@@ -33,8 +33,8 @@ export type Settings = AlarmOptions & {
 
 	// Food with a use-by date in this number of days, or less, is food to use soon.
 	soonDays: number;
-	// With no low line of its own, a food item is low below this percentage of its full amount.
-	lowPercent: number;
+	// The last place that the weekly audit finished. The next audit starts at the place after it.
+	auditDone: string;
 };
 
 export const DEFAULT_SETTINGS: Settings = {
@@ -53,7 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	vibrate: true,
 	keepScreenOn: true,
 	soonDays: 5,
-	lowPercent: 25
+	auditDone: ''
 };
 
 // The path of a folder as the vault has it: "Recipes/" and " Recipes " are "Recipes".

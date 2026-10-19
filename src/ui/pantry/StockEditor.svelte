@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { slide } from 'svelte/transition';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Brand } from '../../pantry/brands';
 	import { makeStock } from '../../pantry/food-item';
 	import { KINDS, showKind, type StapleLabel } from '../../pantry/staple';
 	import type { Stock } from '../../pantry/types';
+	import { entryOf, refusal } from '../../pantry/unit-list';
 	import Button from '../parts/Button.svelte';
-	import Chip from '../parts/Chip.svelte';
 	import BrandFields from './BrandFields.svelte';
 
 	type Props = {
@@ -19,9 +21,6 @@
 		places: string[];
 		// The place that a new row starts with, such as "Place for new food".
 		startPlace?: string;
-		// The low line of the food item, as text. The hint is the line that the plugin sets when the
-		// field is empty. With no low line here, the editor does not ask for it.
-		low?: { text: string; hint: string };
 		// The kind of the food item, "never" when the Shop part never asks about it, or null. With no
 		// value here, the editor does not ask for it.
 		staple?: StapleLabel;
@@ -31,14 +30,10 @@
 		// has no brand yet.
 		brands?: Brand[];
 		urlOf?: (photo: string) => string | null;
-		// The food item has no packages. With no value here, the editor does not show the chip.
-		loose?: boolean;
-		// The chip writes the note at once, as a chip does.
-		onloose?: (on: boolean) => void;
 		onsave: (
 			stock: Stock,
 			name: string,
-			labels: { low: string; staple: StapleLabel },
+			labels: { staple: StapleLabel },
 			brands: BrandDraft[]
 		) => void;
 		oncancel: () => void;
@@ -52,13 +47,10 @@
 		stock,
 		places,
 		startPlace = '',
-		low,
 		staple,
 		facts = [],
 		brands = [],
 		urlOf = () => null,
-		loose,
-		onloose,
 		onsave,
 		oncancel,
 		onusedup,
@@ -66,17 +58,17 @@
 	}: Props = $props();
 
 	const uid = $props.id();
+	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
 	// The fields start with the row as it is. After that, they are yours.
 	const first = () => stock;
 	const firstName = () => startName;
 	const firstPlace = () => first()?.place ?? startPlace;
-	const firstLow = () => low?.text ?? '';
 	const firstKind = (): StapleLabel => staple ?? null;
 	let name = $state(firstName());
-	let lowText = $state(firstLow());
 	let kind = $state(firstKind());
 	let amount = $state(first()?.amountText ?? '');
-	// The form of one package shows its size. New food gets its amount as its size.
+	// The size of the package. Food that is already open needs it, so that its bar ends at the size
+	// of the bottle. With no size, the amount is the size.
 	let size = $state(first()?.sizeText ?? '');
 	let place = $state(firstPlace());
 	let useBy = $state(first()?.useBy ?? '');
@@ -88,6 +80,8 @@
 			at,
 			start: brand.name,
 			name: brand.name,
+			startVerdict: brand.verdict,
+			verdict: brand.verdict,
 			photo: null,
 			removed: false
 		}))
@@ -101,16 +95,21 @@
 
 	const where = $derived(newPlace.trim() || place);
 	const ready = $derived(Boolean(where) && (!names || Boolean(name.trim())));
+	// The amounts as the rows get them, or null for an amount that the vault does not permit.
+	const entries = $derived({
+		amount: entryOf(amount),
+		size: entryOf(size)
+	});
+	const refused = $derived(Object.values(entries).some((entry) => entry === null));
+	// The message waits for "Save", so that "1 j" does not get an error while you type "1 jar".
+	let tried = $state(false);
 
 	function save(event: SubmitEvent) {
 		event.preventDefault();
-		if (!ready) return;
-		onsave(
-			makeStock(where, amount, useBy, size),
-			name.trim(),
-			{ low: lowText.trim(), staple: kind },
-			drafts
-		);
+		tried = true;
+		const { amount, size } = entries;
+		if (!ready || amount === null || size === null) return;
+		onsave(makeStock(where, amount, useBy, size), name.trim(), { staple: kind }, drafts);
 	}
 </script>
 
@@ -160,25 +159,30 @@
 	<div class="wfd-editor__pair">
 		<label class="wfd-editor__field">
 			<span class="wfd-label">How much</span>
-			<input type="text" placeholder="500 g" bind:value={amount} />
+			<input
+				type="text"
+				placeholder="1/2 gal"
+				aria-invalid={tried && entries.amount === null}
+				bind:value={amount}
+			/>
 		</label>
-		{#if stock}
-			<label class="wfd-editor__field">
-				<span class="wfd-label">Size</span>
-				<input type="text" placeholder={amount || '1 gal'} bind:value={size} />
-			</label>
-		{/if}
+		<label class="wfd-editor__field">
+			<span class="wfd-label">Package size</span>
+			<input
+				type="text"
+				placeholder={amount || '1 gal'}
+				aria-invalid={tried && entries.size === null}
+				bind:value={size}
+			/>
+		</label>
 		<label class="wfd-editor__field">
 			<span class="wfd-label">Use by</span>
 			<input type="date" bind:value={useBy} />
 		</label>
-		{#if low}
-			<label class="wfd-editor__field">
-				<span class="wfd-label">Low line</span>
-				<input type="text" placeholder={low.hint} bind:value={lowText} />
-			</label>
-		{/if}
 	</div>
+	{#if tried && refused}
+		<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal}</p>
+	{/if}
 
 	{#if staple !== undefined}
 		<!--
@@ -203,12 +207,6 @@
 		</fieldset>
 	{/if}
 
-	{#if loose !== undefined && onloose}
-		<div class="wfd-editor__options">
-			<Chip label="Loose" on={loose} onclick={() => onloose(!loose)} />
-		</div>
-	{/if}
-
 	<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />
 
 	{#if facts.length}
@@ -227,6 +225,16 @@
 </form>
 
 <style>
+	.wfd-editor__refused {
+		margin: 0;
+		color: var(--wfd-tomato);
+		font-size: 14px;
+	}
+
+	.wfd-editor__field input[aria-invalid='true'] {
+		border-color: var(--wfd-tomato);
+	}
+
 	.wfd-editor {
 		display: grid;
 		gap: 14px;

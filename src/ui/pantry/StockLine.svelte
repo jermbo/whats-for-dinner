@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Bar } from '../../pantry/level';
+	import type { BarPart } from '../../pantry/pantry-bar';
 	import Sticker from '../parts/Sticker.svelte';
-	import LevelBar from './LevelBar.svelte';
+	import PantryBar from './PantryBar.svelte';
 
 	type Props = {
 		name: string;
@@ -12,12 +13,14 @@
 		packages?: number;
 		// The level of the food item. Null when the plugin cannot count the amount.
 		bar: Bar | null;
+		// One part for each package of the food item, the packages of this place first.
+		parts?: BarPart[];
 		// The days until the use-by date. A badge shows only when the date is near.
 		days: number | null;
 		soon: boolean;
 		onclick: () => void;
 	};
-	let { name, note, amount, packages = 1, bar, days, soon, onclick }: Props = $props();
+	let { name, note, amount, packages = 1, bar, parts = [], days, soon, onclick }: Props = $props();
 
 	const badge = $derived.by(() => {
 		if (days === null || !soon) return null;
@@ -41,7 +44,7 @@
 				>{/if}{#if bar?.isLow}<span class="wfd-line__hidden">, low</span>{/if}
 		</span>
 	</span>
-	{#if bar || !amount}<LevelBar {bar} />{/if}
+	{#if parts.length || !amount}<PantryBar {parts} low={bar?.isLow ?? false} />{/if}
 </button>
 
 <style>

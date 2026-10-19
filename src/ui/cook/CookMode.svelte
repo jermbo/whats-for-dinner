@@ -21,6 +21,7 @@
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import CookFinish from './CookFinish.svelte';
 	import StepPhoto from './StepPhoto.svelte';
@@ -159,7 +160,8 @@
 	</header>
 
 	{#if others.length}
-		<ul class="wfd-cook__timers" aria-label="Timers of other steps">
+		<HiddenName id="{uid}-timers" text="Timers of other steps" />
+		<ul class="wfd-cook__timers" aria-labelledby="{uid}-timers">
 			{#each others as one (one.step)}
 				<li>
 					<button
@@ -212,6 +214,8 @@
 													<Sticker label="None" kind="dashed" />
 												{:else if status === 'short'}
 													<Sticker label="Low" kind="amber" />
+												{:else if status === 'unknown'}
+													<Sticker label="Check" />
 												{/if}
 												<span class="wfd-cook__amount wfd-number">
 													{ingredient.amount?.text ?? ''}
@@ -254,7 +258,8 @@
 					<p class="wfd-cook__text">{step.text}</p>
 
 					{#if step.ingredients.length}
-						<ul class="wfd-cook__needs" aria-label="Ingredients of this step">
+						<HiddenName id="{uid}-needs" text="Ingredients of this step" />
+						<ul class="wfd-cook__needs" aria-labelledby="{uid}-needs">
 							{#each step.ingredients as ingredient}
 								<li class="wfd-cook__need">
 									<span class="wfd-number">{ingredient.amount?.text ?? ''}</span>
@@ -308,7 +313,8 @@
 	{/key}
 
 	<!-- The two buttons have the same size and the same place on each page. -->
-	<nav class="wfd-cook__nav" aria-label="Steps">
+	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav">
+		<HiddenName id="{uid}-nav" text="Steps" />
 		<Button disabled={page === 0} onclick={() => go(page - 1)}>← Back</Button>
 		{#if page < last}
 			<Button kind="olive" onclick={() => go(page + 1)}>

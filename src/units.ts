@@ -75,8 +75,16 @@ const METRIC = new Set([
 	'liter'
 ]);
 
+export const isMetric = (unit: string | null) => METRIC.has(unitKey(unit ?? ''));
+
+export const isFraction = (unit: string | null) => FRACTION_UNITS.has(unitKey(unit ?? ''));
+
 // A count is in whole things, such as cans and eggs. Mass and volume are not.
 export const isCount = (kind: string) => kind.startsWith('count:');
+
+// A spoon of sugar must count against a bag in grams. 1 ml is 1 g for each food: rough, but always
+// the same, and a cook does not weigh a spoon. So a mass and a volume compare with no calculation.
+export const compares = (a: string, b: string) => a === b || (!isCount(a) && !isCount(b));
 
 const round = (value: number) => String(Number(value.toFixed(2)));
 

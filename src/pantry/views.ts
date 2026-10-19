@@ -1,12 +1,14 @@
 // The views of the pantry. A line is one food item in one place, because the place is what you
 // forget when you shop. The packages of that place are in the line, so eight cans are one line.
+// The total and the bar of a line are of all places, so that you see what you have.
 
 import { daysBetween } from '../dates';
 import type { FoodNote } from '../note';
 import { isEmpty } from './empty-row';
 import { barOf, levelOf, type Bar, type Level } from './level';
+import { barParts, type BarPart } from './pantry-bar';
 import { firstUseBy, totalOf } from './total';
-import type { Package } from './open-line';
+import type { Numbered as Package } from './use-order';
 
 export type StockRow = {
 	key: string;
@@ -14,8 +16,11 @@ export type StockRow = {
 	place: string;
 	// The rows of the food item in this place that are not empty.
 	packages: Package[];
-	// The total of the packages, such as "1 1/2 gal".
+	// The total of the packages of all places, such as "1 1/4 gal", and their count.
 	total: string;
+	count: number;
+	// One part of the bar for each package, the packages of this place first.
+	parts: BarPart[];
 	// The first use-by date of the packages, or null.
 	useBy: string | null;
 	// The level of the food item, and the part of it that this line shows. Null when the plugin
@@ -28,9 +33,9 @@ export type StockGroup = { title: string; rows: StockRow[] };
 export type Sort = 'place' | 'low' | 'soon' | 'name';
 export type Only = 'low' | 'soon' | 'out';
 
-export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
+export function stockRows(foods: FoodNote[]): StockRow[] {
 	return foods.flatMap((food) => {
-		const level = levelOf(food.item, lowPercent);
+		const level = levelOf(food.item);
 		const rows = food.item.stocks.map((stock, at) => ({ stock, at }));
 		const full = rows.filter(({ stock }) => !isEmpty(stock));
 		const places = [...new Set(full.map(({ stock }) => stock.place))];
@@ -42,7 +47,9 @@ export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 				food,
 				place,
 				packages,
-				total: totalOf(stocks),
+				total: totalOf(food.item.stocks),
+				count: full.length,
+				parts: barParts(food.item.stocks, place),
 				useBy: firstUseBy(stocks),
 				level,
 				bar: barOf(stocks, level)
@@ -51,7 +58,7 @@ export function stockRows(foods: FoodNote[], lowPercent: number): StockRow[] {
 	});
 }
 
-// A line is low when its food item is at or below the low line, with all places together.
+// A line is low when its food item is low, with all places together.
 export const isLow = (row: StockRow) => row.bar?.isLow ?? false;
 
 const byFood = (a: StockRow, b: StockRow) => a.food.item.name.localeCompare(b.food.item.name);

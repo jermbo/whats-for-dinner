@@ -50,8 +50,6 @@ export type CartItem = {
 	known: boolean;
 	// The brands of its food item. Null: the item has no food item note.
 	brands: Brand[] | null;
-	// The food item has no packages. Null: the item has no food item note.
-	loose: boolean | null;
 	// The regular rows of its receipts, the newest first, for the price of each brand.
 	regulars: RegularRow[];
 };
@@ -76,7 +74,7 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 	const { row, last } = known;
 	const start = startFactsOf(known, now);
 	const fits = (amount: string) => countsFor(row.food?.item ?? null, amount);
-	const count = row.food?.item.loose ? 1 : packagesOf(row.amount, lastSizeOf(known));
+	const count = packagesOf(row.amount, lastSizeOf(known));
 	return {
 		key: row.key,
 		name: row.name,
@@ -86,15 +84,13 @@ export function cartItemOf(known: Known, now: Now): CartItem {
 		placeIsGuess: !last?.place && !row.food?.item.stocks[0]?.place,
 		known: Boolean(last?.amounts.length && last.place && readPrice(last.regular) !== null),
 		brands: row.food?.item.brands ?? null,
-		loose: row.food?.item.loose ?? null,
 		regulars: last?.regulars ?? []
 	};
 }
 
-// The last size: the amount of the newest receipt row, in the unit of the food item. Loose food
-// has no packages, so it has no size to copy.
+// The last size: the amount of the newest receipt row, in the unit of the food item.
 function lastSizeOf({ row, last }: Known): string | null {
-	if (row.food?.item.loose || !last?.amount) return null;
+	if (!last?.amount) return null;
 	return countsFor(row.food?.item ?? null, last.amount) ? last.amount : null;
 }
 
@@ -113,7 +109,7 @@ function startFactsOf(known: Known, { today, newPlace }: Now): Facts {
 	const brand = startBrandOf(brands, known.brand, last);
 	return {
 		intoPantry: inPantry,
-		amount: lastSizeOf(known) || row.amount || row.food?.item.full?.text || '1',
+		amount: lastSizeOf(known) || row.amount || row.food?.item.stocks.at(-1)?.sizeText || '1',
 		place: last?.place || row.food?.item.stocks[0]?.place || newPlace,
 		useBy: last ? useByAfter(last, today) : '',
 		price: showPrice(regularOfBrand(last?.regulars ?? [], brands, brand)),

@@ -2,6 +2,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { isForMeal } from '../../shop/browse';
 	import Button from '../parts/Button.svelte';
+	import HiddenName from '../parts/HiddenName.svelte';
 	import AddItem from './AddItem.svelte';
 	import StageFoot from './StageFoot.svelte';
 	import SuggestionList from './SuggestionList.svelte';
@@ -20,10 +21,13 @@
 			? 'nothing to buy'
 			: `${forMeals} ${forMeals === 1 ? 'item' : 'items'} on the list`
 	);
+
+	const uid = $props.id();
 </script>
 
 <!-- What the plugin cannot decide for you: the staples that need a look, and your own items. -->
-<section class="wfd-extras" aria-label="Extras">
+<section class="wfd-extras" aria-labelledby="{uid}-name">
+	<HiddenName id="{uid}-name" text="Extras" />
 	<button class="wfd-extras__meals" type="button" onclick={onshop}>
 		<span>Your meals: <strong>{meals}</strong></span>
 		<span aria-hidden="true">→</span>

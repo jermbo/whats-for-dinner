@@ -24,6 +24,10 @@ A meal that you cooked gives its place back, and it stays in view until you star
 
 Below the week, the plan shows three ideas. They are the recipes that are best for your pantry and that are not in the week. One tap adds an idea to the week.
 
+## The meal card tells what is missing
+
+Each meal shows its count, such as "7 of 9", and what that means for the week: "2 to buy", or "All in the pantry". When the plugin cannot [count](match.md) a line, such as 1 onion against 500 g, the card adds "1 to check". You see on Sunday what to look at, not at the stove.
+
 ## Preparation comes before the meal
 
 Some meals need work before you can cook, such as beef that must come out of the freezer. A recipe tells this in a callout of the type "prep", its [preparation](preparation.md). The meal shows the preparation, with a check box. After you confirm it, "Cook" is the main button of the meal.

@@ -11,6 +11,8 @@ updated: 2026-10-18
 
 You have two gallons of milk with two dates, and two cartons of eggs with 2 eggs and 12 eggs. The pantry keeps each of them as one row with one amount and one date, and the bar cannot show what you see. This page records each decision that makes one row one [package](glossary.md), and the reason for it.
 
+> **Replaced in part.** The [simple pantry](../simple-pantry/decision-log.md) of version 0.6.0 replaces decisions 4, 5, 8, 10, 11, 13, 17, 20 to 22, and 27 to 30: a package has a level or a count, an empty package goes out, a meal takes from the open package first, the card replaces the open line, and the unit list is there. The other decisions stay.
+
 ## The words of the owner
 
 > The full line doesn't make sense. For example, I buy milk when I am halfway low. But since the full line is 1 gallon, it does not represent the correct amount of 1.5 gallons. Similar issue with eggs. I have two cartons one has 2 the other has 12. So I need to track that properly.
@@ -41,7 +43,7 @@ The bar asks what you see, but you see packages, and the row has no packages. A 
 
 ### The bar and the level
 
-4. **A step of the bar is 1/8 of the package for a measure, and 1 for a count.** A gallon of milk moves by 1 pint, so each quarter is a stop. A carton of eggs moves by 1 egg, so 3 eggs is possible. The reason: the bar asks what you see, and you see quarters of a jug. Two options were rejected: quarters, which have no stop between them, and about 20 round steps, which give amounts such as 0.35 gal.
+4. **A step of the bar is 1/8 of the package for a measure, and 1 for a count.** A gallon of milk moves by 1 pint, so each quarter is a stop. A carton of eggs moves by 1 egg, so 3 eggs is possible. The reason: the bar asks what you see, and you see quarters of a jug. Two options were rejected: quarters, which have no stop between them, and about 20 round steps, which give amounts such as 0.35 gal. *Replaced in version 0.6.0 by decision 7 of the [open choices](../open-choices-of-the-first-version/decision-log.md): in a metric vault, 1/8 of a jug of 3.79 l is 0.47 l.*
 5. **The full amount stays, but only for the level.** The plugin learns it as it does today: two gallons in the fridge make `full: 2 gal`. No bar stops at it. The low line is `low`, or a percentage of the full amount. The reason, in the words of the owner: "we need to know what to compare low to." Two options were rejected: a low line that counts packages, and a level that compares the total with the sum of the package sizes.
 
 ### The rows
@@ -60,7 +62,7 @@ The bar asks what you see, but you see packages, and the row has no packages. A 
 
 12. **The number of lines at put away is the amount of the list divided by the last size.** "Milk, 2 gal" and a last row with `Size: 1 gal` give 2 lines. With no last size, it is 1 line. "+ package" copies a line for a package that the list did not know. The reason: the plugin fills it in, and you correct it with one tap. An option that was rejected: always 1 line, with one tap for each more package.
 13. **"Add package" and "Used up" change the packages in the Pantry part.** "Add package" in the open line copies the size of the last package, with an empty date. "Used up" on a package sets it to nothing, and its row stays (decision 17). The reason: one tap for each package. An option that was rejected: the form only, as today.
-14. **A new food item gets the amount of its line as its size.** New quinoa, 1 lb, gets `Size: 1 lb`. For 2 bags of 1 lb, you correct the line to 1 lb and tap "+ package". The reason: you bought the package, so its amount is its size. An option that was rejected: a field that asks for the size.
+14. **A new food item gets the amount of its line as its size.** New quinoa, 1 lb, gets `Size: 1 lb`. For 2 bags of 1 lb, you correct the line to 1 lb and tap "+ package". The reason: you bought the package, so its amount is its size. An option that was rejected: a field that asks for the size. *This stays for put away. Decision 9 of the [open choices](../open-choices-of-the-first-version/decision-log.md) adds the size to the form "Add to pantry", for food that is already open.*
 
 ### The receipt and the list
 
@@ -99,7 +101,7 @@ The stories found five gaps in the spec. The owner confirmed each of these answe
 25. **Gallons, quarts, pints, and fluid ounces are volumes, and the plugin converts them.** Before this work, the plugin read "1 gal" as a count of a thing with the name "gal", so a step of milk was 1/2, and 300 ml of milk for the pancakes did not compare with the milk of the pantry. The units are `gal` (3785.41 ml), `qt` (946.35 ml), `pt` (473.18 ml), and `fl oz` (29.57 ml). `oz` with no "fl" stays a mass. The reason, in the words of the owner: "place in what the package says, then do the conversion automatically. Like if I add gallon but the recipe calls for millileters, we should be able to get it converted. I am not looking for exact perfection, close is good."
 26. **An eighth that is not round with 2 decimals shows as a fraction.** A step of milk is 1/8 gal, and 0.125 gal shows as 0.13 gal. So the bar and the note show "3/8 gal" and "1 1/2 gal". A metric unit keeps the rule of today: 0.625 kg is "625 g". The reason: you read a gallon, a cup, or a pint in fractions on the package.
 27. **An empty row has no use-by date that counts.** An empty row gets no badge, is not "use soon", and is not past its date. Its date in the note stays until put away writes over the row. The reason: the empty slot of the eggs must not make a suggestion for food that you do not have. An option that was rejected: put away clears the date when the row becomes empty, which changes the slot.
-28. **A tap on a sealed count opens one package of it.** You open a new can and use half. A tap on "5 sealed" shows a bar for one can, full, and the count becomes "4 sealed". With no change, the can stays sealed. The reason: a sealed package has no bar, and you can use half a can with no recipe. An option that was rejected: a package opens only through a meal.
+28. **A tap on a sealed count opens one package of it.** You open a new can and use half. A tap on "5 sealed" shows a bar for one can, full, and the count becomes "4 sealed". With no change, the can stays sealed. The reason: a sealed package has no bar, and you can use half a can with no recipe. An option that was rejected: a package opens only through a meal. *Changed in version 0.6.0 by decision 6 of the [open choices](../open-choices-of-the-first-version/decision-log.md): a line with no open package shows the bar of its first sealed package with no tap.*
 29. **"−" on a sealed count makes one package of that date an empty row, and "+" adds one sealed package with that size and date.** So "−" acts as "Used up" on one sealed package. The reason: "one package less" has one result, and "−" corrects a wrong "+". An option that was rejected: "−" takes the row out of the table.
 30. **A fixed list of units is a later initiative.** The owner: "I want to make it easy to enter and be correct. I dont want to have a typo that throws the whole thing off." The proposal: a screen gives the unit as a chip, never as typed text, the plugin writes only the short name, and a unit that is not on the list shows a warning. The owner wants it later, for the recipes and the pantry together: "I think we need to make it a later initiative because I want to have things synced properly." In this work, a unit stays text, as before.
 
@@ -109,6 +111,6 @@ No question is open. The [spec](spec.md) has the scope.
 
 ## Further reading
 
-- [Amount bar](../../architecture/amount-bar.md): the bar of an open row today.
+- [Amount bar](../../architecture/card.md): the bar of an open row today.
 - [Level](../../architecture/level.md): how the full amount and the low line make a food item low.
 - [Workflow](../../standards/workflow.md): the step of the work that this page is in.

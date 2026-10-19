@@ -56,4 +56,6 @@
 	.wfd-recipes__note {
 		font-size: 14px;
 	}
+
+
 </style>
