@@ -34,7 +34,7 @@ flowchart TD
 | State  | `kitchen-state.svelte.ts`, `kitchen/`, `read-properties.ts`        | Keeps the notes of the vault current, and has each action.           | Know a component.                                |
 | Domain | All other files: a folder for each subject, `units.ts`, `dates.ts` | The rules of the kitchen.                                            | Import Obsidian, Svelte, the state, or a screen. |
 
-The shell and the state are the only files that import Obsidian. That is 12 files: the 3 files of the shell, and 9 files of the state. When Obsidian changes, no other file changes.
+The shell and the state are the only files that import Obsidian. That is 13 files: the 3 files of the shell, and 10 files of the state. When Obsidian changes, no other file changes.
 
 ## The folders of the domain tell what the plugin is
 
@@ -42,7 +42,7 @@ The folders of the domain have names from the kitchen: `pantry`, `recipes`, `pla
 
 ## An example: a new amount of rice
 
-1. The pantry screen calls `changeStocks` of the kitchen state, with the new rows.
+1. The pantry screen calls `changeStocks` of the pantry actions in the kitchen state, with the new rows.
 2. The state asks Obsidian for the note of the rice.
 3. The domain function `replaceStocks` gets the text of the note and the rows, and it gives the new text.
 4. The state gives that text back to Obsidian.

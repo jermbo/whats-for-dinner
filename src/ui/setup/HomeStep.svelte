@@ -21,7 +21,7 @@
 	const uid = $props.id();
 </script>
 
-<StepFrame title="Plugin home" at={2} ready={apart} oncontinue={() => kitchen.makeHome(home)}>
+<StepFrame title="Plugin home" at={2} ready={apart} oncontinue={() => kitchen.setup.makeHome(home)}>
 	<label class="wfd-home">
 		<span class="wfd-label">Name of the folder</span>
 		<input type="text" placeholder={HOME} bind:value={text} />

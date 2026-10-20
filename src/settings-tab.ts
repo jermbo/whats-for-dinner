@@ -69,7 +69,7 @@ export class KitchenSettingTab extends PluginSettingTab {
 						.setButtonText('Use these notes')
 						.setCta()
 						.onClick(async () => {
-							await kitchen.useNotes();
+							await kitchen.setup.useNotes();
 							this.display();
 						})
 				);

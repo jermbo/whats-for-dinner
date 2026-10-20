@@ -116,7 +116,7 @@
 	</div>
 {:else if page?.is === 'convert' || page?.is === 'edit'}
 	<div class="wfd-kitchen" in:fade={{ duration }}>
-		{#await kitchen.readForIntake(page) then start}
+		{#await kitchen.intake.readForIntake(page) then start}
 			{#if start}
 				<Intake {kitchen} replace={{ is: page.is, path: page.path, start }} onclose={closePage} />
 			{:else}

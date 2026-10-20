@@ -52,7 +52,7 @@
 	title="Places"
 	at={3}
 	{ready}
-	oncontinue={() => kitchen.choosePlaces(places, chosen)}
+	oncontinue={() => kitchen.setup.choosePlaces(places, chosen)}
 >
 	<p class="wfd-places__note">Where your food is. Rename, remove, or add a place: the list is yours.</p>
 

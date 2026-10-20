@@ -1,7 +1,7 @@
 // The week of the plan: the meals that you did not cook, in one group for each type of meal. The
 // week has room for 7 meals of each type, one for each day.
 
-import type { Meal } from '../kitchen/types';
+import type { Meal } from './types';
 import { typeOf } from '../recipes/browse';
 
 export const ROOM = 7;

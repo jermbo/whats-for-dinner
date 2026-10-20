@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { RecipeEntry } from '../../kitchen/types';
+	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import {
 		inSequence,
@@ -86,7 +86,7 @@
 	});
 
 	const toggleWeek = (path: string) =>
-		kitchen.isPlanned(path) ? kitchen.removeFromPlan(path) : kitchen.addToPlan(path);
+		kitchen.plan.isPlanned(path) ? kitchen.plan.removeFromPlan(path) : kitchen.plan.addToPlan(path);
 </script>
 
 <section class="wfd-recipes" aria-labelledby={headId}>
@@ -152,7 +152,7 @@
 				<li transition:slide={{ duration }}>
 					<RecipeCard
 						{entry}
-						planned={kitchen.isPlanned(entry.path)}
+						planned={kitchen.plan.isPlanned(entry.path)}
 						onweek={() => toggleWeek(entry.path)}
 						oncook={() => oncook(entry.path)}
 						onopen={() => kitchen.open(entry.path)}

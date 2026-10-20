@@ -8,7 +8,7 @@
 
 	const uid = $props.id();
 	// The field starts with the setting as it is. After that, it is yours.
-	const first = () => ({ folders: kitchen.folders(), text: kitchen.settings.recipesFolder });
+	const first = () => ({ folders: kitchen.setup.folders(), text: kitchen.settings.recipesFolder });
 	const { folders, text: firstText } = first();
 	let text = $state(firstText);
 
@@ -22,7 +22,7 @@
 	title="Recipes"
 	at={1}
 	ready={apart}
-	oncontinue={() => kitchen.chooseRecipesFolder(path)}
+	oncontinue={() => kitchen.setup.chooseRecipesFolder(path)}
 >
 	<label class="wfd-recipes">
 		<span class="wfd-label">Recipes folder</span>

@@ -35,8 +35,8 @@
 	// The note of the food item comes from the row, so its brands go after it.
 	async function add(name: string, stock: Stock, brands: BrandDraft[]) {
 		adding = false;
-		if (!(await kitchen.addStock(name, stock))) return;
-		if (brands.length) await kitchen.saveBrands(name, brands);
+		if (!(await kitchen.pantry.addStock(name, stock))) return;
+		if (brands.length) await kitchen.brands.saveBrands(name, brands);
 	}
 
 	const uid = $props.id();
@@ -47,7 +47,7 @@
 	at={4}
 	{ready}
 	action="Finish setup"
-	oncontinue={() => kitchen.finishSetup(picked)}
+	oncontinue={() => kitchen.setup.finishSetup(picked)}
 >
 	<p class="wfd-food__note">
 		Tap what you have, and type how much. Staples go to "{kitchen.settings.newPlace}".

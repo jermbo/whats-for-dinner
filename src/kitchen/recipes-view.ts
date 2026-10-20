@@ -2,7 +2,7 @@ import { lastRating, photoRecords } from '../cook/record';
 import { indexFoods, matchRecipe } from '../match/match';
 import type { FoodNote, Note } from '../note';
 import { readPrep } from '../recipes/prep';
-import type { RecipeEntry } from './types';
+import type { RecipeEntry } from '../recipes/types';
 
 const share = (entry: RecipeEntry) =>
 	entry.match.ingredients.length ? entry.match.inPantry / entry.match.ingredients.length : 0;

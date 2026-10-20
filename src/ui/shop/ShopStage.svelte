@@ -68,7 +68,7 @@
 
 	// When you select a store with an order, the list follows it at once.
 	function pickStore(store: string) {
-		kitchen.setTripStore(store);
+		kitchen.shop.setTripStore(store);
 		if (kitchen.storeOrder.size) bar.sort = 'store';
 		else if (bar.sort === 'store') bar.sort = 'name';
 	}
@@ -84,7 +84,7 @@
 		ticked.add(key);
 		setTimeout(async () => {
 			// The tick goes when the write fails, so that you can tap the row again.
-			if (!(await kitchen.putInCart(key, brand))) ticked.delete(key);
+			if (!(await kitchen.shop.putInCart(key, brand))) ticked.delete(key);
 		}, prefersReducedMotion.current ? 0 : TICK_SHOWS);
 	}
 
@@ -115,7 +115,7 @@
 		const brand = largeBrand ? brandCell(largeBrand) : `[[${photo}]]`;
 		large = null;
 		opened.delete(key);
-		if (inCart.some((one) => one.key === key)) void kitchen.putInCart(key, brand);
+		if (inCart.some((one) => one.key === key)) void kitchen.shop.putInCart(key, brand);
 		else tick(key, brand);
 	}
 
@@ -124,7 +124,7 @@
 	async function takeNew(row: ShoppingRow, photo: Blob, from: HTMLElement) {
 		if (!row.food) return;
 		const { path } = row.food;
-		const name = await kitchen.addBrandPhoto(path, photo);
+		const name = await kitchen.brands.addBrandPhoto(path, photo);
 		if (name) large = { key: row.key, path, photo: name, from };
 	}
 
@@ -236,8 +236,8 @@
 		<AddToCart
 			{text}
 			{proposals}
-			onadd={(path) => take(() => kitchen.addToCart(path))}
-			onaddnew={(name) => take(() => kitchen.addNewToCart(name))}
+			onadd={(path) => take(() => kitchen.shop.addToCart(path))}
+			onaddnew={(name) => take(() => kitchen.shop.addNewToCart(name))}
 		/>
 	{:else if !needed.length}
 		<p class="wfd-shop__empty">{inCart.length ? 'Each item is in the cart.' : 'Nothing to get.'}</p>
@@ -296,7 +296,7 @@
 									<Button
 										kind="link"
 										aria-label="Remove {row.name}"
-										onclick={() => kitchen.removeExtra(row.key)}
+										onclick={() => kitchen.shop.removeExtra(row.key)}
 									>
 										Remove
 									</Button>
@@ -326,7 +326,7 @@
 			<CartLine
 				cart={inCart}
 				priceOf={(key) => showPrice(kitchen.regularOf(key))}
-				onundo={(key) => kitchen.takeOutOfCart(key)}
+				onundo={(key) => kitchen.shop.takeOutOfCart(key)}
 			>
 				{#snippet brands(row)}
 					{@const all = brandsOf(row)}

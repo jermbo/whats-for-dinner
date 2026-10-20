@@ -155,8 +155,8 @@
 	// looked at it.
 	async function write(food: FoodNote, rows: Stock[] | null) {
 		if (!rows) return;
-		if (!(await kitchen.changeStocks(food.path, () => rows))) return;
-		if (food.item.check) await kitchen.setCheck(food.path, false);
+		if (!(await kitchen.pantry.changeStocks(food.path, () => rows))) return;
+		if (food.item.check) await kitchen.pantry.setCheck(food.path, false);
 	}
 
 	// The form writes only what you changed. The writes go one after the other.
@@ -166,9 +166,9 @@
 		form: { size: string; staple: StapleLabel; brands: BrandDraft[] }
 	) {
 		if (open) open = { ...open, form: false };
-		if (form.size !== start) await kitchen.setSize(food.path, form.size);
-		if (form.staple !== labelOf(food)) await kitchen.setStaple(food.path, form.staple);
-		if (form.brands.length) await kitchen.saveBrands(food.item.name, form.brands);
+		if (form.size !== start) await kitchen.pantry.setSize(food.path, form.size);
+		if (form.staple !== labelOf(food)) await kitchen.pantry.setStaple(food.path, form.staple);
+		if (form.brands.length) await kitchen.brands.saveBrands(food.item.name, form.brands);
 	}
 
 	// A known food opens its card with a new package: in the place of the filter, or in the place of
@@ -186,7 +186,7 @@
 		adding = false;
 		bar.clear();
 		bar.find = '';
-		await kitchen.addStock(name, fullPackage(place, size));
+		await kitchen.pantry.addStock(name, fullPackage(place, size));
 		open = { name, place, add: false, form: false };
 	}
 
@@ -233,7 +233,7 @@
 				places={kitchen.places}
 				done={kitchen.settings.auditDone}
 				onwrite={write}
-				onright={(food) => kitchen.setCheck(food.path, false)}
+				onright={(food) => kitchen.pantry.setCheck(food.path, false)}
 				onfinish={(place) => kitchen.changeSettings({ auditDone: place })}
 				onopen={(path) => kitchen.open(path)}
 				onstop={() => (auditing = false)}
@@ -305,7 +305,7 @@
 					onfood={() => open && (open = { ...open, form: true, add: false })}
 				/>
 			{/if}
-			<OnTheList onList={isOnList(food.path)} onadd={() => kitchen.addExtra(food.path)} />
+			<OnTheList onList={isOnList(food.path)} onadd={() => kitchen.shop.addExtra(food.path)} />
 		</div>
 	{/snippet}
 

@@ -25,7 +25,7 @@ Svelte draws a screen again when a field changes, but it does not see a change i
 You tap "Done" on the card of milk, with the full jug at 1/2.
 
 1. The screen gives the new rows to the state.
-2. The state gives them to its pantry actions, which write the note. No field changes yet.
+2. The pantry actions of the state write the note. No field changes yet.
 3. Obsidian reports the change, and the state reads the note into the buffer again.
 4. The state copies the snapshot, and the card shows 1/2.
 
@@ -37,20 +37,30 @@ A change that you type in the note takes steps 3 and 4 too. So the screen shows 
 
 The recipes with their match, the shopping list, the cart, and the suggestions are not notes. Svelte calculates each list again from the fields and the settings. The rules are in the domain, and in three small files next to the state: `kitchen/shop-read-model.ts`, `kitchen/meals-view.ts`, and `kitchen/recipes-view.ts`. So a new list does not make the state larger.
 
-## The file of each write
+## The actions of each subject
 
-Each write goes to one file in `kitchen/`. The type of its host tells what the file needs, such as the paths and some calls of Obsidian. The state gives the file an object of that type. So you can read an action file with no knowledge of the state.
+A screen does not call a write directly. It calls an action of one subject of the kitchen, such as `kitchen.pantry.setSize` or `kitchen.shop.putInCart`. There are seven subjects, and each one has its own file in `kitchen/`:
 
-| File                | What it writes                                                                       |
-| ------------------- | ------------------------------------------------------------------------------------ |
-| `pantry-actions.ts` | The packages of a food item, its size, its staple label, and its mark "check".       |
-| `brand-actions.ts`  | The brands of a food item, with their photos and verdicts.                           |
-| `plan-actions.ts`   | The meals of the plan note.                                                          |
-| `shop-actions.ts`   | The cart in the note "Next trip", the receipt, and each package of put away.         |
-| `cook-actions.ts`   | The end of a meal: the food out of the pantry, the cook record, and the step photos. |
-| `intake-actions.ts` | A new or a changed recipe, and a stub for each new food.                             |
-| `photo-actions.ts`  | A photo of a recipe or of a brand, in its folder `Photos`.                           |
-| `setup-actions.ts`  | The plugin home, its folders, the places, and the first food of setup.               |
+| Subject           | File                | What it writes                                                                       |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| `kitchen.pantry`  | `pantry-actions.ts` | The packages of a food item, its size, its staple label, and its mark "check".       |
+| `kitchen.brands`  | `brand-actions.ts`  | The brands of a food item, with their photos and verdicts.                           |
+| `kitchen.plan`    | `plan-actions.ts`   | The meals of the plan note.                                                          |
+| `kitchen.shop`    | `shop-actions.ts`   | The cart in the note "Next trip", the receipt, and each package of put away.         |
+| `kitchen.cook`    | `cook-actions.ts`   | The end of a meal: the food out of the pantry, the cook record, and the step photos. |
+| `kitchen.intake`  | `intake-actions.ts` | A new or a changed recipe, and a stub for each new food.                             |
+| `kitchen.setup`   | `setup-actions.ts`  | The plugin home, its folders, the places, and the first food of setup.               |
+
+Two more files help them. `photo-actions.ts` puts a photo of a recipe or of a brand in its folder `Photos`. `tried.ts` shows a notice when a write fails.
+
+The type of a host tells what a file needs, such as the paths and some calls of Obsidian. The kitchen state gives the file an object of that type. So you can read an action file with no knowledge of the state.
+
+## A new action
+
+1. Write the action in the file of its subject.
+2. Add it to the object of that subject, with the text of the notice for a failure.
+
+The kitchen state does not change. It changes only when the action needs a field or a call that the host does not have yet.
 
 ## The part on the screen
 
