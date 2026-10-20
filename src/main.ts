@@ -9,7 +9,7 @@ export default class WhatsForDinnerPlugin extends Plugin {
 		const kitchen = new Kitchen(
 			this.app,
 			{ load: () => this.loadData(), save: (data) => this.saveData(data) },
-			(ref) => this.registerEvent(ref)
+			this
 		);
 
 		// The settings are in the data file. The tab and the settings screen need them from the start.

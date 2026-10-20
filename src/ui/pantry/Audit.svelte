@@ -23,7 +23,7 @@
 		// The last place that an audit finished.
 		done: string;
 		onwrite: (food: FoodNote, rows: Stock[] | null) => Promise<void>;
-		onright: (food: FoodNote) => Promise<void>;
+		onright: (food: FoodNote) => Promise<unknown>;
 		onfinish: (place: string) => Promise<void>;
 		onopen: (path: string) => void;
 		onstop: () => void;

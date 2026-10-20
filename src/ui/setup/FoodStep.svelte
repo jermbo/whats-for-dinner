@@ -35,7 +35,7 @@
 	// The note of the food item comes from the row, so its brands go after it.
 	async function add(name: string, stock: Stock, brands: BrandDraft[]) {
 		adding = false;
-		await kitchen.addStock(name, stock);
+		if (!(await kitchen.addStock(name, stock))) return;
 		if (brands.length) await kitchen.saveBrands(name, brands);
 	}
 

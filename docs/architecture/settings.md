@@ -54,14 +54,16 @@ The accent colour is the colour of "ready", "done", and the current step. All ot
 
 ## Cook Mode
 
-| Setting            | Starts as | What it does                                         |
-| ------------------ | --------- | ---------------------------------------------------- |
-| Timer sound        | Beeps     | The sound of the alarm: beeps, a chime, or no sound. |
-| Volume             | 7 of 10   | How loud the alarm is.                               |
-| Vibrate            | On        | A phone vibrates when a timer ends.                  |
-| Keep the screen on | On        | The screen does not go dark while Cook Mode is open. |
+| Setting            | Starts as | What it does                                                           |
+| ------------------ | --------- | ---------------------------------------------------------------------- |
+| Timer sound        | Beeps     | The sound of the alarm: beeps, a chime, or no sound.                   |
+| Volume             | 7 of 10   | How loud the alarm is.                                                 |
+| Vibrate            | On        | A phone vibrates when a timer ends.                                    |
+| Keep the screen on | On        | The screen does not go dark while Cook Mode or the stage Shop is open. |
 
 The button "Test" plays the sound, so that you can select it before you cook.
+
+The setting "Keep the screen on" is in this group, but it is also for the store. On the stage Shop of [shopping](shopping.md), the phone does not lock between two shelves.
 
 ## The pantry
 

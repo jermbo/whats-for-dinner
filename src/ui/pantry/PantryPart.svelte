@@ -155,7 +155,7 @@
 	// looked at it.
 	async function write(food: FoodNote, rows: Stock[] | null) {
 		if (!rows) return;
-		await kitchen.changeStocks(food.path, () => rows);
+		if (!(await kitchen.changeStocks(food.path, () => rows))) return;
 		if (food.item.check) await kitchen.setCheck(food.path, false);
 	}
 

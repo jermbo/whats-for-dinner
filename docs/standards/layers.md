@@ -31,18 +31,18 @@ flowchart TD
 | ------ | ------------------------------------------------------------------ | -------------------------------------------------------------------- | ------------------------------------------------ |
 | Shell  | `main.ts`, `kitchen-view.svelte.ts`, `settings-tab.ts`             | Connects the plugin to Obsidian: the tab, the command, the settings. | Decide a rule of the kitchen.                    |
 | Screen | `ui/`                                                              | Shows what it gets, and tells what you did.                          | Read or write a note, or decide a rule.          |
-| State  | `kitchen-state.svelte.ts`, `kitchen/*-actions.ts`, `read-properties.ts` | Keeps the notes of the vault current, and has each action.      | Know a component.                                |
+| State  | `kitchen-state.svelte.ts`, `kitchen/`, `read-properties.ts`        | Keeps the notes of the vault current, and has each action.           | Know a component.                                |
 | Domain | All other files: a folder for each subject, `units.ts`, `dates.ts` | The rules of the kitchen.                                            | Import Obsidian, Svelte, the state, or a screen. |
 
-The shell and the state are the only files that import Obsidian. That is five files. When Obsidian changes, no other file changes.
+The shell and the state are the only files that import Obsidian. That is 12 files: the 3 files of the shell, and 9 files of the state. When Obsidian changes, no other file changes.
 
 ## The folders of the domain tell what the plugin is
 
-The folders of the domain have names from the kitchen: `pantry`, `recipes`, `plan`, `shop`, and `cook`. Two more have the name of their one subject: `match`, and `recipemd` for the format of a recipe. A reader who sees only the names of the folders knows that this is a kitchen. A folder with the name `utils` or `helpers` tells nothing, so the code has none.
+The folders of the domain have names from the kitchen: `pantry`, `recipes`, `plan`, `shop`, `cook`, and `intake`. Three more have the name of their one subject: `match`, `setup`, and `recipemd` for the format of a recipe. A reader who sees only the names of the folders knows that this is a kitchen. A folder with the name `utils` or `helpers` tells nothing, so the code has none.
 
 ## An example: a new amount of rice
 
-1. The pantry screen calls `setStocks` of the kitchen state, with the new rows.
+1. The pantry screen calls `changeStocks` of the kitchen state, with the new rows.
 2. The state asks Obsidian for the note of the rice.
 3. The domain function `replaceStocks` gets the text of the note and the rows, and it gives the new text.
 4. The state gives that text back to Obsidian.

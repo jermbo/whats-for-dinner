@@ -82,7 +82,10 @@
 	function tick(key: string, brand?: string) {
 		if (ticked.has(key)) return;
 		ticked.add(key);
-		setTimeout(() => kitchen.putInCart(key, brand), prefersReducedMotion.current ? 0 : TICK_SHOWS);
+		setTimeout(async () => {
+			// The tick goes when the write fails, so that you can tap the row again.
+			if (!(await kitchen.putInCart(key, brand))) ticked.delete(key);
+		}, prefersReducedMotion.current ? 0 : TICK_SHOWS);
 	}
 
 	// --- The photos of the brands. ---
@@ -149,7 +152,7 @@
 	);
 	const canAdd = $derived(Boolean(text) && !shown.length && !count);
 
-	function take(add: () => Promise<void>) {
+	function take(add: () => Promise<unknown>) {
 		bar.find = '';
 		void add();
 	}

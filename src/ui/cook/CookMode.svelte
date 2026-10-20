@@ -138,7 +138,7 @@
 	let saving = $state(false);
 
 	async function finish(result: CookResult) {
-		await kitchen.finishCooking(entry.path, result);
+		if (!(await kitchen.finishCooking(entry.path, result))) return;
 		kitchen.notify('The pantry is correct again.');
 		onclose();
 	}

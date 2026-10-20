@@ -33,7 +33,7 @@ A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md)
 
 When the kitchen opens, the plugin reads these notes. After that, it follows the vault: a new note, a changed note, a note with a new name, and a note that is gone.
 
-An action in the kitchen does not change the screen directly. It writes the note. The vault reports the change, and the plugin reads the note again. Then the screen shows the new state.
+An action in the kitchen does not change the screen directly. It writes the note. The vault reports the change, and the [kitchen state](kitchen-state.md) reads the note again. Then the screen shows the new state.
 
 ```mermaid
 flowchart LR

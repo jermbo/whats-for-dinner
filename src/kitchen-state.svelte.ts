@@ -1,7 +1,7 @@
 // The kitchen: all that the screens show, and all that they can do. The notes of the vault are the
 // only source. Each action writes a note, and the kitchen reads the note again after the change.
 
-import { debounce, Notice, TFile, type App, type EventRef, type TAbstractFile } from 'obsidian';
+import { debounce, Notice, TFile, type App, type Component, type TAbstractFile } from 'obsidian';
 import {
 	addStepPhoto as addStepPhotoAction,
 	finishCooking as finishCookingAction,
@@ -190,17 +190,27 @@ export class Kitchen {
 
 	private app: App;
 	private disk: Disk;
-	private register: (ref: EventRef) => void;
+	// An event, a listener, or a timer that the kitchen registers here stops with the plugin.
+	private plugin: Component;
 	private started = false;
 	private vault = new VaultBuffer();
 	private shopMutable: ShopMutable = { puttingAway: false, pendingFacts: new Map() };
-	private writeFacts = debounce(() => void flushReceiptFacts(this.shopHost), 600, true);
-	private writeStore = debounce((store: string) => void saveTripStore(this.shopHost, store), 600, true);
+	private writeFacts = debounce(
+		() => void this.tried('The receipt did not change', () => flushReceiptFacts(this.shopHost)),
+		600,
+		true
+	);
+	private writeStore = debounce(
+		(store: string) =>
+			void this.tried('The store is not saved', () => saveTripStore(this.shopHost, store)),
+		600,
+		true
+	);
 
-	constructor(app: App, disk: Disk, register: (ref: EventRef) => void) {
+	constructor(app: App, disk: Disk, plugin: Component) {
 		this.app = app;
 		this.disk = disk;
-		this.register = register;
+		this.plugin = plugin;
 		const part = app.loadLocalStorage(PART_KEY);
 		if (PARTS.includes(part)) this.part = part;
 	}
@@ -241,20 +251,28 @@ export class Kitchen {
 			.sort();
 	}
 
-	async chooseRecipesFolder(text: string) {
-		await chooseRecipesFolderAction(this.setupHost, text);
+	chooseRecipesFolder(text: string) {
+		return this.tried('The recipes folder is not saved', () =>
+			chooseRecipesFolderAction(this.setupHost, text)
+		);
 	}
 
-	async makeHome(name: string) {
-		await makeHomeAction(this.setupHost, name);
+	makeHome(name: string) {
+		return this.tried('The plugin home is not made', () => makeHomeAction(this.setupHost, name));
 	}
 
-	async choosePlaces(places: string[], newPlace: string) {
-		await choosePlacesAction(this.setupHost, places, newPlace);
+	choosePlaces(places: string[], newPlace: string) {
+		return this.tried('The places are not saved', () =>
+			choosePlacesAction(this.setupHost, places, newPlace)
+		);
 	}
 
-	finishSetup(staples: Map<string, string>): Promise<boolean> {
-		return finishSetupAction(this.setupHost, staples);
+	async finishSetup(staples: Map<string, string>): Promise<boolean> {
+		let done = false;
+		await this.tried('Setup did not finish', async () => {
+			done = await finishSetupAction(this.setupHost, staples);
+		});
+		return done;
 	}
 
 	async startSetupAgain() {
@@ -272,22 +290,30 @@ export class Kitchen {
 		this.started = true;
 
 		const { vault } = this.app;
-		const { register } = this;
+		const { plugin } = this;
 		await this.readAll();
 		// A vault from before the list of places starts with the places that its rows have.
 		if (!this.settings.places.length && this.places.length) {
 			await this.changeSettings({ places: this.places });
 		}
 
-		register(vault.on('create', (file) => this.update(file)));
-		register(vault.on('modify', (file) => this.update(file)));
-		register(vault.on('delete', (file) => this.forget(file.path)));
-		register(
+		plugin.registerEvent(vault.on('create', (file) => this.update(file)));
+		plugin.registerEvent(vault.on('modify', (file) => this.update(file)));
+		plugin.registerEvent(vault.on('delete', (file) => this.forget(file.path)));
+		plugin.registerEvent(
 			vault.on('rename', (file, oldPath) => {
 				this.forget(oldPath);
 				void this.update(file);
 			})
 		);
+
+		// The kitchen can stay open past midnight with no change of a note. A phone stops the timer
+		// while Obsidian is in the background, so the date is read again when it comes into view.
+		const checkToday = () => {
+			this.today = today();
+		};
+		plugin.registerInterval(window.setInterval(checkToday, 60_000));
+		plugin.registerDomEvent(document, 'visibilitychange', checkToday);
 	}
 
 	notify(text: string) {
@@ -299,24 +325,32 @@ export class Kitchen {
 		if (file) void this.app.workspace.getLeaf('tab').openFile(file);
 	}
 
-	async changeStocks(path: string, change: (stocks: Stock[]) => Stock[]) {
-		await changeStocksAction(this.pantryHost, path, change);
+	changeStocks(path: string, change: (stocks: Stock[]) => Stock[]) {
+		return this.tried('The pantry did not change', () =>
+			changeStocksAction(this.pantryHost, path, change)
+		);
 	}
 
-	async addStock(name: string, stock: Stock) {
-		await addStockByName(this.pantryHost, name, stock);
+	addStock(name: string, stock: Stock) {
+		return this.tried('The food is not in the pantry', () =>
+			addStockByName(this.pantryHost, name, stock)
+		);
 	}
 
-	async setCheck(path: string, check: boolean) {
-		await setCheckAction(this.pantryHost, path, check);
+	setCheck(path: string, check: boolean) {
+		return this.tried('The check did not change', () =>
+			setCheckAction(this.pantryHost, path, check)
+		);
 	}
 
-	async setSize(path: string, size: string) {
-		await setSizeAction(this.pantryHost, path, size);
+	setSize(path: string, size: string) {
+		return this.tried('The size did not change', () => setSizeAction(this.pantryHost, path, size));
 	}
 
-	async setStaple(path: string, label: StapleLabel) {
-		await setStapleAction(this.pantryHost, path, label);
+	setStaple(path: string, label: StapleLabel) {
+		return this.tried('The staple did not change', () =>
+			setStapleAction(this.pantryHost, path, label)
+		);
 	}
 
 	isPlanned(path: string) {
@@ -327,28 +361,30 @@ export class Kitchen {
 		return isTodayAction(this.planHost, meal);
 	}
 
-	async addToPlan(path: string) {
-		await addToPlanAction(this.planHost, path);
+	addToPlan(path: string) {
+		return this.tried('The plan did not change', () => addToPlanAction(this.planHost, path));
 	}
 
-	async setToday(path: string, on: boolean) {
-		await setTodayAction(this.planHost, path, on);
+	setToday(path: string, on: boolean) {
+		return this.tried('The plan did not change', () => setTodayAction(this.planHost, path, on));
 	}
 
-	async setPrepDone(path: string, prepDone: boolean) {
-		await setPrepDoneAction(this.planHost, path, prepDone);
+	setPrepDone(path: string, prepDone: boolean) {
+		return this.tried('The plan did not change', () =>
+			setPrepDoneAction(this.planHost, path, prepDone)
+		);
 	}
 
-	async removeFromPlan(path: string) {
-		await removeFromPlanAction(this.planHost, path);
+	removeFromPlan(path: string) {
+		return this.tried('The plan did not change', () => removeFromPlanAction(this.planHost, path));
 	}
 
-	async clearPlan() {
-		await clearPlanAction(this.planHost);
+	clearPlan() {
+		return this.tried('The plan did not change', () => clearPlanAction(this.planHost));
 	}
 
-	async putInCart(key: string, brand?: string) {
-		await putInCartAction(this.shopHost, key, brand);
+	putInCart(key: string, brand?: string) {
+		return this.tried('The cart did not change', () => putInCartAction(this.shopHost, key, brand));
 	}
 
 	// The brands of the form of a food item, by the name of the food item. A new food item has its
@@ -369,32 +405,38 @@ export class Kitchen {
 		return name;
 	}
 
-	async takeOutOfCart(key: string) {
-		await takeOutOfCartAction(this.shopHost, key);
+	takeOutOfCart(key: string) {
+		return this.tried('The cart did not change', () => takeOutOfCartAction(this.shopHost, key));
 	}
 
 	regularOf(key: string): string {
 		return this.shopLists.bought.get(key)?.regular ?? '';
 	}
 
-	async addToCart(path: string) {
-		await addToCartAction(this.shopHost, path);
+	addToCart(path: string) {
+		return this.tried('The cart did not change', () => addToCartAction(this.shopHost, path));
 	}
 
-	async addNewToCart(name: string) {
-		await addNewToCartAction(this.shopHost, name);
+	addNewToCart(name: string) {
+		return this.tried('The cart did not change', () => addNewToCartAction(this.shopHost, name));
 	}
 
-	async addExtra(path: string) {
-		await addExtraAction(this.shopHost, path);
+	addExtra(path: string) {
+		return this.tried('The shopping list did not change', () =>
+			addExtraAction(this.shopHost, path)
+		);
 	}
 
-	async addNewItem(name: string) {
-		await addNewItemAction(this.shopHost, name);
+	addNewItem(name: string) {
+		return this.tried('The shopping list did not change', () =>
+			addNewItemAction(this.shopHost, name)
+		);
 	}
 
-	async removeExtra(key: string) {
-		await removeExtraAction(this.shopHost, key);
+	removeExtra(key: string) {
+		return this.tried('The shopping list did not change', () =>
+			removeExtraAction(this.shopHost, key)
+		);
 	}
 
 	setTripStore(store: string) {
@@ -412,12 +454,12 @@ export class Kitchen {
 		await this.save();
 	}
 
-	async neverAsk(path: string) {
-		await this.setStaple(path, 'never');
+	neverAsk(path: string) {
+		return this.setStaple(path, 'never');
 	}
 
 	startPutAway() {
-		return startPutAwayAction(this.shopHost);
+		return this.tried('The receipt did not change', () => startPutAwayAction(this.shopHost));
 	}
 
 	changeFacts(key: string, facts: Facts) {
@@ -426,21 +468,33 @@ export class Kitchen {
 
 	async putAway(given: Map<string, Facts>): Promise<boolean> {
 		this.writeFacts.cancel();
-		return putAwayAction(this.shopHost, given);
+		let ends = false;
+		await this.tried('The food is not in the pantry', async () => {
+			ends = await putAwayAction(this.shopHost, given);
+		});
+		return ends;
 	}
 
 	async notBought(key: string): Promise<boolean> {
 		this.writeFacts.cancel();
-		return notBoughtAction(this.shopHost, key);
+		let ends = false;
+		await this.tried('The receipt did not change', async () => {
+			ends = await notBoughtAction(this.shopHost, key);
+		});
+		return ends;
 	}
 
-	async addPackageLine(key: string, facts: Facts) {
+	addPackageLine(key: string, facts: Facts) {
 		this.writeFacts.cancel();
-		await addPackageLineAction(this.shopHost, key, facts);
+		return this.tried('The receipt did not change', () =>
+			addPackageLineAction(this.shopHost, key, facts)
+		);
 	}
 
-	async finishCooking(path: string, result: CookResult) {
-		await finishCookingAction(this.cookHost, path, result);
+	finishCooking(path: string, result: CookResult) {
+		return this.tried('The meal is not saved', () =>
+			finishCookingAction(this.cookHost, path, result)
+		);
 	}
 
 	addStepPhoto(path: string, step: number, photo: Blob): Promise<boolean> {
@@ -593,7 +647,8 @@ export class Kitchen {
 				k.setup = setup;
 				await k.save();
 			},
-			addStock: (name, stock) => k.addStock(name, stock),
+			// The action and not the method, so that an error stops setup, and setup tells it once.
+			addStock: (name, stock) => addStockByName(k.pantryHost, name, stock),
 			trash: async (path) => {
 				const folder = k.app.vault.getAbstractFileByPath(path);
 				// The trash of the vault, and not of the system: a phone can have no system trash.
@@ -758,14 +813,16 @@ export class Kitchen {
 	private pathOf = (link: string) =>
 		this.app.metadataCache.getFirstLinkpathDest(link, this.openNote)?.path ?? notePath(link);
 
-	private async read(file: TAbstractFile) {
-		if (!(file instanceof TFile) || file.extension !== 'md') return;
-		if (!noteKind(file.path, this.where, this.openNote)) return;
+	// False when the file is not a note of the kitchen.
+	private async read(file: TAbstractFile): Promise<boolean> {
+		if (!(file instanceof TFile) || file.extension !== 'md') return false;
+		if (!noteKind(file.path, this.where, this.openNote)) return false;
 		const text = await this.app.vault.cachedRead(file);
 		const { path } = file;
 		const kind = noteKind(path, this.where, this.openNote);
-		if (!kind) return;
+		if (!kind) return false;
 		this.vault.applyRead(path, kind, text, file.basename);
+		return true;
 	}
 
 	private async readAll() {
@@ -781,9 +838,11 @@ export class Kitchen {
 
 	private readAgain = debounce(() => void this.readAll(), 500, true);
 
+	// A different note of the vault changes nothing, so the lists of the kitchen do not run again.
+	// A photo shows the kitchen again: Sync can bring it after the note that links to it.
 	private async update(file: TAbstractFile) {
-		await this.read(file);
-		this.show();
+		const isNote = file instanceof TFile && file.extension === 'md';
+		if ((await this.read(file)) || !isNote) this.show();
 	}
 
 	private forget(path: string) {
@@ -801,6 +860,5 @@ export class Kitchen {
 		this.itemNotes = snap.itemNotes;
 		this.receipts = snap.receipts;
 		this.active = snap.active;
-		this.today = today();
 	}
 }
