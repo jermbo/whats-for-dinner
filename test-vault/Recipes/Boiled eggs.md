@@ -9,7 +9,7 @@ This note tests instructions that are not a numbered list. The specification doe
 ---
 
 - *4* eggs
-- water
+- *1 l* water
 
 ---
 

@@ -1,7 +1,6 @@
 node_modules
 
 _archive
-test-vault/Recipes/
 _old
 
 # Output
@@ -13,8 +12,7 @@ _old
 /build
 
 # Obsidian test vault
-test-vault/.obsidian/workspace*.json
-test-vault/.obsidian/plugins/
+test-vault/.obsidian
 
 # OS
 .DS_Store

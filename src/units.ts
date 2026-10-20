@@ -77,8 +77,6 @@ const METRIC = new Set([
 
 export const isMetric = (unit: string | null) => METRIC.has(unitKey(unit ?? ''));
 
-export const isFraction = (unit: string | null) => FRACTION_UNITS.has(unitKey(unit ?? ''));
-
 // A count is in whole things, such as cans and eggs. Mass and volume are not.
 export const isCount = (kind: string) => kind.startsWith('count:');
 
