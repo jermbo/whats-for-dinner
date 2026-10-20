@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Cook
 depends-on: []
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / Colour roles in the two schemes
@@ -55,3 +55,5 @@ Nothing. This story makes the file of the tokens and the naming rule, which each
 - [Settings](../../architecture/settings.md): the accent colour, which now replaces the role `primary`.
 - [Cook Mode](../../architecture/cook-mode.md) and [gallery](../../architecture/gallery.md): the two screens with the dark frame.
 - [Code standards](../../standards/code-standards.md): the page that gets the rule.
+- [Look](../../architecture/look.md): the three kinds of token, the naming rule, and the rule "use a token, not a value". New.
+- [Colour](../../architecture/colour.md): each role and its job in the kitchen. New.

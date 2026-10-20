@@ -22,24 +22,24 @@
 	button.wfd-week {
 		flex: none;
 		inline-size: 46px;
-		block-size: 46px;
+		block-size: var(--wfd-control-min);
 		padding: 0;
-		border: 2px solid var(--wfd-line);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		font-family: inherit;
-		font-size: 24px;
+		font-size: var(--wfd-font-size-title);
 		font-weight: 800;
-		line-height: 1;
+		line-height: var(--wfd-line-height-single);
 		cursor: pointer;
 		transition:
-			border-color 0.2s ease-out,
-			color 0.2s ease-out;
+			border-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 			box-shadow: none;
 		}
@@ -47,13 +47,13 @@
 
 	/* In the week: the edge and the check are ink. */
 	button.wfd-week--on {
-		border-color: var(--wfd-ink);
-		color: var(--wfd-ink);
+		border-color: var(--wfd-color-border);
+		color: var(--wfd-color-text);
 	}
 
 	.wfd-week__mark {
 		display: block;
-		animation: land 0.25s ease-out;
+		animation: land var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	@keyframes land {
@@ -63,16 +63,6 @@
 		}
 		70% {
 			scale: 1.25;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-week {
-			transition: none;
-		}
-
-		.wfd-week__mark {
-			animation: none;
 		}
 	}
 </style>

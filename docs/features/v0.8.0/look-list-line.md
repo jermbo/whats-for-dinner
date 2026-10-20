@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Shopper
 depends-on: [look-one-type-scale.md, look-space-lines-corners-and-controls.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / List line
@@ -46,3 +46,4 @@ As the [shopper](../../personas.md), I want an item to have the same form in eac
 - [Pantry](../../architecture/pantry.md): the line of a food item in a place.
 - [Shopping](../../architecture/shopping.md): the rows of the stage Shop and the cart.
 - [Put away](../../architecture/put-away.md): the lines of put away.
+- [Pieces](../../architecture/pieces.md): List line.

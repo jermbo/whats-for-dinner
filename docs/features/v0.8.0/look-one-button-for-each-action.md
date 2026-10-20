@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Shopper
 depends-on: [look-one-type-scale.md, look-space-lines-corners-and-controls.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / One button for each action
@@ -19,6 +19,7 @@ As the [shopper](../../personas.md), I want each action to be the same button in
 1. Each action of a screen uses the piece `Button`
    - a. The kinds of today stay: `main`, `quiet`, `olive`, and `link`
    - b. The builder adds a kind or a size only when an action fits none, and names it in the story
+   - c. The kind `danger`: an action that removes a thing, such as "Remove" of a brand, with a tomato edge and text
 2. A screen keeps a local button only when no piece fits, such as a photo tile, a line that is a button, or a step piece
    - a. A local button uses only tokens for its look
    - b. A local button has a height of `--wfd-control-min` or more
@@ -43,3 +44,4 @@ As the [shopper](../../personas.md), I want each action to be the same button in
 
 - [Shopping](../../architecture/shopping.md): the rows and the buttons of the stages.
 - [Put away](../../architecture/put-away.md): the buttons of an open line.
+- [Pieces](../../architecture/pieces.md): each piece, its kinds, and when to use it. New.

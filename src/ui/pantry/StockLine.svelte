@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Bar } from '../../pantry/level';
 	import type { BarPart } from '../../pantry/pantry-bar';
+	import ListLine from '../parts/ListLine.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import PantryBar from './PantryBar.svelte';
 
@@ -32,18 +33,17 @@
 
 <!-- One food item in one place, with all its packages there. A tap opens it, so that you can change it. -->
 <button class="wfd-line" class:wfd-line--none={!amount} type="button" {onclick}>
-	<span class="wfd-line__top">
-		<span class="wfd-line__text">
-			<span class="wfd-line__name">{name}</span>
-			{#if note}<span class="wfd-line__note">{note}</span>{/if}
-		</span>
-		{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
-		<span class="wfd-line__amount wfd-number">
-			{amount || 'None'}{#if packages > 1}<span class="wfd-line__packages">
-					· {packages} packages</span
-				>{/if}{#if bar?.isLow}<span class="wfd-line__hidden">, low</span>{/if}
-		</span>
-	</span>
+	<ListLine
+		{name}
+		small={note || undefined}
+		number={amount || 'None'}
+		numberSmall={packages > 1 ? `${packages} packages` : undefined}
+		hint={bar?.isLow ? ', low' : undefined}
+	>
+		{#snippet tag()}
+			{#if badge}<Sticker label={badge.label} kind={badge.kind} />{/if}
+		{/snippet}
+	</ListLine>
 	{#if parts.length || !amount}<PantryBar {parts} low={bar?.isLow ?? false} />{/if}
 </button>
 
@@ -51,30 +51,30 @@
 	button.wfd-line {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		align-content: center;
 		inline-size: 100%;
 		block-size: auto;
 		min-block-size: 56px;
-		padding: 8px 0 10px;
+		padding: var(--wfd-space-group) 0 var(--wfd-space-inset);
 		border: 0;
 		/* A bin makes the rule soft, because its card already holds the lines. */
-		border-block-end: 1px solid var(--wfd-row-rule, var(--wfd-line));
-		border-radius: 6px;
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-row-rule, var(--wfd-color-border));
+		border-radius: var(--wfd-radius-button);
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			box-shadow 0.15s ease-out,
-			scale 0.1s ease-out;
+			background-color var(--wfd-motion-change) var(--wfd-ease-out),
+			box-shadow var(--wfd-motion-change) var(--wfd-ease-out),
+			scale var(--wfd-button-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -3px;
 		}
 
@@ -87,7 +87,7 @@
 	/* Under a pointer, a soft tint that goes a little past the text on each side. */
 	@media (hover: hover) {
 		button.wfd-line:hover {
-			--tint: color-mix(in oklab, var(--wfd-ink) 5%, transparent);
+			--tint: color-mix(in oklab, var(--wfd-color-text) 5%, transparent);
 
 			background: var(--tint);
 			box-shadow:
@@ -99,53 +99,6 @@
 	/* A dashed rule is an empty place: the pantry has none of this food. */
 	button.wfd-line--none {
 		border-block-end-style: dashed;
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-line__top {
-		display: grid;
-		grid-template-columns: 1fr auto auto;
-		gap: 12px;
-		align-items: center;
-	}
-
-	.wfd-line__text {
-		display: grid;
-		gap: 2px;
-		min-inline-size: 0;
-	}
-
-	.wfd-line__name {
-		font-size: 17px;
-		font-weight: 500;
-	}
-
-	.wfd-line__note {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
-	}
-
-	/* The amount is always in the last column, so that a row with no sticker ends at the same edge. */
-	.wfd-line__amount {
-		grid-column: -2;
-		font-size: 20px;
-		text-align: end;
-	}
-
-	.wfd-line__packages {
-		color: var(--wfd-ink-2);
-		font-family: var(--font-interface, inherit);
-		font-size: 14px;
-		white-space: nowrap;
-	}
-
-	/* Text for a screen reader: the colour of the bar is not the only sign of a low level. */
-	.wfd-line__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
+		color: var(--wfd-color-text-muted);
 	}
 </style>

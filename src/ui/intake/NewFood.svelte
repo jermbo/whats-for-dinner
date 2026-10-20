@@ -83,33 +83,33 @@
 <style>
 	.wfd-new {
 		display: grid;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		justify-items: start;
 	}
 
 	button.wfd-new__chip {
 		block-size: auto;
-		min-block-size: 36px;
-		padding: 0 12px;
-		border: 2px dashed var(--wfd-ink);
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) dashed var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 14px;
+		font-size: var(--wfd-font-size-small);
 		font-weight: 700;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	.wfd-new__find {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		inline-size: 100%;
 	}
 
@@ -126,23 +126,23 @@
 	button.wfd-new__food {
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 12px;
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
 		justify-content: start;
 		border: 0;
-		border-block-end: 1px solid var(--wfd-line);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 500;
 		text-align: start;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -2px;
 		}
 	}
@@ -152,8 +152,8 @@
 	}
 
 	.wfd-new__none {
-		padding: 10px 12px;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		padding: var(--wfd-space-inset) var(--wfd-space-inset);
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 </style>

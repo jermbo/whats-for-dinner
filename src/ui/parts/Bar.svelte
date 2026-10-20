@@ -1,5 +1,6 @@
 <script lang="ts" generics="Sort extends string">
 	import type { Snippet } from 'svelte';
+	import Field from './Field.svelte';
 	import FindField from './FindField.svelte';
 
 	type Props = {
@@ -60,11 +61,15 @@
 			<div class="wfd-bar__clip">
 				<!-- One row: the sequence stays, and the filters scroll to the side. -->
 				<div class="wfd-bar__filters">
-					<select class="wfd-bar__sort" aria-label={sequence} bind:value={sort}>
-						{#each sorts as option (option.value)}
-							<option value={option.value}>{option.label}</option>
-						{/each}
-					</select>
+					<div class="wfd-bar__sort-box">
+						<Field>
+							<select class="wfd-bar__sort" aria-label={sequence} bind:value={sort}>
+								{#each sorts as option (option.value)}
+									<option value={option.value}>{option.label}</option>
+								{/each}
+							</select>
+						</Field>
+					</div>
 
 					<!-- The name is hidden text, because Obsidian shows each aria-label as a tooltip. -->
 					<div class="wfd-bar__chips" role="group" aria-labelledby="{more}-chips">
@@ -101,7 +106,7 @@
 		grid-template:
 			'find toggle' auto
 			'more more' auto / minmax(0, 1fr) auto;
-		column-gap: 8px;
+		column-gap: var(--wfd-space-group);
 		align-items: center;
 	}
 
@@ -127,26 +132,26 @@
 		grid-area: toggle;
 		place-items: center;
 		inline-size: 50px;
-		block-size: 50px;
+		block-size: var(--wfd-control);
 		padding: 0;
-		border: 2px solid var(--wfd-line);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 
 		&[aria-expanded='true'] {
-			border-color: var(--wfd-ink);
-			background: var(--wfd-ink);
-			color: var(--wfd-on-ink);
+			border-color: var(--wfd-color-selected);
+			background: var(--wfd-color-selected);
+			color: var(--wfd-color-on-selected);
 		}
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -168,13 +173,13 @@
 		place-items: center;
 		min-inline-size: 22px;
 		block-size: 22px;
-		padding-inline: 5px;
-		border: 2px solid var(--wfd-paper);
+		padding-inline: var(--wfd-space-tight);
+		border: var(--wfd-border) solid var(--wfd-color-bg);
 		border-radius: var(--wfd-radius-sticker);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
-		font-size: 13px;
-		animation: appear 0.15s ease-out;
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
+		font-size: var(--wfd-font-size-label);
+		animation: appear var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	/*
@@ -188,8 +193,8 @@
 		min-inline-size: 0;
 		visibility: hidden;
 		transition:
-			grid-template-rows 0.2s ease-out,
-			visibility 0.2s;
+			grid-template-rows var(--wfd-motion-change) var(--wfd-ease-out),
+			visibility var(--wfd-motion-change);
 	}
 
 	.wfd-bar__more--open {
@@ -207,23 +212,27 @@
 
 	.wfd-bar__filters {
 		display: flex;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		min-inline-size: 0;
-		margin-block-start: 6px;
+		margin-block-start: var(--wfd-space-group);
 	}
 
-	.wfd-bar :global(select.wfd-bar__sort) {
+	.wfd-bar__sort-box {
 		flex: none;
-		min-block-size: 36px;
-		padding-inline: 10px 28px;
-		font-size: 14px;
+	}
+
+	/* The sequence sits in the row of the chips, so it has their height and their text. */
+	.wfd-bar :global(.wfd-field select.wfd-bar__sort) {
+		min-block-size: var(--wfd-control-min);
+		padding-inline: var(--wfd-space-inset) calc(var(--wfd-space-inset) + var(--wfd-space-section));
+		font-size: var(--wfd-font-size-small);
 		font-weight: 700;
 	}
 
 	.wfd-bar__chips {
 		display: flex;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		overflow-x: auto;
 		scrollbar-width: none;
@@ -232,7 +241,7 @@
 	@container (inline-size > 46rem) {
 		.wfd-bar__tools {
 			grid-template: 'find more' auto / minmax(12rem, 18rem) minmax(0, 1fr);
-			column-gap: 12px;
+			column-gap: var(--wfd-space-stack);
 		}
 
 		.wfd-bar__tools--end {
@@ -257,17 +266,6 @@
 		from {
 			opacity: 0;
 			scale: 0.6;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-bar__toggle,
-		.wfd-bar__more {
-			transition: none;
-		}
-
-		.wfd-bar__count {
-			animation: none;
 		}
 	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import Field from '../parts/Field.svelte';
 	export type Line = { id: number; text: string };
 
 	export const linesOf = (texts: string[]): Line[] =>
@@ -56,17 +57,19 @@
 	<ol class="wfd-lines__list">
 		{#each lines as line, at (line.id)}
 			<li class="wfd-lines__line" transition:slide={{ duration }}>
-				<input
-					type="text"
-					aria-label="{label}, line {at + 1}"
-					placeholder={at === 0 ? hint : ''}
-					enterkeyhint="next"
-					autocomplete="off"
-					id="{uid}-{line.id}"
-					use:keep={line.id}
-					bind:value={line.text}
-					onkeydown={(event) => onkeydown(event, at)}
-				/>
+				<Field>
+					<input
+						type="text"
+						aria-label="{label}, line {at + 1}"
+						placeholder={at === 0 ? hint : ''}
+						enterkeyhint="next"
+						autocomplete="off"
+						id="{uid}-{line.id}"
+						use:keep={line.id}
+						bind:value={line.text}
+						onkeydown={(event) => onkeydown(event, at)}
+					/>
+				</Field>
 				{#if result && line.text.trim()}
 					{@render result(line)}
 				{/if}
@@ -78,7 +81,7 @@
 <style>
 	.wfd-lines {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
@@ -86,14 +89,14 @@
 	}
 
 	.wfd-lines__label {
-		margin-block-end: 6px;
+		margin-block-end: var(--wfd-space-group);
 		padding: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-lines__list {
 		display: grid;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -101,10 +104,6 @@
 
 	.wfd-lines__line {
 		display: grid;
-		gap: 4px;
-	}
-
-	.wfd-lines__line :global(input) {
-		inline-size: 100%;
+		gap: var(--wfd-space-tight);
 	}
 </style>

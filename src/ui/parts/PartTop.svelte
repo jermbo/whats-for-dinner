@@ -22,31 +22,25 @@
 		z-index: 3;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
-		margin-block-start: calc(-1 * var(--wfd-kitchen-gap));
-		padding-block: var(--wfd-kitchen-gap) 10px;
-		background: var(--wfd-paper);
+		gap: var(--wfd-space-stack);
+		margin-block-start: calc(-1 * var(--wfd-space-section));
+		padding-block: var(--wfd-space-section) var(--wfd-space-inset);
+		background: var(--wfd-color-bg);
 	}
 
 	.wfd-top :global(.wfd-head__title) {
-		transition: font-size 0.2s ease-out;
+		transition: font-size var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	/* A stuck top gets small, so that more lines show, and a thin rule tells where the list goes under. */
 	@container scroll-state(stuck: top) {
 		.wfd-top :global(.wfd-head__title) {
-			font-size: 24px;
+			font-size: var(--wfd-font-size-title);
 		}
 
 		.wfd-top > :global(:last-child) {
-			padding-block-end: 10px;
-			border-block-end: 1px solid var(--wfd-ink-3);
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-top :global(.wfd-head__title) {
-			transition: none;
+			padding-block-end: var(--wfd-space-inset);
+			border-block-end: var(--wfd-border-thin) solid var(--wfd-color-text-faint);
 		}
 	}
 </style>

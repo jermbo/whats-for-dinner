@@ -53,6 +53,7 @@ Start with the page that has your question. Each page goes one step down, to mor
 | What occurs when you cook?                | [Cook Mode](architecture/cook-mode.md)                       |
 | How does a new vault start?               | [Setup](architecture/setup.md)                               |
 | Which settings are there?                 | [Settings](architecture/settings.md)                         |
+| How does each screen get the same look?   | [Look](architecture/look.md)                                 |
 | What does a word mean?                    | [Glossary](glossary.md)                                      |
 | Who uses the plugin, and in which moment? | [Personas](personas.md)                                      |
 | What is left to build?                    | [Roadmap](features/roadmap.md)                               |

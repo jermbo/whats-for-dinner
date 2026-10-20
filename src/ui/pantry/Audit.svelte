@@ -140,12 +140,12 @@
 	.wfd-audit {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-audit__head {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: end;
 		justify-content: space-between;
 
@@ -156,17 +156,17 @@
 
 	.wfd-audit__place {
 		margin: 0;
-		font-size: 26px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-audit__empty {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-audit__list {
 		display: grid;
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -175,20 +175,20 @@
 	.wfd-audit__row {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 	}
 
 	.wfd-audit__right {
 		display: flex;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
 	}
 
 	/* A food item that you confirmed is grey, so that the ones that are left stand out. */
 	.wfd-audit__item--done {
 		opacity: 0.55;
-		transition: opacity 0.2s ease-out;
+		transition: opacity var(--wfd-row-motion);
 	}
 
 	.wfd-audit__hidden {
@@ -204,9 +204,9 @@
 		display: grid;
 		place-items: center;
 		inline-size: 44px;
-		block-size: 44px;
-		color: var(--wfd-olive);
-		font-size: 22px;
+		block-size: var(--wfd-control-min);
+		color: var(--wfd-color-primary);
+		font-size: var(--wfd-font-size-title);
 		font-weight: 800;
 	}
 </style>

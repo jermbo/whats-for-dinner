@@ -5,6 +5,8 @@
 	import { isFound } from '../../pantry/views';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
+	import Panel from '../parts/Panel.svelte';
 	import SizeField from './SizeField.svelte';
 
 	// "Add to pantry": you type a name. A known food opens its card with a new package. A new food asks
@@ -33,82 +35,67 @@
 	);
 </script>
 
-<div class="wfd-add">
-	<div class="wfd-add__top">
-		<h3 class="wfd-add__title wfd-display">Add to pantry</h3>
-		<Button kind="link" onclick={oncancel}>Cancel</Button>
-	</div>
-
-	{#if step === 'name'}
-		<label class="wfd-add__field">
-			<span class="wfd-label">Name</span>
-			<!-- svelte-ignore a11y_autofocus -->
-			<input type="text" autofocus enterkeyhint="search" bind:value={name} />
-		</label>
-		{#if text}
-			<ul class="wfd-add__list" in:fade={{ duration }}>
-				{#each found as food (food.path)}
-					<li>
-						<button type="button" onclick={() => onknown(food)}>{food.item.name}</button>
-					</li>
-				{/each}
-				<li>
-					<button class="wfd-add__new" type="button" onclick={() => (step = 'size')}>
-						New: {text}
-					</button>
-				</li>
-			</ul>
-		{/if}
-	{:else if step === 'size'}
-		<p class="wfd-add__what">{text}</p>
-		<SizeField value={size} onchange={(next) => (size = next)} />
-		<Button kind="main" disabled={!size} onclick={() => (step = 'place')}>Next</Button>
-	{:else}
-		<p class="wfd-add__what">{text} · {size}</p>
-		<div class="wfd-add__chips" role="group" aria-label="Place">
-			{#each places as option (option)}
-				<Chip label={option} on={place === option} onclick={() => (place = option)} />
-			{/each}
+<Panel kind="form">
+	<div class="wfd-add">
+		<div class="wfd-add__top">
+			<h3 class="wfd-add__title wfd-display">Add to pantry</h3>
+			<Button kind="link" onclick={oncancel}>Cancel</Button>
 		</div>
-		<Button kind="main" disabled={!place} onclick={() => onnew(text, size, place)}>Add</Button>
-	{/if}
-</div>
+
+		{#if step === 'name'}
+			<Field label="Name">
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" autofocus enterkeyhint="search" bind:value={name} />
+			</Field>
+			{#if text}
+				<ul class="wfd-add__list" in:fade={{ duration }}>
+					{#each found as food (food.path)}
+						<li>
+							<button type="button" onclick={() => onknown(food)}>{food.item.name}</button>
+						</li>
+					{/each}
+					<li>
+						<button class="wfd-add__new" type="button" onclick={() => (step = 'size')}>
+							New: {text}
+						</button>
+					</li>
+				</ul>
+			{/if}
+		{:else if step === 'size'}
+			<p class="wfd-add__what">{text}</p>
+			<SizeField value={size} onchange={(next) => (size = next)} />
+			<Button kind="main" disabled={!size} onclick={() => (step = 'place')}>Next</Button>
+		{:else}
+			<p class="wfd-add__what">{text} · {size}</p>
+			<div class="wfd-add__chips" role="group" aria-label="Place">
+				{#each places as option (option)}
+					<Chip label={option} on={place === option} onclick={() => (place = option)} />
+				{/each}
+			</div>
+			<Button kind="main" disabled={!place} onclick={() => onnew(text, size, place)}>Add</Button>
+		{/if}
+	</div>
+</Panel>
 
 <style>
 	.wfd-add {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
-		padding: 16px;
-		border: 2px solid var(--wfd-ink);
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-add__top {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		justify-content: space-between;
 	}
 
 	.wfd-add__title {
 		margin: 0;
-		font-size: 22px;
+		font-size: var(--wfd-font-size-title);
 	}
 
-	.wfd-add__field {
-		display: grid;
-		gap: 6px;
-		color: var(--wfd-ink-2);
-
-		& input {
-			box-sizing: border-box;
-			inline-size: 100%;
-			block-size: 44px;
-			font-size: 17px;
-		}
-	}
 
 	/* A long list scrolls in its own box, so that the field stays in view. */
 	.wfd-add__list {
@@ -122,16 +109,16 @@
 		& button {
 			inline-size: 100%;
 			block-size: auto;
-			min-block-size: 48px;
-			padding: 0 4px;
+			min-block-size: var(--wfd-control);
+			padding: 0 var(--wfd-space-tight);
 			border: 0;
-			border-block-end: 1px solid var(--wfd-line);
+			border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 			border-radius: 0;
 			background: none;
 			box-shadow: none;
-			color: var(--wfd-ink);
+			color: var(--wfd-color-text);
 			font-family: inherit;
-			font-size: 17px;
+			font-size: var(--wfd-font-size-text);
 			text-align: start;
 			cursor: pointer;
 		}
@@ -143,13 +130,13 @@
 
 	.wfd-add__what {
 		margin: 0;
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 		font-weight: 600;
 	}
 
 	.wfd-add__chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 6px;
+		gap: 0 var(--wfd-space-group);
 	}
 </style>

@@ -13,6 +13,8 @@
 	import BrandStrip from '../parts/BrandStrip.svelte';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
+	import ListLine from '../parts/ListLine.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import UseByPick from './UseByPick.svelte';
 
@@ -111,6 +113,19 @@
 	One item of the cart, as the plugin filled it in. The closed line is text to check, with one
 	chip for a sale. A tap on the line opens the corrections.
 -->
+<!-- A different brand has a different price. The new price fades in. -->
+{#snippet paid()}
+	{#key price}
+		<span
+			class:wfd-away-line__price--missing={price === '–'}
+			class:wfd-away-line__price--bad={badPrice}
+			in:fade={{ duration: reduced.current ? 0 : 300 }}
+		>
+			{price}
+		</span>
+	{/key}
+{/snippet}
+
 <div class="wfd-away-line">
 	<button
 		class="wfd-away-line__what"
@@ -119,36 +134,23 @@
 		aria-controls="{uid}-facts"
 		onclick={ontoggle}
 	>
-		<span class="wfd-away-line__mark" class:wfd-away-line__mark--open={open} aria-hidden="true">
-			›
-		</span>
-		<span class="wfd-away-line__text">
-			<span class="wfd-away-line__top">
+		<ListLine
+			name={item.name}
+			small={facts.intoPantry ? when : undefined}
+			number={facts.intoPantry ? amountOf(facts) : undefined}
+			numberSmall={paid}
+		>
+			{#snippet mark()}
+				<span class="wfd-away-line__mark" class:wfd-away-line__mark--open={open} aria-hidden="true">
+					›
+				</span>
 				{#if chosenUrl}
 					<img class="wfd-away-line__brand" src={chosenUrl} alt="" in:fade={{ duration }} />
 				{:else if chosen}
 					<span class="wfd-away-line__brand-name">{chosen.name}</span>
 				{/if}
-				<span class="wfd-away-line__name">{item.name}</span>
-				{#if facts.intoPantry}
-					<span class="wfd-away-line__amount wfd-number">{amountOf(facts)}</span>
-				{/if}
-			</span>
-			{#if facts.intoPantry}
-				<span class="wfd-away-line__when">{when}</span>
-			{/if}
-		</span>
-		<!-- A different brand has a different price. The new price fades in. -->
-		{#key price}
-			<span
-				class="wfd-away-line__price wfd-number"
-				class:wfd-away-line__price--missing={price === '–'}
-				class:wfd-away-line__price--bad={badPrice}
-				in:fade={{ duration: reduced.current ? 0 : 300 }}
-			>
-				{price}
-			</span>
-		{/key}
+			{/snippet}
+		</ListLine>
 	</button>
 
 	<div class="wfd-away-line__sale">
@@ -167,23 +169,22 @@
 				/>
 			{/if}
 			<div class="wfd-away-line__paid">
-				<label class="wfd-away-line__field">
-					<span class="wfd-label">Price</span>
-					<input
-						class="wfd-away-line__price-field"
-						class:wfd-away-line__price-field--bad={badPrice}
-						type="text"
-						inputmode="decimal"
-						enterkeyhint="done"
-						autocomplete="off"
-						aria-label="Price of {item.name}"
-						aria-invalid={badPrice}
-						placeholder={hint}
-						value={facts.price}
-						bind:this={priceField}
-						oninput={(event) => onchange({ price: event.currentTarget.value })}
-					/>
-				</label>
+				<div class="wfd-away-line__field">
+					<Field label="Price" kind="number">
+						<input
+							type="text"
+							inputmode="decimal"
+							enterkeyhint="done"
+							autocomplete="off"
+							aria-label="Price of {item.name}"
+							aria-invalid={badPrice}
+							placeholder={hint}
+							value={facts.price}
+							bind:this={priceField}
+							oninput={(event) => onchange({ price: event.currentTarget.value })}
+						/>
+					</Field>
+				</div>
 				{#if own}
 					<Chip
 						label="Into the pantry"
@@ -239,8 +240,8 @@
 <style>
 	.wfd-away-line__refused {
 		margin: 0;
-		color: var(--wfd-tomato);
-		font-size: 14px;
+		color: var(--wfd-color-danger);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	/* The text and the price are one button. The chip of a sale is at the right of it. */
@@ -250,59 +251,44 @@
 			'what sale'
 			'facts facts';
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 0 8px;
+		gap: 0 var(--wfd-space-group);
 		align-items: center;
-		padding-block: 6px;
+		padding-block: var(--wfd-space-tight);
 	}
 
 	button.wfd-away-line__what {
 		display: grid;
 		grid-area: what;
-		grid-template-columns: 12px minmax(0, 1fr) auto;
-		gap: 8px;
-		align-items: start;
+		grid-template-columns: minmax(0, 1fr);
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 50px;
-		padding: 4px 0;
+		min-block-size: var(--wfd-control);
+		padding: var(--wfd-space-tight) 0;
 		border: 0;
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	.wfd-away-line__mark {
-		font-size: 20px;
+		font-size: var(--wfd-font-size-title);
 		font-weight: 700;
-		line-height: 1.1;
-		transition: rotate 0.2s ease-out;
+		line-height: var(--wfd-line-height-display);
+		transition: rotate var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-away-line__mark--open {
 		rotate: 90deg;
-	}
-
-	.wfd-away-line__text {
-		display: grid;
-		gap: 3px;
-		min-inline-size: 0;
-	}
-
-	.wfd-away-line__top {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 2px 10px;
-		align-items: baseline;
 	}
 
 	/* The brand of the line, small, before the name. */
@@ -310,50 +296,22 @@
 		inline-size: 24px;
 		block-size: 24px;
 		align-self: center;
-		border-radius: 4px;
+		border-radius: var(--wfd-radius-sticker);
 		object-fit: cover;
 	}
 
 	.wfd-away-line__brand-name {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
-	}
-
-	.wfd-away-line__name {
-		font-size: 18px;
-		font-weight: 600;
-		overflow-wrap: anywhere;
-	}
-
-	.wfd-away-line__name::first-letter {
-		text-transform: uppercase;
-	}
-
-	.wfd-away-line__amount {
-		font-size: 17px;
-	}
-
-	.wfd-away-line__when {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
-	}
-
-	/* A price is a number of the receipt, so it has the font of the numbers. */
-	.wfd-away-line__price {
-		font-family: var(--wfd-display);
-		font-size: 17px;
-		font-variant-numeric: tabular-nums;
-		line-height: 1.3;
-		text-align: end;
 	}
 
 	.wfd-away-line__price--missing {
-		color: var(--wfd-ink-3);
+		color: var(--wfd-color-text-faint);
 	}
 
 	.wfd-away-line__price--bad {
-		color: var(--wfd-tomato);
+		color: var(--wfd-color-danger);
 	}
 
 	.wfd-away-line__sale {
@@ -365,45 +323,24 @@
 		display: grid;
 		grid-area: facts;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
-		padding: 6px 0 6px 20px;
+		gap: var(--wfd-space-stack);
+		padding: var(--wfd-space-tight) 0 var(--wfd-space-tight) var(--wfd-space-inset);
 	}
 
 	.wfd-away-line__paid {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px 12px;
+		gap: var(--wfd-space-group) var(--wfd-space-stack);
 		align-items: end;
 	}
 
 	.wfd-away-line__field {
-		display: grid;
-		gap: 6px;
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-away-line__field :global(input.wfd-away-line__price-field) {
 		inline-size: 9rem;
-		min-block-size: 44px;
-		padding-inline: 10px;
-		font-family: var(--wfd-display);
-		font-variant-numeric: tabular-nums;
-		text-align: end;
-	}
-
-	.wfd-away-line__field :global(input.wfd-away-line__price-field--bad) {
-		border-color: var(--wfd-tomato);
 	}
 
 	.wfd-away-line__actions {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px 12px;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-away-line__mark {
-			transition: none;
-		}
+		gap: var(--wfd-space-group) var(--wfd-space-stack);
 	}
 </style>

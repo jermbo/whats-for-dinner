@@ -395,17 +395,17 @@
 	.wfd-pantry {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-pantry__fact {
 		display: inline-flex;
-		gap: 5px;
+		gap: var(--wfd-space-tight);
 		align-items: baseline;
 	}
 
 	.wfd-pantry__number {
-		font-size: 22px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-pantry__hidden {
@@ -418,19 +418,19 @@
 	}
 
 	.wfd-pantry__plus {
-		font-size: 26px;
-		line-height: 1;
+		font-size: var(--wfd-font-size-title);
+		line-height: var(--wfd-line-height-single);
 	}
 
 	.wfd-pantry__none {
 		display: grid;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		justify-items: start;
 	}
 
 	.wfd-pantry__empty {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/*
@@ -439,7 +439,7 @@
 	 */
 	.wfd-pantry__bins {
 		columns: 20rem;
-		column-gap: 16px;
+		column-gap: var(--wfd-space-section);
 	}
 
 	.wfd-pantry__bins > div {
@@ -447,6 +447,6 @@
 	}
 
 	.wfd-pantry__open {
-		padding-block: 10px;
+		padding-block: var(--wfd-space-inset);
 	}
 </style>

@@ -57,49 +57,49 @@
 	.wfd-rows__row {
 		display: grid;
 		grid-template-columns: 1fr auto auto;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		min-block-size: 40px;
-		padding-block: 6px;
-		border-block-end: 1px solid var(--wfd-line);
+		padding-block: var(--wfd-space-tight);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 	}
 
 	.wfd-rows__row--none {
 		border-block-end-style: dashed;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-rows__name {
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 	}
 
 	.wfd-rows__mark {
-		margin-inline-start: 6px;
-		color: var(--wfd-ink-2);
+		margin-inline-start: var(--wfd-space-group);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* Food that you have is quiet. Only food that is low or missing gets a sticker. */
 	.wfd-rows__have {
-		color: var(--wfd-ink-3);
+		color: var(--wfd-color-text-faint);
 		font-weight: 800;
 	}
 
 	.wfd-rows__amount {
 		min-inline-size: 3ch;
-		color: var(--wfd-ink-2);
-		font-size: 15px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		text-align: end;
 	}
 
 	.wfd-rows__heading {
-		margin-block: 14px 2px;
-		color: var(--wfd-ink-2);
+		margin-block: var(--wfd-space-section) var(--wfd-space-tight);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* A group in a group moves in. The inner group is in a different instance of this component. */
 	.wfd-rows__group :global(.wfd-rows__group) {
-		padding-inline-start: 16px;
+		padding-inline-start: var(--wfd-space-inset);
 	}
 </style>

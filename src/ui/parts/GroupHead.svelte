@@ -10,23 +10,23 @@
 <style>
 	.wfd-group {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: baseline;
 		justify-content: space-between;
-		margin-block-start: 12px;
-		padding-block-end: 6px;
-		border-block-end: 2px solid var(--wfd-ink);
+		margin-block-start: var(--wfd-space-stack);
+		padding-block-end: var(--wfd-space-tight);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 	}
 
 	.wfd-group__title {
 		margin: 0;
-		color: var(--wfd-ink);
-		font-size: 19px;
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-group__note {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 700;
 	}
 </style>

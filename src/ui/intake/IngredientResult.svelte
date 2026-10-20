@@ -28,9 +28,9 @@
 <style>
 	.wfd-result {
 		margin: 0;
-		padding-inline: 4px;
-		color: var(--wfd-ink);
-		font-size: 14px;
+		padding-inline: var(--wfd-space-tight);
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Field from './Field.svelte';
 	type Props = { label: string; value: string };
 	let { label, value = $bindable() }: Props = $props();
 
@@ -16,19 +17,21 @@
 		<circle cx="8.5" cy="8.5" r="5.5" />
 		<path d="m13 13 5 5" />
 	</svg>
-	<input
-		class="wfd-find__field"
-		type="text"
-		inputmode="search"
-		enterkeyhint="search"
-		autocomplete="off"
-		autocapitalize="off"
-		spellcheck="false"
-		aria-label={label}
-		placeholder={label}
-		bind:this={field}
-		bind:value
-	/>
+	<Field>
+		<input
+			class="wfd-find__field"
+			type="text"
+			inputmode="search"
+			enterkeyhint="search"
+			autocomplete="off"
+			autocapitalize="off"
+			spellcheck="false"
+			aria-label={label}
+			placeholder={label}
+			bind:this={field}
+			bind:value
+		/>
+	</Field>
 	{#if value}
 		<button class="wfd-find__clear" type="button" aria-label="Clear" onclick={clear}>
 			<svg viewBox="0 0 20 20" aria-hidden="true"><path d="m5 5 10 10M15 5 5 15" /></svg>
@@ -56,18 +59,18 @@
 		position: absolute;
 		inset-block-start: 15px;
 		inset-inline-start: 14px;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		pointer-events: none;
 	}
 
-	.wfd-find :global(input.wfd-find__field) {
-		inline-size: 100%;
-		padding-inline: 44px;
+	/* The field has the look of each field, with room for the glass and the cross. */
+	.wfd-find :global(.wfd-field input.wfd-find__field) {
+		padding-inline: var(--wfd-control-min);
 	}
 
 	/* An empty field has no cross, so its placeholder can use that room. */
-	.wfd-find :global(input.wfd-find__field:placeholder-shown) {
-		padding-inline-end: 14px;
+	.wfd-find :global(.wfd-field input.wfd-find__field:placeholder-shown) {
+		padding-inline-end: var(--wfd-space-inset);
 		text-overflow: ellipsis;
 	}
 
@@ -83,12 +86,12 @@
 		border: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		cursor: pointer;
-		animation: appear 0.15s ease-out;
+		animation: appear var(--wfd-motion-change) var(--wfd-ease-out);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -6px;
 		}
 	}
@@ -97,12 +100,6 @@
 		from {
 			opacity: 0;
 			scale: 0.6;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-find__clear {
-			animation: none;
 		}
 	}
 </style>

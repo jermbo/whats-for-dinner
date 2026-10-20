@@ -46,7 +46,7 @@
 		margin: 0;
 		padding: 0;
 		border: 0;
-		border-block-end: 2px solid var(--wfd-line);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 
 		&::after {
 			content: '';
@@ -54,14 +54,14 @@
 			inset-block-end: -2px;
 			inset-inline-start: 0;
 			inline-size: calc(100% / 3);
-			block-size: var(--wfd-rule-4);
-			background: var(--wfd-ink);
+			block-size: var(--wfd-border-rule);
+			background: var(--wfd-color-selected);
 			translate: calc(var(--at) * 100%) 0;
-			transition: translate 0.2s ease-out;
+			transition: translate var(--wfd-motion-change) var(--wfd-ease-out);
 		}
 
 		&:has(:focus-visible) {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -78,23 +78,23 @@
 
 	.wfd-stages__stage {
 		display: grid;
-		gap: 2px;
+		gap: var(--wfd-space-tight);
 		justify-items: center;
-		min-block-size: 52px;
-		padding-block: 6px 8px;
-		color: var(--wfd-ink-3);
+		min-block-size: var(--wfd-control);
+		padding-block: var(--wfd-space-tight) var(--wfd-space-group);
+		color: var(--wfd-color-text-faint);
 		cursor: pointer;
-		transition: color 0.2s ease-out;
+		transition: color var(--wfd-motion-change) var(--wfd-ease-out);
 
 		&:has(:checked) {
-			color: var(--wfd-ink);
+			color: var(--wfd-color-text);
 		}
 	}
 
 	/* A count that changes makes a small jump, so that you see where the item went. */
 	.wfd-stages__count {
-		font-size: 22px;
-		animation: jump 0.3s ease-out;
+		font-size: var(--wfd-font-size-title);
+		animation: jump var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	.wfd-stages__name {
@@ -104,17 +104,6 @@
 	@keyframes jump {
 		40% {
 			translate: 0 -5px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-stages::after,
-		.wfd-stages__stage {
-			transition: none;
-		}
-
-		.wfd-stages__count {
-			animation: none;
 		}
 	}
 </style>

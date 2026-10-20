@@ -18,26 +18,24 @@
 	.wfd-head {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 16px;
+		gap: var(--wfd-space-tight) var(--wfd-space-section);
 		align-items: end;
 		justify-content: space-between;
-		padding-block-end: 8px;
-		border-block-end: var(--wfd-rule-4) solid var(--wfd-ink);
+		padding-block-end: var(--wfd-space-group);
+		border-block-end: var(--wfd-border-rule) solid var(--wfd-color-border);
 	}
 
 	.wfd-head__title {
 		margin: 0;
-		color: var(--wfd-ink);
-		font-size: 36px;
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-head);
 		font-weight: 800;
-		line-height: 1.05;
+		line-height: var(--wfd-line-height-display);
 	}
 
 	.wfd-head__side {
-		--wfd-count-size: 22px;
-
 		display: flex;
-		gap: 14px;
+		gap: var(--wfd-space-section);
 		align-items: baseline;
 	}
 </style>

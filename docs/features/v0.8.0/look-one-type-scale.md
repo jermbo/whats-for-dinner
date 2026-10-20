@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Shopper
 depends-on: [look-colour-roles-in-the-two-schemes.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / One type scale
@@ -51,3 +51,4 @@ As the [shopper](../../personas.md), I want the text of each part to come from o
 
 - [Cook Mode](../../architecture/cook-mode.md): the fluid sizes of a step.
 - [Settings](../../architecture/settings.md): the font for titles and numbers, which this story does not change.
+- [Type](../../architecture/type.md): the six sizes and the three line heights. New.

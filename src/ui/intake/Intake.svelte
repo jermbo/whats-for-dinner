@@ -11,6 +11,7 @@
 	import { foodNameOf } from '../../match/names';
 	import type { FoodNote } from '../../note';
 	import Button from '../parts/Button.svelte';
+	import Field from '../parts/Field.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import IngredientResult from './IngredientResult.svelte';
 	import IntakeLines, { linesOf, type Line } from './IntakeLines.svelte';
@@ -147,26 +148,27 @@
 		{/snippet}
 	</PartHead>
 
-	<label class="wfd-intake__field" for="{uid}-title">
-		<span class="wfd-label">Title</span>
+	<Field label="Title">
 		<input id="{uid}-title" type="text" autocomplete="off" bind:value={title} />
 		{#if inUse}
 			<span class="wfd-intake__note" aria-live="polite">
 				The vault has the recipe "{inUse}". "Save" makes a second one.
 			</span>
 		{/if}
-	</label>
+	</Field>
 
 	<TagsField known={knownTags} bind:tags />
 
 	<div class="wfd-intake__field">
 		<label class="wfd-label" for="{uid}-source">Source</label>
-		<textarea
-			id="{uid}-source"
-			rows="1"
-			placeholder="One Pan Wonders, page 46"
-			bind:value={source}
-		></textarea>
+		<Field>
+			<textarea
+				id="{uid}-source"
+				rows="1"
+				placeholder="One Pan Wonders, page 46"
+				bind:value={source}
+			></textarea>
+		</Field>
 		<SourcePhotos
 			bind:photos
 			bind:kept
@@ -176,14 +178,12 @@
 
 	{#if replace}
 		<!-- Each text of the note that has no other field is here, so that nothing is lost. -->
-		<label class="wfd-intake__field" for="{uid}-description">
-			<span class="wfd-label">Description</span>
+		<Field label="Description">
 			<textarea id="{uid}-description" rows="4" bind:value={description}></textarea>
-		</label>
+		</Field>
 	{/if}
 
-	<label class="wfd-intake__field" for="{uid}-yields">
-		<span class="wfd-label">Yield</span>
+	<Field label="Yield">
 		<input
 			id="{uid}-yields"
 			type="text"
@@ -191,7 +191,7 @@
 			placeholder="4 servings"
 			bind:value={yields}
 		/>
-	</label>
+	</Field>
 
 	<IntakeLines label="Ingredients" hint="200 g flour" bind:lines={ingredients}>
 		{#snippet result(line)}
@@ -239,38 +239,34 @@
 	.wfd-intake {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 18px;
+		gap: var(--wfd-space-section);
 		max-inline-size: 40rem;
 	}
 
 	.wfd-intake__field {
 		display: grid;
-		gap: 6px;
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-intake__field :global(:is(input, textarea)) {
-		inline-size: 100%;
+		gap: var(--wfd-space-group);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-intake__end {
 		display: grid;
-		gap: 8px;
-		padding-block-start: 8px;
-		border-block-start: var(--wfd-rule-4) solid var(--wfd-ink);
+		gap: var(--wfd-space-group);
+		padding-block-start: var(--wfd-space-group);
+		border-block-start: var(--wfd-border-rule) solid var(--wfd-color-border);
 	}
 
 	.wfd-intake__group {
 		margin: 0;
-		padding-inline: 4px;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		padding-inline: var(--wfd-space-tight);
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 	}
 
 	.wfd-intake__note {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 </style>

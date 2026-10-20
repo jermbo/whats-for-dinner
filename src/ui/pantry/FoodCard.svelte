@@ -20,6 +20,8 @@
 	import { isCount, measure, sameUnit } from '../../units';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
+	import Panel from '../parts/Panel.svelte';
 
 	type Props = {
 		item: FoodItem;
@@ -146,127 +148,128 @@
 	const done = () => ondone(cardRows(item.stocks, packages, emptied));
 </script>
 
-<div class="wfd-card" class:wfd-card--low={low}>
-	<div class="wfd-card__top">
-		<div class="wfd-card__head">
-			<h3 class="wfd-card__name">{item.name}</h3>
-			<p class="wfd-card__note">
-				{place} · {here} here{placeCount > 1 ? ` · ${placeCount} places` : ''}
-			</p>
-		</div>
-		<output class="wfd-card__total wfd-number">{stocks.length ? totalOf(stocks) : 'Out'}</output>
-	</div>
-
-	{#if layout.length}
-		<div
-			class="wfd-card__track"
-			class:wfd-card__track--drag={dragging}
-			role="slider"
-			tabindex="0"
-			aria-labelledby="{uid}-name"
-			aria-valuemin={0}
-			aria-valuemax={on ? stopsOf(on.stock) : 1}
-			aria-valuenow={on ? filledOf(on.stock) : 0}
-			aria-valuetext={on ? `${leftText(on.stock)}, ${on.stock.place}` : ''}
-			onpointerdown={down}
-			onpointermove={move}
-			onpointerup={() => (dragging = false)}
-			onpointercancel={() => (dragging = false)}
-			onkeydown={key}
-		>
-			<span class="wfd-card__hidden" id="{uid}-name">{item.name}</span>
-			{#each layout as part (part.key)}
-				<span
-					class="wfd-card__part"
-					class:wfd-card__part--here={part.stock.place === place}
-					style:inline-size="{part.width * 100}%"
-					in:slide={{ axis: 'x', duration }}
-					out:slide={{ axis: 'x', duration }}
-				>
-					<span class="wfd-card__fill" style:inline-size="{fillOf(part.stock) * 100}%"></span>
-				</span>
-			{/each}
-			{#if handle}
-				<span
-					class="wfd-card__handle"
-					style:inset-inline-start="{(handle.start + fillOf(handle.stock) * handle.width) * 100}%"
-				></span>
-			{/if}
-		</div>
-
-		<div class="wfd-card__scale wfd-label">
-			<span>0</span>
-			{#if on}
-				<span>{on.stock.place === place ? '' : `${on.stock.place} · `}{leftText(on.stock)}</span>
-			{/if}
-			<span>{sizes}</span>
-		</div>
-	{/if}
-
-	<div class="wfd-card__actions">
-		<Button disabled={!canAdd} onclick={add}>+ Add package</Button>
-		<Button kind="olive" onclick={done}>Done</Button>
-	</div>
-
-	<div class="wfd-card__links">
-		{#if on}
-			<button type="button" onclick={empty}>Empty</button>
-			<button type="button" aria-expanded={details} onclick={() => (details = !details)}>
-				Place and date
-			</button>
-		{/if}
-		<button type="button" onclick={onfood}>Size, names, and brands</button>
-		<button type="button" onclick={oncancel}>Cancel</button>
-	</div>
-	{#if !canAdd}
-		<p class="wfd-card__hint">Give the food item a size, and you can add a package.</p>
-	{/if}
-
-	{#if details && on}
-		<div class="wfd-card__details" transition:slide={{ duration }}>
-			<div class="wfd-card__chips" role="group" aria-label="Place">
-				{#each places as option (option)}
-					<Chip
-						label={option}
-						on={on.stock.place === option}
-						onclick={() => change(on.key, (stock) => withPlace(stock, option))}
-					/>
-				{/each}
+<Panel kind="ink">
+	<div class="wfd-card" class:wfd-card--low={low}>
+		<div class="wfd-card__top">
+			<div class="wfd-card__head">
+				<h3 class="wfd-card__name">{item.name}</h3>
+				<p class="wfd-card__note">
+					{place} · {here} here{placeCount > 1 ? ` · ${placeCount} places` : ''}
+				</p>
 			</div>
-			<label class="wfd-card__date">
-				<span class="wfd-label">Use by</span>
-				<input
-					type="date"
-					value={on.stock.useBy ?? ''}
-					onchange={(event) => change(on.key, (stock) => withUseBy(stock, event.currentTarget.value))}
-				/>
-			</label>
+			<output class="wfd-card__total wfd-number">{stocks.length ? totalOf(stocks) : 'Out'}</output>
 		</div>
-	{/if}
-</div>
+
+		{#if layout.length}
+			<div
+				class="wfd-card__track"
+				class:wfd-card__track--drag={dragging}
+				role="slider"
+				tabindex="0"
+				aria-labelledby="{uid}-name"
+				aria-valuemin={0}
+				aria-valuemax={on ? stopsOf(on.stock) : 1}
+				aria-valuenow={on ? filledOf(on.stock) : 0}
+				aria-valuetext={on ? `${leftText(on.stock)}, ${on.stock.place}` : ''}
+				onpointerdown={down}
+				onpointermove={move}
+				onpointerup={() => (dragging = false)}
+				onpointercancel={() => (dragging = false)}
+				onkeydown={key}
+			>
+				<span class="wfd-card__hidden" id="{uid}-name">{item.name}</span>
+				{#each layout as part (part.key)}
+					<span
+						class="wfd-card__part"
+						class:wfd-card__part--here={part.stock.place === place}
+						style:inline-size="{part.width * 100}%"
+						in:slide={{ axis: 'x', duration }}
+						out:slide={{ axis: 'x', duration }}
+					>
+						<span class="wfd-card__fill" style:inline-size="{fillOf(part.stock) * 100}%"></span>
+					</span>
+				{/each}
+				{#if handle}
+					<span
+						class="wfd-card__handle"
+						style:inset-inline-start="{(handle.start + fillOf(handle.stock) * handle.width) * 100}%"
+					></span>
+				{/if}
+			</div>
+
+			<div class="wfd-card__scale wfd-label">
+				<span>0</span>
+				{#if on}
+					<span>{on.stock.place === place ? '' : `${on.stock.place} · `}{leftText(on.stock)}</span>
+				{/if}
+				<span>{sizes}</span>
+			</div>
+		{/if}
+
+		<div class="wfd-card__actions">
+			<Button disabled={!canAdd} onclick={add}>+ Add package</Button>
+			<Button kind="olive" onclick={done}>Done</Button>
+		</div>
+
+		<div class="wfd-card__links">
+			{#if on}
+				<Button kind="link" onclick={empty}>Empty</Button>
+				<Button kind="link" aria-expanded={details} onclick={() => (details = !details)}>
+					Place and date
+				</Button>
+			{/if}
+			<Button kind="link" onclick={onfood}>Size, names, and brands</Button>
+			<Button kind="link" onclick={oncancel}>Cancel</Button>
+		</div>
+		{#if !canAdd}
+			<p class="wfd-card__hint">Give the food item a size, and you can add a package.</p>
+		{/if}
+
+		{#if details && on}
+			<div class="wfd-card__details" transition:slide={{ duration }}>
+				<Panel>
+					<div class="wfd-card__detail-list">
+						<div class="wfd-card__chips" role="group" aria-label="Place">
+							{#each places as option (option)}
+								<Chip
+									label={option}
+									on={on.stock.place === option}
+									onclick={() => change(on.key, (stock) => withPlace(stock, option))}
+								/>
+							{/each}
+						</div>
+						<Field label="Use by">
+							<input
+								type="date"
+								value={on.stock.useBy ?? ''}
+								onchange={(event) => change(on.key, (stock) => withUseBy(stock, event.currentTarget.value))}
+							/>
+						</Field>
+					</div>
+				</Panel>
+			</div>
+		{/if}
+	</div>
+</Panel>
 
 <style>
 	.wfd-card {
-		--card-track: color-mix(in oklab, var(--wfd-on-ink) 14%, var(--wfd-ink));
-		--card-away: color-mix(in oklab, var(--wfd-on-ink) 50%, var(--wfd-ink));
-		--card-fill: var(--wfd-on-ink);
+		--card-track: color-mix(in oklab, var(--wfd-color-on-selected) 14%, var(--wfd-color-selected));
+		--card-away: color-mix(in oklab, var(--wfd-color-on-selected) 50%, var(--wfd-color-selected));
+		--card-fill: var(--wfd-color-on-selected);
 
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
-		padding: 16px;
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-card--low {
-		--card-fill: var(--wfd-amber);
+		--card-fill: var(--wfd-color-warning);
 	}
 
 	.wfd-card__top {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: start;
 		justify-content: space-between;
 	}
@@ -278,20 +281,20 @@
 	.wfd-card__name {
 		margin: 0;
 		color: inherit;
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 		font-weight: 600;
 		overflow-wrap: anywhere;
 	}
 
 	.wfd-card__note {
-		margin: 2px 0 0;
-		font-size: 14px;
+		margin: var(--wfd-space-tight) 0 0;
+		font-size: var(--wfd-font-size-small);
 		opacity: 0.75;
 	}
 
 	.wfd-card__total {
-		font-size: 34px;
-		line-height: 1;
+		font-size: var(--wfd-font-size-head);
+		line-height: var(--wfd-line-height-single);
 		white-space: nowrap;
 	}
 
@@ -299,15 +302,15 @@
 	.wfd-card__track {
 		position: relative;
 		display: flex;
-		block-size: 44px;
-		margin-block: 5px;
+		block-size: var(--wfd-control-min);
+		margin-block: var(--wfd-space-tight);
 		cursor: ew-resize;
 		touch-action: pan-y;
 		-webkit-user-select: none;
 		user-select: none;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-on-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-on-selected);
 			outline-offset: 7px;
 		}
 	}
@@ -318,8 +321,8 @@
 		display: flex;
 		flex: none;
 		background: var(--card-track);
-		border-inline-start: 3px solid var(--wfd-ink);
-		transition: inline-size 0.25s ease-out;
+		border-inline-start: var(--wfd-border-rule) solid var(--wfd-color-selected);
+		transition: inline-size var(--wfd-card-motion);
 
 		&:first-of-type {
 			border-inline-start: 0;
@@ -328,7 +331,7 @@
 
 	.wfd-card__fill {
 		background: var(--card-away);
-		transition: inline-size 0.2s ease-out;
+		transition: inline-size var(--wfd-card-motion);
 	}
 
 	.wfd-card__part--here .wfd-card__fill {
@@ -339,20 +342,20 @@
 		position: absolute;
 		inset-block: -5px;
 		inline-size: 12px;
-		margin-inline-start: -6px;
-		border: 2px solid var(--wfd-ink);
+		translate: -50% 0;
+		border: var(--wfd-border) solid var(--wfd-color-selected);
 		border-radius: var(--wfd-radius-sticker);
-		background: var(--wfd-olive);
+		background: var(--wfd-color-primary);
 		pointer-events: none;
 		transition:
-			inset-inline-start 0.2s ease-out,
-			scale 0.1s ease-out;
+			inset-inline-start var(--wfd-card-motion),
+			scale var(--wfd-motion-press) var(--wfd-ease-out);
 	}
 
 	/* While you drag, the bar follows the thumb with no delay, and the handle grows a little. */
 	.wfd-card__track--drag .wfd-card__fill,
 	.wfd-card__track--drag .wfd-card__handle {
-		transition: scale 0.1s ease-out;
+		transition: scale var(--wfd-button-motion);
 	}
 
 	.wfd-card__track--drag .wfd-card__handle {
@@ -361,7 +364,7 @@
 
 	.wfd-card__scale {
 		display: flex;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		justify-content: space-between;
 	}
 
@@ -369,76 +372,38 @@
 	.wfd-card__actions {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr));
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-card__actions :global(button.wfd-button) {
-		padding-inline: 12px;
 		white-space: nowrap;
-	}
-
-	.wfd-card :global(button.wfd-button--quiet) {
-		border-color: var(--wfd-on-ink);
-		background: none;
-		color: var(--wfd-on-ink);
 	}
 
 	.wfd-card__links {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 20px;
-
-		& button {
-			block-size: 44px;
-			padding: 0;
-			border: 0;
-			background: none;
-			box-shadow: none;
-			color: var(--wfd-on-ink);
-			font-family: inherit;
-			font-size: 15px;
-			font-weight: 600;
-			text-decoration: underline;
-			cursor: pointer;
-		}
+		gap: 0 var(--wfd-space-section);
 	}
 
 	.wfd-card__hint {
 		margin: 0;
-		font-size: 14px;
+		font-size: var(--wfd-font-size-small);
 		opacity: 0.75;
 	}
 
 	/* The place and the date are in the colours of the page, on a panel inside the card. */
-	.wfd-card__details {
+	.wfd-card__detail-list {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-		padding: 8px 12px 12px;
-		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
-		color: var(--wfd-ink);
+		gap: var(--wfd-space-group);
 	}
 
 	.wfd-card__chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 6px;
+		gap: 0 var(--wfd-space-group);
 	}
 
-	.wfd-card__date {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr);
-		gap: 12px;
-		align-items: center;
-
-		& input {
-			box-sizing: border-box;
-			inline-size: 100%;
-			min-inline-size: 0;
-			block-size: 44px;
-		}
-	}
 
 	.wfd-card__hidden {
 		position: absolute;
@@ -447,13 +412,5 @@
 		overflow: hidden;
 		clip-path: inset(50%);
 		white-space: nowrap;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-card__part,
-		.wfd-card__fill,
-		.wfd-card__handle {
-			transition: none;
-		}
 	}
 </style>

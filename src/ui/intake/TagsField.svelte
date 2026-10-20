@@ -2,6 +2,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { crossfade, scale } from 'svelte/transition';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
@@ -57,22 +58,24 @@
 			</li>
 		{/each}
 	</ul>
-	<input
-		id="{uid}-new"
-		type="text"
-		aria-label="A new tag"
-		placeholder="A new tag"
-		enterkeyhint="done"
-		autocomplete="off"
-		bind:value={typed}
-		{onkeydown}
-	/>
+	<Field>
+		<input
+			id="{uid}-new"
+			type="text"
+			aria-label="A new tag"
+			placeholder="A new tag"
+			enterkeyhint="done"
+			autocomplete="off"
+			bind:value={typed}
+			{onkeydown}
+		/>
+	</Field>
 </fieldset>
 
 <style>
 	.wfd-tags {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
@@ -80,21 +83,17 @@
 	}
 
 	.wfd-tags__label {
-		margin-block-end: 6px;
+		margin-block-end: var(--wfd-space-group);
 		padding: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-tags__chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 8px;
+		gap: 0 var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
-	}
-
-	.wfd-tags :global(input) {
-		inline-size: 100%;
 	}
 </style>

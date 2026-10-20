@@ -266,75 +266,75 @@
 	.wfd-away {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-away__empty {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* Paper with sharp corners, as the receipt of a store. */
 	.wfd-away__receipt {
-		padding: 4px 14px;
+		padding: var(--wfd-space-tight) var(--wfd-space-inset);
 		border-radius: var(--wfd-radius-sticker);
-		background: var(--wfd-card);
+		background: var(--wfd-color-surface);
 	}
 
 	.wfd-away__trip {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 10px;
-		padding-block: 12px;
-		border-block-end: 2px dashed var(--wfd-ink-3);
+		gap: var(--wfd-space-stack);
+		padding-block: var(--wfd-space-inset);
+		border-block-end: var(--wfd-border) dashed var(--wfd-color-text-faint);
 	}
 
 	.wfd-away__day {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		text-align: center;
 	}
 
 	.wfd-away__group,
 	.wfd-away__known {
-		padding-block-end: 6px;
+		padding-block-end: var(--wfd-space-tight);
 	}
 
 	/* The head of the known items is one button, as the line "In the cart" of the stage Shop. */
 	button.wfd-away__known-head {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto auto;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 52px;
-		margin-block-start: 6px;
+		min-block-size: var(--wfd-control);
+		margin-block-start: var(--wfd-space-group);
 		padding: 0;
 		border: 0;
-		border-block-end: 2px solid var(--wfd-ink);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -3px;
 		}
 	}
 
 	.wfd-away__known-title,
 	.wfd-away__known-count {
-		font-size: 19px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	/* A count that changes makes a small jump, so that you see that the items went in. */
 	.wfd-away__known-count {
-		animation: jump 0.3s ease-out;
+		animation: jump var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	.wfd-away__arrow {
@@ -343,7 +343,7 @@
 		fill: none;
 		stroke: currentColor;
 		stroke-width: 2.5;
-		transition: rotate 0.2s ease-out;
+		transition: rotate var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	[aria-expanded='true'] .wfd-away__arrow {
@@ -356,21 +356,11 @@
 		}
 	}
 
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-away__known-count {
-			animation: none;
-		}
-
-		.wfd-away__arrow {
-			transition: none;
-		}
-	}
-
 	/* On a wide tab, the lines are in columns, as the rows of the list. */
 	.wfd-away__lines {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 24rem), 1fr));
-		gap: 0 32px;
+		gap: 0 var(--wfd-space-section);
 		align-items: start;
 		margin: 0;
 		padding: 0;
@@ -378,32 +368,32 @@
 	}
 
 	.wfd-away__line {
-		border-block-end: 1px dotted var(--wfd-ink-3);
+		border-block-end: var(--wfd-border-thin) dotted var(--wfd-color-text-faint);
 	}
 
 	.wfd-away__sums {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 16px;
+		gap: var(--wfd-space-tight) var(--wfd-space-section);
 		align-items: baseline;
 		justify-content: space-between;
 	}
 
 	.wfd-away__total {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		font-weight: 600;
 
 		& strong {
-			color: var(--wfd-ink);
-			font-size: 18px;
+			color: var(--wfd-color-text);
+			font-size: var(--wfd-font-size-name);
 		}
 	}
 
 	.wfd-away__missing {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 	}
 </style>

@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Keeper
 depends-on: [look-colour-roles-in-the-two-schemes.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / Motion tokens
@@ -44,3 +44,4 @@ As the [keeper](../../personas.md), I want each card, row, chip, and button to m
 ## Architecture
 
 - [Card](../../architecture/card.md): the card of a food item, which gets the card motion.
+- [Motion](../../architecture/motion.md): the tokens, the piece tokens, and the transitions of Svelte that stay. New.

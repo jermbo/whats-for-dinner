@@ -129,7 +129,7 @@
 <style>
 	.wfd-step-photo {
 		display: grid;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		justify-items: start;
 	}
 
@@ -141,7 +141,7 @@
 		overflow: hidden;
 		border: 0;
 		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-track);
+		background: var(--wfd-color-track);
 		box-shadow: none;
 		cursor: pointer;
 
@@ -153,7 +153,7 @@
 		}
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -164,17 +164,17 @@
 		display: inline-flex;
 		align-items: center;
 		min-block-size: 56px;
-		padding: 0 20px;
-		border: 2px solid var(--wfd-ink);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
-		color: var(--wfd-ink);
-		font-size: 17px;
+		background: var(--wfd-color-control);
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-text);
 		font-weight: 700;
 		cursor: pointer;
 
 		&:focus-within {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -194,28 +194,28 @@
 		z-index: 1;
 		display: grid;
 		grid-template-rows: auto minmax(0, 1fr);
-		gap: 12px;
-		padding: 16px 20px;
-		background: var(--wfd-card);
+		gap: var(--wfd-space-stack);
+		padding: var(--wfd-space-inset) var(--wfd-space-inset);
+		background: var(--wfd-color-surface);
 	}
 
 	.wfd-step-photo__head {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	button.wfd-step-photo__close {
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 4px;
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-tight);
 		border: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 15px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 700;
 		cursor: pointer;
 	}
@@ -223,7 +223,7 @@
 	.wfd-step-photo__list {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr));
-		gap: 14px;
+		gap: var(--wfd-space-section);
 		margin: 0;
 		padding: 0;
 		overflow-y: auto;
@@ -233,7 +233,7 @@
 
 	.wfd-step-photo__one {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 
 		& img {
 			inline-size: 100%;
@@ -245,28 +245,22 @@
 
 	button.wfd-step-photo__best {
 		block-size: auto;
-		min-block-size: 48px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 700;
 		cursor: pointer;
-		transition: background-color 0.15s ease-out;
+		transition: background-color var(--wfd-chip-motion);
 	}
 
 	button.wfd-step-photo__best--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-step-photo__best {
-			transition: none;
-		}
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 </style>

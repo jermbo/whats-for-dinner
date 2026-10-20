@@ -5,7 +5,7 @@ parent: look-stories.md
 updated: 2026-10-20
 persona: Keeper
 depends-on: [look-colour-roles-in-the-two-schemes.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Look stories](look-stories.md) / Space, lines, corners, and controls
@@ -53,3 +53,4 @@ As the [keeper](../../personas.md), I want each part to have the same gaps, edge
 
 - [Pantry](../../architecture/pantry.md): the tag "Out".
 - [Brands](../../architecture/brands.md): the mark on a brand photo.
+- [Space](../../architecture/space.md): the space jobs, the lines, the corners, and the heights. New.

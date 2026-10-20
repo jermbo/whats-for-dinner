@@ -2,6 +2,7 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { folderPath } from '../../settings';
 	import { areApart, HOME } from '../../setup/home';
+	import Field from '../parts/Field.svelte';
 	import StepFrame from './StepFrame.svelte';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
@@ -24,8 +25,7 @@
 	ready={apart}
 	oncontinue={() => kitchen.setup.chooseRecipesFolder(path)}
 >
-	<label class="wfd-recipes">
-		<span class="wfd-label">Recipes folder</span>
+	<Field label="Recipes folder">
 		<input type="text" list="{uid}-folders" placeholder="Recipes" bind:value={text} />
 		<datalist id="{uid}-folders">
 			{#each folders as option (option)}
@@ -39,23 +39,12 @@
 		{:else}
 			<span class="wfd-recipes__note">Only the notes in this folder are recipes.</span>
 		{/if}
-	</label>
+	</Field>
 </StepFrame>
 
 <style>
-	.wfd-recipes {
-		display: grid;
-		gap: 6px;
-		color: var(--wfd-ink-2);
-
-		& input {
-			inline-size: 100%;
-		}
-	}
-
 	.wfd-recipes__note {
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
-
-
 </style>

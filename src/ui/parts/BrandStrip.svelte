@@ -148,7 +148,7 @@
 		position: relative;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
 	}
 
@@ -161,39 +161,33 @@
 		place-items: center;
 		inline-size: 20px;
 		block-size: 20px;
-		border: 2px solid var(--wfd-card);
-		border-radius: 50%;
-		color: #fff;
-		font-size: 11px;
+		border: var(--wfd-border) solid var(--wfd-color-surface);
+		border-radius: var(--wfd-radius-sticker);
+		font-size: var(--wfd-font-size-label);
 		font-weight: 800;
-		line-height: 1;
-		animation: wfd-mark-in 0.2s ease-out;
+		line-height: var(--wfd-line-height-single);
+		animation: wfd-mark-in var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	/* On a chip, the mark follows the name. */
 	.wfd-brands__chip .wfd-brands__mark {
 		position: static;
-		margin-inline-start: 6px;
+		margin-inline-start: var(--wfd-space-group);
 	}
 
 	.wfd-brands__mark--again {
-		background: var(--wfd-olive);
-		color: var(--wfd-on-olive);
+		background: var(--wfd-color-primary);
+		color: var(--wfd-color-on-primary);
 	}
 
 	.wfd-brands__mark--avoid {
-		background: var(--wfd-tomato);
+		background: var(--wfd-color-danger);
+		color: var(--wfd-color-on-danger);
 	}
 
 	@keyframes wfd-mark-in {
 		from {
 			scale: 0.4;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-brands__mark {
-			animation: none;
 		}
 	}
 
@@ -207,15 +201,15 @@
 		block-size: 48px;
 		padding: 0;
 		overflow: hidden;
-		border: 2px solid var(--wfd-line);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-track);
+		background: var(--wfd-color-track);
 		box-shadow: none;
 		cursor: pointer;
 
 		&:focus-visible,
 		&:focus-within {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -229,15 +223,15 @@
 	.wfd-brands__chip {
 		display: inline-flex;
 		align-items: center;
-		block-size: 36px;
-		padding: 0 12px;
-		border: 2px solid var(--wfd-line);
+		block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 14px;
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 		white-space: nowrap;
 	}
@@ -246,7 +240,7 @@
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -254,7 +248,7 @@
 	.wfd-brands__camera {
 		border-style: dashed;
 		background: none;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 
 		& svg {
 			inline-size: 24px;
@@ -282,18 +276,12 @@
 		inset-block-start: 0;
 		inset-inline-start: 0;
 		box-sizing: border-box;
-		border: 3px solid var(--wfd-olive);
+		border: var(--wfd-border-rule) solid var(--wfd-color-primary);
 		border-radius: var(--wfd-radius-button);
 		pointer-events: none;
 		transition:
-			translate 0.2s ease-out,
-			inline-size 0.2s ease-out,
-			block-size 0.2s ease-out;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-brands__ring {
-			transition: none;
-		}
+			translate var(--wfd-motion-change) var(--wfd-ease-out),
+			inline-size var(--wfd-motion-change) var(--wfd-ease-out),
+			block-size var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 </style>

@@ -4,6 +4,7 @@
 	import type { FoodNote } from '../../note';
 	import { proposalsFor } from '../../shop/proposals';
 	import Button from '../parts/Button.svelte';
+	import Field from '../parts/Field.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
@@ -48,15 +49,17 @@
 -->
 <div class="wfd-add">
 	<div class="wfd-add__tools">
-		<input
-			type="text"
-			autocomplete="off"
-			spellcheck="false"
-			aria-label="Add an item"
-			placeholder="Add an item"
-			bind:this={field}
-			bind:value={text}
-		/>
+		<Field>
+			<input
+				type="text"
+				autocomplete="off"
+				spellcheck="false"
+				aria-label="Add an item"
+				placeholder="Add an item"
+				bind:this={field}
+				bind:value={text}
+			/>
+		</Field>
 		<Button disabled={!text.trim()} onclick={addNew}>Add as new</Button>
 	</div>
 
@@ -78,17 +81,13 @@
 	.wfd-add {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 	}
 
 	.wfd-add__tools {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 8px;
-	}
-
-	.wfd-add__tools :global(input) {
-		inline-size: 100%;
+		gap: var(--wfd-space-group);
 	}
 
 	.wfd-add__proposals {
@@ -104,23 +103,23 @@
 		justify-content: start;
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 48px;
-		padding: 0 14px;
+		min-block-size: var(--wfd-control);
+		padding: 0 var(--wfd-space-inset);
 		border: 0;
-		border-block-end: 1px solid var(--wfd-line);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 17px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -3px;
 		}
 	}

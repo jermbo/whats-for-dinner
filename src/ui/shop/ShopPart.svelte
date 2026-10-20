@@ -68,6 +68,6 @@
 	.wfd-shop-part {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 </style>

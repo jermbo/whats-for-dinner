@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
+	import Button from './Button.svelte';
+	import Panel from './Panel.svelte';
 
 	type Props = {
 		// The address of the photo, or null for a brand with no photo.
@@ -56,19 +58,23 @@
 	oncancel={(event) => (event.preventDefault(), onclose())}
 	onclick={outside}
 >
-	<div class="wfd-brand-photo__card" bind:this={card}>
-		<div class="wfd-brand-photo__head">
-			<button class="wfd-brand-photo__close" type="button" onclick={onclose}>Close</button>
-		</div>
-		{#if url}
-			<img class="wfd-brand-photo__image" src={url} alt={name || 'Brand with no name'} />
-		{/if}
-		{#if name}
-			<span class="wfd-brand-photo__name wfd-display">{name}</span>
-		{/if}
-		{#if children}
-			<div class="wfd-brand-photo__actions">{@render children()}</div>
-		{/if}
+	<div bind:this={card}>
+		<Panel kind="form">
+			<div class="wfd-brand-photo__card">
+				<div class="wfd-brand-photo__head">
+					<Button kind="link" onclick={onclose}>Close</Button>
+				</div>
+				{#if url}
+					<img class="wfd-brand-photo__image" src={url} alt={name || 'Brand with no name'} />
+				{/if}
+				{#if name}
+					<span class="wfd-brand-photo__name wfd-display">{name}</span>
+				{/if}
+				{#if children}
+					<div class="wfd-brand-photo__actions">{@render children()}</div>
+				{/if}
+			</div>
+		</Panel>
 	</div>
 </dialog>
 
@@ -83,44 +89,25 @@
 		background: none;
 
 		&::backdrop {
-			background: rgb(0 0 0 / 0.6);
+			background: color-mix(in srgb, var(--wfd-color-frame) 60%, transparent);
 		}
 	}
 
 	.wfd-brand-photo__card {
 		display: grid;
-		gap: 12px;
-		padding: 12px 16px 16px;
-		border: 2px solid var(--wfd-ink);
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
-		color: var(--wfd-ink);
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-brand-photo__head {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		justify-content: flex-end;
-		min-block-size: 44px;
+		min-block-size: var(--wfd-control-min);
 	}
 
 	.wfd-brand-photo__name {
-		font-size: 20px;
-	}
-
-	button.wfd-brand-photo__close {
-		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 4px;
-		border: 0;
-		background: none;
-		box-shadow: none;
-		color: var(--wfd-ink);
-		font-family: inherit;
-		font-size: 15px;
-		font-weight: 700;
-		cursor: pointer;
+		font-size: var(--wfd-font-size-name);
 	}
 
 	.wfd-brand-photo__image {
@@ -129,12 +116,12 @@
 		max-block-size: 60vh;
 		border-radius: var(--wfd-radius-button);
 		object-fit: contain;
-		background: var(--wfd-track);
+		background: var(--wfd-color-track);
 	}
 
 	/* The action is at the lower edge, where the thumb is. */
 	.wfd-brand-photo__actions {
 		display: grid;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 	}
 </style>

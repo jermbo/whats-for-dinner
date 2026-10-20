@@ -61,6 +61,20 @@ The phone is where you use the plugin, and a function with no test there is not 
 | Each place as a bin           | At 1000 px, "Freezer" starts under "Fridge", and the head of "Fridge" shows "1 past".         |
 | The top stays in view         | In each part, the nav, the title, and the bar stay at the top while the list scrolls.            |
 
+## The look needs a check by eye
+
+The [look stories](v0.8.0/look-stories.md) give each part one look. No automatic test checks a look, so you check each part on the phone, in the light and the dark scheme. The check list "Look check list" at the root of `test-vault/` tells what to look at in each part.
+
+| Test                      | It is done when                                                                                       |
+| ------------------------- | ----------------------------------------------------------------------------------------------------- |
+| The two schemes           | Each part is readable in the light and the dark scheme. The frame of Cook Mode stays dark.            |
+| One size for a name       | "Rice" in the Pantry and "Onions" in the Shop have the same size.                                     |
+| The zoom                  | At a zoom of 120%, the text of each part is larger, and the main buttons keep their place.            |
+| The motion                | Each tap moves as before. With less motion, nothing moves.                                            |
+| The accent                | With the accent "Obsidian", "Ready" and the current step of Cook Mode have the colour of the theme.   |
+| One button for an action  | The main button of the Shop looks like "Add food" of the Pantry.                                      |
+| Field, panel, list line   | The fields of "Add food" and of the card of rice are the same. The line of onions has the form of the line of rice. |
+
 ## Unit tests come before 1.0
 
 After 1.0, a change must not break a rule that worked, and the form of a note is hard to change. So each critical path gets a unit test before 1.0. The [unit test stories](v0.8.0/unit-test-stories.md) have the ten pieces of work. A story is done when `npm test` passes, and a rule that you break on purpose makes its test fail.

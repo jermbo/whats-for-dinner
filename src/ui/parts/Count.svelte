@@ -14,16 +14,16 @@
 <style>
 	.wfd-count {
 		display: inline-flex;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		align-items: baseline;
 		white-space: nowrap;
 	}
 
 	.wfd-count__numbers {
-		font-size: var(--wfd-count-size, 20px);
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-count__of {
-		color: var(--wfd-ink-3);
+		color: var(--wfd-color-text-faint);
 	}
 </style>

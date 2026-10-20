@@ -21,13 +21,13 @@ The [spec](../../initiatives/style-guide/spec.md) has the scope, and the [decisi
 
 | Story                                                                                     | Persona | Depends on | Status  |
 | ----------------------------------------------------------------------------------------- | ------- | ---------- | ------- |
-| 1. [Colour roles in the two schemes](look-colour-roles-in-the-two-schemes.md)              | Cook    | Nothing    | `ready` |
-| 2. [One type scale](look-one-type-scale.md)                                               | Shopper | 1          | `ready` |
-| 3. [Space, lines, corners, and controls](look-space-lines-corners-and-controls.md)        | Keeper  | 1          | `ready` |
-| 4. [Motion tokens](look-motion-tokens.md)                                                 | Keeper  | 1          | `ready` |
-| 5. [One button for each action](look-one-button-for-each-action.md)                       | Shopper | 2, 3       | `ready` |
-| 6. [Field and panel](look-field-and-panel.md)                                             | Keeper  | 2, 3       | `ready` |
-| 7. [List line](look-list-line.md)                                                         | Shopper | 2, 3       | `ready` |
+| 1. [Colour roles in the two schemes](look-colour-roles-in-the-two-schemes.md)              | Cook    | Nothing    | `built` |
+| 2. [One type scale](look-one-type-scale.md)                                               | Shopper | 1          | `built` |
+| 3. [Space, lines, corners, and controls](look-space-lines-corners-and-controls.md)        | Keeper  | 1          | `built` |
+| 4. [Motion tokens](look-motion-tokens.md)                                                 | Keeper  | 1          | `built` |
+| 5. [One button for each action](look-one-button-for-each-action.md)                       | Shopper | 2, 3       | `built` |
+| 6. [Field and panel](look-field-and-panel.md)                                             | Keeper  | 2, 3       | `built` |
+| 7. [List line](look-list-line.md)                                                         | Shopper | 2, 3       | `built` |
 
 ## The steps of the work
 
