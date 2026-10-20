@@ -61,6 +61,10 @@ The phone is where you use the plugin, and a function with no test there is not 
 | Each place as a bin           | At 1000 px, "Freezer" starts under "Fridge", and the head of "Fridge" shows "1 past".         |
 | The top stays in view         | In each part, the nav, the title, and the bar stay at the top while the list scrolls.            |
 
+## Unit tests come before 1.0
+
+After 1.0, a change must not break a rule that worked, and the form of a note is hard to change. So each critical path gets a unit test before 1.0. The [unit test stories](v0.8.0/unit-test-stories.md) have the ten pieces of work. A story is done when `npm test` passes, and a rule that you break on purpose makes its test fail.
+
 ## More settings come after the first use
 
 The plugin has a fixed value for each of these. A value becomes a setting when it is wrong for your kitchen.

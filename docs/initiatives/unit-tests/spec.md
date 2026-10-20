@@ -29,7 +29,7 @@ An example: a change to the parse of an amount makes "1 1/2 cups" into 1 cup. Th
 3. Each critical path below has tests of its main case and of its common edge cases (decisions 1 and 12)
    - a. Amounts: the four forms of a number, such as 2, 1.5, 1 1/2, and ½, and the unit after it. Text with no number gives no amount
    - b. Units: a conversion in one kind, such as 1000 g and 1 kg. A count and a weight do not compare
-   - c. Level: low and out of a food item. A full amount and rows that do not compare give no level
+   - c. Level: low and out of a food item. A food item with no package that the plugin can count has no level
    - d. Food item note: the rows of the table read back as they were written, and the text around the table stays (decision 5)
    - e. Match: an ingredient finds its food item by name, and gets enough, short, missing, or not known
    - f. Recipe note: the title, the groups, the ingredients, and their amounts. The record of a meal keeps the text of the note (decision 5)

@@ -81,7 +81,7 @@ Each decision has the same form: the decision in bold, the reason, the options t
 
 8. **Each test follows seven rules.**
    - a. A test file tests one file of the code, because one file has one job.
-   - b. A test name is a sentence in the words of the glossary: "a full amount of 2 kg and rows of 3 bags give no level". A test that fails then tells the rule that broke.
+   - b. A test name is a sentence in the words of the glossary: "a jug of milk at 1/4 with a full jug is not low". A test that fails then tells the rule that broke.
    - c. The tests run in Node, with no browser page, because the domain needs no page.
    - d. The command is `npm test`, and it runs each test one time.
    - e. No snapshot tests: each test names the value that it expects. A snapshot accepts each change, also a wrong one.
