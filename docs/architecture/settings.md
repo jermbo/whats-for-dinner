@@ -50,7 +50,7 @@ When the list is empty, the plugin fills it from the places of the rows, the fir
 | Font for titles and numbers | Bricolage Grotesque | The font of Obsidian, or a font of your device. |
 | Accent colour               | Larder olive        | The accent colour of Obsidian, from your theme. |
 
-The accent colour is the colour of "ready", "done", and the current step. All other text has the font of Obsidian.
+The accent colour is the colour of "ready", "done", and the current step. The accent of your theme replaces the [colour](colour.md) role `primary`, and its text colour replaces `on-primary`. All other text has the font of Obsidian.
 
 ## Cook Mode
 

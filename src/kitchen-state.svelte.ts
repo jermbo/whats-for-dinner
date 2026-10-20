@@ -26,15 +26,14 @@ import {
 	type ShopMutable
 } from './kitchen/shop-actions';
 import {
-	calculatedList,
 	cartItems,
-	mealNeeds,
 	putAwayCartItems,
 	storeOrderOf,
 	storesOf,
 	tripSuggestions
 } from './kitchen/shop-read-model';
 import { tried } from './kitchen/tried';
+import { calculatedList, mealNeeds } from './shop/calculated-list';
 import type { Disk, KitchenPage, Part } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import { indexFoods } from './match/match';

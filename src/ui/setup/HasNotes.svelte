@@ -19,10 +19,10 @@
 <style>
 	.wfd-notes {
 		display: grid;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		max-inline-size: 40rem;
-		padding: 12px 14px 40px;
-		color: var(--wfd-ink);
+		padding: var(--wfd-space-page) var(--wfd-space-page) var(--wfd-space-section);
+		color: var(--wfd-color-text);
 
 		& p {
 			margin: 0;

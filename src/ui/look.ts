@@ -15,8 +15,8 @@ export function lookOf({ font, fontName, accent }: Settings): Record<string, str
 	const fromObsidian = accent === 'obsidian';
 
 	return {
-		'--wfd-display': fonts[font],
-		'--wfd-olive': fromObsidian ? 'var(--interactive-accent)' : null,
-		'--wfd-on-olive': fromObsidian ? 'var(--text-on-accent)' : null
+		'--wfd-font-display': fonts[font],
+		'--wfd-color-primary': fromObsidian ? 'var(--interactive-accent)' : null,
+		'--wfd-color-on-primary': fromObsidian ? 'var(--text-on-accent)' : null
 	};
 }

@@ -4,8 +4,10 @@
 	import type { Brand } from '../../pantry/brands';
 	import BrandPhoto from '../parts/BrandPhoto.svelte';
 	import BrandStrip from '../parts/BrandStrip.svelte';
+	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import type { Verdict } from '../../pantry/brands';
+	import Field from '../parts/Field.svelte';
 
 	type Props = {
 		// The brands of the note, as the form opened.
@@ -138,8 +140,7 @@
 		from={open.from}
 		onclose={() => (open = null)}
 	>
-		<label class="wfd-brand-fields__name">
-			<span class="wfd-label">Name</span>
+		<Field label="Name">
 			<input
 				type="text"
 				placeholder="Optional"
@@ -148,7 +149,7 @@
 				oninput={(event) => change({ name: event.currentTarget.value })}
 				onkeydown={enter}
 			/>
-		</label>
+		</Field>
 		<div class="wfd-brand-fields__verdict" role="group" aria-labelledby="{uid}-verdict">
 			<span class="wfd-label" id="{uid}-verdict">Verdict</span>
 			<div class="wfd-brand-fields__chips">
@@ -173,7 +174,7 @@
 					onchange={newPhoto}
 				/>
 			</label>
-			<button class="wfd-brand-fields__remove" type="button" onclick={remove}>Remove</button>
+			<Button kind="danger" onclick={remove}>Remove</Button>
 		</div>
 	</BrandPhoto>
 {/if}
@@ -181,68 +182,62 @@
 <style>
 	.wfd-brand-fields {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-brand-fields__verdict {
 		display: grid;
-		gap: 4px;
-		color: var(--wfd-ink-2);
+		gap: var(--wfd-space-tight);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-brand-fields__chips {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 8px;
+		gap: 0 var(--wfd-space-group);
 	}
 
 	.wfd-brand-fields__row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
 	}
 
 	/* The labels are the buttons of the camera. The file field of the browser is hidden. */
 	.wfd-brand-fields__add,
-	.wfd-brand-fields__photo,
-	button.wfd-brand-fields__remove {
+	.wfd-brand-fields__photo {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		block-size: auto;
-		min-block-size: 48px;
-		padding: 0 16px;
-		border: 2px solid var(--wfd-ink);
+		min-block-size: var(--wfd-control);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 700;
 		cursor: pointer;
 
 		&:focus-within,
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	.wfd-brand-fields__add {
 		border-style: dashed;
-	}
-
-	button.wfd-brand-fields__remove {
-		border-color: var(--wfd-tomato);
-		color: var(--wfd-tomato);
 	}
 
 	.wfd-brand-fields__hidden {
@@ -253,19 +248,10 @@
 		clip-path: inset(50%);
 	}
 
-	.wfd-brand-fields__name {
-		display: grid;
-		gap: 6px;
-		color: var(--wfd-ink-2);
-
-		& input {
-			inline-size: 100%;
-		}
-	}
 
 	.wfd-brand-fields__actions {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 	}
 </style>

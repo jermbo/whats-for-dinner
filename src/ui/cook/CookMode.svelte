@@ -157,7 +157,7 @@
 				></span>
 			{/each}
 		</div>
-		<button class="wfd-cook__exit" type="button" onclick={onclose}>Exit</button>
+		<Button kind="link" onclick={onclose}>Exit</Button>
 	</header>
 
 	{#if others.length}
@@ -338,71 +338,54 @@
 	.wfd-cook {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		block-size: 100%;
-		padding: 12px 12px max(var(--safe-area-inset-bottom, 0px), 12px);
+		padding: var(--wfd-space-page) var(--wfd-space-page)
+			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page));
 		overflow-x: clip;
-		background: var(--wfd-frame);
+		background: var(--wfd-color-frame);
 		container-type: inline-size;
 	}
 
 	/* On a tab that is too low for the card, the tab scrolls. The frame stays dark there. */
 	:global(.view-content.wfd:has(> .wfd-cook)) {
-		background: var(--wfd-frame);
+		background: var(--wfd-color-frame);
 	}
 
 	.wfd-cook__bar {
 		display: flex;
+		color: var(--wfd-color-on-frame);
 		flex: none;
-		gap: 16px;
+		gap: var(--wfd-space-section);
 		align-items: center;
 	}
 
 	.wfd-cook__pieces {
 		display: flex;
 		flex: 1;
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 	}
 
 	.wfd-cook__piece {
 		flex: 1;
 		block-size: 6px;
-		background: #4a463f;
-		transition: background-color 0.2s ease-out;
+		background: var(--wfd-color-frame-muted);
+		transition: background-color var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-cook__piece--done {
-		background: #eceae2;
+		background: var(--wfd-color-on-frame);
 	}
 
 	.wfd-cook__piece--now {
-		background: var(--wfd-olive);
-	}
-
-	button.wfd-cook__exit {
-		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 4px;
-		border: 0;
-		background: none;
-		box-shadow: none;
-		color: #eceae2;
-		font-family: inherit;
-		font-size: 15px;
-		font-weight: 700;
-		cursor: pointer;
-
-		/* The frame is ink in the two schemes, so the ring has the colour of the text. */
-		&:focus-visible {
-			outline: 2px solid currentcolor;
-		}
+		background: var(--wfd-color-primary);
 	}
 
 	.wfd-cook__timers {
 		display: flex;
 		flex: none;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -410,30 +393,30 @@
 
 	button.wfd-cook__other {
 		display: flex;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-items: baseline;
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 12px;
-		border: 2px solid #eceae2;
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-on-frame);
 		border-radius: var(--wfd-radius-button);
 		background: none;
 		box-shadow: none;
-		color: #eceae2;
+		color: var(--wfd-color-on-frame);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid currentcolor;
+			outline: var(--wfd-border) solid currentcolor;
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-cook__other--rung {
-		border-color: var(--wfd-tomato);
-		background: var(--wfd-tomato);
-		color: #fff;
+		border-color: var(--wfd-color-danger);
+		background: var(--wfd-color-danger);
+		color: var(--wfd-color-on-danger);
 	}
 
 	/* The title and the note keep their place. Only the work between them scrolls. */
@@ -445,35 +428,35 @@
 		grid-template-columns: minmax(0, 1fr);
 		overflow: hidden;
 		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
-		color: var(--wfd-ink);
+		background: var(--wfd-color-surface);
+		color: var(--wfd-color-text);
 	}
 
 	/* On a phone, the title and its count are one row, so that the list gets the height. */
 	.wfd-cook__side {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 16px;
+		gap: var(--wfd-space-tight) var(--wfd-space-section);
 		align-items: baseline;
 		justify-content: space-between;
-		padding: 16px 20px 0;
+		padding: var(--wfd-space-inset) var(--wfd-space-inset) 0;
 	}
 
 	.wfd-cook__recipe {
 		flex-basis: 100%;
 		margin: 0;
 		overflow: hidden;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
 
 	.wfd-cook__title {
 		margin: 0;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-size: clamp(2rem, 10cqi, 4.5rem);
 		font-weight: 800;
-		line-height: 1.05;
+		line-height: var(--wfd-line-height-display);
 	}
 
 	.wfd-cook__title--count {
@@ -481,7 +464,7 @@
 	}
 
 	.wfd-cook__of {
-		color: var(--wfd-ink-3);
+		color: var(--wfd-color-text-faint);
 		font-size: 0.45em;
 	}
 
@@ -491,23 +474,23 @@
 	 */
 	.wfd-cook__main {
 		display: grid;
-		gap: 18px;
+		gap: var(--wfd-space-section);
 		align-content: start;
 		min-block-size: 0;
-		padding: 16px 20px 20px;
+		padding: var(--wfd-space-inset) var(--wfd-space-inset) var(--wfd-space-inset);
 		overflow-y: auto;
 		overscroll-behavior: contain;
 		background:
-			linear-gradient(var(--wfd-card), var(--wfd-card)) top / 100% 3px no-repeat local,
-			linear-gradient(var(--wfd-card), var(--wfd-card)) bottom / 100% 3px no-repeat local,
-			linear-gradient(var(--wfd-ink), var(--wfd-ink)) top / 100% 2px no-repeat scroll,
-			linear-gradient(var(--wfd-ink), var(--wfd-ink)) bottom / 100% 2px no-repeat scroll;
+			linear-gradient(var(--wfd-color-surface), var(--wfd-color-surface)) top / 100% 3px no-repeat local,
+			linear-gradient(var(--wfd-color-surface), var(--wfd-color-surface)) bottom / 100% 3px no-repeat local,
+			linear-gradient(var(--wfd-color-border), var(--wfd-color-border)) top / 100% 2px no-repeat scroll,
+			linear-gradient(var(--wfd-color-border), var(--wfd-color-border)) bottom / 100% 2px no-repeat scroll;
 	}
 
 	/* The space between two groups is here, and not above the head of each group. */
 	.wfd-cook__groups {
 		display: grid;
-		gap: 20px;
+		gap: var(--wfd-space-section);
 	}
 
 	.wfd-cook__groups :global(.wfd-group) {
@@ -523,16 +506,16 @@
 	.wfd-cook__item {
 		display: grid;
 		grid-template-columns: auto 1fr auto auto;
-		gap: 14px;
+		gap: var(--wfd-space-section);
 		align-items: center;
 		min-block-size: 58px;
-		border-block-end: 1px solid var(--wfd-line);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 		cursor: pointer;
-		transition: color 0.2s ease-out;
+		transition: color var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-cook__row {
-		border-block-end: 1px solid var(--wfd-line);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 
 		& .wfd-cook__item {
 			border-block-end: 0;
@@ -543,55 +526,55 @@
 	.wfd-cook__pick {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
-		padding-block-end: 12px;
-		padding-inline-start: 42px;
+		padding-block-end: var(--wfd-space-inset);
+		padding-inline-start: calc(var(--checkbox-size) + var(--wfd-space-section));
 	}
 
 	button.wfd-cook__option {
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 14px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		cursor: pointer;
-		transition: background-color 0.15s ease-out;
+		transition: background-color var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-cook__option--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 
 	.wfd-cook__item--got {
-		color: var(--wfd-ink-3);
+		color: var(--wfd-color-text-faint);
 	}
 
 	.wfd-cook__name {
-		font-size: 20px;
+		font-size: var(--wfd-font-size-name);
 		font-weight: 500;
 	}
 
 	.wfd-cook__amount {
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 	}
 
 	.wfd-cook__hint {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* Large type: you read the step from a distance, with your hands in the food. */
@@ -599,13 +582,13 @@
 		margin: 0;
 		font-size: clamp(1.6rem, 6.5cqi, 2.75rem);
 		font-weight: 600;
-		line-height: 1.2;
+		line-height: var(--wfd-line-height-display);
 	}
 
 	.wfd-cook__needs {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -613,62 +596,62 @@
 
 	.wfd-cook__need {
 		display: flex;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: baseline;
-		padding: 8px 12px;
-		border: 2px solid var(--wfd-line);
+		padding: var(--wfd-space-group) var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-sticker);
-		font-size: 17px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 500;
 	}
 
 	.wfd-cook__timer {
 		display: flex;
-		gap: 16px;
+		gap: var(--wfd-space-section);
 		align-items: center;
 		justify-content: space-between;
-		padding-block: 10px;
-		border-block: var(--wfd-rule-4) solid var(--wfd-ink);
+		padding-block: var(--wfd-space-inset);
+		border-block: var(--wfd-border-rule) solid var(--wfd-color-border);
 	}
 
 	.wfd-cook__timer--rung {
-		border-color: var(--wfd-tomato);
-		color: var(--wfd-tomato);
-		animation: blink 0.8s steps(2, jump-none) infinite;
+		border-color: var(--wfd-color-danger);
+		color: var(--wfd-color-danger);
+		animation: blink calc(4 * var(--wfd-motion-change)) steps(2, jump-none) infinite;
 	}
 
 	.wfd-cook__clock {
 		font-size: clamp(2.6rem, 14cqi, 4.5rem);
 		font-variant-numeric: tabular-nums;
-		line-height: 1;
+		line-height: var(--wfd-line-height-single);
 	}
 
 	/* The note is one line, so that a long note does not take the card. A tap shows all of it. */
 	button.wfd-cook__note {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: baseline;
 		justify-content: start;
 		inline-size: 100%;
 		block-size: auto;
 		max-block-size: 48px;
-		padding: 12px 20px;
+		padding: var(--wfd-space-inset) var(--wfd-space-inset);
 		overflow: hidden;
 		border: 0;
 		border-radius: 0;
-		background: var(--wfd-olive);
+		background: var(--wfd-color-primary);
 		box-shadow: none;
-		color: var(--wfd-on-olive);
+		color: var(--wfd-color-on-primary);
 		font-family: inherit;
-		font-size: 17px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
-		line-height: 24px;
+		line-height: var(--wfd-line-height-text);
 		text-align: start;
 		cursor: pointer;
-		transition: max-block-size 0.2s ease-out;
+		transition: max-block-size var(--wfd-motion-change) var(--wfd-ease-out);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-on-olive);
+			outline: var(--wfd-border) solid var(--wfd-color-on-primary);
 			outline-offset: -4px;
 		}
 	}
@@ -696,12 +679,12 @@
 		display: grid;
 		flex: none;
 		grid-template-columns: 1fr 2fr;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-cook__nav :global(button.wfd-button) {
 		block-size: 72px;
-		font-size: 19px;
+		font-size: var(--wfd-font-size-name);
 	}
 
 	/* On a wide tab, the title is at the left and the work is at the right. */
@@ -713,11 +696,11 @@
 
 		.wfd-cook__side {
 			display: grid;
-			gap: 6px;
+			gap: var(--wfd-space-group);
 			align-content: start;
 			justify-content: stretch;
-			padding: 32px;
-			border-inline-end: 2px solid var(--wfd-ink);
+			padding: calc(2 * var(--wfd-space-section));
+			border-inline-end: var(--wfd-border) solid var(--wfd-color-border);
 		}
 
 		.wfd-cook__recipe {
@@ -725,7 +708,7 @@
 		}
 
 		.wfd-cook__main {
-			padding: 32px;
+			padding: calc(2 * var(--wfd-space-section));
 		}
 
 		.wfd-cook__note {
@@ -736,19 +719,6 @@
 	@keyframes blink {
 		50% {
 			opacity: 0.35;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-cook__piece,
-		.wfd-cook__item,
-		button.wfd-cook__option,
-		button.wfd-cook__note {
-			transition: none;
-		}
-
-		.wfd-cook__timer--rung {
-			animation: none;
 		}
 	}
 </style>

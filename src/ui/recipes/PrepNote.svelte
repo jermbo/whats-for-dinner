@@ -28,44 +28,38 @@
 <style>
 	.wfd-prep {
 		display: grid;
-		gap: 4px;
-		padding: 10px 12px;
-		border: 2px dashed var(--wfd-ink-3);
+		gap: var(--wfd-space-tight);
+		padding: var(--wfd-space-inset) var(--wfd-space-inset);
+		border: var(--wfd-border) dashed var(--wfd-color-text-faint);
 		border-radius: var(--wfd-radius-button);
 		transition:
-			border-color 0.2s ease-out,
-			background-color 0.2s ease-out;
+			border-color var(--wfd-motion-change) var(--wfd-ease-out),
+			background-color var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-prep--done {
 		border-style: solid;
-		border-color: var(--wfd-olive);
-		background: color-mix(in oklch, var(--wfd-olive) 18%, transparent);
+		border-color: var(--wfd-color-primary);
+		background: color-mix(in oklch, var(--wfd-color-primary) 18%, transparent);
 	}
 
 	.wfd-prep__label {
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-prep__text {
 		margin: 0;
-		font-size: 16px;
-		line-height: 1.4;
+		font-size: var(--wfd-font-size-text);
+		line-height: var(--wfd-line-height-text);
 		white-space: pre-line;
 	}
 
 	.wfd-prep__confirm {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
-		min-block-size: 44px;
+		min-block-size: var(--wfd-control-min);
 		font-weight: 700;
 		cursor: pointer;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-prep {
-			transition: none;
-		}
 	}
 </style>

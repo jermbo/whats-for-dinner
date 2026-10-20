@@ -96,6 +96,33 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Step          | One instruction of a recipe, on one page of [Cook Mode](architecture/cook-mode.md).                                                                                                                                                                                                       |
 | Record        | The line that a [cooked meal](architecture/end-of-a-meal.md) leaves in its recipe note: date, rating, note, and photo.                                                                                                                                                                    |
 
+## The look
+
+The kitchen uses "part", "card", "row", and "line" for its own things. So the look uses different words for the things of the screen.
+
+| Word          | Meaning                                                                                                                                         |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Look          | All that you see of the plugin but the data: colour, font, size, space, corners, lines, and motion. See [look](architecture/look.md).           |
+| Token         | One value of the look with a name, such as `--wfd-color-text`. A screen uses the name, not the value. Then one change of the token changes each screen. |
+| Scale         | A short list of tokens for one kind of value, from small to large, such as the six font sizes.                                                  |
+| Palette token | A token that names a plain value, such as the colour olive. Only a role token uses it.                                                          |
+| Role token    | A token that names a job, such as "primary" or the font size of a name. Screens and pieces use it.                                              |
+| Piece token   | A token of one piece that points to a role token, such as the motion of a card. You change it to try a different value on that piece only.      |
+| Piece         | One shared thing of the screen with its own look, such as a button, a chip, or a sticker. Each screen uses the same [piece](architecture/pieces.md). |
+| Frame         | The dark area around Cook Mode and the gallery. It is dark in the light scheme and in the dark scheme.                                          |
+| Style guide   | The pages that tell the tokens, the scales, and the pieces, and when to use each one: [look](architecture/look.md) and the pages below it.       |
+
+## The tests
+
+| Word        | Meaning                                                                                                                                       |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit test   | Code that calls one function of the plugin with a known input, and compares the answer with the answer that you expect. It needs no Obsidian. See [unit tests](standards/unit-tests.md). |
+| Test file   | One file of unit tests for one file of the code: `level.test.ts` tests `level.ts`.                                                            |
+| Test run    | One command, `npm test`, that runs all unit tests and tells which ones fail. It runs on the computer, not on the phone.                        |
+| Fixture     | The input of a test: the text of a note, a list of rows, or an amount such as "1000 g" of rice.                                               |
+| Bad note    | A note that a reader of the plugin cannot read completely: a half-typed amount, a missing section, a table with a broken row.                 |
+| Phone check | One test of a check list at the root of `test-vault/`. You do it by hand, on the phone. A unit test does not replace it.                      |
+
 ## Further reading
 
 - [Writing style](standards/writing-style.md): the rule "one word for one thing", and the other rules of the language.

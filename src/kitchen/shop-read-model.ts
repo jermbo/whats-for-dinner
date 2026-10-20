@@ -1,32 +1,14 @@
 import type { FoodNote } from '../note';
 import { cartItemOf, type CartItem, type Facts } from '../shop/facts';
 import { lastRows } from '../shop/last-receipt';
-import { pastDateRows } from '../shop/past-date';
 import type { Receipt } from '../shop/read-receipt';
 import { lineOf, type ReceiptLine } from '../shop/receipt';
 import { isAllDone, isLineOf } from '../shop/receipt-line';
-import { needsOf, shoppingList } from '../shop/shopping-list';
+import type { calculatedList } from '../shop/calculated-list';
 import { suggestionsOf } from '../shop/suggestions';
 import { storeOrderOf } from '../shop/store-order';
 import { storesOf } from '../shop/stores';
 import { cartOf, isPantryItem, listOf, type TripItem } from '../shop/trip';
-import type { Meal } from '../plan/types';
-
-export function mealNeeds(meals: Meal[], pantryFolder: string) {
-	return needsOf(
-		meals.flatMap(({ cooked, entry }) =>
-			cooked || !entry ? [] : [{ title: entry.recipe.title, ingredients: entry.match.ingredients }]
-		),
-		pantryFolder
-	);
-}
-
-export function calculatedList(needs: ReturnType<typeof needsOf>, today: string) {
-	return {
-		missing: shoppingList(needs),
-		past: pastDateRows(needs, today)
-	};
-}
 
 export function cartItems(
 	calculated: ReturnType<typeof calculatedList>,

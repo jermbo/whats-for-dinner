@@ -3,6 +3,7 @@
 	import { UNITS } from '../../pantry/unit-list';
 	import { sameUnit } from '../../units';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
 
 	// The size of a package: one number, and one unit that you select. "Count" is a plain count,
 	// such as 12 eggs. No unit is typed, so a typo such as "1 gall" cannot get into the pantry.
@@ -27,16 +28,19 @@
 
 <fieldset class="wfd-size">
 	<legend class="wfd-label">Package size</legend>
-	<input
-		class="wfd-size__number"
-		id="{uid}-number"
-		type="text"
-		inputmode="decimal"
-		placeholder="1"
-		aria-label="Number of the package size"
-		bind:value={number}
-		oninput={tell}
-	/>
+	<div class="wfd-size__number">
+		<Field kind="number">
+			<input
+				id="{uid}-number"
+				type="text"
+				inputmode="decimal"
+				placeholder="1"
+				aria-label="Number of the package size"
+				bind:value={number}
+				oninput={tell}
+			/>
+		</Field>
+	</div>
 	<div class="wfd-size__units" role="group" aria-label="Unit">
 		{#each [COUNT, ...UNITS] as option (option)}
 			<Chip label={option} on={unit === option} onclick={() => ((unit = option), tell())} />
@@ -48,25 +52,22 @@
 	.wfd-size {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-size__number {
-		box-sizing: border-box;
 		inline-size: min(100%, 8rem);
-		block-size: 44px;
-		font-size: 18px;
 	}
 
 	/* The chips wrap, so that each one stays inside the form. */
 	.wfd-size__units {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 6px;
+		gap: 0 var(--wfd-space-group);
 	}
 </style>

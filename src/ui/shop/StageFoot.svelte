@@ -18,10 +18,11 @@
 		inset-block-end: 0;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 8px;
-		margin-inline: -14px;
-		padding: 10px 14px max(var(--safe-area-inset-bottom, 0px), 12px);
-		border-block-start: 2px solid var(--wfd-ink);
-		background: var(--wfd-paper);
+		gap: var(--wfd-space-group);
+		margin-inline: calc(-1 * var(--wfd-space-page));
+		padding: var(--wfd-space-inset) var(--wfd-space-page)
+			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-inset));
+		border-block-start: var(--wfd-border) solid var(--wfd-color-border);
+		background: var(--wfd-color-bg);
 	}
 </style>

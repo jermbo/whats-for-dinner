@@ -6,6 +6,7 @@
 	import { firstNewPlace, FIRST_PLACES, MORE_PLACES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
+	import Field from '../parts/Field.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import StepFrame from './StepFrame.svelte';
@@ -60,12 +61,14 @@
 	<ul class="wfd-places" aria-labelledby="{uid}-places">
 		{#each places as name (name)}
 			<li class="wfd-places__row" transition:slide={{ duration }}>
-				<input
-					type="text"
-					aria-label="Name of {name}"
-					value={name}
-					onchange={(event) => rename(name, event.currentTarget)}
-				/>
+				<Field>
+					<input
+						type="text"
+						aria-label="Name of {name}"
+						value={name}
+						onchange={(event) => rename(name, event.currentTarget)}
+					/>
+				</Field>
 				<Button
 					aria-label="Remove {name}"
 					onclick={() => (places = places.filter((other) => other !== name))}
@@ -77,7 +80,9 @@
 	</ul>
 
 	<form class="wfd-places__add" onsubmit={addTyped}>
-		<input type="text" aria-label="A new place" placeholder="A new place" bind:value={added} />
+		<Field kind="new">
+			<input type="text" aria-label="A new place" placeholder="A new place" bind:value={added} />
+		</Field>
 		<Button type="submit" disabled={!added.trim()}>Add</Button>
 	</form>
 
@@ -109,13 +114,13 @@
 <style>
 	.wfd-places__note {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-places {
 		display: grid;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -125,25 +130,17 @@
 	.wfd-places__add {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 8px;
-
-		& input {
-			inline-size: 100%;
-		}
-	}
-
-	.wfd-places__add input {
-		border-style: dashed;
+		gap: var(--wfd-space-group);
 	}
 
 	.wfd-places__more {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 4px 8px;
+		gap: var(--wfd-space-tight) var(--wfd-space-group);
 	}
 
 	.wfd-places__new {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 	}
 </style>

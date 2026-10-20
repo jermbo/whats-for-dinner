@@ -8,7 +8,9 @@
 	import type { Stock } from '../../pantry/types';
 	import { entryOf, refusal } from '../../pantry/unit-list';
 	import Button from '../parts/Button.svelte';
+	import Field from '../parts/Field.svelte';
 	import BrandFields from './BrandFields.svelte';
+	import Panel from '../parts/Panel.svelte';
 
 	type Props = {
 		title: string;
@@ -113,228 +115,204 @@
 	}
 </script>
 
-<form class="wfd-editor" onsubmit={save}>
-	<div class="wfd-editor__top">
-		<h3 class="wfd-editor__title wfd-display">{title}</h3>
-		<Button kind="link" onclick={oncancel}>Cancel</Button>
-	</div>
-
-	{#if names}
-		<label class="wfd-editor__field">
-			<span class="wfd-label">Name</span>
-			<!-- svelte-ignore a11y_autofocus -->
-			<input type="text" list="{uid}-names" autofocus bind:value={name} />
-			<datalist id="{uid}-names">
-				{#each names as option}
-					<option value={option}></option>
-				{/each}
-			</datalist>
-		</label>
-	{/if}
-
-	<fieldset class="wfd-editor__field">
-		<legend class="wfd-label">Where</legend>
-		<div class="wfd-editor__options">
-			{#each places as option}
-				<button
-					class="wfd-editor__option"
-					class:wfd-editor__option--on={!newPlace.trim() && place === option}
-					type="button"
-					aria-pressed={!newPlace.trim() && place === option}
-					onclick={() => ((place = option), (newPlace = ''))}
-				>
-					{option}
-				</button>
-			{/each}
-			<input
-				class="wfd-editor__new"
-				type="text"
-				aria-label="A new place"
-				placeholder="A new place"
-				bind:value={newPlace}
-			/>
+<Panel kind="form">
+	<form class="wfd-editor" onsubmit={save}>
+		<div class="wfd-editor__top">
+			<h3 class="wfd-editor__title wfd-display">{title}</h3>
+			<Button kind="link" onclick={oncancel}>Cancel</Button>
 		</div>
-	</fieldset>
 
-	<div class="wfd-editor__pair">
-		<label class="wfd-editor__field">
-			<span class="wfd-label">How much</span>
-			<input
-				type="text"
-				placeholder="1/2 gal"
-				aria-invalid={tried && entries.amount === null}
-				bind:value={amount}
-			/>
-		</label>
-		<label class="wfd-editor__field">
-			<span class="wfd-label">Package size</span>
-			<input
-				type="text"
-				placeholder={amount || '1 gal'}
-				aria-invalid={tried && entries.size === null}
-				bind:value={size}
-			/>
-		</label>
-		<label class="wfd-editor__field">
-			<span class="wfd-label">Use by</span>
-			<input type="date" bind:value={useBy} />
-		</label>
-	</div>
-	{#if tried && refused}
-		<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal}</p>
-	{/if}
+		{#if names}
+			<Field label="Name">
+				<!-- svelte-ignore a11y_autofocus -->
+				<input type="text" list="{uid}-names" autofocus bind:value={name} />
+				<datalist id="{uid}-names">
+					{#each names as option}
+						<option value={option}></option>
+					{/each}
+				</datalist>
+			</Field>
+		{/if}
 
-	{#if staple !== undefined}
-		<!--
-			How often you buy the food. The plugin asks about each food item that is low, and about a staple
-			when its time is over. "Never ask" is for food that you bought for one recipe.
-		-->
 		<fieldset class="wfd-editor__field">
-			<legend class="wfd-label">Staple</legend>
+			<legend class="wfd-label">Where</legend>
 			<div class="wfd-editor__options">
-				{#each kinds as option (option.label)}
+				{#each places as option}
 					<button
 						class="wfd-editor__option"
-						class:wfd-editor__option--on={kind === option.value}
+						class:wfd-editor__option--on={!newPlace.trim() && place === option}
 						type="button"
-						aria-pressed={kind === option.value}
-						onclick={() => (kind = option.value)}
+						aria-pressed={!newPlace.trim() && place === option}
+						onclick={() => ((place = option), (newPlace = ''))}
 					>
-						{option.label}
+						{option}
 					</button>
 				{/each}
+				<div class="wfd-editor__new">
+					<Field kind="new">
+						<input type="text" aria-label="A new place" placeholder="A new place" bind:value={newPlace} />
+					</Field>
+				</div>
 			</div>
 		</fieldset>
-	{/if}
 
-	<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />
-
-	{#if facts.length}
-		<p class="wfd-editor__facts">{facts.join(' · ')}</p>
-	{/if}
-
-	<div class="wfd-editor__actions">
-		{#if onusedup}
-			<Button onclick={onusedup}>Used up</Button>
+		<div class="wfd-editor__pair">
+			<Field label="How much">
+				<input
+					type="text"
+					placeholder="1/2 gal"
+					aria-invalid={tried && entries.amount === null}
+					bind:value={amount}
+				/>
+			</Field>
+			<Field label="Package size">
+				<input
+					type="text"
+					placeholder={amount || '1 gal'}
+					aria-invalid={tried && entries.size === null}
+					bind:value={size}
+				/>
+			</Field>
+			<Field label="Use by">
+				<input type="date" bind:value={useBy} />
+			</Field>
+		</div>
+		{#if tried && refused}
+			<p class="wfd-editor__refused" role="alert" transition:slide={{ duration }}>{refusal}</p>
 		{/if}
-		<Button kind="main" type="submit" disabled={!ready}>Save</Button>
-	</div>
-	{#if onopen}
-		<Button kind="link" onclick={onopen}>Open note</Button>
-	{/if}
-</form>
+
+		{#if staple !== undefined}
+			<!--
+				How often you buy the food. The plugin asks about each food item that is low, and about a staple
+				when its time is over. "Never ask" is for food that you bought for one recipe.
+			-->
+			<fieldset class="wfd-editor__field">
+				<legend class="wfd-label">Staple</legend>
+				<div class="wfd-editor__options">
+					{#each kinds as option (option.label)}
+						<button
+							class="wfd-editor__option"
+							class:wfd-editor__option--on={kind === option.value}
+							type="button"
+							aria-pressed={kind === option.value}
+							onclick={() => (kind = option.value)}
+						>
+							{option.label}
+						</button>
+					{/each}
+				</div>
+			</fieldset>
+		{/if}
+
+		<BrandFields {brands} bind:drafts {urlOf} of={names ? name || title : title} />
+
+		{#if facts.length}
+			<p class="wfd-editor__facts">{facts.join(' · ')}</p>
+		{/if}
+
+		<div class="wfd-editor__actions">
+			{#if onusedup}
+				<Button onclick={onusedup}>Used up</Button>
+			{/if}
+			<Button kind="main" type="submit" disabled={!ready}>Save</Button>
+		</div>
+		{#if onopen}
+			<Button kind="link" onclick={onopen}>Open note</Button>
+		{/if}
+	</form>
+</Panel>
 
 <style>
 	.wfd-editor__refused {
 		margin: 0;
-		color: var(--wfd-tomato);
-		font-size: 14px;
-	}
-
-	.wfd-editor__field input[aria-invalid='true'] {
-		border-color: var(--wfd-tomato);
+		color: var(--wfd-color-danger);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-editor {
 		display: grid;
-		gap: 14px;
-		padding: 16px;
-		border: 2px solid var(--wfd-ink);
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
+		gap: var(--wfd-space-section);
 	}
 
 	.wfd-editor__top {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		justify-content: space-between;
-		border-block-end: 2px solid var(--wfd-ink);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 	}
 
 	.wfd-editor__title {
 		margin: 0;
-		color: var(--wfd-ink);
-		font-size: 22px;
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-editor__field {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-editor__field :global(input) {
-		inline-size: 100%;
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-editor__options {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 	}
 
 	button.wfd-editor__option {
 		block-size: auto;
-		min-block-size: 50px;
-		padding: 0 16px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-editor__option--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 
-	.wfd-editor__options :global(input.wfd-editor__new) {
+	.wfd-editor__new {
 		flex: 1 1 10rem;
-		inline-size: auto;
-		border-style: dashed;
 	}
 
 	.wfd-editor__pair {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-editor__facts {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-editor__actions {
 		display: grid;
 		grid-auto-columns: 1fr;
 		grid-auto-flow: column;
-		gap: 12px;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-editor__option {
-			transition: none;
-		}
+		gap: var(--wfd-space-stack);
 	}
 </style>

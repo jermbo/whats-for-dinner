@@ -28,12 +28,12 @@
 	.wfd-on-list {
 		display: flex;
 		justify-content: end;
-		min-block-size: 50px;
+		min-block-size: var(--wfd-control);
 		align-items: center;
-		padding-block-start: 8px;
+		padding-block-start: var(--wfd-space-group);
 	}
 
 	.wfd-on-list__fact {
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 </style>

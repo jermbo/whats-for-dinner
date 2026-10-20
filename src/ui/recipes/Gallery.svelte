@@ -5,6 +5,7 @@
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { RecipeEntry } from '../../recipes/types';
+	import Button from '../parts/Button.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
@@ -68,7 +69,7 @@
 	<header class="wfd-gallery__bar">
 		<p class="wfd-gallery__title wfd-label">{entry.recipe.title}</p>
 		<span class="wfd-gallery__count wfd-number">{at + 1}/{records.length}</span>
-		<button class="wfd-gallery__close" type="button" onclick={onclose}>Close</button>
+		<Button kind="link" onclick={onclose}>Close</Button>
 	</header>
 
 	{#if record}
@@ -120,22 +121,23 @@
 	.wfd-gallery {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		block-size: 100%;
-		padding: 12px 12px max(var(--safe-area-inset-bottom, 0px), 12px);
+		padding: var(--wfd-space-page) var(--wfd-space-page)
+			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page));
 		overflow: hidden;
-		background: var(--wfd-frame);
-		color: #eceae2;
+		background: var(--wfd-color-frame);
+		color: var(--wfd-color-on-frame);
 	}
 
 	:global(.view-content.wfd:has(> .wfd-gallery)) {
-		background: var(--wfd-frame);
+		background: var(--wfd-color-frame);
 	}
 
 	.wfd-gallery__bar {
 		display: flex;
 		flex: none;
-		gap: 16px;
+		gap: var(--wfd-space-section);
 		align-items: center;
 	}
 
@@ -148,29 +150,11 @@
 		white-space: nowrap;
 	}
 
-	button.wfd-gallery__close {
-		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 4px;
-		border: 0;
-		background: none;
-		box-shadow: none;
-		color: #eceae2;
-		font-family: inherit;
-		font-size: 15px;
-		font-weight: 700;
-		cursor: pointer;
-
-		&:focus-visible {
-			outline: 2px solid currentcolor;
-		}
-	}
-
 	.wfd-gallery__record {
 		display: grid;
 		flex: 1;
 		grid-template-rows: minmax(0, 1fr) auto;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		min-block-size: 0;
 		margin: 0;
 		touch-action: pan-y;
@@ -192,25 +176,25 @@
 
 	.wfd-gallery__caption {
 		display: grid;
-		gap: 4px;
-		padding-inline: 4px;
+		gap: var(--wfd-space-tight);
+		padding-inline: var(--wfd-space-tight);
 	}
 
 	.wfd-gallery__date {
-		font-size: 28px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-gallery__stars {
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 		letter-spacing: 1px;
 	}
 
 	.wfd-gallery__no-star {
-		color: #4a463f;
+		color: var(--wfd-color-frame-muted);
 	}
 
 	.wfd-gallery__note {
-		font-size: 17px;
-		line-height: 1.4;
+		font-size: var(--wfd-font-size-text);
+		line-height: var(--wfd-line-height-text);
 	}
 </style>

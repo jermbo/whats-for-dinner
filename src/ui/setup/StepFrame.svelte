@@ -45,6 +45,6 @@
 <style>
 	.wfd-step {
 		display: grid;
-		gap: 16px;
+		gap: var(--wfd-space-section);
 	}
 </style>

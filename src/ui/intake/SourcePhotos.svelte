@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import Button from '../parts/Button.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = {
@@ -46,21 +47,13 @@
 				{@const src = keptUrlOf(name.split('|')[0])}
 				<li class="wfd-sources__photo" transition:fade={{ duration }}>
 					{#if src}<img {src} alt={name} />{/if}
-					<button
-						class="wfd-sources__remove"
-						type="button"
-						onclick={() => (kept = kept.filter((one) => one !== name))}
-					>
-						Remove
-					</button>
+					<Button kind="link" onclick={() => (kept = kept.filter((one) => one !== name))}>Remove</Button>
 				</li>
 			{/each}
 			{#each photos as photo, at (photo)}
 				<li class="wfd-sources__photo" transition:fade={{ duration }} onoutroend={() => free(photo)}>
 					<img src={urlOf(photo)} alt="New source photo {at + 1}" />
-					<button class="wfd-sources__remove" type="button" onclick={() => remove(photo)}>
-						Remove
-					</button>
+					<Button kind="link" onclick={() => remove(photo)}>Remove</Button>
 				</li>
 			{/each}
 		</ul>
@@ -82,14 +75,14 @@
 <style>
 	.wfd-sources {
 		display: grid;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		justify-items: start;
 	}
 
 	.wfd-sources__list {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -97,7 +90,7 @@
 
 	.wfd-sources__photo {
 		display: grid;
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 		justify-items: center;
 
 		& img {
@@ -108,37 +101,22 @@
 		}
 	}
 
-	button.wfd-sources__remove {
-		block-size: auto;
-		min-block-size: 36px;
-		padding: 0 8px;
-		border: 0;
-		background: none;
-		box-shadow: none;
-		color: var(--wfd-ink-2);
-		font-family: inherit;
-		font-size: 14px;
-		font-weight: 700;
-		text-decoration: underline;
-		cursor: pointer;
-	}
-
 	/* The label is the button. The file field of the browser is hidden, but a screen reader has it. */
 	.wfd-sources__take {
 		position: relative;
 		display: inline-flex;
 		align-items: center;
-		min-block-size: 50px;
-		padding: 0 20px;
-		border: 2px solid var(--wfd-ink);
+		min-block-size: var(--wfd-control);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
-		color: var(--wfd-ink);
+		background: var(--wfd-color-control);
+		color: var(--wfd-color-text);
 		font-weight: 700;
 		cursor: pointer;
 
 		&:focus-within {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}

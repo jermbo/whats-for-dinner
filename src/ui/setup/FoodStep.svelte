@@ -8,6 +8,7 @@
 	import { entryOf, refusal } from '../../pantry/unit-list';
 	import { STAPLES } from '../../setup/starts';
 	import Button from '../parts/Button.svelte';
+	import Field from '../parts/Field.svelte';
 	import StockEditor from '../pantry/StockEditor.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 	import StepFrame from './StepFrame.svelte';
@@ -63,16 +64,18 @@
 					<span class="wfd-display">{name}</span>
 				</button>
 				{#if on}
-					<input
-						class="wfd-food__amount"
-						type="text"
-						aria-label="How much {name}"
-						placeholder="No amount"
-						aria-invalid={isRefused(picked.get(name) ?? '')}
-						value={picked.get(name)}
-						oninput={(event) => picked.set(name, event.currentTarget.value)}
-						transition:slide={{ axis: 'x', duration }}
-					/>
+					<div class="wfd-food__amount" transition:slide={{ axis: 'x', duration }}>
+						<Field>
+							<input
+								type="text"
+								aria-label="How much {name}"
+								placeholder="No amount"
+								aria-invalid={isRefused(picked.get(name) ?? '')}
+								value={picked.get(name)}
+								oninput={(event) => picked.set(name, event.currentTarget.value)}
+							/>
+						</Field>
+					</div>
 				{/if}
 			</li>
 		{/each}
@@ -106,24 +109,20 @@
 <style>
 	.wfd-food__refused {
 		margin: 0;
-		color: var(--wfd-tomato);
-		font-size: 14px;
-	}
-
-	.wfd-food__row :global(input.wfd-food__amount[aria-invalid='true']) {
-		border-color: var(--wfd-tomato);
+		color: var(--wfd-color-danger);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-food__note {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-food {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -131,39 +130,39 @@
 
 	.wfd-food__row {
 		display: flex;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
-		min-block-size: 50px;
-		padding-inline-end: 6px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control);
+		padding-inline-end: var(--wfd-space-tight);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
-		transition: border-color 0.15s ease-out;
+		background: var(--wfd-color-surface);
+		transition: border-color var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-food__row--on {
-		border-color: var(--wfd-ink);
+		border-color: var(--wfd-color-border);
 	}
 
 	button.wfd-food__staple {
 		display: flex;
 		flex: 1 1 auto;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		block-size: auto;
-		min-block-size: 46px;
-		padding: 0 10px;
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
 		border: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 17px;
+		font-size: var(--wfd-font-size-text);
 		text-align: start;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -2px;
 		}
 	}
@@ -175,29 +174,19 @@
 		place-items: center;
 		inline-size: 24px;
 		block-size: 24px;
-		border: 2px solid var(--wfd-ink);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-sticker);
-		color: var(--wfd-on-ink);
-		font-size: 14px;
-		transition: background-color 0.15s ease-out;
+		color: var(--wfd-color-on-selected);
+		font-size: var(--wfd-font-size-small);
+		transition: background-color var(--wfd-chip-motion);
 	}
 
 	.wfd-food__row--on .wfd-food__tick {
-		background: var(--wfd-ink);
+		background: var(--wfd-color-selected);
 	}
 
-	.wfd-food__row :global(input.wfd-food__amount) {
+	.wfd-food__amount {
 		flex: 0 1 7.5rem;
 		min-inline-size: 0;
-		min-block-size: 40px;
-		padding: 0 10px;
-		font-size: 16px;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-food__row,
-		.wfd-food__tick {
-			transition: none;
-		}
 	}
 </style>

@@ -13,6 +13,7 @@
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import ListLine from '../parts/ListLine.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 
 	type Props = {
@@ -106,23 +107,21 @@
 				{#each group.lines as { food, reason } (food.path)}
 					{@const facts = factsOf(food)}
 					<li class="wfd-suggest__line" transition:slide={{ duration }}>
-						<span class="wfd-suggest__text">
-							<span class="wfd-suggest__top">
-								<span class="wfd-suggest__name">{food.item.name}</span>
+						<ListLine name={food.item.name} small={facts.join(' · ') || undefined}>
+							{#snippet tag()}
 								<Sticker label={showReason(reason)} kind={stickerOf(reason)} />
-							</span>
-							{#if facts.length}
-								<span class="wfd-suggest__facts">{facts.join(' · ')}</span>
-							{/if}
-						</span>
-						<Button
-							kind="link"
-							aria-label="Skip {food.item.name}"
-							onclick={() => skip(food.path, food.item.name)}
-						>
-							Skip
-						</Button>
-						<Button aria-label="Add {food.item.name}" onclick={() => add(food.path)}>Add</Button>
+							{/snippet}
+							{#snippet control()}
+								<Button
+									kind="link"
+									aria-label="Skip {food.item.name}"
+									onclick={() => skip(food.path, food.item.name)}
+								>
+									Skip
+								</Button>
+								<Button aria-label="Add {food.item.name}" onclick={() => add(food.path)}>Add</Button>
+							{/snippet}
+						</ListLine>
 					</li>
 				{/each}
 			</ul>
@@ -146,56 +145,33 @@
 
 	.wfd-suggest__line {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto auto;
-		gap: 14px;
+		grid-template-columns: minmax(0, 1fr);
 		align-items: center;
 		min-block-size: 64px;
-		padding-block: 8px;
-		border-block-end: 1px solid var(--wfd-line);
-	}
-
-	.wfd-suggest__text {
-		display: grid;
-		gap: 3px;
-	}
-
-	.wfd-suggest__top {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 10px;
-		align-items: center;
-	}
-
-	.wfd-suggest__name {
-		font-size: 18px;
-		font-weight: 600;
+		padding-block: var(--wfd-space-group);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 	}
 
 	.wfd-suggest__none {
 		margin: 0;
-		color: var(--wfd-ink-2);
-	}
-
-	.wfd-suggest__facts {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* The note of a skip is a quiet card, so that it does not look like one more suggestion. */
 	.wfd-suggest__skipped {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 0 16px;
+		gap: 0 var(--wfd-space-section);
 		align-items: center;
 		margin: 0;
-		padding: 2px 14px;
+		padding: var(--wfd-space-tight) var(--wfd-space-inset);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-color-surface);
 	}
 
 	.wfd-suggest__skipped-text {
 		flex: 1 1 12rem;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		font-weight: 600;
 	}
 </style>

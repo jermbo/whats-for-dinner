@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { addDays } from '../../dates';
+	import Field from '../parts/Field.svelte';
 
 	type Props = {
 		// The use-by date as year-month-day, or no text.
@@ -34,13 +35,16 @@
 				{option.label}
 			</button>
 		{/each}
-		<input
-			class="wfd-use-by__date"
-			type="date"
-			aria-label="Use-by date"
-			{value}
-			oninput={(event) => onchange(event.currentTarget.value)}
-		/>
+		<div class="wfd-use-by__date">
+			<Field>
+				<input
+					type="date"
+					aria-label="Use-by date"
+					{value}
+					oninput={(event) => onchange(event.currentTarget.value)}
+				/>
+			</Field>
+		</div>
 	</div>
 </fieldset>
 
@@ -50,60 +54,52 @@
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* A legend is not a child of a grid, so it has its own space below it. */
 	.wfd-use-by legend {
-		margin-block-end: 6px;
+		margin-block-end: var(--wfd-space-group);
 		padding: 0;
 	}
 
 	.wfd-use-by__options {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 	}
 
 	button.wfd-use-by__option {
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 14px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-use-by__option--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 
-	.wfd-use-by__options :global(input.wfd-use-by__date) {
+	.wfd-use-by__date {
 		flex: 1 1 9rem;
-		min-block-size: 44px;
-		inline-size: auto;
 		min-inline-size: 0;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-use-by__option {
-			transition: none;
-		}
 	}
 </style>

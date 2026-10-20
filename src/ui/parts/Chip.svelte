@@ -20,7 +20,7 @@
 <style>
 	button.wfd-chip {
 		flex: none;
-		block-size: 44px;
+		block-size: var(--wfd-control-min);
 		padding: 0;
 		border: 0;
 		background: none;
@@ -29,38 +29,32 @@
 		cursor: pointer;
 
 		&:focus-visible .wfd-chip__face {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	.wfd-chip__face {
 		display: flex;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		align-items: center;
 		block-size: 32px;
-		padding: 0 12px;
-		border: 2px solid var(--wfd-line);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
-		color: var(--wfd-ink);
-		font-size: 14px;
+		background: var(--wfd-color-control);
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 		white-space: nowrap;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 	}
 
 	.wfd-chip__face--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-chip__face {
-			transition: none;
-		}
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 </style>

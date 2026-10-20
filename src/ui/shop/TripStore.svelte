@@ -49,14 +49,14 @@
 <style>
 	.wfd-trip-store {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		justify-content: space-between;
 	}
 
 	.wfd-trip-store__name {
 		display: flex;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-items: baseline;
 		font-weight: 700;
 	}

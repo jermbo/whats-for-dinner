@@ -58,37 +58,37 @@
 	.wfd-extras {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	button.wfd-extras__meals {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		justify-content: space-between;
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 50px;
-		padding: 8px 14px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control);
+		padding: var(--wfd-space-group) var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-color-surface);
 		box-shadow: none;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
 
 		& strong {
-			color: var(--wfd-ink);
+			color: var(--wfd-color-text);
 			font-weight: 700;
 		}
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
+	import Panel from '../parts/Panel.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 
 	type Props = {
@@ -21,31 +22,30 @@
 
 <!-- One place of the pantry. Its head tells what needs you before you read its lines. -->
 <section class="wfd-bin" class:wfd-bin--out={out} style:--at={at} aria-labelledby={headId}>
-	<header class="wfd-bin__head">
-		<h3 class="wfd-bin__title wfd-display" id={headId}>{title}</h3>
-		<span class="wfd-bin__count wfd-number">{count}</span>
-		<span class="wfd-bin__stickers">
-			{#if past}<Sticker label="{past} past" kind="tomato" />{/if}
-			{#if soon}<Sticker label="{soon} soon" />{/if}
-			{#if low}<Sticker label="{low} low" kind="amber" />{/if}
-		</span>
-	</header>
-	<div class="wfd-bin__lines">{@render children()}</div>
+	<Panel kind={out ? 'empty' : 'surface'}>
+		<header class="wfd-bin__head">
+			<h3 class="wfd-bin__title wfd-display" id={headId}>{title}</h3>
+			<span class="wfd-bin__count wfd-number">{count}</span>
+			<span class="wfd-bin__stickers">
+				{#if past}<Sticker label="{past} past" kind="tomato" />{/if}
+				{#if soon}<Sticker label="{soon} soon" />{/if}
+				{#if low}<Sticker label="{low} low" kind="amber" />{/if}
+			</span>
+		</header>
+		<div class="wfd-bin__lines">{@render children()}</div>
+	</Panel>
 </section>
 
 <style>
 	/* The card holds the group, so the rules between its lines are soft, and the bars are thin. */
 	.wfd-bin {
-		--wfd-row-rule: var(--wfd-track);
+		--wfd-row-rule: var(--wfd-color-track);
 		--wfd-pbar-size: 6px;
 
 		break-inside: avoid;
-		margin-block-end: 16px;
-		padding: 16px 18px 8px;
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
-		animation: wfd-bin-in 0.35s ease-out backwards;
-		animation-delay: calc(var(--at) * 60ms);
+		margin-block-end: var(--wfd-space-section);
+		animation: wfd-bin-in var(--wfd-row-motion) backwards;
+		animation-delay: calc(var(--at) * var(--wfd-motion-press) / 2);
 	}
 
 	@keyframes wfd-bin-in {
@@ -58,25 +58,25 @@
 	.wfd-bin__head {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px 10px;
+		gap: var(--wfd-space-group) var(--wfd-space-stack);
 		align-items: center;
-		padding-block-end: 10px;
-		border-block-end: 2px solid var(--wfd-ink);
+		padding-block-end: var(--wfd-space-inset);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 	}
 
 	.wfd-bin__title {
 		margin: 0;
-		font-size: 22px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-bin__count {
-		color: var(--wfd-ink-3);
-		font-size: 22px;
+		color: var(--wfd-color-text-faint);
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-bin__stickers {
 		display: flex;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		margin-inline-start: auto;
 	}
 
@@ -86,32 +86,22 @@
 
 	/* An open card sits on the paper, so that it stands out of the bin. */
 	.wfd-bin__lines :global(.wfd-pantry__open) {
-		margin-inline: -10px;
-		padding: 10px;
+		margin-inline: calc(-1 * var(--wfd-space-inset));
+		padding: var(--wfd-space-inset);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-paper);
+		background: var(--wfd-color-bg);
 	}
 
 	/* Food that is out has no amount and no bar, so it is a set of tags with no card. */
-	.wfd-bin--out {
-		border: 2px dashed var(--wfd-ink-3);
-		background: none;
-	}
 
 	.wfd-bin--out .wfd-bin__lines {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
-		padding-block: 12px 8px;
+		gap: var(--wfd-space-group);
+		padding-block: var(--wfd-space-inset) var(--wfd-space-group);
 	}
 
 	.wfd-bin--out .wfd-bin__lines :global(.wfd-pantry__open) {
 		flex-basis: 100%;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-bin {
-			animation: none;
-		}
 	}
 </style>

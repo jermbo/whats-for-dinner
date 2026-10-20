@@ -24,6 +24,7 @@
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import ListLine from '../parts/ListLine.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import AddToCart from './AddToCart.svelte';
 	import CartLine from './CartLine.svelte';
@@ -271,26 +272,23 @@
 									aria-pressed={ticked.has(row.key)}
 									onclick={() => tick(row.key)}
 								>
-									<span
-										class="wfd-shop__box"
-										class:wfd-shop__box--ticked={ticked.has(row.key)}
-										aria-hidden="true">✓</span
+									<ListLine
+										name={row.name}
+										small={row.recipes.join(', ') || undefined}
+										number={row.amount}
+										numberSmall={priceOf(row) !== null ? showPrice(kitchen.regularOf(row.key)) : undefined}
 									>
-									<span class="wfd-shop__text">
-										<span class="wfd-shop__top">
-											<span class="wfd-shop__name">{row.name}</span>
+										{#snippet mark()}
+											<span
+												class="wfd-shop__box"
+												class:wfd-shop__box--ticked={ticked.has(row.key)}
+												aria-hidden="true">✓</span
+											>
+										{/snippet}
+										{#snippet tag()}
 											{#if row.extra}<Sticker label="Extra" />{/if}
-										</span>
-										{#if row.recipes.length}
-											<span class="wfd-shop__note">{row.recipes.join(', ')}</span>
-										{/if}
-									</span>
-									<span class="wfd-shop__cost">
-										<span class="wfd-shop__amount wfd-number">{row.amount}</span>
-										{#if priceOf(row) !== null}
-											<span class="wfd-shop__price">{showPrice(kitchen.regularOf(row.key))}</span>
-										{/if}
-									</span>
+										{/snippet}
+									</ListLine>
 								</button>
 								{#if row.extra}
 									<Button
@@ -378,34 +376,36 @@
 	.wfd-shop {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 	}
 
 	.wfd-shop__pieces {
 		display: flex;
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 	}
 
 	.wfd-shop__piece {
 		flex: 1;
 		block-size: 8px;
-		background: var(--wfd-track);
-		transition: background-color 0.2s ease-out;
+		background: var(--wfd-color-track);
+		transition: background-color var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-shop__piece--done {
-		background: var(--wfd-ink);
+		background: var(--wfd-color-selected);
 	}
 
 	.wfd-shop__empty {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-shop__list {
+		--box-size: 26px;
+
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-		gap: 0 32px;
+		gap: 0 var(--wfd-space-section);
 		margin: 0;
 		padding: 0;
 		list-style: none;
@@ -415,32 +415,31 @@
 	.wfd-shop__item {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 14px;
+		gap: var(--wfd-space-section);
 		align-items: center;
-		border-block-end: 1px solid var(--wfd-line);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 	}
 
 	button.wfd-shop__row {
 		display: grid;
-		grid-template-columns: auto 1fr auto;
-		gap: 12px;
+		grid-template-columns: minmax(0, 1fr);
 		align-items: center;
 		inline-size: 100%;
 		block-size: auto;
 		min-block-size: 64px;
-		padding: 10px 0;
+		padding: var(--wfd-space-inset) 0;
 		border: 0;
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -3px;
 		}
 	}
@@ -449,28 +448,28 @@
 	.wfd-shop__box {
 		display: grid;
 		place-items: center;
-		inline-size: 26px;
-		block-size: 26px;
-		border: 2px solid var(--wfd-ink);
+		inline-size: var(--box-size);
+		block-size: var(--box-size);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-sticker);
 		color: transparent;
-		font-size: 15px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 800;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out,
-			scale 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion),
+			scale var(--wfd-chip-motion);
 	}
 
 	.wfd-shop__box--ticked {
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 		scale: 1.1;
 	}
 
 	.wfd-shop__none {
 		display: grid;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		justify-items: start;
 	}
 
@@ -483,68 +482,19 @@
 	/* The photos are below the text of the row, in line with the name. */
 	.wfd-shop__brands {
 		grid-column: 1 / -1;
-		padding: 0 0 12px 38px;
-	}
-
-	.wfd-shop__text {
-		display: grid;
-		gap: 3px;
-	}
-
-	.wfd-shop__top {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 4px 10px;
-		align-items: center;
-	}
-
-	.wfd-shop__name {
-		font-size: 18px;
-		font-weight: 600;
-	}
-
-	.wfd-shop__name::first-letter {
-		text-transform: uppercase;
-	}
-
-	.wfd-shop__note {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
-	}
-
-	.wfd-shop__cost {
-		display: grid;
-		justify-items: end;
-		gap: 2px;
-	}
-
-	.wfd-shop__amount {
-		font-size: 18px;
-	}
-
-	.wfd-shop__price {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
-		font-variant-numeric: tabular-nums;
+		padding: 0 0 var(--wfd-space-inset) calc(var(--box-size) + var(--wfd-space-stack));
 	}
 
 	.wfd-shop__totals {
 		margin: 0;
-		color: var(--wfd-ink-2);
-		font-size: 14px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 		text-align: end;
 
 		& strong {
-			color: var(--wfd-ink);
-			font-size: 16px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-shop__piece,
-		.wfd-shop__box {
-			transition: none;
+			color: var(--wfd-color-text);
+			font-size: var(--wfd-font-size-text);
 		}
 	}
 </style>

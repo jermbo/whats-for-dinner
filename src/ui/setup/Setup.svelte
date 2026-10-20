@@ -35,6 +35,7 @@
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
 		max-inline-size: 40rem;
-		padding: 12px 14px max(var(--safe-area-inset-bottom, 0px), 40px);
+		padding: var(--wfd-space-page) var(--wfd-space-page)
+			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-section));
 	}
 </style>

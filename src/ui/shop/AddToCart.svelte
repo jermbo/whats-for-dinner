@@ -42,12 +42,12 @@
 	.wfd-take {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 4px;
+		gap: var(--wfd-space-tight);
 	}
 
 	.wfd-take__note {
 		margin: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-take__list {
@@ -61,14 +61,14 @@
 	.wfd-take__line {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: 14px;
+		gap: var(--wfd-space-section);
 		align-items: center;
 		min-block-size: 60px;
-		border-block-end: 1px dashed var(--wfd-ink-3);
+		border-block-end: var(--wfd-border-thin) dashed var(--wfd-color-text-faint);
 	}
 
 	.wfd-take__name {
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 		font-weight: 600;
 	}
 
@@ -77,6 +77,6 @@
 	}
 
 	.wfd-take__name--new {
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 </style>

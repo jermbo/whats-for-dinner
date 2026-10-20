@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Field from './Field.svelte';
 	type Props = {
 		legend: string;
 		options: string[];
@@ -48,15 +49,18 @@
 			</button>
 		{/each}
 		{#if other}
-			<input
-				class="wfd-pick__other"
-				type="text"
-				autocomplete="off"
-				aria-label={other}
-				placeholder={other}
-				value={text}
-				oninput={(event) => type(event.currentTarget.value)}
-			/>
+			<div class="wfd-pick__other">
+				<Field kind="new">
+					<input
+						type="text"
+						autocomplete="off"
+						aria-label={other}
+						placeholder={other}
+						value={text}
+						oninput={(event) => type(event.currentTarget.value)}
+					/>
+				</Field>
+			</div>
 		{/if}
 	</div>
 </fieldset>
@@ -67,62 +71,52 @@
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	/* A legend is not a child of a grid, so it has its own space below it. */
 	.wfd-pick legend {
-		margin-block-end: 6px;
+		margin-block-end: var(--wfd-space-group);
 		padding: 0;
 	}
 
 	.wfd-pick__options {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 	}
 
 	button.wfd-pick__option {
 		block-size: auto;
-		min-block-size: 44px;
-		padding: 0 14px;
-		border: 2px solid var(--wfd-line);
+		min-block-size: var(--wfd-control-min);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 600;
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			color 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			color var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
 
 	button.wfd-pick__option--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 
-	/* The field has a dashed edge: it is the place for an option that is not there yet. */
-	.wfd-pick__options :global(input.wfd-pick__other) {
+	.wfd-pick__other {
 		flex: 1 1 9rem;
-		min-block-size: 44px;
-		inline-size: auto;
 		min-inline-size: 0;
-		border-style: dashed;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-pick__option {
-			transition: none;
-		}
 	}
 </style>

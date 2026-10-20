@@ -10,24 +10,24 @@
 <style>
 	button.wfd-tag {
 		block-size: auto;
-		min-block-size: 40px;
-		padding: 6px 14px;
-		border: 2px dashed var(--wfd-ink-3);
-		border-radius: 999px;
+		min-block-size: var(--wfd-control-min);
+		padding: var(--wfd-space-tight) var(--wfd-space-inset);
+		border: var(--wfd-border) dashed var(--wfd-color-text-faint);
+		border-radius: var(--wfd-radius-sticker);
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 		font-family: inherit;
-		font-size: 16px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 500;
 		cursor: pointer;
 		transition:
-			border-color 0.15s ease-out,
-			color 0.15s ease-out,
-			scale 0.1s ease-out;
+			border-color var(--wfd-motion-change) var(--wfd-ease-out),
+			color var(--wfd-motion-change) var(--wfd-ease-out),
+			scale var(--wfd-button-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 
@@ -38,8 +38,8 @@
 
 	@media (hover: hover) {
 		button.wfd-tag:hover {
-			border-color: var(--wfd-ink);
-			color: var(--wfd-ink);
+			border-color: var(--wfd-color-border);
+			color: var(--wfd-color-text);
 		}
 	}
 

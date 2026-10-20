@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { optionsOf } from '../../cook/pick-food';
+	import { countMeal, stocksAfterMeal } from '../../cook/out-of-pantry';
 	import type { CookResult } from '../../kitchen/types';
 	import type { RecipeEntry } from '../../recipes/types';
-	import { showName } from '../../match/names';
-	import type { FoodNote } from '../../note';
-	import { takeOut } from '../../pantry/total';
-	import type { Stock } from '../../pantry/types';
-	import { showMeasure, type Measure } from '../../units';
+	import { showMeasure } from '../../units';
+	import Field from '../parts/Field.svelte';
 
 	type Props = {
 		// The button that sends this form is in the navigation of Cook Mode. It finds the form by this.
@@ -22,35 +19,8 @@
 
 	const uid = $props.id();
 
-	// An ingredient that the plugin can take out of the pantry: it has an amount, and one or more
-	// food items have an amount that compares.
-	type Counted = { name: string; need: Measure; options: FoodNote[]; first: FoodNote };
-
-	// Food that the pantry counts, but in an amount that compares with nothing, such as 1 onion
-	// against a bag of 1 kg. Water with the row "tap" has no amount, so it is never to check.
-	const isCounted = (food: FoodNote) => food.item.stocks.some((stock) => stock.amount?.factor);
-
 	// The pantry as it is when this page opens. A change of a note after that does not move the rows.
-	function count(): { counted: Counted[]; others: string[]; check: string[] } {
-		const counted: Counted[] = [];
-		const others: string[] = [];
-		const check: string[] = [];
-		for (const [at, match] of entry.match.ingredients.entries()) {
-			const { ingredient, food, need } = match;
-			const options = need ? optionsOf(match) : [];
-			if (need && options.length) {
-				const first =
-					options.find((option) => option.path === picked[at]) ??
-					options.find((option) => option.path === food?.path) ??
-					options[0];
-				counted.push({ name: showName(ingredient.name), need, options, first });
-			} else {
-				others.push(showName(ingredient.name));
-				if (need && food && isCounted(food)) check.push(food.path);
-			}
-		}
-		return { counted, others, check };
-	}
+	const count = () => countMeal(entry.match.ingredients, picked);
 	const { counted, others, check } = count();
 
 	// For each counted ingredient: if you used it. The food item is the one of "Get out".
@@ -63,14 +33,7 @@
 		event.preventDefault();
 		busy = true;
 
-		// Two ingredients can use the same food item, so each one starts with the rows that are left.
-		const stocks = new Map<string, Stock[]>();
-		counted.forEach((row, at) => {
-			if (!used[at]) return;
-			const food = row.first;
-			stocks.set(food.path, takeOut(stocks.get(food.path) ?? food.item.stocks, row.need));
-		});
-
+		const stocks = stocksAfterMeal(counted, used);
 		try {
 			await ondone({ stocks, check, rating, note, photo: photos?.[0] ?? null });
 		} finally {
@@ -121,10 +84,9 @@
 		</div>
 	</fieldset>
 
-	<label class="wfd-finish__part" for="{uid}-note">
-		<span class="wfd-label">Note for the next time</span>
+	<Field label="Note for the next time">
 		<textarea id="{uid}-note" rows="2" bind:value={note}></textarea>
-	</label>
+	</Field>
 
 	<label class="wfd-finish__part" for="{uid}-photo">
 		<span class="wfd-label">Photo</span>
@@ -143,90 +105,90 @@
 	.wfd-finish {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 22px;
+		gap: var(--wfd-space-section);
 	}
 
 	.wfd-finish__part {
 		display: grid;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
 		border: 0;
-		color: var(--wfd-ink-2);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-finish__legend {
 		inline-size: 100%;
-		margin-block-end: 4px;
-		padding: 0 0 6px;
-		border-block-end: 2px solid var(--wfd-ink);
-		color: var(--wfd-ink);
-		font-size: 20px;
+		margin-block-end: var(--wfd-space-tight);
+		padding: 0 0 var(--wfd-space-tight);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-finish__row {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 6px 12px;
+		gap: var(--wfd-space-group) var(--wfd-space-stack);
 		align-items: center;
 		min-block-size: 52px;
-		padding-block: 4px;
-		border-block-end: 1px solid var(--wfd-line);
-		color: var(--wfd-ink);
+		padding-block: var(--wfd-space-tight);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
+		color: var(--wfd-color-text);
 	}
 
 	.wfd-finish__used {
 		display: flex;
 		flex: 1 1 10rem;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
-		min-block-size: 44px;
+		min-block-size: var(--wfd-control-min);
 		cursor: pointer;
 	}
 
 	.wfd-finish__name {
-		font-size: 17px;
+		font-size: var(--wfd-font-size-text);
 		font-weight: 500;
 	}
 
 	.wfd-finish__food {
-		color: var(--wfd-ink-2);
-		font-size: 15px;
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-finish__amount {
-		font-size: 18px;
+		font-size: var(--wfd-font-size-name);
 	}
 
 	.wfd-finish__hint {
 		margin: 0;
-		font-size: 14px;
+		font-size: var(--wfd-font-size-small);
 	}
 
 	.wfd-finish__stars {
 		display: flex;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 	}
 
 	button.wfd-finish__star {
 		inline-size: 52px;
-		block-size: 52px;
+		block-size: var(--wfd-control);
 		padding: 0;
-		border: 2px solid var(--wfd-line);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-quiet);
+		background: var(--wfd-color-control);
 		box-shadow: none;
-		color: var(--wfd-ink-3);
-		font-size: 26px;
-		line-height: 1;
+		color: var(--wfd-color-text-faint);
+		font-size: var(--wfd-font-size-title);
+		line-height: var(--wfd-line-height-single);
 		cursor: pointer;
 		transition:
-			background-color 0.15s ease-out,
-			scale 0.15s ease-out;
+			background-color var(--wfd-chip-motion),
+			scale var(--wfd-chip-motion);
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 
@@ -236,24 +198,14 @@
 	}
 
 	button.wfd-finish__star--on {
-		border-color: var(--wfd-ink);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
-	}
-
-	.wfd-finish__part :global(textarea) {
-		inline-size: 100%;
+		border-color: var(--wfd-color-selected);
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
 	}
 
 	.wfd-finish__photo {
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
-		font-size: 15px;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		button.wfd-finish__star {
-			transition: none;
-		}
+		font-size: var(--wfd-font-size-small);
 	}
 </style>

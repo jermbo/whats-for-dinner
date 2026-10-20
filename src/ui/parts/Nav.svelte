@@ -44,9 +44,9 @@
 		margin: 0;
 		padding: 0;
 		overflow: hidden;
-		border: 2px solid var(--wfd-ink);
+		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-card);
+		background: var(--wfd-color-surface);
 
 		&::before {
 			content: '';
@@ -54,13 +54,13 @@
 			inset-block: 0;
 			inset-inline-start: 0;
 			inline-size: calc(100% / var(--count));
-			background: var(--wfd-ink);
+			background: var(--wfd-color-selected);
 			translate: calc(var(--at) * 100%) 0;
-			transition: translate 0.2s ease-out;
+			transition: translate var(--wfd-motion-change) var(--wfd-ease-out);
 		}
 
 		&:has(:focus-visible) {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
 	}
@@ -78,39 +78,28 @@
 	.wfd-nav__option {
 		position: relative;
 		display: flex;
-		gap: 6px;
+		gap: var(--wfd-space-group);
 		align-items: center;
 		justify-content: center;
-		min-block-size: 46px;
-		color: var(--wfd-ink);
+		min-block-size: var(--wfd-control-min);
+		color: var(--wfd-color-text);
 		cursor: pointer;
-		transition: color 0.2s ease-out;
+		transition: color var(--wfd-motion-change) var(--wfd-ease-out);
 
 		&:has(:checked) {
-			color: var(--wfd-on-ink);
+			color: var(--wfd-color-on-selected);
 		}
 	}
 
 	/* A count that changes makes a small jump, so that you see where your tap went. */
 	.wfd-nav__count {
-		font-size: 14px;
-		animation: jump 0.3s ease-out;
+		font-size: var(--wfd-font-size-small);
+		animation: jump var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	@keyframes jump {
 		40% {
 			translate: 0 -5px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-nav::before,
-		.wfd-nav__option {
-			transition: none;
-		}
-
-		.wfd-nav__count {
-			animation: none;
 		}
 	}
 </style>

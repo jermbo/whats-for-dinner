@@ -68,6 +68,10 @@ Before the first step, [Cook Mode](../architecture/cook-mode.md) lists what to g
 
 You tell the plugin which folder has your recipes and which folder is your pantry, so the other notes of your vault stay out of the kitchen. You also select the font, the accent colour, and the sound of the timer. The accent colour can come from your theme.
 
+## Each part has one look
+
+The name of an item has the same size in each list, and each action is the same button in each part. So you find the name and the number of an item at the same place, with a quick look. The text follows the zoom of Obsidian: when you make the text larger, the kitchen gets larger too. The [look](../architecture/look.md) follows the light and the dark scheme of Obsidian.
+
 ## Your recipes are notes that last
 
 A recipe is a plain [note](../architecture/notes-of-the-kitchen.md): a title, the ingredients, and the steps. Any text editor can open the file, with or without the plugin.

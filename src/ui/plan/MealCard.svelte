@@ -2,6 +2,7 @@
 	import type { Meal } from '../../plan/types';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
+	import Panel from '../parts/Panel.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import PrepNote from '../recipes/PrepNote.svelte';
 
@@ -21,81 +22,80 @@
 	const ready = $derived(!entry?.prep || prepDone);
 </script>
 
-<article class="wfd-meal">
-	<div class="wfd-meal__top">
-		<h3 class="wfd-meal__name wfd-display">{entry?.recipe.title ?? path}</h3>
-		{#if entry}
-			<Count have={entry.match.inPantry} of={entry.match.ingredients.length} />
-		{/if}
-	</div>
-	<div class="wfd-meal__facts">
-		{#if entry}
-			{@const toBuy = entry.match.ingredients.length - entry.match.inPantry}
-			{@const toCheck = entry.match.ingredients.filter((one) => one.status === 'unknown').length}
-			<span class="wfd-label">
-				{toBuy ? `${toBuy} to buy` : 'All in the pantry'}{toCheck ? ` · ${toCheck} to check` : ''}
-			</span>
-			{#if entry.match.useSoon.length}
-				<Sticker label="Uses {entry.match.useSoon.join(' · ')}" kind="tomato" />
-			{/if}
-		{:else}
-			<span class="wfd-label">The note of this recipe is gone</span>
-		{/if}
-	</div>
-	{#if entry?.prep}
-		<PrepNote text={entry.prep} done={prepDone} onchange={onprep} />
-	{/if}
-	<div class="wfd-meal__actions">
-		{#if today && entry}
-			<Button onclick={() => ontoday(false)}>Not today</Button>
-			<Button kind={ready ? 'main' : 'quiet'} onclick={oncook}>Cook →</Button>
-		{:else}
-			<Button onclick={onremove}>Remove</Button>
+<Panel>
+	<article class="wfd-meal">
+		<div class="wfd-meal__top">
+			<h3 class="wfd-meal__name wfd-display">{entry?.recipe.title ?? path}</h3>
 			{#if entry}
-				<Button kind="main" onclick={() => ontoday(true)}>Today</Button>
+				<Count have={entry.match.inPantry} of={entry.match.ingredients.length} />
 			{/if}
+		</div>
+		<div class="wfd-meal__facts">
+			{#if entry}
+				{@const toBuy = entry.match.ingredients.length - entry.match.inPantry}
+				{@const toCheck = entry.match.ingredients.filter((one) => one.status === 'unknown').length}
+				<span class="wfd-label">
+					{toBuy ? `${toBuy} to buy` : 'All in the pantry'}{toCheck ? ` · ${toCheck} to check` : ''}
+				</span>
+				{#if entry.match.useSoon.length}
+					<Sticker label="Uses {entry.match.useSoon.join(' · ')}" kind="tomato" />
+				{/if}
+			{:else}
+				<span class="wfd-label">The note of this recipe is gone</span>
+			{/if}
+		</div>
+		{#if entry?.prep}
+			<PrepNote text={entry.prep} done={prepDone} onchange={onprep} />
 		{/if}
-	</div>
-</article>
+		<div class="wfd-meal__actions">
+			{#if today && entry}
+				<Button onclick={() => ontoday(false)}>Not today</Button>
+				<Button kind={ready ? 'main' : 'quiet'} onclick={oncook}>Cook →</Button>
+			{:else}
+				<Button onclick={onremove}>Remove</Button>
+				{#if entry}
+					<Button kind="main" onclick={() => ontoday(true)}>Today</Button>
+				{/if}
+			{/if}
+		</div>
+	</article>
+</Panel>
 
 <style>
 	.wfd-meal {
 		display: grid;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 		align-content: space-between;
 		block-size: 100%;
-		padding: 16px;
-		border-radius: var(--wfd-radius-card);
-		background: var(--wfd-card);
 	}
 
 	.wfd-meal__top {
 		display: flex;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: start;
 		justify-content: space-between;
 	}
 
 	.wfd-meal__name {
 		margin: 0;
-		color: var(--wfd-ink);
-		font-size: 22px;
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-name);
 	}
 
 	.wfd-meal__facts {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 8px;
+		gap: var(--wfd-space-group);
 		align-items: center;
-		padding-block-end: 12px;
-		border-block-end: 2px solid var(--wfd-ink);
-		color: var(--wfd-ink-2);
+		padding-block-end: var(--wfd-space-inset);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-meal__actions {
 		display: grid;
 		grid-auto-columns: 1fr;
 		grid-auto-flow: column;
-		gap: 10px;
+		gap: var(--wfd-space-stack);
 	}
 </style>

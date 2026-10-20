@@ -24,46 +24,39 @@
 
 <style>
 	.wfd-pbar {
-		--fill: var(--wfd-ink);
-		--fill-away: var(--wfd-ink-3);
+		--fill: var(--wfd-color-text);
+		--fill-away: var(--wfd-color-text-faint);
 
 		display: flex;
-		gap: 3px;
+		gap: var(--wfd-space-tight);
 		/* A bin makes the bar thin. */
 		block-size: var(--wfd-pbar-size, 8px);
 	}
 
 	.wfd-pbar--low {
-		--fill: var(--wfd-amber);
-		--fill-away: color-mix(in oklab, var(--wfd-amber) 45%, var(--wfd-track));
+		--fill: var(--wfd-color-warning);
+		--fill-away: color-mix(in oklab, var(--wfd-color-warning) 45%, var(--wfd-color-track));
 	}
 
 	/* A dashed track is an empty place. */
 	.wfd-pbar--none {
-		background: repeating-linear-gradient(90deg, var(--wfd-track) 0 4px, transparent 4px 8px);
+		background: repeating-linear-gradient(90deg, var(--wfd-color-track) 0 4px, transparent 4px 8px);
 	}
 
 	.wfd-pbar__part {
 		display: flex;
 		flex-basis: 0;
 		min-inline-size: 6px;
-		background: var(--wfd-track);
-		transition: flex-grow 0.3s ease-out;
+		background: var(--wfd-color-track);
+		transition: flex-grow var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	.wfd-pbar__fill {
 		background: var(--fill-away);
-		transition: inline-size 0.3s ease-out;
+		transition: inline-size var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	.wfd-pbar__part--here .wfd-pbar__fill {
 		background: var(--fill);
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-pbar__part,
-		.wfd-pbar__fill {
-			transition: none;
-		}
 	}
 </style>

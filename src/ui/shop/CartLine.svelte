@@ -4,6 +4,7 @@
 	import { slide } from 'svelte/transition';
 	import type { ShoppingRow } from '../../shop/shopping-list';
 	import Button from '../parts/Button.svelte';
+	import ListLine from '../parts/ListLine.svelte';
 
 	type Props = {
 		cart: ShoppingRow[];
@@ -42,15 +43,16 @@
 		<ul class="wfd-cart__items" id={uid} transition:slide={{ duration }}>
 			{#each cart as row (row.key)}
 				<li class="wfd-cart__item" transition:slide={{ duration }}>
-					<span class="wfd-cart__tick" aria-hidden="true">✓</span>
-					<span class="wfd-cart__name">{row.name}</span>
-					<span class="wfd-cart__cost">
-						{#if row.amount}<span class="wfd-cart__amount wfd-number">{row.amount}</span>{/if}
-						{#if priceOf(row.key)}<span class="wfd-cart__price">{priceOf(row.key)}</span>{/if}
-					</span>
-					<Button kind="link" aria-label="Undo {row.name}" onclick={() => onundo(row.key)}>
-						Undo
-					</Button>
+					<ListLine name={row.name} number={row.amount || undefined} numberSmall={priceOf(row.key) || undefined}>
+						{#snippet mark()}
+							<span class="wfd-cart__tick" aria-hidden="true">✓</span>
+						{/snippet}
+						{#snippet control()}
+							<Button kind="link" aria-label="Undo {row.name}" onclick={() => onundo(row.key)}>
+								Undo
+							</Button>
+						{/snippet}
+					</ListLine>
 					{#if brands}
 						<div class="wfd-cart__brands">{@render brands(row)}</div>
 					{/if}
@@ -69,36 +71,36 @@
 	button.wfd-cart__line {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto auto;
-		gap: 12px;
+		gap: var(--wfd-space-stack);
 		align-items: center;
 		inline-size: 100%;
 		block-size: auto;
-		min-block-size: 52px;
+		min-block-size: var(--wfd-control);
 		padding: 0;
 		border: 0;
-		border-block-end: 2px solid var(--wfd-ink);
+		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: 0;
 		background: none;
 		box-shadow: none;
-		color: var(--wfd-ink);
+		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
 		cursor: pointer;
 
 		&:focus-visible {
-			outline: 2px solid var(--wfd-ink);
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: -3px;
 		}
 	}
 
 	.wfd-cart__title {
-		font-size: 19px;
+		font-size: var(--wfd-font-size-title);
 	}
 
 	/* A count that changes makes a small jump, so that you see that the item arrived. */
 	.wfd-cart__count {
-		font-size: 19px;
-		animation: jump 0.3s ease-out;
+		font-size: var(--wfd-font-size-title);
+		animation: jump var(--wfd-motion-move) var(--wfd-ease-out);
 	}
 
 	.wfd-cart__arrow {
@@ -107,7 +109,7 @@
 		fill: none;
 		stroke: currentColor;
 		stroke-width: 2.5;
-		transition: rotate 0.2s ease-out;
+		transition: rotate var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	[aria-expanded='true'] .wfd-cart__arrow {
@@ -117,23 +119,23 @@
 	.wfd-cart__items {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-		gap: 0 32px;
+		gap: 0 var(--wfd-space-section);
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
 	.wfd-cart__item {
+		--tick-size: 26px;
+
 		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto auto;
-		gap: 12px;
-		align-items: center;
-		border-block-end: 1px solid var(--wfd-line);
+		grid-template-columns: minmax(0, 1fr);
+		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
 	}
 
+	/* The photos are below the text of the line, in line with the name. */
 	.wfd-cart__brands {
-		grid-column: 2 / -1;
-		padding-block-end: 10px;
+		padding: 0 0 var(--wfd-space-inset) calc(var(--tick-size) + var(--wfd-space-stack));
 
 		&:empty {
 			display: none;
@@ -143,53 +145,18 @@
 	.wfd-cart__tick {
 		display: grid;
 		place-items: center;
-		inline-size: 26px;
-		block-size: 26px;
+		inline-size: var(--tick-size);
+		block-size: var(--tick-size);
 		border-radius: var(--wfd-radius-sticker);
-		background: var(--wfd-ink);
-		color: var(--wfd-on-ink);
-		font-size: 15px;
+		background: var(--wfd-color-selected);
+		color: var(--wfd-color-on-selected);
+		font-size: var(--wfd-font-size-small);
 		font-weight: 800;
-	}
-
-	.wfd-cart__name {
-		font-size: 17px;
-		font-weight: 600;
-	}
-
-	.wfd-cart__name::first-letter {
-		text-transform: uppercase;
-	}
-
-	.wfd-cart__cost {
-		display: grid;
-		justify-items: end;
-		gap: 2px;
-	}
-
-	.wfd-cart__amount {
-		font-size: 17px;
-	}
-
-	.wfd-cart__price {
-		color: var(--wfd-ink-2);
-		font-size: 14px;
-		font-variant-numeric: tabular-nums;
 	}
 
 	@keyframes jump {
 		40% {
 			translate: 0 -5px;
-		}
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.wfd-cart__count {
-			animation: none;
-		}
-
-		.wfd-cart__arrow {
-			transition: none;
 		}
 	}
 </style>
