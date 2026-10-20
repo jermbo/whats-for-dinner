@@ -1,11 +1,12 @@
 {
 	"name": "whats-for-dinner",
 	"private": true,
-	"version": "0.7.0",
+	"version": "0.8.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite build --watch --mode development",
 		"build": "vite build",
+		"test": "vitest run",
 		"check": "svelte-check --tsconfig ./tsconfig.app.json --config ./svelte.config.js && tsc -p tsconfig.node.json"
 	},
 	"devDependencies": {

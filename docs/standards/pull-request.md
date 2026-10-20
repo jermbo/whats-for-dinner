@@ -2,6 +2,7 @@
 title: Pull request
 summary: "The form of the message of a pull request: what changed, the choices that no story has, and the danger of the merge."
 parent: workflow.md
+updated: 2026-10-20
 ---
 
 [Wiki](../README.md) / [Workflow](workflow.md) / Pull request
@@ -25,7 +26,7 @@ The last answer is the most important. A thing that is gone is what surprises yo
 | What changed                          | Three sections: "Added", "Changed", and "Removed".                                      |
 | Choices that the stories did not have | Each decision that the build made, and that no story and no spec has.                   |
 | Merge danger                          | Two sections: "Door", with its kind in the heading, and "Blast radius".                 |
-| Tested                                | What somebody ran or saw, and what nobody tested.                                       |
+| Tested                                | What somebody ran or saw, and what nobody tested. `npm test` passes before you open it. |
 
 The names of the parts are headings of level 2, and the sections in a part are headings of level 3. A section with no line is not in the message.
 
@@ -92,7 +93,8 @@ The shopping list has more than the food of the meals now. You accept the staple
 ## Tested
 
 1. `npm run check`: 0 errors
-2. Not tested: the screens, in Obsidian and on the phone
+2. `npm test`: each test passes
+3. Not tested: the screens, in Obsidian and on the phone
 ```
 
 The title of this example is "Accept staples, add your own items, and get a receipt - v0.2.0".

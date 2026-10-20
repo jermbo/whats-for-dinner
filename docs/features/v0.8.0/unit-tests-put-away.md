@@ -5,7 +5,7 @@ parent: unit-test-stories.md
 updated: 2026-10-20
 persona: Maker
 depends-on: [unit-tests-run-the-tests.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Unit test stories](unit-test-stories.md) / Test put away

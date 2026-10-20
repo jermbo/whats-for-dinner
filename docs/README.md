@@ -59,6 +59,7 @@ Start with the page that has your question. Each page goes one step down, to mor
 | What is left to build?                    | [Roadmap](features/roadmap.md)                               |
 | How does an idea become code?             | [Workflow](standards/workflow.md)                            |
 | How is the code written?                  | [Code standards](standards/code-standards.md)                |
+| How is a rule tested?                     | [Unit tests](standards/unit-tests.md)                        |
 
 ## Further reading
 

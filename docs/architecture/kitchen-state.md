@@ -2,7 +2,7 @@
 title: Kitchen state
 summary: "The object between the notes and the screens: its copy of the vault, the path of a change, and the file of each write."
 parent: notes-of-the-kitchen.md
-updated: 2026-10-19
+updated: 2026-10-20
 ---
 
 [Wiki](../README.md) / [Notes of the kitchen](notes-of-the-kitchen.md) / Kitchen state
@@ -35,7 +35,7 @@ A change that you type in the note takes steps 3 and 4 too. So the screen shows 
 
 ## Lists that the state calculates
 
-The recipes with their match, the shopping list, the cart, and the suggestions are not notes. Svelte calculates each list again from the fields and the settings. The rules are in the domain, and in three small files next to the state: `kitchen/shop-read-model.ts`, `kitchen/meals-view.ts`, and `kitchen/recipes-view.ts`. So a new list does not make the state larger.
+The recipes with their match, the shopping list, the cart, and the suggestions are not notes. Svelte calculates each list again from the fields and the settings. The rules are in the domain, and in three small files next to the state: `kitchen/shop-read-model.ts`, `kitchen/meals-view.ts`, and `kitchen/recipes-view.ts`. So a new list does not make the state larger. A rule of a critical path, such as the rows of the list or the lines of a receipt at the start of put away, is in the domain, so that a [unit test](../standards/unit-tests.md) can check it.
 
 ## The actions of each subject
 

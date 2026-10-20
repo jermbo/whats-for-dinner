@@ -14,7 +14,7 @@ The message of a pull request tells what changed, the choices that no story has,
 1. Find what the branch changes: `git log main..HEAD --oneline` and `git diff main...HEAD --stat`.
 2. Look at `git status`. Work that is not committed is not in the branch. If the message needs it, tell the owner.
 3. Find the stories that the branch completes: the stories of `docs/features/<version>/` with the status `built` or `done`.
-4. Find what somebody ran or saw: `npm run check`, a test, a check of the owner on the phone.
+4. Find what somebody ran or saw: `npm run check`, `npm test`, a check of the owner on the phone.
 
 ## Where each part comes from
 

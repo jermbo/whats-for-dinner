@@ -1,12 +1,8 @@
 <script lang="ts">
-	import { optionsOf } from '../../cook/pick-food';
+	import { countMeal, stocksAfterMeal } from '../../cook/out-of-pantry';
 	import type { CookResult } from '../../kitchen/types';
 	import type { RecipeEntry } from '../../recipes/types';
-	import { showName } from '../../match/names';
-	import type { FoodNote } from '../../note';
-	import { takeOut } from '../../pantry/total';
-	import type { Stock } from '../../pantry/types';
-	import { showMeasure, type Measure } from '../../units';
+	import { showMeasure } from '../../units';
 	import Field from '../parts/Field.svelte';
 
 	type Props = {
@@ -23,35 +19,8 @@
 
 	const uid = $props.id();
 
-	// An ingredient that the plugin can take out of the pantry: it has an amount, and one or more
-	// food items have an amount that compares.
-	type Counted = { name: string; need: Measure; options: FoodNote[]; first: FoodNote };
-
-	// Food that the pantry counts, but in an amount that compares with nothing, such as 1 onion
-	// against a bag of 1 kg. Water with the row "tap" has no amount, so it is never to check.
-	const isCounted = (food: FoodNote) => food.item.stocks.some((stock) => stock.amount?.factor);
-
 	// The pantry as it is when this page opens. A change of a note after that does not move the rows.
-	function count(): { counted: Counted[]; others: string[]; check: string[] } {
-		const counted: Counted[] = [];
-		const others: string[] = [];
-		const check: string[] = [];
-		for (const [at, match] of entry.match.ingredients.entries()) {
-			const { ingredient, food, need } = match;
-			const options = need ? optionsOf(match) : [];
-			if (need && options.length) {
-				const first =
-					options.find((option) => option.path === picked[at]) ??
-					options.find((option) => option.path === food?.path) ??
-					options[0];
-				counted.push({ name: showName(ingredient.name), need, options, first });
-			} else {
-				others.push(showName(ingredient.name));
-				if (need && food && isCounted(food)) check.push(food.path);
-			}
-		}
-		return { counted, others, check };
-	}
+	const count = () => countMeal(entry.match.ingredients, picked);
 	const { counted, others, check } = count();
 
 	// For each counted ingredient: if you used it. The food item is the one of "Get out".
@@ -64,14 +33,7 @@
 		event.preventDefault();
 		busy = true;
 
-		// Two ingredients can use the same food item, so each one starts with the rows that are left.
-		const stocks = new Map<string, Stock[]>();
-		counted.forEach((row, at) => {
-			if (!used[at]) return;
-			const food = row.first;
-			stocks.set(food.path, takeOut(stocks.get(food.path) ?? food.item.stocks, row.need));
-		});
-
+		const stocks = stocksAfterMeal(counted, used);
 		try {
 			await ondone({ stocks, check, rating, note, photo: photos?.[0] ?? null });
 		} finally {

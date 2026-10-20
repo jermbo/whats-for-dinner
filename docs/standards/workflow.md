@@ -2,6 +2,7 @@
 title: Workflow
 summary: "The path of a piece of work, from a discussion to code with tests, and the folder that holds it at each step."
 parent: ../README.md
+updated: 2026-10-20
 ---
 
 [Wiki](../README.md) / Workflow
@@ -28,7 +29,7 @@ Code that comes first decides things that nobody decided. A page is easy to chan
 2. **Stories.** You divide the scope of the spec into [user stories](user-story.md). One agent or one person can complete a story. A story has a persona, requirements, acceptance criteria, and links to the stories that it depends on.
 3. **Elevate.** The initiative goes from draft to architecture. You compare the story with the architecture pages and with the code, to see that they agree. Then you change the pages that must change, and you approve them before the code starts. It is the last moment in which a change is only words.
 4. **Code.** The code follows the story and the pages that step 3 changed.
-5. **Tests.** Each test must be useful. You do not make a test only to have a test.
+5. **Tests.** Each test must be useful. You do not make a test only to have a test. A rule of the domain gets a [unit test](unit-tests.md), and `npm test` runs each test. A rule of the screen or of the feel gets a check on the phone.
 6. **Repeat.** You go back to the stories, and you do steps 3 to 6 for the next story, until all stories are done.
 
 ```mermaid

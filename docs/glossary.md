@@ -112,6 +112,17 @@ The kitchen uses "part", "card", "row", and "line" for its own things. So the lo
 | Frame         | The dark area around Cook Mode and the gallery. It is dark in the light scheme and in the dark scheme.                                          |
 | Style guide   | The pages that tell the tokens, the scales, and the pieces, and when to use each one: [look](architecture/look.md) and the pages below it.       |
 
+## The tests
+
+| Word        | Meaning                                                                                                                                       |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit test   | Code that calls one function of the plugin with a known input, and compares the answer with the answer that you expect. It needs no Obsidian. See [unit tests](standards/unit-tests.md). |
+| Test file   | One file of unit tests for one file of the code: `level.test.ts` tests `level.ts`.                                                            |
+| Test run    | One command, `npm test`, that runs all unit tests and tells which ones fail. It runs on the computer, not on the phone.                        |
+| Fixture     | The input of a test: the text of a note, a list of rows, or an amount such as "1000 g" of rice.                                               |
+| Bad note    | A note that a reader of the plugin cannot read completely: a half-typed amount, a missing section, a table with a broken row.                 |
+| Phone check | One test of a check list at the root of `test-vault/`. You do it by hand, on the phone. A unit test does not replace it.                      |
+
 ## Further reading
 
 - [Writing style](standards/writing-style.md): the rule "one word for one thing", and the other rules of the language.

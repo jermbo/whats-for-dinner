@@ -140,8 +140,10 @@ function useByAfter({ day, useBy }: LastRow, today: string): string {
 // The amount that goes into the pantry and into the receipt.
 export const amountOf = (facts: Facts) => partsOf(facts).join(' + ');
 
-// The rows that the item adds to its food item.
+// The rows that the item adds to its food item. An item that does not go into the pantry, such as
+// batteries, adds none.
 export function stocksOf(facts: Facts): Stock[] {
+	if (!facts.intoPantry) return [];
 	return partsOf(facts).map((part) => makeStock(facts.place, part, facts.useBy));
 }
 

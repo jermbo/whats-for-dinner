@@ -15,7 +15,8 @@ import {
 	type ReceiptLine
 } from '../shop/receipt';
 import { lineKey, partsOfLineKey } from '../shop/package-lines';
-import { isAllDone, isLineOf, rowsOf } from '../shop/receipt-line';
+import { isLineOf, rowsOf } from '../shop/receipt-line';
+import { startLines } from '../shop/start-put-away';
 import {
 	addExtra as addExtraLine,
 	putInCart as putInCartNote,
@@ -202,10 +203,6 @@ function startPutAway(host: ShopActionsHost) {
 		const tasks = open ? readTrip(await host.app.vault.read(open)) : [];
 		const file = host.vault.activePath ? host.fileAt(host.vault.activePath) : null;
 		const text = file ? await host.app.vault.read(file) : '';
-		const lines = linesIn(text);
-		const cart = itemsOf(tasks, host.pathOf).filter(
-			(item) => item.inCart && !isAllDone(lines, item, host.pathOf)
-		);
 
 		// One row for each package that the stage proposes.
 		const proposed = new Map(host.toPutAway.map((item) => [item.key, item.lines]));
@@ -215,18 +212,10 @@ function startPutAway(host: ShopActionsHost) {
 			];
 			return starts.map((facts) => ({ link: item.link, name: item.name, facts, done: false }));
 		};
-		if (!file) {
-			if (cart.length) await makeReceipt(host, cart.flatMap(linesOfItem));
-			return;
-		}
-		const kept = lines.filter(
-			(line) => line.done || cart.some((item) => isLineOf(line, item, host.pathOf))
-		);
-		const added = cart.filter(
-			(item) => !lines.some((line) => isLineOf(line, item, host.pathOf))
-		);
-		if (kept.length === lines.length && !added.length) return;
-		await host.app.vault.modify(file, withLines(text, [...kept, ...added.flatMap(linesOfItem)]));
+		const lines = startLines(linesIn(text), itemsOf(tasks, host.pathOf), linesOfItem, host.pathOf);
+		if (!lines) return;
+		if (!file) await makeReceipt(host, lines);
+		else await host.app.vault.modify(file, withLines(text, lines));
 	});
 }
 

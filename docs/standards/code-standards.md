@@ -29,6 +29,7 @@ The test of a file is one question: can that reader find the line to change, and
 | [An error is a part of the design](errors.md)   | A bad note gives a reason that you can read. A missing value shows in its type. |
 | Simple first                                    | No code for a need that no story has: no option and no layer "for later".       |
 | One kind of change                              | A step is a move, a new name, or a new behaviour. It is not two of them.        |
+| [A rule has a test](unit-tests.md)                | A critical path of the domain has a unit test that names the value that it expects. |
 | [Use a token, not a value](../architecture/look.md) | A style block names a token for each colour, size, space, line, corner, and motion. The only number is 0. |
 
 ## An example: "is the rice low?"
