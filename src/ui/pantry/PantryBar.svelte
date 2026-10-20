@@ -29,7 +29,8 @@
 
 		display: flex;
 		gap: 3px;
-		block-size: 8px;
+		/* A bin makes the bar thin. */
+		block-size: var(--wfd-pbar-size, 8px);
 	}
 
 	.wfd-pbar--low {

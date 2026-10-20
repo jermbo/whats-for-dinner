@@ -19,6 +19,7 @@
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
+	import PartTop from '../parts/PartTop.svelte';
 	import RecipeCard from './RecipeCard.svelte';
 
 	type Props = {
@@ -90,40 +91,42 @@
 </script>
 
 <section class="wfd-recipes" aria-labelledby={headId}>
-	<PartHead id={headId} title="Recipes">
-		{#snippet side()}
-			<div class="wfd-recipes__side">
-				<Count have={readyCount} of={kitchen.recipes.length} label="ready" />
-				<Button onclick={() => kitchen.openPage({ is: 'intake' })}>Add recipe</Button>
-			</div>
-		{/snippet}
-	</PartHead>
+	<PartTop>
+		<PartHead id={headId} title="Recipes">
+			{#snippet side()}
+				<div class="wfd-recipes__side">
+					<Count have={readyCount} of={kitchen.recipes.length} label="ready" />
+					<Button onclick={() => kitchen.openPage({ is: 'intake' })}>Add recipe</Button>
+				</div>
+			{/snippet}
+		</PartHead>
 
-	<Bar
-		label="Find a recipe or ingredient"
-		sequence="Sequence of the recipes"
-		{sorts}
-		{count}
-		bind:find={bar.find}
-		bind:sort={bar.sort}
-		bind:open={bar.open}
-	>
-		{#snippet chips()}
-			<Chip
-				label="Ready to cook"
-				on={bar.only.has('ready')}
-				onclick={() => bar.flip('ready')}
-			/>
-			<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
-			{#each types as option (option)}
+		<Bar
+			label="Find a recipe or ingredient"
+			sequence="Sequence of the recipes"
+			{sorts}
+			{count}
+			bind:find={bar.find}
+			bind:sort={bar.sort}
+			bind:open={bar.open}
+		>
+			{#snippet chips()}
 				<Chip
-					label={option.charAt(0).toUpperCase() + option.slice(1)}
-					on={typeOn === option}
-					onclick={() => bar.pick(option)}
+					label="Ready to cook"
+					on={bar.only.has('ready')}
+					onclick={() => bar.flip('ready')}
 				/>
-			{/each}
-		{/snippet}
-	</Bar>
+				<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
+				{#each types as option (option)}
+					<Chip
+						label={option.charAt(0).toUpperCase() + option.slice(1)}
+						on={typeOn === option}
+						onclick={() => bar.pick(option)}
+					/>
+				{/each}
+			{/snippet}
+		</Bar>
+	</PartTop>
 
 	{#if !shown.length}
 		<div class="wfd-recipes__none" aria-live="polite">

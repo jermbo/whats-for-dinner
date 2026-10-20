@@ -58,6 +58,8 @@ The phone is where you use the plugin, and a function with no test there is not 
 | Add new food                  | "New: Oat milk" makes `Oat milk.md` with one full package of 64 fl oz in "Fridge".               |
 | The audit                     | With `check: true` on onions, "Audit" shows them first. "Right" removes the property `check`.    |
 | Open the last part            | Close the tab on Plan, and the kitchen opens on Plan again. Each device keeps its own part.      |
+| Each place as a bin           | At 1000 px, "Freezer" starts under "Fridge", and the head of "Fridge" shows "1 past".         |
+| The top stays in view         | In each part, the nav, the title, and the bar stay at the top while the list scrolls.            |
 
 ## More settings come after the first use
 

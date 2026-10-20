@@ -2,7 +2,6 @@
 aliases:
   - chicken stock
   - broth
-check: true
 ---
 
 | Place          | Left | Size   | Use by     |

@@ -1,2 +1,5 @@
 - [ ] [[Larder/Pantry/Onions|Onions]]
 - [ ] [[Larder/Pantry/Taco seasoning|Taco seasoning]]
+- [ ] [[Larder/Pantry/Heavy cream|Heavy cream]]
+- [ ] [[Larder/Pantry/Shell pasta|Shell pasta]]
+- [ ] [[Larder/Pantry/Soy sauce|Soy sauce]]

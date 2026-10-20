@@ -20,6 +20,7 @@
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
+	import PartTop from '../parts/PartTop.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
 	import MealCard from './MealCard.svelte';
@@ -126,36 +127,38 @@
 </script>
 
 <section class="wfd-plan" aria-labelledby={headId}>
-	<PartHead id={headId} title="Plan">
-		{#snippet side()}
-			{#if kitchen.meals.length}
-				<Count have={cooked.length} of={kitchen.meals.length} label="cooked" />
-			{/if}
-		{/snippet}
-	</PartHead>
+	<PartTop>
+		<PartHead id={headId} title="Plan">
+			{#snippet side()}
+				{#if kitchen.meals.length}
+					<Count have={cooked.length} of={kitchen.meals.length} label="cooked" />
+				{/if}
+			{/snippet}
+		</PartHead>
 
-	<Bar
-		label="Find a meal or ingredient"
-		sequence="Sequence of the plan"
-		{sorts}
-		{count}
-		bind:find={bar.find}
-		bind:sort={bar.sort}
-		bind:open={bar.open}
-	>
-		{#snippet chips()}
-			<Chip
-				label="Ready to cook"
-				on={bar.only.has('ready')}
-				onclick={() => bar.flip('ready')}
-			/>
-			<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
-			<Chip label="Prep to do" on={bar.only.has('prep')} onclick={() => bar.flip('prep')} />
-			{#each types as option (option)}
-				<Chip label={nameOf(option)} on={typeOn === option} onclick={() => bar.pick(option)} />
-			{/each}
-		{/snippet}
-	</Bar>
+		<Bar
+			label="Find a meal or ingredient"
+			sequence="Sequence of the plan"
+			{sorts}
+			{count}
+			bind:find={bar.find}
+			bind:sort={bar.sort}
+			bind:open={bar.open}
+		>
+			{#snippet chips()}
+				<Chip
+					label="Ready to cook"
+					on={bar.only.has('ready')}
+					onclick={() => bar.flip('ready')}
+				/>
+				<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
+				<Chip label="Prep to do" on={bar.only.has('prep')} onclick={() => bar.flip('prep')} />
+				{#each types as option (option)}
+					<Chip label={nameOf(option)} on={typeOn === option} onclick={() => bar.pick(option)} />
+				{/each}
+			{/snippet}
+		</Bar>
+	</PartTop>
 
 	{#snippet card(meal: Meal, isToday: boolean)}
 		<MealCard
