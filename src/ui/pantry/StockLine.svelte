@@ -58,8 +58,9 @@
 		min-block-size: 56px;
 		padding: 8px 0 10px;
 		border: 0;
-		border-block-end: 1px solid var(--wfd-line);
-		border-radius: 0;
+		/* A bin makes the rule soft, because its card already holds the lines. */
+		border-block-end: 1px solid var(--wfd-row-rule, var(--wfd-line));
+		border-radius: 6px;
 		background: none;
 		box-shadow: none;
 		color: var(--wfd-ink);
@@ -67,10 +68,31 @@
 		text-align: start;
 		white-space: normal;
 		cursor: pointer;
+		transition:
+			background-color 0.15s ease-out,
+			box-shadow 0.15s ease-out,
+			scale 0.1s ease-out;
 
 		&:focus-visible {
 			outline: 2px solid var(--wfd-ink);
 			outline-offset: -3px;
+		}
+
+		/* A small press tells that the tap arrived. */
+		&:active {
+			scale: 0.99;
+		}
+	}
+
+	/* Under a pointer, a soft tint that goes a little past the text on each side. */
+	@media (hover: hover) {
+		button.wfd-line:hover {
+			--tint: color-mix(in oklab, var(--wfd-ink) 5%, transparent);
+
+			background: var(--tint);
+			box-shadow:
+				-10px 0 0 var(--tint),
+				10px 0 0 var(--tint);
 		}
 	}
 
@@ -103,7 +125,9 @@
 		font-size: 14px;
 	}
 
+	/* The amount is always in the last column, so that a row with no sticker ends at the same edge. */
 	.wfd-line__amount {
+		grid-column: -2;
 		font-size: 20px;
 		text-align: end;
 	}

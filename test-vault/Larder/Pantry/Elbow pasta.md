@@ -2,14 +2,14 @@
 aliases:
   - pasta
   - macaroni
-bought: 2026-10-17
+bought: 2026-09-20
 ---
 
-| Place          | Left | Size   | Use by |
-| -------------- | ---- | ------ | ------ |
-| Kitchen pantry | full | 2300 g |        |
+| Place          | Left | Size  | Use by |
+| -------------- | ---- | ----- | ------ |
+| Kitchen pantry | 1/4  | 454 g |        |
 
 ## Brands
 
 - Brand A
-- Store brand
+- Store brand · avoid

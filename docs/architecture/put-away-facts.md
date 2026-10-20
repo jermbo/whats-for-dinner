@@ -52,7 +52,7 @@ A row has a brand when its cell `Brand` links to one of the photos of the brand,
 
 ## One line for each package
 
-The list asks for the amount that the meals need, and the pantry tells the packages. So put away divides the amount of the list row by the last size, rounds up, and makes that number of lines, at least 1. Each line starts with the last size as its amount. "Milk, 1 1/2 gal" and a last size of 1 gal give 2 lines of 1 gal. With no last size, or with a unit that does not [compare](amounts.md), the item has 1 line with the amount of the list row. A loose food item always has 1 line.
+The list asks for the amount that the meals need, and the pantry tells the packages. So put away divides the amount of the list row by the last size, rounds up, and makes that number of lines, at least 1. Each line starts with the last size as its amount. "Milk, 1 1/2 gal" and a last size of 1 gal give 2 lines of 1 gal. With no last size, or with a unit that does not [compare](amounts.md), the item has 1 line with the amount of the list row.
 
 The amount of a line is the size of its package. New quinoa of 1 lb gets the size 1 lb.
 
@@ -62,7 +62,7 @@ The amount of a line is the size of its package. New quinoa of 1 lb gets the siz
 
 ## A price is a number
 
-A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price. If you remove the text of an amount, the item goes in as 1. "Another amount" goes into the unit system of the vault, as each amount of the [pantry](food-item-note.md) does: "1 gal" is "3.79 l" in a metric vault. A container word, such as "1 bag", stops "Put away" on that line, and the field asks for the weight or the volume from the label.
+A price has no currency. A point or a comma is its decimal mark, and the receipt shows 2 decimals: "0.5" is "0.50". Text that is not a number counts as a missing price. If you remove the text of an amount, the item goes in as 1. "Another amount" keeps the unit that you type, because a package keeps the unit of its label: "1 gal" stays "1 gal". A container word, such as "1 bag", stops "Put away" on that line, and the field asks for the weight or the volume from the label.
 
 ## Further reading
 

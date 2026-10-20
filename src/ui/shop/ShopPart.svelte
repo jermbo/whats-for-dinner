@@ -6,6 +6,7 @@
 	import type { Only, Sort } from '../../shop/browse';
 	import type { BarState } from '../bar-state.svelte';
 	import PartHead from '../parts/PartHead.svelte';
+	import PartTop from '../parts/PartTop.svelte';
 	import ExtrasStage from './ExtrasStage.svelte';
 	import type { PutAwayDraft } from './put-away-draft.svelte';
 	import PutAway from './PutAway.svelte';
@@ -45,8 +46,10 @@
 </script>
 
 <section class="wfd-shop-part" aria-labelledby={headId}>
-	<PartHead id={headId} title="Shop" />
-	<StageStrip {counts} value={shown} onchange={open} />
+	<PartTop>
+		<PartHead id={headId} title="Shop" />
+		<StageStrip {counts} value={shown} onchange={open} />
+	</PartTop>
 
 	{#key shown}
 		<div in:fly={{ x: from, duration }}>

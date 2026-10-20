@@ -1,6 +1,8 @@
 ---
+aliases:
+  - white sugar
 staple: seldom
-bought: 2026-09-30
+bought: 2026-08-10
 ---
 
 | Place          | Left | Size | Use by |

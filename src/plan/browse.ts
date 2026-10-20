@@ -1,7 +1,7 @@
 // The filters and the sequences of the plan. They work on the week: the meals that you did not
 // cook.
 
-import type { Meal } from '../kitchen/types';
+import type { Meal } from './types';
 import { isFound as isRecipeFound, isReady as isRecipeReady } from '../recipes/browse';
 
 export type Sort = 'type' | 'match' | 'name';

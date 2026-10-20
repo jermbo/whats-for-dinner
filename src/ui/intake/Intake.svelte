@@ -130,10 +130,10 @@
 		const properties = start?.properties ?? '';
 		const saved =
 			replace?.is === 'convert'
-				? await kitchen.convertRecipe(replace.path, properties, draft, photos)
+				? await kitchen.intake.convertRecipe(replace.path, properties, draft, photos)
 				: replace?.is === 'edit'
-					? await kitchen.editRecipe(replace.path, properties, draft, photos)
-					: await kitchen.saveRecipe(draft, photos);
+					? await kitchen.intake.editRecipe(replace.path, properties, draft, photos)
+					: await kitchen.intake.saveRecipe(draft, photos);
 		saving = false;
 		if (saved) onclose(true);
 	}

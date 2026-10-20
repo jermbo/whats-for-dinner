@@ -9,7 +9,7 @@ export default class WhatsForDinnerPlugin extends Plugin {
 		const kitchen = new Kitchen(
 			this.app,
 			{ load: () => this.loadData(), save: (data) => this.saveData(data) },
-			(ref) => this.registerEvent(ref)
+			this
 		);
 
 		// The settings are in the data file. The tab and the settings screen need them from the start.
@@ -65,7 +65,7 @@ export default class WhatsForDinnerPlugin extends Plugin {
 				id: 'start-setup-again',
 				name: 'Start setup again (deletes the plugin home)',
 				callback: async () => {
-					await kitchen.startSetupAgain();
+					await kitchen.setup.startAgain();
 					new Notice('Setup starts again. The plugin home is in the trash of the vault.');
 					await this.openKitchen();
 				}

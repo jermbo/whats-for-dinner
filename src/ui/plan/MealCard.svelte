@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Meal } from '../../kitchen/types';
+	import type { Meal } from '../../plan/types';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import Sticker from '../parts/Sticker.svelte';

@@ -3,7 +3,8 @@
 	import { fly } from 'svelte/transition';
 	import { photoRecords } from '../../cook/record';
 	import { showDate } from '../../dates';
-	import type { Kitchen, RecipeEntry } from '../../kitchen-state.svelte';
+	import type { Kitchen } from '../../kitchen-state.svelte';
+	import type { RecipeEntry } from '../../recipes/types';
 	import HiddenName from '../parts/HiddenName.svelte';
 
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };

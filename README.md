@@ -29,4 +29,4 @@ Obsidian does not load a new build by itself. After a change, use the command "R
 | `npm run build` | Builds the plugin for use: small, with no source map.               |
 | `npm run check` | Checks the types of the code.                                       |
 
-The note `test-vault/Start here.md` tells the state in which the test vault starts.
+Each set of stories has its check list at the root of `test-vault/`, such as `Pantry check list.md`. A check list tells the state that the notes need, and each test on the phone.

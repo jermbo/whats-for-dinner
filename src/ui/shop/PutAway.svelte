@@ -53,7 +53,7 @@
 	// tick later. The stage does not read its own write, so the call is out of the effect.
 	const cartKeys = $derived(kitchen.toPutAway.map(({ key }) => key).join('\n'));
 	$effect(() => {
-		if (cartKeys) untrack(() => void kitchen.startPutAway());
+		if (cartKeys) untrack(() => void kitchen.shop.startPutAway());
 	});
 
 	// The line that shows all its facts, and the group that it had when it opened. It stays in that
@@ -89,7 +89,7 @@
 	// correction of one line does not change the other lines of the item.
 	function update({ key, item, start }: Line, changed: Partial<Facts>) {
 		draft.change(key, changed);
-		kitchen.changeFacts(key, draft.factsOf(key, item, start));
+		kitchen.shop.changeFacts(key, draft.factsOf(key, item, start));
 	}
 
 	// A sale has its own price, so the regular price goes out of the field, and the field shows it
@@ -110,13 +110,13 @@
 
 	// A photo of the package in your hand is a new brand, and the brand of the line.
 	async function takeBrand(line: Line, photo: Blob) {
-		const name = await kitchen.addBrandPhoto(line.item.key, photo);
+		const name = await kitchen.brands.addBrandPhoto(line.item.key, photo);
 		if (name) update(line, { brand: `[[${name}]]` });
 	}
 
 	// A package that the plugin did not expect: a copy of the open line, below it.
 	function addPackage(line: Line) {
-		return kitchen.addPackageLine(line.key, line.facts);
+		return kitchen.shop.addPackageLine(line.key, line.facts);
 	}
 
 	// The lines go one by one while the items go into the pantry. The stage does not say that the
@@ -126,11 +126,11 @@
 	// The open line stays open while its item goes into the pantry, so that it slides out as you
 	// left it. The last item ends the trip.
 	function putOne({ key, facts }: Line) {
-		return run(() => kitchen.putAway(new Map([[key, facts]])));
+		return run(() => kitchen.shop.putAway(new Map([[key, facts]])));
 	}
 
 	function putKnown() {
-		return run(() => kitchen.putAway(new Map(known.map(({ key, facts }) => [key, facts]))));
+		return run(() => kitchen.shop.putAway(new Map(known.map(({ key, facts }) => [key, facts]))));
 	}
 
 	// The last line of a trip that has food in the pantry already ends it. With no such food, the
@@ -138,7 +138,7 @@
 	function notBought({ key, item }: Line) {
 		if (open?.key === key) open = null;
 		draft.forgetItem(item.key);
-		return run(() => kitchen.notBought(key));
+		return run(() => kitchen.shop.notBought(key));
 	}
 
 	async function run(action: () => Promise<boolean>) {
@@ -203,7 +203,7 @@
 					value={kitchen.tripStore}
 					other="A new store"
 					canBeOff
-					onchange={(store) => kitchen.setTripStore(store)}
+					onchange={(store) => kitchen.shop.setTripStore(store)}
 				/>
 			</div>
 			{#if known.length}

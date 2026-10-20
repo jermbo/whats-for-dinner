@@ -15,7 +15,8 @@
 		cookSlideFrom,
 		cookTimerClock
 	} from '../../cook/cook-pages';
-	import type { CookResult, RecipeEntry } from '../../kitchen/types';
+	import type { CookResult } from '../../kitchen/types';
+	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
 	import Button from '../parts/Button.svelte';
@@ -138,7 +139,7 @@
 	let saving = $state(false);
 
 	async function finish(result: CookResult) {
-		await kitchen.finishCooking(entry.path, result);
+		if (!(await kitchen.cook.finishCooking(entry.path, result))) return;
 		kitchen.notify('The pantry is correct again.');
 		onclose();
 	}
@@ -289,8 +290,8 @@
 					<StepPhoto
 						{step}
 						urlOf={(name) => kitchen.photoUrl(name, entry.path)}
-						ontake={(photo) => kitchen.addStepPhoto(entry.path, page, photo)}
-						onbest={(name) => kitchen.setBestPhoto(entry.path, page, name)}
+						ontake={(photo) => kitchen.cook.addStepPhoto(entry.path, page, photo)}
+						onbest={(name) => kitchen.cook.setBestPhoto(entry.path, page, name)}
 					/>
 				{:else}
 					<CookFinish id="{uid}-finish" {entry} {picked} ondone={finish} bind:busy={saving} />

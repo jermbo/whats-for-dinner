@@ -1,8 +1,8 @@
 ---
 staple: seldom
-bought: 2026-10-14
+bought: 2026-07-20
 ---
 
-| Place          | Left | Size   | Use by |
-| -------------- | ---- | ------ | ------ |
-| Kitchen pantry | full | 1105 g |        |
+| Place          | Left | Size  | Use by |
+| -------------- | ---- | ----- | ------ |
+| Kitchen pantry | full | 737 g |        |

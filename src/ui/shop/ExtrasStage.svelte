@@ -37,16 +37,16 @@
 	<AddItem
 		foods={kitchen.foods}
 		itemNotes={kitchen.itemNotes}
-		onadd={(path) => kitchen.addExtra(path)}
-		onaddnew={(name) => kitchen.addNewItem(name)}
+		onadd={(path) => kitchen.shop.addExtra(path)}
+		onaddnew={(name) => kitchen.shop.addNewItem(name)}
 	/>
 
 	<SuggestionList
 		suggestions={kitchen.suggestions}
-		onadd={(path) => kitchen.addExtra(path)}
-		onskip={(path) => kitchen.skip(path)}
-		onunskip={(path) => kitchen.unskip(path)}
-		onneverask={(path) => kitchen.neverAsk(path)}
+		onadd={(path) => kitchen.shop.addExtra(path)}
+		onskip={(path) => kitchen.shop.skip(path)}
+		onunskip={(path) => kitchen.shop.unskip(path)}
+		onneverask={(path) => kitchen.shop.neverAsk(path)}
 	/>
 
 	<StageFoot>

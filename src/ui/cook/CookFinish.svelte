@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { optionsOf } from '../../cook/pick-food';
-	import type { CookResult, RecipeEntry } from '../../kitchen/types';
+	import type { CookResult } from '../../kitchen/types';
+	import type { RecipeEntry } from '../../recipes/types';
 	import { showName } from '../../match/names';
 	import type { FoodNote } from '../../note';
 	import { takeOut } from '../../pantry/total';

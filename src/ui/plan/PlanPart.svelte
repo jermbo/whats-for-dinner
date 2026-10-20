@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
-	import type { Meal } from '../../kitchen/types';
+	import type { Meal } from '../../plan/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import {
 		inSequence,
@@ -20,6 +20,7 @@
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
+	import PartTop from '../parts/PartTop.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
 	import MealCard from './MealCard.svelte';
@@ -69,8 +70,8 @@
 	);
 
 	// The meals of today are at the top, in each sequence.
-	const today = $derived(shown.filter((meal) => kitchen.isToday(meal)));
-	const later = $derived(shown.filter((meal) => !kitchen.isToday(meal)));
+	const today = $derived(shown.filter((meal) => kitchen.plan.isToday(meal)));
+	const later = $derived(shown.filter((meal) => !kitchen.plan.isToday(meal)));
 
 	// The place of each recipe in the sequence "best for the pantry".
 	const rank = $derived(new Map(kitchen.recipes.map((entry, at) => [entry.path, at])));
@@ -107,7 +108,7 @@
 	// The plugin proposes the recipes that use up the pantry, and that are not in the week.
 	const ideas = $derived(
 		kitchen.recipes
-			.filter((entry) => !kitchen.plan.some((meal) => meal.path === entry.path))
+			.filter((entry) => !kitchen.plannedMeals.some((meal) => meal.path === entry.path))
 			.slice(0, 3)
 	);
 
@@ -121,49 +122,51 @@
 
 	async function startNewWeek() {
 		asking = false;
-		await kitchen.clearPlan();
+		await kitchen.plan.clearPlan();
 	}
 </script>
 
 <section class="wfd-plan" aria-labelledby={headId}>
-	<PartHead id={headId} title="Plan">
-		{#snippet side()}
-			{#if kitchen.meals.length}
-				<Count have={cooked.length} of={kitchen.meals.length} label="cooked" />
-			{/if}
-		{/snippet}
-	</PartHead>
+	<PartTop>
+		<PartHead id={headId} title="Plan">
+			{#snippet side()}
+				{#if kitchen.meals.length}
+					<Count have={cooked.length} of={kitchen.meals.length} label="cooked" />
+				{/if}
+			{/snippet}
+		</PartHead>
 
-	<Bar
-		label="Find a meal or ingredient"
-		sequence="Sequence of the plan"
-		{sorts}
-		{count}
-		bind:find={bar.find}
-		bind:sort={bar.sort}
-		bind:open={bar.open}
-	>
-		{#snippet chips()}
-			<Chip
-				label="Ready to cook"
-				on={bar.only.has('ready')}
-				onclick={() => bar.flip('ready')}
-			/>
-			<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
-			<Chip label="Prep to do" on={bar.only.has('prep')} onclick={() => bar.flip('prep')} />
-			{#each types as option (option)}
-				<Chip label={nameOf(option)} on={typeOn === option} onclick={() => bar.pick(option)} />
-			{/each}
-		{/snippet}
-	</Bar>
+		<Bar
+			label="Find a meal or ingredient"
+			sequence="Sequence of the plan"
+			{sorts}
+			{count}
+			bind:find={bar.find}
+			bind:sort={bar.sort}
+			bind:open={bar.open}
+		>
+			{#snippet chips()}
+				<Chip
+					label="Ready to cook"
+					on={bar.only.has('ready')}
+					onclick={() => bar.flip('ready')}
+				/>
+				<Chip label="Uses food soon" on={bar.only.has('soon')} onclick={() => bar.flip('soon')} />
+				<Chip label="Prep to do" on={bar.only.has('prep')} onclick={() => bar.flip('prep')} />
+				{#each types as option (option)}
+					<Chip label={nameOf(option)} on={typeOn === option} onclick={() => bar.pick(option)} />
+				{/each}
+			{/snippet}
+		</Bar>
+	</PartTop>
 
 	{#snippet card(meal: Meal, isToday: boolean)}
 		<MealCard
 			{meal}
 			today={isToday}
-			ontoday={(on) => kitchen.setToday(meal.path, on)}
-			onprep={(done) => kitchen.setPrepDone(meal.path, done)}
-			onremove={() => kitchen.removeFromPlan(meal.path)}
+			ontoday={(on) => kitchen.plan.setToday(meal.path, on)}
+			onprep={(done) => kitchen.plan.setPrepDone(meal.path, done)}
+			onremove={() => kitchen.plan.removeFromPlan(meal.path)}
 			oncook={() => oncook(meal.path)}
 		/>
 	{/snippet}
@@ -253,7 +256,7 @@
 					<WeekButton
 						name={entry.recipe.title}
 						planned={false}
-						onclick={() => kitchen.addToPlan(entry.path)}
+						onclick={() => kitchen.plan.addToPlan(entry.path)}
 					/>
 				</li>
 			{/each}
@@ -270,7 +273,7 @@
 							{entry?.recipe.title ?? path}
 						</span>
 					</span>
-					<Button kind="link" onclick={() => kitchen.addToPlan(path)}>Cook again</Button>
+					<Button kind="link" onclick={() => kitchen.plan.addToPlan(path)}>Cook again</Button>
 				</li>
 			{/each}
 		</ul>

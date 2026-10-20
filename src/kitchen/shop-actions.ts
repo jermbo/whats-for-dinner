@@ -32,6 +32,7 @@ import type { KitchenWhere } from './note-kind';
 import { fallbackPutAwayFacts } from './shop-read-model';
 import { foodPath } from './pantry-actions';
 import { entriesOf } from '../pantry/unit-list';
+import { tried, triedFor } from './tried';
 
 export type ShopMutable = {
 	puttingAway: boolean;
@@ -63,7 +64,13 @@ export type ShopActionsHost = {
 	writeTrip(change: (text: string) => string): Promise<void>;
 	notify(text: string): void;
 	save(): Promise<void>;
+	skipped: string[];
+	setSkipped(paths: string[]): void;
 	setTripStoreValue(store: string): void;
+	// The facts and the store of the trip wait a short time, so that each key you type is not a write.
+	writeFactsSoon(): void;
+	cancelFactsWrite(): void;
+	writeStoreSoon(store: string): void;
 	cancelTripStoreWrite(): void;
 	addStockTo(path: string, stock: Stock): Promise<void>;
 	setStaple(path: string, label: StapleLabel): Promise<void>;
@@ -131,13 +138,13 @@ function rowOfLine(lines: ReceiptLine[], host: ShopActionsHost, key: string): nu
 }
 
 // With a brand, the task keeps the brand that you took, as the cell of a receipt has it.
-export async function putInCart(host: ShopActionsHost, key: string, brand?: string) {
+async function putInCart(host: ShopActionsHost, key: string, brand?: string) {
 	const row = host.calculated.missing.find((row) => row.key === key);
 	const task = host.trip.find((item) => item.key === key) ?? (row && taskOf(row.key));
 	if (task) await host.writeTrip((text) => putInCartNote(text, task, brand));
 }
 
-export async function takeOutOfCart(host: ShopActionsHost, key: string) {
+async function takeOutOfCart(host: ShopActionsHost, key: string) {
 	const item = host.trip.find((item) => item.key === key);
 	if (!item) return;
 	const onList = host.calculated.missing.some((row) => row.key === key);
@@ -147,24 +154,24 @@ export async function takeOutOfCart(host: ShopActionsHost, key: string) {
 	);
 }
 
-export async function addToCart(host: ShopActionsHost, path: string) {
+async function addToCart(host: ShopActionsHost, path: string) {
 	await host.writeTrip((text) => putInCartNote(text, taskOf(path)));
 }
 
-export async function addNewToCart(host: ShopActionsHost, name: string) {
+async function addNewToCart(host: ShopActionsHost, name: string) {
 	await addToCart(host, notePathIn(host.where.items, name));
 }
 
-export async function addExtra(host: ShopActionsHost, path: string) {
+async function addExtra(host: ShopActionsHost, path: string) {
 	if (host.trip.some((item) => item.key === path)) return;
 	await host.writeTrip((text) => addExtraLine(text, taskOf(path)));
 }
 
-export async function addNewItem(host: ShopActionsHost, name: string) {
+async function addNewItem(host: ShopActionsHost, name: string) {
 	await addExtra(host, notePathIn(host.where.items, name));
 }
 
-export async function removeExtra(host: ShopActionsHost, key: string) {
+async function removeExtra(host: ShopActionsHost, key: string) {
 	const item = host.trip.find((item) => item.key === key);
 	if (item) await host.writeTrip((text) => removeTasks(text, [item]));
 }
@@ -184,12 +191,12 @@ export async function saveTripStore(host: ShopActionsHost, store: string) {
 	});
 }
 
-export function changeFacts(host: ShopActionsHost, key: string, facts: Facts, schedule: () => void) {
+function changeFacts(host: ShopActionsHost, key: string, facts: Facts, schedule: () => void) {
 	host.mutable.pendingFacts.set(key, facts);
 	schedule();
 }
 
-export function startPutAway(host: ShopActionsHost) {
+function startPutAway(host: ShopActionsHost) {
 	return host.inTurn(async () => {
 		const open = host.fileAt(host.openNote);
 		const tasks = open ? readTrip(await host.app.vault.read(open)) : [];
@@ -224,7 +231,7 @@ export function startPutAway(host: ShopActionsHost) {
 }
 
 // `given` has the facts of each line that goes into the pantry, by the key of its line.
-export async function putAway(host: ShopActionsHost, given: Map<string, Facts>) {
+async function putAway(host: ShopActionsHost, given: Map<string, Facts>) {
 	const lines = [...given].flatMap(([key, facts]) => {
 		const { item: itemKey, at } = partsOfLineKey(key);
 		const item = host.trip.find((one) => one.inCart && one.key === itemKey);
@@ -264,7 +271,7 @@ export async function putAway(host: ShopActionsHost, given: Map<string, Facts>) 
 }
 
 // "+ package": a copy of the open line, as a new row after the rows of its item.
-export async function addPackageLine(host: ShopActionsHost, key: string, facts: Facts) {
+async function addPackageLine(host: ShopActionsHost, key: string, facts: Facts) {
 	await flushReceiptFacts(host);
 	const item = host.trip.find((one) => one.key === partsOfLineKey(key).item);
 	if (!item) return;
@@ -278,7 +285,7 @@ export async function addPackageLine(host: ShopActionsHost, key: string, facts: 
 
 // "Not bought" takes one line out. The task stays in the cart while its item has a line, or a
 // package in the pantry. The last line of an item takes the item out of the cart.
-export async function notBought(host: ShopActionsHost, key: string) {
+async function notBought(host: ShopActionsHost, key: string) {
 	const { item: itemKey, at } = partsOfLineKey(key);
 	const item = host.trip.find((one) => one.key === itemKey);
 	const cartItem = host.toPutAway.find((one) => one.key === itemKey);
@@ -325,4 +332,47 @@ async function completeTrip(host: ShopActionsHost) {
 		host.vault.activePath = null;
 	});
 	await host.onTripComplete();
+}
+
+// What the Shop part can do. Each write tells you in a notice when it fails.
+export function shopActions(host: ShopActionsHost) {
+	const changed = 'The cart did not change';
+	const listChanged = 'The shopping list did not change';
+	const receiptChanged = 'The receipt did not change';
+	const skipped = async (paths: string[]) => {
+		host.setSkipped(paths);
+		await host.save();
+	};
+	return {
+		putInCart: (key: string, brand?: string) => tried(changed, () => putInCart(host, key, brand)),
+		takeOutOfCart: (key: string) => tried(changed, () => takeOutOfCart(host, key)),
+		addToCart: (path: string) => tried(changed, () => addToCart(host, path)),
+		addNewToCart: (name: string) => tried(changed, () => addNewToCart(host, name)),
+		addExtra: (path: string) => tried(listChanged, () => addExtra(host, path)),
+		addNewItem: (name: string) => tried(listChanged, () => addNewItem(host, name)),
+		removeExtra: (key: string) => tried(listChanged, () => removeExtra(host, key)),
+		setTripStore: (store: string) => {
+			host.setTripStoreValue(store.trim());
+			host.writeStoreSoon(store.trim());
+		},
+		skip: (path: string) => skipped([...host.skipped, path]),
+		unskip: (path: string) => skipped(host.skipped.filter((other) => other !== path)),
+		neverAsk: (path: string) =>
+			tried('The staple did not change', () => host.setStaple(path, 'never')),
+		startPutAway: () => tried(receiptChanged, () => startPutAway(host)),
+		changeFacts: (key: string, facts: Facts) =>
+			changeFacts(host, key, facts, () => host.writeFactsSoon()),
+		putAway: (given: Map<string, Facts>) => {
+			host.cancelFactsWrite();
+			return triedFor('The food is not in the pantry', () => putAway(host, given), false);
+		},
+		notBought: (key: string) => {
+			host.cancelFactsWrite();
+			return triedFor(receiptChanged, () => notBought(host, key), false);
+		},
+		addPackageLine: (key: string, facts: Facts) => {
+			host.cancelFactsWrite();
+			return tried(receiptChanged, () => addPackageLine(host, key, facts));
+		}
+	};
 }

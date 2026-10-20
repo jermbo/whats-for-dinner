@@ -1,29 +1,78 @@
+---
+title: Kitchen state
+summary: "The object between the notes and the screens: its copy of the vault, the path of a change, and the file of each write."
+parent: notes-of-the-kitchen.md
+updated: 2026-10-19
+---
+
+[Wiki](../README.md) / [Notes of the kitchen](notes-of-the-kitchen.md) / Kitchen state
+
 # Kitchen state
 
-The `Kitchen` class is what every screen reads and writes. The vault is the only source of truth: each action changes a note, Obsidian fires an event, and the kitchen reads the note again.
+The Pantry part and the Shop part both show the milk. If each screen read the note itself, the two could show different amounts. So one object, the kitchen state, reads the notes, and each screen reads that object. This page tells how it stays current, and where each action writes.
 
-## Two layers
+## A copy of the vault, and the fields of the screens
 
-1. **`VaultBuffer`** (`src/kitchen/vault-buffer.ts`) — working copy of the vault. Maps and sets hold the latest read of each note (recipes, pantry, plan, trip, receipts). Only this module updates those maps.
-2. **`Kitchen`** (`src/kitchen-state.svelte.ts`) — reactive fields the UI binds to (`notes`, `foods`, `trip`, `cart`, …), plus commands that write notes (plan, shop, pantry, cook).
+The copy and the fields are in two files:
 
-After any read, forget, or full reload, `Kitchen.show()` calls `vault.snapshot()` and copies the result into the `$state` fields. UI code should use those fields, not the buffer maps.
+1. The vault buffer, in `kitchen/vault-buffer.ts`, is the working copy of the vault. It has the last read of each recipe, food item, plan, trip, and receipt. Only the buffer changes this copy.
+2. The kitchen state, in `kitchen-state.svelte.ts`, has the fields that the screens read, such as the food items, the trip, and the cart.
 
-## Derived data
+Svelte draws a screen again when a field changes, but it does not see a change in the buffer. So after each read, the state copies a snapshot of the buffer into its fields. A screen reads the fields, never the buffer.
 
-Lists such as `recipes`, `cart`, and `suggestions` are `$derived` from the snapshot fields and settings. Pure helpers live in `src/kitchen/shop-read-model.ts`, `src/kitchen/meals-view.ts`, and `src/shop/` so new features can extend logic without growing the class.
+## The path of a change
+
+You tap "Done" on the card of milk, with the full jug at 1/2.
+
+1. The screen gives the new rows to the state.
+2. The pantry actions of the state write the note. No field changes yet.
+3. Obsidian reports the change, and the state reads the note into the buffer again.
+4. The state copies the snapshot, and the card shows 1/2.
+
+If the write fails, a notice tells what did not change, and the screen stays as it was.
+
+A change that you type in the note takes steps 3 and 4 too. So the screen shows what the note says, from the plugin or from you. The state follows four events of the vault: a new note, a changed note, a note with a new name, and a note that is gone.
+
+## Lists that the state calculates
+
+The recipes with their match, the shopping list, the cart, and the suggestions are not notes. Svelte calculates each list again from the fields and the settings. The rules are in the domain, and in three small files next to the state: `kitchen/shop-read-model.ts`, `kitchen/meals-view.ts`, and `kitchen/recipes-view.ts`. So a new list does not make the state larger.
+
+## The actions of each subject
+
+A screen does not call a write directly. It calls an action of one subject of the kitchen, such as `kitchen.pantry.setSize` or `kitchen.shop.putInCart`. There are seven subjects, and each one has its own file in `kitchen/`:
+
+| Subject           | File                | What it writes                                                                       |
+| ----------------- | ------------------- | ------------------------------------------------------------------------------------ |
+| `kitchen.pantry`  | `pantry-actions.ts` | The packages of a food item, its size, its staple label, and its mark "check".       |
+| `kitchen.brands`  | `brand-actions.ts`  | The brands of a food item, with their photos and verdicts.                           |
+| `kitchen.plan`    | `plan-actions.ts`   | The meals of the plan note.                                                          |
+| `kitchen.shop`    | `shop-actions.ts`   | The cart in the note "Next trip", the receipt, and each package of put away.         |
+| `kitchen.cook`    | `cook-actions.ts`   | The end of a meal: the food out of the pantry, the cook record, and the step photos. |
+| `kitchen.intake`  | `intake-actions.ts` | A new or a changed recipe, and a stub for each new food.                             |
+| `kitchen.setup`   | `setup-actions.ts`  | The plugin home, its folders, the places, and the first food of setup.               |
+
+Two more files help them. `photo-actions.ts` puts a photo of a recipe or of a brand in its folder `Photos`. `tried.ts` shows a notice when a write fails.
+
+The type of a host tells what a file needs, such as the paths and some calls of Obsidian. The kitchen state gives the file an object of that type. So you can read an action file with no knowledge of the state.
+
+## A new action
+
+1. Write the action in the file of its subject.
+2. Add it to the object of that subject, with the text of the notice for a failure.
+
+The kitchen state does not change. It changes only when the action needs a field or a call that the host does not have yet.
 
 ## The part on the screen
 
-`Kitchen.part` is the part that the kitchen shows: Pantry, Recipes, Plan, or Shop. It is on the class and not in the screen, so it stays when the tab closes. The class also writes it to the local storage of the vault (`app.saveLocalStorage`), so it stays after a restart. That storage is per device, so the phone and the desktop each open where they were. The rest of the state of a screen, such as the bars and Cook Mode, stays in the screen and starts again when the tab opens.
+The state also keeps the part that the kitchen shows: Pantry, Recipes, Plan, or Shop. It is in the state and not in a screen, so it stays when the tab closes. The state writes it to the local storage of the vault too, so it stays after a restart. That storage is on one device, so the phone and the desktop each open where they were. The rest of a screen, such as the bars and Cook Mode, starts again with the tab.
 
-## Writes
+## A new kind of note
 
-Vault changes go through `src/kitchen/pantry-actions.ts`, `plan-actions.ts`, `shop-actions.ts`, and `cook-actions.ts`. `Kitchen` exposes the same public methods as before; each one forwards to the right module with a small host object (paths, trip, vault buffer, and so on).
+1. Give the kind a name in `kitchen/note-kind.ts`. The path of a note tells its kind.
+2. Read a note of that kind into the buffer.
+3. If a screen needs it, add it to the snapshot and to a field of the state.
+4. Write it with an action file. Do not change a field: the event of the vault reads the note again.
 
-## Adding a new note kind
+## Further reading
 
-1. Extend `noteKind()` in `src/kitchen/note-kind.ts`.
-2. Handle the kind in `VaultBuffer.applyRead()`.
-3. If the UI needs it, extend `VaultSnapshot` and `show()`.
-4. Add write methods on `Kitchen` that modify the vault and rely on events to refresh the buffer.
+- [Layers](../standards/layers.md): why only the state and the shell import Obsidian.

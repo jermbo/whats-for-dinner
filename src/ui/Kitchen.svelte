@@ -116,7 +116,7 @@
 	</div>
 {:else if page?.is === 'convert' || page?.is === 'edit'}
 	<div class="wfd-kitchen" in:fade={{ duration }}>
-		{#await kitchen.readForIntake(page) then start}
+		{#await kitchen.intake.readForIntake(page) then start}
 			{#if start}
 				<Intake {kitchen} replace={{ is: page.is, path: page.path, start }} onclose={closePage} />
 			{:else}
@@ -132,7 +132,10 @@
 	<CookMode {kitchen} entry={cooked} onclose={() => (cooking = null)} />
 {:else}
 	<div class="wfd-kitchen" in:fade={{ duration: inSetup ? duration : 0 }}>
-		<Nav label="Part of the kitchen" {options} value={part} onchange={show} />
+		<!-- The nav stays at the top while a part scrolls. -->
+		<div class="wfd-kitchen__nav">
+			<Nav label="Part of the kitchen" {options} value={part} onchange={show} />
+		</div>
 
 		{#key part}
 			<div in:fly={{ x: from, duration }}>
@@ -301,10 +304,25 @@
 		border-width: 2px;
 	}
 
+	/*
+	 * The top of a part sticks under the nav, so it must know the height of the nav (46 px of
+	 * options and 2 px of edge on each side) and the gap above it.
+	 */
 	.wfd-kitchen {
+		--wfd-nav-size: 50px;
+		--wfd-kitchen-gap: 16px;
+
 		display: grid;
 		grid-template-columns: minmax(0, 1fr);
-		gap: 16px;
+		gap: var(--wfd-kitchen-gap);
 		padding: 12px 14px max(var(--safe-area-inset-bottom, 0px), 40px);
+	}
+
+	/* The paper above the nav hides the lines that scroll past the padding of the kitchen. */
+	.wfd-kitchen__nav {
+		position: sticky;
+		inset-block-start: 0;
+		z-index: 4;
+		box-shadow: 0 -14px 0 14px var(--wfd-paper);
 	}
 </style>

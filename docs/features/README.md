@@ -62,7 +62,7 @@ The note of the trip becomes its [receipt](../architecture/receipt.md): what you
 
 ## Cook Mode shows one step at a time
 
-Before the first step, [Cook Mode](../architecture/cook-mode.md) lists what to get out, in the groups of the recipe, such as "Dry" and "Wet". When a line such as "pasta" fits two food items, it selects the one to use first, and you only check it. Then it shows one step in large type, with the ingredients of that step, and the best photo of that step from an earlier meal. A camera button keeps a new one. The buttons are large, because your hands are dirty. The screen stays on, and a step with a time has its timer. The timer rings until you stop it. When you finish, the plugin takes the food out of the pantry. You can add a photo, a rating, and a note for the next time.
+Before the first step, [Cook Mode](../architecture/cook-mode.md) lists what to get out, in the groups of the recipe, such as "Dry" and "Wet". When a line such as "pasta" fits two food items, it selects the one to use first, and you only check it. Then it shows one step in large type, with the ingredients of that step, and the best photo of that step from an earlier meal. A camera button keeps a new one. The buttons are large, because your hands are dirty. The screen stays on, and a step with a time has its timer. When the time is up, the alarm rings until you tap "OK", or for one minute. When you finish, the plugin takes the food out of the pantry. You can add a photo, a rating, and a note for the next time.
 
 ## The settings fit the plugin to your vault
 

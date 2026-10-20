@@ -8,8 +8,8 @@ bought: 2026-10-17
 
 ## Brands
 
-- Brand A
+- Brand A · buy again
   ![[Taco seasoning - Brand A.jpg]]
-- Brand B
+- Brand B · avoid
   ![[Taco seasoning - Brand B.jpg]]
 - Brand C

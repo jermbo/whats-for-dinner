@@ -10,7 +10,7 @@ import { suggestionsOf } from '../shop/suggestions';
 import { storeOrderOf } from '../shop/store-order';
 import { storesOf } from '../shop/stores';
 import { cartOf, isPantryItem, listOf, type TripItem } from '../shop/trip';
-import type { Meal } from './types';
+import type { Meal } from '../plan/types';
 
 export function mealNeeds(meals: Meal[], pantryFolder: string) {
 	return needsOf(

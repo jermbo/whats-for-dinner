@@ -73,6 +73,16 @@ export const daysLeft = (row: StockRow, today: string) =>
 export const isSoon = (row: StockRow, today: string, soonDays: number) =>
 	(daysLeft(row, today) ?? 9999) <= soonDays;
 
+// What a group needs from you: its lines past their date, soon but not past, and low.
+export function attentionOf(rows: StockRow[], today: string, soonDays: number) {
+	const past = (row: StockRow) => (daysLeft(row, today) ?? 0) < 0;
+	return {
+		past: rows.filter(past).length,
+		soon: rows.filter((row) => isSoon(row, today, soonDays) && !past(row)).length,
+		low: rows.filter(isLow).length
+	};
+}
+
 // The text that you type finds a food item by its name, its other names, or the names of its brands.
 export function isFound(food: FoodNote, text: string): boolean {
 	const words = text.trim().toLowerCase();
