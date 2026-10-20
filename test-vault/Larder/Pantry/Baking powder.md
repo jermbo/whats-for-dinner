@@ -1,7 +1,3 @@
----
-bought: 2026-10-17
----
-
-| Place          | Left | Size    | Use by |
-| -------------- | ---- | ------- | ------ |
-| Kitchen pantry | full | 57.5 ml |        |
+| Place          | Left | Size  | Use by     |
+| -------------- | ---- | ----- | ---------- |
+| Kitchen pantry | 1/2  | 230 g | 2027-05-01 |
