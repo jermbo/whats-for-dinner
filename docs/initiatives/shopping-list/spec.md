@@ -115,7 +115,7 @@ Architecture pages that change:
 - [Food item note](../../architecture/food-item-note.md): the properties `staple` and `bought`.
 - [Notes of the kitchen](../../architecture/notes-of-the-kitchen.md): a fourth kind of note, and a data file with no cart.
 - [Settings](../../architecture/settings.md): two folders.
-- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the [roadmap](../../features/roadmap.md).
+- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the roadmap.
 
 A page that is new: the form of the shopping note, from the page [shopping note](shopping-note.md) of this initiative.
 

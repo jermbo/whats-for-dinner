@@ -41,7 +41,7 @@ A file can start with one comment that tells its job, and why the job is as it i
 1. No comment that says what the next line says.
 2. No code in a comment. Git has the old code.
 3. No history, no date, and no author. Git has them.
-4. No "TODO". The work that is left is in the [roadmap](../features/roadmap.md).
+4. No "TODO". Work that is left is not in the code.
 5. A `catch` that does nothing has a comment that tells why nothing is correct.
 6. A comment changes in the same step as its code. A comment that is not true goes out.
 7. A comment has short sentences, and the words of the glossary.

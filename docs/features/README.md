@@ -87,4 +87,3 @@ The plugin works on the two devices and with no connection. Obsidian moves the v
 ## Further reading
 
 - [Vision](../vision.md): the problem that these features solve.
-- [Roadmap](roadmap.md): what is left before the plugin does all of this.

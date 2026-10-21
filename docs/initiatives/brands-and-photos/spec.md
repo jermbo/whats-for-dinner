@@ -89,7 +89,7 @@ Architecture pages that change:
 - [Pantry](../../architecture/pantry.md): the find field, and the brands in the form.
 - [Setup](../../architecture/setup.md): the photo of a brand in the first food step.
 - [End of a meal](../../architecture/end-of-a-meal.md): the folder, the name, and the size of a photo, for a brand as for a recipe.
-- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the [roadmap](../../features/roadmap.md).
+- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the roadmap.
 
 Notes and data that get a different form:
 

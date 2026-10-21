@@ -26,7 +26,7 @@ The test of a page is one question: after 90 seconds, can a new reader tell what
 | It teaches          | It gives the problem, the mechanism, and an example. A list of rules does not teach.                |
 | It is not a copy    | It tells something that no other page tells.                                                        |
 | It tells the system | It tells what the system does, and why. It must agree with the code, but it does not copy the code. |
-| It has no status    | It does not tell what is planned or what is done. Only the roadmap does that.                       |
+| It has no status    | It does not tell what is planned or what is done.                                                   |
 | It comes first      | A new feature or a new rule gets its page first. The code comes after the page.                     |
 
 ## How a page is built

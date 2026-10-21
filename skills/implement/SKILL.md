@@ -25,7 +25,7 @@ The story tells what the persona does. The architecture pages tell how the syste
 2. Change a page that tells it differently. Add a page for a mechanism that has no page.
 3. Move each word that the story uses from the glossary of the initiative to `docs/glossary.md`.
 4. Add each new page to "Architecture" of the story.
-5. Change `docs/features/README.md` when the story changes what the plugin does, and `docs/features/roadmap.md` when it changes what is left.
+5. Change `docs/features/README.md` when the story changes what the plugin does.
 
 A page tells the system as it is when the story is done. Each page follows `docs/standards/documentation-standards.md`.
 

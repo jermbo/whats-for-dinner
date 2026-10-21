@@ -112,7 +112,7 @@ Architecture pages that change:
 - [Put away](../../architecture/put-away.md) and [facts of an item](../../architecture/put-away-facts.md): one line for each package, "+ package", the chip "Loose", and the empty row.
 - [Receipt](../../architecture/receipt.md): one row for each package.
 - [End of a meal](../../architecture/end-of-a-meal.md) and [use soon](../../architecture/use-soon.md): a meal that takes from more than one package.
-- The wiki [glossary](../../glossary.md): package, package size, left, step, open package, sealed, and the new meaning of row. The [features](../../features/README.md) page and the [roadmap](../../features/roadmap.md): the roadmap item on the full amount of the bar goes.
+- The wiki [glossary](../../glossary.md): package, package size, left, step, open package, sealed, and the new meaning of row. The [features](../../features/README.md) page : the roadmap item on the full amount of the bar goes.
 
 Notes and data that get a different form:
 

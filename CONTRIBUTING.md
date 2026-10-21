@@ -5,8 +5,6 @@ This page is for you if you want to build What's for Dinner from its source, or 
 ## Where to read
 
 - [Wiki](docs/README.md): how the plugin works, from the full picture down to the exact rules.
-- [Build plan](PLAN.md): the slices of the first version, and the choices that are open.
-- [Roadmap](docs/features/roadmap.md): what is left.
 - [Workflow](docs/standards/workflow.md): how a change goes from a discussion to code.
 
 ## How to run it

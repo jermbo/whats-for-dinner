@@ -8,7 +8,7 @@ parent: ../../README.md
 
 # Decision log: open choices of the first version
 
-The eight slices of the [build plan](../../../PLAN.md) were built before each choice had a decision, so that the full loop could be tested. The plan has a table "Choices that are not decided". This page closes that table, one choice at a time, and records each decision with its reason.
+The eight slices of the build plan were built before each choice had a decision, so that the full loop could be tested. The plan has a table "Choices that are not decided". This page closes that table, one choice at a time, and records each decision with its reason.
 
 > **Replaced in part.** The [simple pantry](../simple-pantry/decision-log.md) of the same version replaces decisions 3, 6, 7, and 9: the vault has no unit system, and the card with its stops replaces the bar in round steps and the field "Package size". Decisions 1, 2, 4, 5, and 8 stay.
 
@@ -54,7 +54,7 @@ The other 33 rows are open. This grill takes them in groups by subject:
    - c. The fields of entry accept the units of the other system and write the units of the vault. You type "8 oz", and the row gets "227 g", rounded to a whole gram or millilitre. You read the label as it is, and you do not calculate at the shelf.
    - d. The unit system is a setting, and setup asks it with metric selected. A change of the setting later does not change the rows that exist.
    - e. The imperial system is oz and lb for mass, and fl oz, cup, qt, and gal for volume.
-   - f. Out of scope: a toggle that shows a recipe in the other system. It is an idea on the [roadmap](../../features/roadmap.md).
+   - f. Out of scope: a toggle that shows a recipe in the other system. It is an idea on the roadmap.
 4. **Food that the plugin cannot count is "in the pantry", with a mark "check".** It counts in the "7 of 9", and it stays off the list. The recipe card, the plan, and Get out show the mark on that line. Two cases give the mark: a count against a mass or a volume, such as "1 onion" against a row of 500 g, and a row with no number, such as water "tap". The reason: Get out is where you put each ingredient on the counter before you start. Food that you do not buy, such as water, is still an ingredient to call out, and the mark tells you that this line is not a count. Two options were rejected:
    - "In the pantry" with no mark, as today. A jar that is nearly empty looks full.
    - Missing, and on the list. The onion goes on the list each week, and you have 500 g.
@@ -127,4 +127,4 @@ Each other decision keeps what is built.
 
 ## Further reading
 
-- [Roadmap](../../features/roadmap.md): the five ideas with no decision, which this grill does not close.
+- Roadmap: the five ideas with no decision, which this grill does not close.
