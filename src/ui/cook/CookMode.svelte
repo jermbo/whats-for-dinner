@@ -48,6 +48,7 @@
 		from = cookSlideFrom(page, to);
 		page = Math.max(0, Math.min(last, to));
 		noteOpen = false;
+		asking = false;
 	}
 
 	// The ingredients that are on the counter. You mark them before you start.
@@ -138,6 +139,20 @@
 
 	let saving = $state(false);
 
+	// A timer stops when Cook Mode closes, so a running timer asks first. A timer that rang waits
+	// for your "OK", so it counts too.
+	let asking = $state(false);
+	const question = $derived(
+		timers.length === 1
+			? '1 timer is running. Exit and stop it?'
+			: `${timers.length} timers are running. Exit and stop them?`
+	);
+
+	function leave() {
+		if (timers.length) asking = true;
+		else onclose();
+	}
+
 	async function finish(result: CookResult) {
 		if (!(await kitchen.cook.finishCooking(entry.path, result))) return;
 		kitchen.notify('The pantry is correct again.');
@@ -157,7 +172,7 @@
 				></span>
 			{/each}
 		</div>
-		<Button kind="link" onclick={onclose}>Exit</Button>
+		<Button kind="link" onclick={leave}>Exit</Button>
 	</header>
 
 	{#if others.length}
@@ -316,15 +331,22 @@
 	<!-- The two buttons have the same size and the same place on each page. -->
 	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav">
 		<HiddenName id="{uid}-nav" text="Steps" />
-		<Button disabled={page === 0} onclick={() => go(page - 1)}>← Back</Button>
-		{#if page < last}
-			<Button kind="olive" onclick={() => go(page + 1)}>
-				{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'} →
-			</Button>
+		{#if asking}
+			<p class="wfd-cook__question" role="alert">{question}</p>
+			<Button kind="danger" onclick={onclose}>Exit</Button>
+			<Button kind="olive" onclick={() => (asking = false)}>Keep cooking</Button>
 		{:else}
-			<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>
-				{saving ? 'One moment' : 'Update the pantry'}
-			</Button>
+			<!-- On "Get out", the thumb is on "Back" already, so it is a way out too. -->
+			<Button onclick={() => (page === 0 ? leave() : go(page - 1))}>← Back</Button>
+			{#if page < last}
+				<Button kind="olive" onclick={() => go(page + 1)}>
+					{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'} →
+				</Button>
+			{:else}
+				<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>
+					{saving ? 'One moment' : 'Update the pantry'}
+				</Button>
+			{/if}
 		{/if}
 	</nav>
 </article>
@@ -680,6 +702,14 @@
 		flex: none;
 		grid-template-columns: 1fr 2fr;
 		gap: var(--wfd-space-stack);
+	}
+
+	.wfd-cook__question {
+		grid-column: 1 / -1;
+		margin: 0;
+		font-size: var(--wfd-font-size-name);
+		font-weight: 700;
+		text-align: center;
 	}
 
 	.wfd-cook__nav :global(button.wfd-button) {

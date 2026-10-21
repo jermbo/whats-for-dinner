@@ -48,5 +48,5 @@ A recipe can also tell its [preparation](preparation.md): the work that it needs
 
 ## Further reading
 
-- [Plan](plan.md): how a recipe becomes a meal of the week.
+- [Plan](plan.md): how a recipe becomes a meal of the week. "Add a meal" in the Plan opens this list in the sequence "Best for the pantry".
 - [Notes of the kitchen](notes-of-the-kitchen.md): how the plugin finds the notes that are recipes.

@@ -12,7 +12,7 @@ With no list, you buy what you have and you forget what you need. This page tell
 
 ## The list is the plan minus the pantry
 
-The plugin takes each ingredient of each meal of the [plan](plan.md) that you did not cook. It adds the amounts for each food item. Then it takes off what the [pantry](pantry.md) has. If an amount is left, it is a row of the list.
+The plugin takes each ingredient of each meal of the [plan](plan.md), and of each side of that meal that is a recipe. A row names the main dish as its meal. It adds the amounts for each food item. Then it takes off what the [pantry](pantry.md) has. If an amount is left, it is a row of the list.
 
 One meal needs 1 onion and a second meal needs 2. The pantry has 1 onion. The list has one row: "Onion, 2".
 

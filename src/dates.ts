@@ -28,3 +28,4 @@ export function showDate(date: string): string {
 	const year = day.getFullYear() === new Date().getFullYear() ? undefined : 'numeric';
 	return day.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year });
 }
+

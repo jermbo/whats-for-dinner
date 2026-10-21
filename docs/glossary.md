@@ -67,8 +67,11 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Source photo | A photo of the original of a recipe, such as the card or the page of the cookbook. [Intake](architecture/intake.md) puts it below the title. |
 | Step photo  | A photo that shows one [step](architecture/steps.md) of a recipe, in the note below that step. The mark `\|best` tells the best one. |
 | Gallery     | The [view](architecture/gallery.md) of the records of a recipe that have a photo: each photo with its date, its rating, and its note. |
-| Meal        | A recipe that is in the [plan](architecture/plan.md).                                                     |
-| Week        | The meals of the plan that you did not cook.                                                              |
+| Meal        | A main dish and its sides, which you eat at one time. A meal is in the [plan](architecture/plan.md) until you cook it. |
+| Dish        | One part of a meal: a recipe, or only a name, such as "Salad".                                           |
+| Main dish   | The first dish of a meal: a recipe. The card of the meal has its name.                                    |
+| Side        | A dish that goes with a main dish, such as mashed potatoes. "Side" is also the type of a recipe with the tag "side".                  |
+| Week        | The meals of the plan: the options that you planned at a calm moment.                                     |
 
 ## The store and the stove
 

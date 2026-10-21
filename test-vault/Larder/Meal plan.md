@@ -1,4 +1,3 @@
-- [ ] [[Recipes/Banana oat muffins|Banana oat muffins]]
-- [ ] [[Recipes/Mashed potatoes|Mashed potatoes]]
-- [ ] [[Recipes/Pancakes|Pancakes]]
+- [ ] [[Recipes/Boiled eggs|Boiled eggs]]
 - [ ] [[Recipes/Spinach omelette|Spinach omelette]]
+- [ ] [[Recipes/Chicken noodle soup|Chicken noodle soup]]

@@ -55,7 +55,7 @@ The photo goes into the folder `Photos` of the recipes folder, with a name that 
 
 ## The plan and the next time
 
-If the recipe is a meal of the week, its task in the [plan note](plan-note.md) is done.
+If the recipe is the main dish of a meal of the plan, the meal leaves the [plan note](plan-note.md): its task and its sides go out. A side that you cook alone does not change the plan note.
 
 The next time that you cook the recipe, each page of Cook Mode shows the newest note of the record. Thus you see "Less curry paste" before you add the curry paste.
 

@@ -32,11 +32,11 @@ You find a recipe by its name or by an ingredient. A filter shows only the recip
 
 ## The week has a plan before it starts
 
-At a calm moment, you choose the meals of the [week](../architecture/plan.md). You start with the dinners. Then you add breakfasts, lunches, and snacks, if you want them. The week has room for 7 meals of each type, and you do not have to fill it. The plugin proposes recipes that use up your pantry. A meal has no fixed day, so one bad day does not break the plan.
+At a calm moment, you choose the meals of the [week](../architecture/plan.md). "Add a meal" opens your recipes, with the ones that use up your pantry first. The week is one list of options, with no groups to fill: you start with the dinners, and you add breakfasts, lunches, and snacks if you want them. A meal is a main dish with its sides, such as beef tacos with honey glazed carrots and a salad. A side is a recipe, or only a name.
 
-## The day starts with a look at the meal
+## The day starts with a look at the meals
 
-On the day, you select the meal that you will cook. Some meals need preparation, such as beef that must come out of the freezer. The plugin shows the preparation, and you confirm it when it is done. If you forgot the preparation, you select a different meal of the week.
+On the day, you flag the meal that you plan to cook, and it goes to the top, into "Tonight", as a large dark card. So you see at a glance what you selected. Some meals need preparation, such as beef that must come out of the freezer. The flagged meal shows the preparation, and you confirm it when it is done. The flag is optional: each meal has "Cook". If you forgot the preparation, you cook a different meal: the other meals are still options. When you finish a meal, it leaves the plan, and the meals that you did not cook stay for the next days.
 
 You write the preparation in the recipe note, as a callout of the type "prep". A callout is a box with a colour and an icon, so the preparation stands out when you read the note.
 

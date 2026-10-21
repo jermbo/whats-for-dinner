@@ -29,7 +29,7 @@ A step with a time shows its clock and the button "Start". After that, the timer
 
 Thus you start a timer at step 3, and you see its time while you are at step 4.
 
-A timer is part of Cook Mode. If you exit Cook Mode, all timers stop.
+A timer is part of Cook Mode. If you exit Cook Mode, all timers stop. So while a timer runs, "Exit", and "Back" on "Get out", ask first: "1 timer is running. Exit and stop it?". The two buttons of the page change to "Keep cooking" and "Exit", in the same place. A timer that rang and waits for "OK" counts as running, because you have not answered it.
 
 ## The alarm rings until you answer
 
