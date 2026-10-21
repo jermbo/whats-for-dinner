@@ -5,7 +5,8 @@
 		// The number of items that wait in each stage.
 		counts: Record<Stage, number>;
 		value: Stage;
-		onchange: (stage: Stage) => void;
+		// The label of the stage that you tapped is where its circle starts.
+		onchange: (stage: Stage, label: HTMLElement) => void;
 	};
 	let { counts, value, onchange }: Props = $props();
 
@@ -27,7 +28,7 @@
 				type="radio"
 				name={uid}
 				checked={stage === value}
-				onchange={() => onchange(stage)}
+				onchange={(event) => onchange(stage, event.currentTarget.parentElement ?? event.currentTarget)}
 			/>
 			{#key counts[stage]}
 				<span class="wfd-stages__count wfd-number">{counts[stage]}</span>

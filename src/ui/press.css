@@ -36,3 +36,8 @@
 		transform: scale(0);
 	}
 }
+
+/* A surface that grows is clear while the copy of the glide grows under it. */
+.wfd [data-glide-clear] {
+	background-color: transparent !important;
+}

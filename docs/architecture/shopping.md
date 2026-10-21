@@ -34,7 +34,7 @@ A suggestion that you accepted and an item of your own are extras: items that ar
 
 ## A trip has three stages
 
-A trip has three moments: you decide the extras, you shop, and you put the food away. The Shop part has one stage for each, in a strip at the top: "1 Extras", "2 Shop", and "3 Put away". An item goes from a suggestion to the list, from the list to the cart, and from the cart to the pantry. Each stage moves it one place, and the count of a stage tells how many items wait there.
+A trip has three moments: you decide the extras, you shop, and you put the food away. The Shop part has one stage for each, in a strip at the top: "1 Extras", "2 Shop", and "3 Put away". An item goes from a suggestion to the list, from the list to the cart, and from the cart to the pantry. Each stage moves it one place, and the count of a stage tells how many items wait there. A new stage comes in under a circle of paper that grows from the point of your tap and covers only the stage, so the strip stays in view.
 
 The stage Extras starts with one line, such as "Your meals: 6 items on the list". The meals need no action from you, so the stage shows only the [suggestions](suggestions.md) and the field "Add an item".
 

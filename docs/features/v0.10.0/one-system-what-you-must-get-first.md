@@ -26,6 +26,7 @@ As the [planner](../../personas.md), I want an open recipe to show the food that
 3. A row of "To get or check" has the name at the size `name`, the amount, and a sticker: "None" dashed, "Low" amber, or "Check"
    - a. The rows have the sequence: none, then low, then check
    - b. A recipe with no row shows "All in the pantry ✓" at the size `title`
+   - c. A recipe with no ingredient shows only "No ingredients", with no meter. A long name or amount wraps in its column
 4. A chip of "In the pantry" has the name, and the amount in small text
 5. The groups of the recipe do not show here
 6. With 34 rem or more of width, the description, the preparation, and the actions are in a column next to the food: 3 parts food, 2 parts method

@@ -1,3 +1,4 @@
+import { easeOf, timeOf } from './motion';
 import { lastTap } from './tap';
 
 // The point in a card where its circle starts: an element of the card that asks for it, such as
@@ -15,8 +16,7 @@ export function originOf(card: HTMLElement): { x: number; y: number } {
 
 // The time of a circle is two moves, from the motion tokens, so less motion makes it 0.
 export function inkLength(card: HTMLElement): number {
-	const move = getComputedStyle(card).getPropertyValue('--wfd-motion-move').trim();
-	return (parseFloat(move) || 0) * (move.endsWith('ms') ? 1 : 1000) * 2;
+	return timeOf(card, 'move') * 2;
 }
 
 // Grows or shrinks one circle of a card from its point. Only the scale of the circle moves, so
@@ -44,7 +44,7 @@ export function spread(card: HTMLElement, layer: HTMLElement, on: boolean, durat
 	const scales = on ? ['scale(0)', 'scale(1)'] : ['scale(1)', 'scale(0)'];
 	const motion = layer.animate(
 		scales.map((transform) => ({ transform })),
-		{ duration, easing: getComputedStyle(card).getPropertyValue('--wfd-ease-out'), fill: 'forwards' }
+		{ duration, easing: easeOf(card), fill: 'forwards' }
 	);
 	motion.onfinish = () => {
 		layer.classList.remove('wfd-ink--circle');

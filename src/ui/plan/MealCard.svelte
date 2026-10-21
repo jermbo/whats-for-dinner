@@ -188,6 +188,7 @@
 		margin: 0;
 		color: var(--wfd-color-text);
 		font-size: var(--wfd-font-size-name);
+		overflow-wrap: anywhere;
 	}
 
 	/* The meal of tonight is the largest name of the Plan, so you see it first. */

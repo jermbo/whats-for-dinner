@@ -1,56 +1,94 @@
+import { easeOf, timeOf } from './motion';
+import { lastTap } from './tap';
+
 // A screen of its own opens with a circle: it grows from the button that you tapped until it
 // covers the window, the new screen opens under it, and the circle fades. The circle has the
-// colour of the new screen, so the change has no flash.
+// colour of the new screen, so the change has no flash. A stage of the Shop changes the same way,
+// with a circle that covers only the stage.
 
-const GROW = 480;
-const FADE = 260;
+// The circle is a bit larger than its area. With the soft end of the easing, it covers the area
+// at about half its time, so the new screen opens then and does not wait for the end.
+const OVER = 1.1;
+const COVERED = 0.5;
+// The radius of the circle at its start: the circle of the arrow of a pill.
+const START = 22;
 
 type Role = 'frame' | 'bg';
+type Box = { left: number; top: number; width: number; height: number };
 
 // The start of the circle: the arrow of a pill, the point of the tap, or the middle of the button.
-function startOf(event: MouseEvent): { x: number; y: number } {
-	const button = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
-	const arrow = button?.querySelector('.wfd-button__arrow')?.getBoundingClientRect();
+function startOf(source: HTMLElement): { x: number; y: number } {
+	const arrow = source.querySelector('.wfd-button__arrow')?.getBoundingClientRect();
 	if (arrow) return { x: arrow.left + arrow.width / 2, y: arrow.top + arrow.height / 2 };
-	if (event.detail > 0) return { x: event.clientX, y: event.clientY };
-	const box = button?.getBoundingClientRect();
-	return box ? { x: box.left + box.width / 2, y: box.top + box.height / 2 } : { x: 0, y: 0 };
+	const tap = lastTap();
+	if (tap) return tap;
+	const box = source.getBoundingClientRect();
+	return { x: box.left + box.width / 2, y: box.top + box.height / 2 };
 }
 
-export function coverThen(event: MouseEvent, role: Role, open: () => void) {
-	const source = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
-	if (!source || matchMedia('(prefers-reduced-motion: reduce)').matches) return open();
-	const { x, y } = startOf(event);
+// The part of the area that is in the window: a stage can be longer than the screen.
+function boxOf(area: HTMLElement | undefined): Box {
+	if (!area) return { left: 0, top: 0, width: innerWidth, height: innerHeight };
+	const box = area.getBoundingClientRect();
+	const top = Math.max(box.top, 0);
+	return { left: box.left, top, width: box.width, height: Math.min(box.bottom, innerHeight) - top };
+}
+
+// Grows the circle from `source` over `area`, or over the window, and calls `open` under it.
+export function cover(source: HTMLElement, role: Role, open: () => void, area?: HTMLElement) {
+	const grow = timeOf(source, 'move') * 2;
+	if (!grow) return open();
+	const easing = easeOf(source);
 	const colour = getComputedStyle(source).getPropertyValue(`--wfd-color-${role}`);
-	const far = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-	// A circle as large as the window, at the start point. Only its scale moves, so the browser
-	// moves it with no new paint, also on a phone.
-	const cover = document.createElement('div');
-	Object.assign(cover.style, {
+	const box = boxOf(area);
+	const start = startOf(source);
+	const x = start.x - box.left;
+	const y = start.y - box.top;
+	const far = OVER * Math.hypot(Math.max(x, box.width - x), Math.max(y, box.height - y));
+	// The frame holds the circle in its area. It does not move, so it costs no new paint.
+	const frame = document.createElement('div');
+	Object.assign(frame.style, {
 		position: 'fixed',
+		left: `${box.left}px`,
+		top: `${box.top}px`,
+		width: `${box.width}px`,
+		height: `${box.height}px`,
+		zIndex: '50',
+		overflow: 'hidden',
+		pointerEvents: 'none'
+	});
+	// Only the scale of the circle moves, so the browser moves it with no new paint, also on a phone.
+	const circle = document.createElement('div');
+	Object.assign(circle.style, {
+		position: 'absolute',
 		left: `${x - far}px`,
 		top: `${y - far}px`,
 		width: `${far * 2}px`,
 		height: `${far * 2}px`,
-		zIndex: '50',
 		borderRadius: '50%',
-		pointerEvents: 'none',
 		background: colour,
 		willChange: 'transform'
 	});
-	document.body.append(cover);
-	// Slow at the start and at the end, so the circle leaves the button and lands on the edges.
-	const grow = cover.animate(
-		[{ transform: `scale(${22 / far})` }, { transform: 'scale(1)' }],
-		{ duration: GROW, easing: 'cubic-bezier(0.65, 0, 0.35, 1)', fill: 'forwards' }
+	frame.append(circle);
+	document.body.append(frame);
+	const growing = circle.animate(
+		[{ transform: `scale(${START / far})` }, { transform: 'scale(1)' }],
+		{ duration: grow, easing, fill: 'forwards' }
 	);
-	grow.onfinish = () => {
-		open();
-		const fade = cover.animate([{ opacity: 1 }, { opacity: 0 }], {
-			duration: FADE,
-			delay: 80,
+	setTimeout(open, grow * COVERED);
+	growing.onfinish = () => {
+		const fade = frame.animate([{ opacity: 1 }, { opacity: 0 }], {
+			duration: grow / 2,
+			easing,
 			fill: 'forwards'
 		});
-		fade.onfinish = () => cover.remove();
+		fade.onfinish = () => frame.remove();
 	};
+}
+
+// The circle from the button of a click.
+export function coverThen(event: MouseEvent, role: Role, open: () => void) {
+	const source = event.currentTarget instanceof HTMLElement ? event.currentTarget : null;
+	if (!source) return open();
+	cover(source, role, open);
 }

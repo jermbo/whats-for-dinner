@@ -25,3 +25,7 @@ Uses the chicken thighs in the fridge before their date. Cold rice from yesterda
 4. Push the vegetables to the side. Cook the eggs in the free part of the pan, and stir them.
 5. Add the rice, the peas, and the chicken. Fry for 4 minutes.
 6. Add the soy sauce and mix.
+
+## Cooked
+
+- 2026-10-21

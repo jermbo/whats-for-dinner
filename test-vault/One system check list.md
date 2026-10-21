@@ -1,18 +1,19 @@
 # Check list: one system
 
-This list tests the nine one system stories of version 0.10.0, on the phone and on the desktop. Each line has one action and what you must see. The text in brackets is the story and its criterion.
+This list tests the eleven one system stories of version 0.10.0, on the phone and on the desktop. Each line has one action and what you must see. The text in brackets is the story and its criterion.
 
-The stories are: 1 [One easing and the press](../docs/features/v0.10.0/one-system-one-easing-and-the-press.md), 2 [The pill](../docs/features/v0.10.0/one-system-the-pill.md), 3 [Recipe cards in columns](../docs/features/v0.10.0/one-system-recipe-cards-in-columns.md), 4 [Open a recipe card](../docs/features/v0.10.0/one-system-open-a-recipe-card.md), 5 [What you must get first](../docs/features/v0.10.0/one-system-what-you-must-get-first.md), 6 [Edit a recipe in its card](../docs/features/v0.10.0/one-system-edit-a-recipe-in-its-card.md), 7 [A circle to a screen](../docs/features/v0.10.0/one-system-a-circle-to-a-screen.md), 8 [Open a food card](../docs/features/v0.10.0/one-system-open-a-food-card.md), 9 [Tonight with the ink](../docs/features/v0.10.0/one-system-tonight-with-the-ink.md).
+The stories are: 1 [One easing and the press](../docs/features/v0.10.0/one-system-one-easing-and-the-press.md), 2 [The pill](../docs/features/v0.10.0/one-system-the-pill.md), 3 [Recipe cards in columns](../docs/features/v0.10.0/one-system-recipe-cards-in-columns.md), 4 [Open a recipe card](../docs/features/v0.10.0/one-system-open-a-recipe-card.md), 5 [What you must get first](../docs/features/v0.10.0/one-system-what-you-must-get-first.md), 6 [Edit a recipe in its card](../docs/features/v0.10.0/one-system-edit-a-recipe-in-its-card.md), 7 [A circle to a screen](../docs/features/v0.10.0/one-system-a-circle-to-a-screen.md), 8 [Open a food card](../docs/features/v0.10.0/one-system-open-a-food-card.md), 9 [Tonight with the ink](../docs/features/v0.10.0/one-system-tonight-with-the-ink.md), 10 [A circle between stages](../docs/features/v0.10.0/one-system-a-circle-between-stages.md), 11 [Cook Mode closes with a circle](../docs/features/v0.10.0/one-system-cook-mode-closes-with-a-circle.md).
 
 ## Before you start
 
 - [ ] The build made `main.js` again. Put the plugin off and on, or restart Obsidian.
 - [ ] `Larder/Meal plan.md` has 3 meals with no date: Boiled eggs, Spinach omelette, Chicken noodle soup.
-- [ ] Less motion is off on the device. Section H turns it on.
+- [ ] Less motion is off on the device. Section K turns it on.
 
 ## A. The press and the easing
 
 - [ ] Go to: Shop. Press "In cart" on a row. A small circle grows from the finger and fades. The button does not move down. (1, AC 1)
+- [ ] On the phone, go to: Recipes. Put a finger on "+" of a card, and scroll the list up. No circle shows on "+". (decision 22)
 - [ ] Go to: Pantry. Tap the chip "Low". A circle grows from the finger, and the chip changes to ink. (1, AC 2)
 - [ ] Go to: Recipes. Tap "+" on Beef tacos. The check grows to its size and stops, with no wobble. Tap it again to take Beef tacos out. (1, AC 3)
 
@@ -64,10 +65,34 @@ Go to: Recipes.
 - [ ] Go to: Plan. Take the flag off Boiled eggs. Tap "☆ Tonight" on Spinach omelette. The ink spreads from its star. Boiled eggs and Chicken noodle soup stay at full. (9, AC 1)
 - [ ] Tap "★ Tonight". The ink goes back to the star, and Spinach omelette is in the list. (9, AC 2)
 
-## H. Less motion
+## H. A circle between stages
+
+Go to: Shop.
+
+- [ ] Tap "1 Extras" in the strip. Tap "2 Shop". The ink line slides to "Shop" at once, and a circle of paper grows from the finger over the stage. The strip stays in view. The list shows when the circle fades. (10, AC 1)
+- [ ] Tap "1 Extras". Tap "Go shopping". The circle grows from its arrow, and the list shows. (10, AC 2)
+- [ ] Mark one row "In cart". Tap "Put away". The circle grows from its arrow, and "Put away" shows. Tap "2 Shop" to go back. (10, AC 3)
+
+## I. Cook Mode closes with a circle
+
+- [ ] Go to: Recipes. Open Boiled eggs, and tap "Cook". Tap "Step 1". The first piece of the bar is white, and the second piece fills with olive from the left. Step 1 slides in from the right. (11, AC 3)
+- [ ] Tap "Exit". A circle of paper grows from "Exit", and the Recipes show when it fades. (11, AC 2)
+- [ ] Open Boiled eggs again, and tap "Cook". Tap "Step 1", "Next", "Next", and "Finish". Tap "Update the pantry". A circle of paper grows from the button, and the Recipes show when it fades. The pantry has 4 eggs less. (11, AC 1)
+
+## J. Focus and long text
+
+On the desktop, with the keyboard:
+
+- [ ] Go to: Recipes. Press Tab until the name of Chicken noodle soup has the focus ring. Press Enter. Press Tab until "Close" has the ring. Press Enter. The ring is on the name of Chicken noodle soup. ([open card](../docs/architecture/open-card.md))
+- [ ] Go to: Pantry. Press Tab until the line of Milk has the ring. Press Enter. Press Tab until "Cancel" has the ring. Press Enter. When the line of Milk is back, the ring is on it. ([open card](../docs/architecture/open-card.md))
+- [ ] On the phone, go to: Plan. Flag Chicken noodle soup for tonight. Its name wraps on two lines, and no text goes past the edge of the card. Take the flag off. (5, requirement 3 c)
+
+## K. Less motion
 
 Turn on less motion on the device.
 
 - [ ] Go to: Recipes. Open Chicken noodle soup. It is ink and at the top at once, each piece shows at once, and the count shows 6. (4, AC 6; 5, AC 6)
 - [ ] Tap "Cook". Cook Mode opens at once. Close it. (7, AC 6)
 - [ ] Press any button. No circle shows. (1, AC 5)
+- [ ] Go to: Shop. Tap "2 Shop". The list shows at once, with no circle. (10, AC 4)
+- [ ] Go to: Recipes. Open Boiled eggs, and tap "Cook". Tap "Exit". Cook Mode closes at once. (11, AC 4)

@@ -1,2 +1,2 @@
-- [ ] [[Recipes/Spinach omelette|Spinach omelette]]
 - [ ] [[Recipes/Chicken noodle soup|Chicken noodle soup]]
+- [ ] [[Recipes/Black bean soup|Black bean soup]]

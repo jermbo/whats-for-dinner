@@ -55,6 +55,12 @@ Each part has the look of the Pantry, with one language of motion: each change i
    - c. Second actions on an open card have no edge, and have a small mark (decision 10)
 10. Each button has the press: a small circle at the finger, in place of the move down (decision 18)
 11. With less motion, no circle or scroll moves, and the content shows at once (decision 12)
+12. A change of stage in the Shop is a circle of paper that covers the stage (decision 20)
+13. "Update the pantry" and "Exit" close Cook Mode with a circle of paper (decision 21)
+    - a. The piece of the bar of a new step fills from the left (decision 21)
+14. Each motion of a script takes its time and its easing from the tokens (decision 22)
+    - a. A screen opens when its circle covers the window (decision 22)
+    - b. On a touch screen, a scroll that starts on a button shows no press (decision 22)
 
 ## Out of scope
 
@@ -64,6 +70,7 @@ Each part has the look of the Pantry, with one language of motion: each change i
 4. "Add recipe" and "Convert" in a card (decision 17)
 5. The bounce for small marks (decision 16)
 6. A wave of the pieces of an open card (decision 6)
+7. A circle for each step of Cook Mode (decision 21)
 
 ## What changes in the system
 

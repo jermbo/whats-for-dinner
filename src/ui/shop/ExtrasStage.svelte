@@ -10,7 +10,7 @@
 	type Props = {
 		kitchen: Kitchen;
 		// Opens the stage Shop.
-		onshop: () => void;
+		onshop: (event: MouseEvent) => void;
 	};
 	let { kitchen, onshop }: Props = $props();
 

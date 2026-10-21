@@ -24,11 +24,11 @@ A motion lands and stops. No curve goes past its end and comes back, because a b
 
 ## The press of a button
 
-A press drops a small circle at the point of your finger. The circle has the colour of the text of the button, and it grows until it covers the button, and fades. A key press starts it at the middle. One listener on the kitchen tab gives the press to each button, so a local button of a screen has it too, with no code of its own.
+A press drops a small circle at the point of your finger. The circle has the colour of the text of the button, and it grows until it covers the button, and fades. A key press starts it at the middle. On a touch screen, the circle waits one press time: a finger that moves first starts a scroll, and shows no circle. One listener on the kitchen tab gives the press to each button, so a local button of a screen has it too, with no code of its own.
 
 ## A piece names its own motion
 
-Four pieces have a motion of their own. Each has a piece token with a duration and an easing, which point to the role tokens above.
+Five pieces have a motion of their own. Each has a piece token with a duration and an easing, which point to the role tokens above.
 
 | Piece token           | The motion of                     |
 | --------------------- | --------------------------------- |
@@ -39,6 +39,18 @@ Four pieces have a motion of their own. Each has a piece token with a duration a
 | `--wfd-press-motion`  | The circle of the press           |
 
 The ink and the paper of an [open card](open-card.md) take two moves, with `--wfd-ease-out`. An example: you want the [card](card.md) of a food item to open slower. You change the duration of `--wfd-card-motion`. The card of rice opens slower, and the chips and the buttons move as before.
+
+## A motion of a script reads the tokens
+
+The circles of the [open card](open-card.md), the glide of the things around it, and the circle that covers the window are scripts, not style blocks. Each one reads `--wfd-motion-move` and `--wfd-ease-out` of the element that it moves. So a change of a token changes them too, and with less motion they take no time.
+
+| Motion | Time |
+| ------ | ---- |
+| The ink and the paper of a card | Two moves to open, one move to close |
+| The glide of the things that a card pushes | One move |
+| A circle that covers the window or a stage | Two moves to grow, one move to fade |
+
+A circle that covers is a bit larger than the window. With the soft end of the easing, it covers the window at half its time, so the new screen opens then, and the circle grows on over it. A screen of its own, such as Cook Mode, opens and closes with such a circle, and so does a stage of the [Shop](shopping.md).
 
 ## Less motion is no motion
 

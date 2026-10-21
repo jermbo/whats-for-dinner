@@ -37,42 +37,46 @@
 
 <div class="wfd-needs" style:--wfd-needs-step="{step}ms" style:--wfd-needs-start="{start}ms">
 	<div class="wfd-needs__food">
-		<div
-			class="wfd-needs__meter"
-			role="img"
-			aria-label="{match.inPantry} of {match.ingredients.length} in the pantry"
-		>
-			{#each meter as one, index}
-				<span class="wfd-needs__piece wfd-needs__piece--{one.status}" style:--wfd-needs-n={index}
-				></span>
-			{/each}
-		</div>
-
-		{#if toGet.length}
-			<section class="wfd-needs__group">
-				<h4 class="wfd-needs__head wfd-label">To get or check · {toGet.length}</h4>
-				<ul class="wfd-needs__rows">
-					{#each toGet as one, index}
-						<li class="wfd-needs__row" style:--wfd-needs-n={index}>
-							<span class="wfd-needs__name">{showName(one.ingredient.name)}</span>
-							<span class="wfd-needs__amount">{one.ingredient.amount?.text ?? ''}</span>
-							<span class="wfd-needs__stamp">
-								{#if one.status === 'missing'}
-									<Sticker label="None" kind="dashed" />
-								{:else if one.status === 'short'}
-									<Sticker label="Low" kind="amber" />
-								{:else}
-									<Sticker label="Check" />
-								{/if}
-							</span>
-						</li>
-					{/each}
-				</ul>
-			</section>
+		{#if !match.ingredients.length}
+			<p class="wfd-needs__head wfd-label">No ingredients</p>
 		{:else}
-			<p class="wfd-needs__all wfd-display">
-				All in the pantry <span class="wfd-needs__stamp" aria-hidden="true">✓</span>
-			</p>
+			<div
+				class="wfd-needs__meter"
+				role="img"
+				aria-label="{match.inPantry} of {match.ingredients.length} in the pantry"
+			>
+				{#each meter as one, index}
+					<span class="wfd-needs__piece wfd-needs__piece--{one.status}" style:--wfd-needs-n={index}
+					></span>
+				{/each}
+			</div>
+
+			{#if toGet.length}
+				<section class="wfd-needs__group">
+					<h4 class="wfd-needs__head wfd-label">To get or check · {toGet.length}</h4>
+					<ul class="wfd-needs__rows">
+						{#each toGet as one, index}
+							<li class="wfd-needs__row" style:--wfd-needs-n={index}>
+								<span class="wfd-needs__name">{showName(one.ingredient.name)}</span>
+								<span class="wfd-needs__amount">{one.ingredient.amount?.text ?? ''}</span>
+								<span class="wfd-needs__stamp">
+									{#if one.status === 'missing'}
+										<Sticker label="None" kind="dashed" />
+									{:else if one.status === 'short'}
+										<Sticker label="Low" kind="amber" />
+									{:else}
+										<Sticker label="Check" />
+									{/if}
+								</span>
+							</li>
+						{/each}
+					</ul>
+				</section>
+			{:else}
+				<p class="wfd-needs__all wfd-display">
+					All in the pantry <span class="wfd-needs__stamp" aria-hidden="true">✓</span>
+				</p>
+			{/if}
 		{/if}
 
 		{#if have.length}
@@ -194,7 +198,7 @@
 
 	.wfd-needs__row {
 		display: grid;
-		grid-template-columns: 1fr auto auto;
+		grid-template-columns: minmax(0, 1fr) minmax(0, max-content) auto;
 		gap: var(--wfd-space-stack);
 		align-items: center;
 		min-block-size: var(--wfd-control-min);
@@ -227,6 +231,12 @@
 		100% {
 			scale: 1;
 		}
+	}
+
+	/* A long name or amount wraps in its column, and does not push the sticker off the card. */
+	.wfd-needs__name,
+	.wfd-needs__amount {
+		overflow-wrap: anywhere;
 	}
 
 	.wfd-needs__name {

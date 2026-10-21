@@ -23,6 +23,7 @@
 	import PartTop from '../parts/PartTop.svelte';
 	import { coverThen } from '../cover';
 	import { glide } from '../glide';
+	import { timeOf } from '../motion';
 	import RecipeCard from './RecipeCard.svelte';
 
 	type Props = {
@@ -110,11 +111,17 @@
 	function close() {
 		if (!openPath) return;
 		clearTimeout(closeTimer);
+		// A button of the card that had the focus goes away with the inside. The focus goes back to
+		// the name of the card, so that a keyboard and a screen reader keep their place.
+		const item = listBox?.querySelector(`[data-path="${CSS.escape(openPath)}"]`);
+		if (item?.contains(document.activeElement)) {
+			item.querySelector<HTMLElement>('[aria-expanded]')?.focus({ preventScroll: true });
+		}
 		closingPath = openPath;
 		openPath = null;
 		closeTimer = setTimeout(
 			() => change(() => (closingPath = null)),
-			prefersReducedMotion.current ? 0 : 300
+			listBox ? timeOf(listBox, 'move') : 0
 		);
 	}
 
@@ -214,6 +221,7 @@
 					style:--wfd-deal={Math.min(index, 12)}
 					transition:slide={{ duration }}
 					data-glide-surface
+					data-path={entry.path}
 				>
 					<RecipeCard
 						{kitchen}

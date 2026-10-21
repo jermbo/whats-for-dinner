@@ -1,17 +1,16 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
-	import { fly } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { Only, Sort } from '../../shop/browse';
 	import type { BarState } from '../bar-state.svelte';
+	import { cover } from '../cover';
 	import PartHead from '../parts/PartHead.svelte';
 	import PartTop from '../parts/PartTop.svelte';
 	import ExtrasStage from './ExtrasStage.svelte';
 	import type { PutAwayDraft } from './put-away-draft.svelte';
 	import PutAway from './PutAway.svelte';
 	import ShopStage from './ShopStage.svelte';
-	import { STAGES, stageWithWork, type Stage } from './stage';
+	import { stageWithWork, type Stage } from './stage';
 	import StageStrip from './StageStrip.svelte';
 
 	type Props = {
@@ -35,33 +34,37 @@
 		away: kitchen.cart.length
 	});
 
-	// The new stage comes in from the side of its place in the strip.
-	let from = $state(0);
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-
-	function open(next: Stage) {
-		from = STAGES.indexOf(next) > STAGES.indexOf(shown) ? 16 : -16;
-		stage = next;
+	// The new stage comes in under a circle of paper from the button that you tapped. The circle
+	// covers only the stage, so the strip stays in view.
+	// The strip shows the new stage at once, while the circle grows.
+	let stageBox = $state<HTMLElement>();
+	let going = $state<Stage | null>(null);
+	function open(next: Stage, source: HTMLElement | undefined = stageBox) {
+		if (next === (going ?? shown) || !source || !stageBox) return void (stage = next);
+		going = next;
+		cover(source, 'bg', () => ((stage = next), (going = null)), stageBox);
 	}
+	const fromButton = (next: Stage) => (event: MouseEvent) =>
+		open(next, event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined);
 </script>
 
 <section class="wfd-shop-part" aria-labelledby={headId}>
 	<PartTop>
 		<PartHead id={headId} title="Shop" />
-		<StageStrip {counts} value={shown} onchange={open} />
+		<StageStrip {counts} value={going ?? shown} onchange={open} />
 	</PartTop>
 
-	{#key shown}
-		<div in:fly={{ x: from, duration }}>
+	<div bind:this={stageBox}>
+		{#key shown}
 			{#if shown === 'extras'}
-				<ExtrasStage {kitchen} onshop={() => open('shop')} />
+				<ExtrasStage {kitchen} onshop={fromButton('shop')} />
 			{:else if shown === 'shop'}
-				<ShopStage {kitchen} {bar} onputaway={() => open('away')} />
+				<ShopStage {kitchen} {bar} onputaway={fromButton('away')} />
 			{:else}
 				<PutAway {kitchen} {draft} ondone={() => open(stageWithWork(kitchen))} />
 			{/if}
-		</div>
-	{/key}
+		{/key}
+	</div>
 </section>
 
 <style>

@@ -17,8 +17,8 @@ As the [cook](../../personas.md), I want a new screen to grow from the button th
 ## Requirements
 
 1. "Cook" grows the circle of its arrow into the dark frame of Cook Mode
-   - a. The circle starts at the arrow, 22 px in radius, and grows until it covers the window, in 0.48 s, slow at the start and at the end
-   - b. Cook Mode opens under it, and the circle fades in 0.26 s
+   - a. The circle starts at the arrow, 22 px in radius, and grows a bit past the window in two moves, with the one easing
+   - b. Cook Mode opens under it when it covers the window, at half its time, and the circle fades in one move
    - c. The same for "Cook" on the meal of tonight. A quiet "Cook" grows the circle from the point of the tap
 2. "Add recipe", "Convert", and a tap on the photo of a recipe grow a circle from the point of the tap
    - a. The circle has the colour of the new screen: `bg` for intake and "Convert", `frame` for the gallery
@@ -44,4 +44,4 @@ As the [cook](../../personas.md), I want a new screen to grow from the button th
 
 - [Cook Mode](../../architecture/cook-mode.md): the dark frame.
 - [Motion](../../architecture/motion.md): the circle.
-- [Decision log: one system](../../initiatives/one-system/decision-log.md): decisions 5, 10, and 17.
+- [Decision log: one system](../../initiatives/one-system/decision-log.md): decisions 5, 10, 17, and 22.

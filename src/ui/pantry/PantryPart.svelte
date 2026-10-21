@@ -39,6 +39,7 @@
 	import OutTag from './OutTag.svelte';
 	import StockLine from './StockLine.svelte';
 	import { glide } from '../glide';
+	import { timeOf } from '../motion';
 	import { scrollToTop } from '../scroll-to-top';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
@@ -129,12 +130,18 @@
 	function close() {
 		if (!open) return;
 		clearTimeout(closeTimer);
+		// The card and the button in it that had the focus go away. The focus goes to the line that
+		// takes the place of the card, so that a keyboard and a screen reader keep their place.
+		const row = binsBox?.querySelector(
+			`[data-name="${CSS.escape(open.name)}"][data-place="${CSS.escape(open.place)}"]`
+		);
+		const hadFocus = row?.contains(document.activeElement) ?? false;
 		closing = open;
 		open = null;
-		closeTimer = setTimeout(
-			() => change(() => (closing = null)),
-			prefersReducedMotion.current ? 0 : 300
-		);
+		closeTimer = setTimeout(() => {
+			change(() => (closing = null));
+			if (hadFocus) row?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+		}, binsBox ? timeOf(binsBox, 'move') : 0);
 	}
 	// A tap on a different line closes the open card at once. A card that closed in two steps
 	// above the new card would move the new card after it got to the top of the screen.
@@ -409,7 +416,12 @@
 						at={bar.sort === 'low' && out.length ? at + 1 : at}
 					>
 						{#each group.rows as row (row.key)}
-							<div class="wfd-pantry__row" transition:slide={{ duration }}>
+							<div
+								class="wfd-pantry__row"
+								transition:slide={{ duration }}
+								data-name={row.food.item.name}
+								data-place={row.place}
+							>
 								{#if isShown(row.food.item.name, row.place)}
 									{@render cardOf(row.food, row.place)}
 								{:else}

@@ -9,6 +9,8 @@
 	import InkCard from '../parts/InkCard.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
+	import { inkLength } from '../ink';
+	import { timeOf } from '../motion';
 	import { scrollToTop } from '../scroll-to-top';
 	import RecipeEdit from './RecipeEdit.svelte';
 	import RecipeNeeds from './RecipeNeeds.svelte';
@@ -34,17 +36,18 @@
 	const { recipe, match } = $derived(entry);
 	const instant = $derived(prefersReducedMotion.current);
 	const duration = $derived(instant ? 0 : 200);
-	// The meter starts as the ink covers the card. One piece of the meter is one step of the count.
-	const start = 150;
-	const step = 55;
+	let card = $state<HTMLElement>();
+
+	// The meter starts as the ink covers the card, as a bin of the pantry comes after the bin
+	// above it. One piece of the meter is one step of the count.
+	const start = $derived(card ? inkLength(card) / 4 : 0);
+	const step = $derived(card ? timeOf(card, 'press') / 2 : 0);
 
 	// "Dinner · chicken · one pot · 4 servings"
 	const line = $derived.by(() => {
 		const text = [...recipe.tags, ...recipe.yields.map((amount) => amount.text)].join(' · ');
 		return text.charAt(0).toUpperCase() + text.slice(1);
 	});
-
-	let card = $state<HTMLElement>();
 
 	// The count of the head runs up from 0 with the meter when the card opens.
 	const count = new Tween(0, { duration: 0 });
@@ -73,7 +76,7 @@
 	});
 	$effect(() => {
 		const form = open && editing;
-		const timer = setTimeout(() => (showForm = form), instant ? 0 : 140);
+		const timer = setTimeout(() => (showForm = form), card ? inkLength(card) / 4 : 0);
 		return () => clearTimeout(timer);
 	});
 	function edit() {
@@ -228,8 +231,10 @@
 	}
 
 	/* The open recipe has the largest name of the list, so you see it first. */
+	/* The open card has the name at title size, so a long word must wrap on a phone. */
 	.wfd-recipe__name {
 		font-size: var(--wfd-font-size-name);
+		overflow-wrap: anywhere;
 	}
 
 	.wfd-recipe--open .wfd-recipe__name {

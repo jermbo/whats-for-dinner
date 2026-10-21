@@ -19,6 +19,7 @@
 	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
+	import { cover } from '../cover';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -148,15 +149,20 @@
 			: `${timers.length} timers are running. Exit and stop them?`
 	);
 
-	function leave() {
+	// Cook Mode closes with a circle of paper from the button, as "Cook" opened it with a dark one.
+	const closeFrom = (source: EventTarget | null | undefined) =>
+		source instanceof HTMLElement ? cover(source, 'bg', onclose) : onclose();
+
+	function leave(event: MouseEvent) {
 		if (timers.length) asking = true;
-		else onclose();
+		else closeFrom(event.currentTarget);
 	}
 
+	let nav = $state<HTMLElement>();
 	async function finish(result: CookResult) {
 		if (!(await kitchen.cook.finishCooking(entry.path, result))) return;
 		kitchen.notify('The pantry is correct again.');
-		onclose();
+		closeFrom(nav?.querySelector('button[type="submit"]'));
 	}
 </script>
 
@@ -329,15 +335,15 @@
 	{/key}
 
 	<!-- The two buttons have the same size and the same place on each page. -->
-	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav">
+	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav" bind:this={nav}>
 		<HiddenName id="{uid}-nav" text="Steps" />
 		{#if asking}
 			<p class="wfd-cook__question" role="alert">{question}</p>
-			<Button kind="danger" onclick={onclose}>Exit</Button>
+			<Button kind="danger" onclick={(event) => closeFrom(event.currentTarget)}>Exit</Button>
 			<Button kind="olive" onclick={() => (asking = false)}>Keep cooking</Button>
 		{:else}
 			<!-- On "Get out", the thumb is on "Back" already, so it is a way out too. -->
-			<Button onclick={() => (page === 0 ? leave() : go(page - 1))}>← Back</Button>
+			<Button onclick={(event) => (page === 0 ? leave(event) : go(page - 1))}>← Back</Button>
 			{#if page < last}
 				<Button kind="olive" onclick={() => go(page + 1)}>
 					{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'}
@@ -399,8 +405,24 @@
 		background: var(--wfd-color-on-frame);
 	}
 
+	/* The piece of the step that you go to fills from the left, so the bar tells the move too. */
 	.wfd-cook__piece--now {
-		background: var(--wfd-color-primary);
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: var(--wfd-color-primary);
+			transform-origin: left;
+			animation: wfd-cook-fill var(--wfd-card-motion) backwards;
+		}
+	}
+
+	@keyframes wfd-cook-fill {
+		from {
+			scale: 0 1;
+		}
 	}
 
 	.wfd-cook__timers {

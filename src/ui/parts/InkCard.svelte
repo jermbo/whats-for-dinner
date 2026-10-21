@@ -41,11 +41,12 @@
 	});
 
 	// The text changes its colours when the circle covers about half the card, so that it stays
-	// readable while the circle grows.
+	// readable while the circle grows. With the soft end of the easing, that is at a quarter of
+	// its time.
 	let inked = $state(false);
 	$effect(() => {
 		const to = open && !paper;
-		const timer = setTimeout(() => (inked = to), length ? (to ? 140 : 100) : 0);
+		const timer = setTimeout(() => (inked = to), (to ? length : length / 2) / 4);
 		return () => clearTimeout(timer);
 	});
 </script>

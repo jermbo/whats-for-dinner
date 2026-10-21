@@ -35,7 +35,7 @@
 		kitchen: Kitchen;
 		bar: BarState<Sort, Only>;
 		// Opens the stage Put away.
-		onputaway: () => void;
+		onputaway: (event: MouseEvent) => void;
 	};
 	let { kitchen, bar, onputaway }: Props = $props();
 

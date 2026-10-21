@@ -16,7 +16,7 @@ When you cook, your hands are dirty and your eyes are on the pan. So Cook Mode s
 2. **The steps.** One page for each step, with its text and the ingredients that the text names.
 3. **Done.** You confirm what you used. You can add a rating, a note, and a photo.
 
-The two buttons do not move from page to page. On "Get out", "Back" closes Cook Mode, as "Exit" does: the thumb is already on it. The screen stays on while Cook Mode is open.
+The two buttons do not move from page to page. A new page slides in from the side to which you go, and its piece of the bar fills from the left. "Update the pantry" and "Exit" close Cook Mode with a circle of paper from the button, as "Cook" opened it with a dark circle. On "Get out", "Back" closes Cook Mode, as "Exit" does: the thumb is already on it. The screen stays on while Cook Mode is open.
 
 ## Get out selects the food item
 

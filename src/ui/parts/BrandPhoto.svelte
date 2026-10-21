@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
+	import { easeOf, timeOf } from '../motion';
 	import Button from './Button.svelte';
 	import Panel from './Panel.svelte';
 
@@ -31,7 +31,7 @@
 	function grow() {
 		const start = from?.getBoundingClientRect();
 		const end = card?.getBoundingClientRect();
-		if (!start || !end || prefersReducedMotion.current || !end.width) return;
+		if (!start || !end || !card || !end.width) return;
 		const x = start.x + start.width / 2 - (end.x + end.width / 2);
 		const y = start.y + start.height / 2 - (end.y + end.height / 2);
 		const size = start.width / end.width;
@@ -40,7 +40,7 @@
 				{ transform: `translate(${x}px, ${y}px) scale(${size})`, opacity: 0.4 },
 				{ transform: 'none', opacity: 1 }
 			],
-			{ duration: 200, easing: 'ease-out' }
+			{ duration: timeOf(card, 'move'), easing: easeOf(card) }
 		);
 	}
 
