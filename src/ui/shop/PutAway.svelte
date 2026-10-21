@@ -255,7 +255,7 @@
 			</div>
 			{#if known.length}
 				<Button kind="olive" disabled={busy} onclick={putKnown}>
-					Put away {known.length} known <span aria-hidden="true">→</span>
+					Put away {known.length} known
 				</Button>
 			{/if}
 		</StageFoot>

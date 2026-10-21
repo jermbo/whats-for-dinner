@@ -28,7 +28,7 @@ In the store, you ask "do I have this?". You type a name, a brand, or a differen
 
 The [recipe list](../architecture/recipes.md) sorts by your pantry, not by name. Each recipe shows how much of it you have: "7 of 9 in the pantry". A spoon of sugar counts against the grams in the bag. A line that the plugin cannot count, such as 1 onion against 500 g, shows "Check", so you look at the shelf. Food that spoils soon moves its recipes up, so you use the spinach before it is waste.
 
-You find a recipe by its name or by an ingredient. A filter shows only the recipes that you can cook now, or the recipes of one type, such as dinner.
+On a wide screen, the recipe cards flow down in columns, so an open recipe leaves no empty space next to it. A tap opens a recipe as a dark card that spreads from your finger and moves to the top of the screen. It shows what you lack first: the food that you have none of, then what is low, then what to check, and the food that you have as small chips. You find a recipe by its name or by an ingredient. A filter shows only the recipes that you can cook now, or the recipes of one type, such as dinner.
 
 ## The week has a plan before it starts
 
@@ -70,13 +70,13 @@ You tell the plugin which folder has your recipes and which folder is your pantr
 
 ## Each part has one look
 
-The name of an item has the same size in each list, and each action is the same button in each part. So you find the name and the number of an item at the same place, with a quick look. The text follows the zoom of Obsidian: when you make the text larger, the kitchen gets larger too. The [look](../architecture/look.md) follows the light and the dark scheme of Obsidian.
+The name of an item has the same size in each list, and each action is the same button in each part. Each button answers your finger the same way, with a small circle where you press, and each motion lands softly, with no bounce. An action that moves you forward, such as "Cook" or "Done", is the same round button in the accent colour, and a screen of its own, such as Cook Mode, grows from the button that you tapped. So you find the name and the number of an item at the same place, with a quick look. The text follows the zoom of Obsidian: when you make the text larger, the kitchen gets larger too. The [look](../architecture/look.md) follows the light and the dark scheme of Obsidian.
 
 ## Your recipes are notes that last
 
 A recipe is a plain [note](../architecture/notes-of-the-kitchen.md): a title, the ingredients, and the steps. Any text editor can open the file, with or without the plugin.
 
-You do not type the format yourself. ["Add recipe"](../architecture/intake.md) takes a recipe from a cookbook or a family card one line at a time, and each line shows the food item that it found. "Save" writes a correct note, with a link to each food item, and a new food item for each food that the pantry does not know. The source and a photo of the card stay below the title. An old note that is not a recipe gets the button ["Convert"](../architecture/convert.md), which takes it through the same flow. ["Edit"](../architecture/edit.md) on a recipe card opens a recipe in intake again, and "Save" keeps its groups, its step photos, and its records.
+You do not type the format yourself. ["Add recipe"](../architecture/intake.md) takes a recipe from a cookbook or a family card one line at a time, and each line shows the food item that it found. "Save" writes a correct note, with a link to each food item, and a new food item for each food that the pantry does not know. The source and a photo of the card stay below the title. An old note that is not a recipe gets the button ["Convert"](../architecture/convert.md), which takes it through the same flow. ["Edit"](../architecture/edit.md) on an open recipe opens it in intake again, right in its card, and "Save" keeps its groups, its step photos, and its records.
 
 Each photo of a recipe goes into the folder `Photos` next to your recipes, sharp and small enough for Obsidian Sync. A recipe card shows the photo of your last meal, and a tap opens the [gallery](../architecture/gallery.md) of each meal, with its rating and its note.
 

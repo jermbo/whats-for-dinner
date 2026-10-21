@@ -21,6 +21,7 @@
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
+	import InkCard from '../parts/InkCard.svelte';
 	import Panel from '../parts/Panel.svelte';
 
 	type Props = {
@@ -148,7 +149,8 @@
 	const done = () => ondone(cardRows(item.stocks, packages, emptied));
 </script>
 
-<Panel kind="ink">
+<!-- The card opens with its ink, and the bar is ready under the thumb at once. -->
+<InkCard open>
 	<div class="wfd-card" class:wfd-card--low={low}>
 		<div class="wfd-card__top">
 			<div class="wfd-card__head">
@@ -250,7 +252,7 @@
 			</div>
 		{/if}
 	</div>
-</Panel>
+</InkCard>
 
 <style>
 	.wfd-card {

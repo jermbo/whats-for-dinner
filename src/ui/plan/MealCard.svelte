@@ -7,9 +7,10 @@
 	import type { RecipeEntry } from '../../recipes/types';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
-	import Panel from '../parts/Panel.svelte';
+	import InkCard from '../parts/InkCard.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import PrepNote from '../recipes/PrepNote.svelte';
+	import { coverThen } from '../cover';
 	import SideField from './SideField.svelte';
 
 	type Props = {
@@ -68,7 +69,8 @@
 	}
 </script>
 
-<Panel kind={tonight ? 'ink' : 'surface'}>
+<!-- The meal of tonight is an open card: its ink spreads from the star. -->
+<InkCard open={tonight}>
 	<article class="wfd-meal" class:wfd-meal--tonight={tonight}>
 		<div class="wfd-meal__top">
 			<h3 class="wfd-meal__name wfd-display">{entry?.recipe.title ?? path}</h3>
@@ -95,7 +97,10 @@
 						<span class="wfd-meal__side-actions">
 							{#if side.entry && side.path}
 								{@const sidePath = side.path}
-								<Button kind="link" onclick={() => oncook(sidePath)}>Cook</Button>
+								<Button
+									kind="link"
+									onclick={(event) => coverThen(event, 'frame', () => oncook(sidePath))}>Cook</Button
+								>
 							{/if}
 							<Button
 								kind="link"
@@ -142,14 +147,19 @@
 				type="button"
 				aria-pressed={tonight}
 				aria-label="{entry?.recipe.title ?? path} for tonight"
+				data-ink-from
 				onclick={() => ontonight(!tonight)}
 			>
 				<span aria-hidden="true">{tonight ? '★' : '☆'}</span>
 				Tonight
 			</button>
 			{#if entry}
-				<Button kind={tonight && ready ? 'main' : 'quiet'} onclick={() => oncook(path)}>
-					Cook →
+				<Button
+					kind={tonight && ready ? 'olive' : 'quiet'}
+					arrow={tonight && ready}
+					onclick={(event) => coverThen(event, 'frame', () => oncook(path))}
+				>
+					Cook
 				</Button>
 			{/if}
 		</div>
@@ -157,7 +167,7 @@
 			<Button kind="link" onclick={onremove}>Remove</Button>
 		</div>
 	</article>
-</Panel>
+</InkCard>
 
 <style>
 	.wfd-meal {

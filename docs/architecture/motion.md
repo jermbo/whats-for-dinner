@@ -1,25 +1,30 @@
 ---
 title: Motion
-summary: "The three durations and two easings of the plugin, the motion of each piece, the rule for less motion, and the transitions of Svelte that stay."
+summary: "The three durations and the one easing of the plugin, the press of a button, the motion of each piece, the rule for less motion, and the transitions of Svelte that stay."
 parent: look.md
-updated: 2026-10-20
+updated: 2026-10-21
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Motion
 
 # Motion
 
-A chip that you tap changes to ink. A button moves down a little when you press it. Such a motion tells you that the plugin got your tap. Each change of state must feel the same in each part. This page tells the tokens of the motion.
+A chip that you tap changes to ink. A button drops a small circle at your finger when you press it. Such a motion tells you that the plugin got your tap. Each change of state must feel the same in each part. This page tells the tokens of the motion.
 
-## Three durations and two easings
+## Three durations and one easing
 
 | Token                 | Value  | Job                                            |
 | --------------------- | ------ | ---------------------------------------------- |
 | `--wfd-motion-press`  | 0.1 s  | The press of a button                          |
 | `--wfd-motion-change` | 0.2 s  | A control that changes its state, such as a chip |
 | `--wfd-motion-move`   | 0.3 s  | A thing that comes, goes, or moves on the screen |
-| `--wfd-ease-out`      | ease-out | Fast at the start, slow at the end. The usual easing. |
-| `--wfd-ease-bounce`   | a curve that goes past its end and comes back | A motion that lands |
+| `--wfd-ease-out`      | `cubic-bezier(0.22, 1, 0.36, 1)` | Fast at the start, with a long, soft end. Each motion uses it. |
+
+A motion lands and stops. No curve goes past its end and comes back, because a bounce looks generic.
+
+## The press of a button
+
+A press drops a small circle at the point of your finger. The circle has the colour of the text of the button, and it grows until it covers the button, and fades. A key press starts it at the middle. One listener on the kitchen tab gives the press to each button, so a local button of a screen has it too, with no code of its own.
 
 ## A piece names its own motion
 
@@ -30,9 +35,10 @@ Four pieces have a motion of their own. Each has a piece token with a duration a
 | `--wfd-card-motion`   | A card that opens or changes      |
 | `--wfd-row-motion`    | A row that comes or goes          |
 | `--wfd-chip-motion`   | A chip that changes to on or off  |
-| `--wfd-button-motion` | The press of a button             |
+| `--wfd-button-motion` | A local button that gets smaller under the finger |
+| `--wfd-press-motion`  | The circle of the press           |
 
-The open card of a food item settles a little as it opens, with the card motion. An example: you want to try a bounce on the [card](card.md) of a food item. You point `--wfd-card-motion` to `--wfd-ease-bounce`. The card of rice opens with a bounce, and the chips and the buttons move as before.
+The ink and the paper of an [open card](open-card.md) take two moves, with `--wfd-ease-out`. An example: you want the [card](card.md) of a food item to open slower. You change the duration of `--wfd-card-motion`. The card of rice opens slower, and the chips and the buttons move as before.
 
 ## Less motion is no motion
 

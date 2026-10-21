@@ -1,35 +1,40 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
-	import { slide } from 'svelte/transition';
-	import type { RecipeEntry } from '../../recipes/types';
-	import type { Ingredient } from '../../recipemd/types';
+	import { linear } from 'svelte/easing';
+	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { fade } from 'svelte/transition';
+	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { isReady } from '../../recipes/browse';
-	import { withoutPrep } from '../../recipes/prep';
-	import Button from '../parts/Button.svelte';
+	import type { RecipeEntry } from '../../recipes/types';
 	import Count from '../parts/Count.svelte';
-	import Panel from '../parts/Panel.svelte';
+	import InkCard from '../parts/InkCard.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 	import WeekButton from '../parts/WeekButton.svelte';
-	import IngredientRows from './IngredientRows.svelte';
-	import PrepNote from './PrepNote.svelte';
+	import { scrollToTop } from '../scroll-to-top';
+	import RecipeEdit from './RecipeEdit.svelte';
+	import RecipeNeeds from './RecipeNeeds.svelte';
 
 	type Props = {
+		kitchen: Kitchen;
 		entry: RecipeEntry;
 		planned: boolean;
+		open: boolean;
+		ontoggle: () => void;
 		onweek: () => void;
-		oncook: () => void;
-		onopen: () => void;
-		onedit: () => void;
+		oncook: (event: MouseEvent) => void;
 		// The photo of the newest meal, or null. A tap on it opens the gallery.
 		photo: string | null;
-		ongallery: () => void;
+		ongallery: (event: MouseEvent) => void;
 	};
-	let { entry, planned, onweek, oncook, onopen, onedit, photo, ongallery }: Props = $props();
+	let { kitchen, entry, planned, open, ontoggle, onweek, oncook, photo, ongallery }: Props =
+		$props();
 
 	const uid = $props.id();
 	const { recipe, match } = $derived(entry);
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
-	let open = $state(false);
+	const instant = $derived(prefersReducedMotion.current);
+	const duration = $derived(instant ? 0 : 200);
+	// The meter starts as the ink covers the card. One piece of the meter is one step of the count.
+	const start = 150;
+	const step = 55;
 
 	// "Dinner · chicken · one pot · 4 servings"
 	const line = $derived.by(() => {
@@ -37,15 +42,49 @@
 		return text.charAt(0).toUpperCase() + text.slice(1);
 	});
 
-	// The preparation has its own box, so the description shows without the callout.
-	const description = $derived(withoutPrep(recipe.description ?? ''));
+	let card = $state<HTMLElement>();
 
-	const statuses = $derived(new Map(match.ingredients.map((one) => [one.ingredient, one.status])));
-	const statusOf = (ingredient: Ingredient) => statuses.get(ingredient);
+	// The count of the head runs up from 0 with the meter when the card opens.
+	const count = new Tween(0, { duration: 0 });
+	$effect(() => {
+		const have = match.inPantry;
+		if (!open || instant) return void count.set(have, { duration: 0 });
+		count.set(0, { duration: 0 });
+		const timer = setTimeout(
+			() => count.set(have, { duration: have * step, easing: linear }),
+			start
+		);
+		return () => clearTimeout(timer);
+	});
+
+	// The card moves to the top of the screen as it opens.
+	$effect(() => {
+		if (open && card) scrollToTop(card);
+	});
+
+	// Edit: paper spreads from the button, and the form comes in on it when the paper covers about
+	// half the card. A card that closes closes its form too.
+	let editing = $state(false);
+	let showForm = $state(false);
+	$effect(() => {
+		if (!open) editing = false;
+	});
+	$effect(() => {
+		const form = open && editing;
+		const timer = setTimeout(() => (showForm = form), instant ? 0 : 140);
+		return () => clearTimeout(timer);
+	});
+	function edit() {
+		editing = true;
+		if (card) scrollToTop(card);
+	}
+
+	// The inside shows at its full height at once, so that no frame needs a new layout of the list.
+	// Only its opacity moves.
 </script>
 
-<Panel flush>
-	<article class="wfd-recipe">
+<div class="wfd-recipe" class:wfd-recipe--open={open} bind:this={card}>
+	<InkCard {open} paper={editing} flush>
 		<div class="wfd-recipe__top" class:wfd-recipe__top--photo={photo}>
 			{#if photo}
 				<button
@@ -62,7 +101,7 @@
 				type="button"
 				aria-expanded={open}
 				aria-controls="{uid}-body"
-				onclick={() => (open = !open)}
+				onclick={ontoggle}
 			>
 				<span class="wfd-recipe__name wfd-display">{recipe.title}</span>
 				<span class="wfd-recipe__line">{line}</span>
@@ -88,39 +127,41 @@
 				{/if}
 			</button>
 
-			<Count have={match.inPantry} of={match.ingredients.length} />
+			<Count have={Math.round(count.current)} of={match.ingredients.length} />
 			<WeekButton name={recipe.title} {planned} onclick={onweek} />
 		</div>
 
 		{#if open}
-			<div class="wfd-recipe__body" id="{uid}-body" transition:slide={{ duration }}>
-				{#if description}
-					<p class="wfd-recipe__description">{description}</p>
+			<div
+				class="wfd-recipe__body"
+				id="{uid}-body"
+				in:fade={{ duration }}
+			>
+				{#if showForm}
+					<RecipeEdit {kitchen} path={entry.path} onclose={() => (editing = false)} />
+				{:else}
+					<RecipeNeeds
+						{entry}
+						{start}
+						{step}
+						{oncook}
+						onedit={edit}
+						onnote={() => kitchen.open(entry.path)}
+						onclose={ontoggle}
+					/>
 				{/if}
-				{#if entry.prep}
-					<div class="wfd-recipe__prep">
-						<PrepNote text={entry.prep} />
-					</div>
-				{/if}
-				<IngredientRows ingredients={recipe.ingredients} groups={recipe.groups} {statusOf} />
-				<div class="wfd-recipe__actions">
-					<Button onclick={onopen}>Open note</Button>
-					<Button onclick={onedit}>Edit</Button>
-					<Button kind="main" onclick={oncook}>Cook →</Button>
-				</div>
 			</div>
 		{/if}
-	</article>
-</Panel>
+	</InkCard>
+</div>
 
 <style>
-
 	.wfd-recipe__top {
 		display: grid;
 		grid-template-columns: 1fr auto auto;
 		gap: var(--wfd-space-stack);
 		align-items: center;
-		padding: var(--wfd-space-inset) var(--wfd-space-inset) var(--wfd-space-inset) var(--wfd-space-inset);
+		padding: var(--wfd-space-inset);
 	}
 
 	.wfd-recipe__top--photo {
@@ -183,8 +224,13 @@
 		}
 	}
 
+	/* The open recipe has the largest name of the list, so you see it first. */
 	.wfd-recipe__name {
 		font-size: var(--wfd-font-size-name);
+	}
+
+	.wfd-recipe--open .wfd-recipe__name {
+		font-size: var(--wfd-font-size-title);
 	}
 
 	.wfd-recipe__line {
@@ -212,28 +258,6 @@
 
 	.wfd-recipe__body {
 		padding: 0 var(--wfd-space-inset) var(--wfd-space-inset);
-	}
-
-	.wfd-recipe__description {
-		margin: 0 0 var(--wfd-space-group);
-		padding-block-start: var(--wfd-space-inset);
-		border-block-start: var(--wfd-border) solid var(--wfd-color-border);
-		color: var(--wfd-color-text-muted);
-		font-size: var(--wfd-font-size-small);
-		line-height: var(--wfd-line-height-text);
-		white-space: pre-line;
-	}
-
-	.wfd-recipe__prep {
-		margin-block: var(--wfd-space-stack) var(--wfd-space-tight);
-	}
-
-	/* "Cook" is the main button, so it keeps the widest place, at the end of the row. */
-	.wfd-recipe__actions {
-		display: grid;
-		grid-template-columns: auto auto 1fr;
-		gap: var(--wfd-space-stack);
-		margin-block-start: var(--wfd-space-section);
 	}
 
 </style>

@@ -8,7 +8,7 @@ parent: intake.md
 
 # Edit
 
-A recipe changes: less sugar, one more step. You can change the note in the editor of Obsidian, but at the stove you do not type italics and links. "Edit" opens the recipe in the same [intake](intake.md) that made it. This page tells which part of the note goes into which field, and what stays that intake has no field for.
+A recipe changes: less sugar, one more step. You can change the note in the editor of Obsidian, but at the stove you do not type italics and links. "Edit" on an open recipe opens the same [intake](intake.md) that made it, on paper in the card, so you stay in the list. The command "Edit recipe" opens it as a page. This page tells which part of the note goes into which field, and what stays that intake has no field for.
 
 ## Each part has its field
 

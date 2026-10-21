@@ -1,0 +1,34 @@
+/* The tab is the place of the layers of the press, so that they scroll with the content. */
+.view-content.wfd {
+	position: relative;
+}
+
+/* The finger goes through the layer to the button under it. The layer fades as the circle grows. */
+.wfd-press {
+	position: absolute;
+	z-index: 10;
+	overflow: hidden;
+	pointer-events: none;
+	opacity: 0;
+	animation: wfd-press-fade var(--wfd-press-motion);
+}
+
+.wfd-press__circle {
+	position: absolute;
+	border-radius: 50%;
+	background: color-mix(in oklch, currentcolor 16%, transparent);
+	animation: wfd-press-grow var(--wfd-press-motion);
+}
+
+@keyframes wfd-press-fade {
+	from,
+	70% {
+		opacity: 1;
+	}
+}
+
+@keyframes wfd-press-grow {
+	from {
+		transform: scale(0);
+	}
+}

@@ -40,6 +40,12 @@ Thus the spinach that spoils on Tuesday moves the spinach omelette to the top, b
 
 You can select a different sequence, such as by rating. A filter shows only the recipes that you can cook now, or one type. The type of a recipe is its first tag, such as "dinner".
 
+The cards flow down in columns, as the bins of the [pantry](pantry.md): the sequence goes down the first column, then down the next. A column is 22 rem or wider, so a phone has one column. An open card makes only its own column longer, so no space is empty next to it. When the part opens, the cards come in one after the other.
+
+## An open recipe shows what you lack first
+
+A tap opens one recipe as an [open card](open-card.md). First comes a meter with one piece for each ingredient: dark when you have it, grey to check, amber when low, dashed when you have none. The count of the card runs up with it. Then the rows "To get or check": none first, then low, then check. Then the food that you have, as small chips. The description, the preparation, and "Cook" come last, or in a column next to the food when there is room.
+
 ## What the plugin writes in a recipe note
 
 You can write a recipe by hand, or the plugin writes it for you at [intake](intake.md), from what you type one line at a time. After that, the plugin does not change the text of your recipe. It adds only photos: a [step photo](steps.md) below its step, and its mark "best". After a meal, it adds a record at the end of the note: the date, your rating, your note, and the photo. [Cook Mode](cook-mode.md) writes it, and the [gallery](gallery.md) shows each record with a photo.

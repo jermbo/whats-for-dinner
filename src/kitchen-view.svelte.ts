@@ -3,6 +3,8 @@ import { mount, unmount } from 'svelte';
 import type { Kitchen } from './kitchen-state.svelte';
 import KitchenScreen from './ui/Kitchen.svelte';
 import { lookOf } from './ui/look';
+import { listenForPress } from './ui/press';
+import { listenForTaps } from './ui/tap';
 
 export const KITCHEN_VIEW = 'whats-for-dinner-kitchen';
 
@@ -11,6 +13,8 @@ export class KitchenView extends ItemView {
 	private kitchen: Kitchen;
 	private screen: ReturnType<typeof mount> | undefined;
 	private stopLook: (() => void) | undefined;
+	private stopPress: (() => void) | undefined;
+	private stopTaps: (() => void) | undefined;
 
 	constructor(leaf: WorkspaceLeaf, kitchen: Kitchen) {
 		super(leaf);
@@ -34,6 +38,9 @@ export class KitchenView extends ItemView {
 		this.app.workspace.onLayoutReady(() => void this.kitchen.start());
 		// The styles of the plugin apply only below this class.
 		this.contentEl.addClass('wfd');
+		this.stopPress = listenForPress(this.contentEl);
+		// Each circle of the motion starts at the last tap.
+		this.stopTaps = listenForTaps(this.contentEl);
 		// The font and the accent colour follow the settings while the tab is open.
 		this.stopLook = $effect.root(() => {
 			$effect(() => {
@@ -51,6 +58,8 @@ export class KitchenView extends ItemView {
 
 	async onClose() {
 		this.stopLook?.();
+		this.stopPress?.();
+		this.stopTaps?.();
 		if (this.screen) await unmount(this.screen);
 	}
 }

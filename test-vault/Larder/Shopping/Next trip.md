@@ -3,3 +3,4 @@
 - [ ] [[Larder/Pantry/Heavy cream|Heavy cream]]
 - [ ] [[Larder/Pantry/Shell pasta|Shell pasta]]
 - [ ] [[Larder/Pantry/Soy sauce|Soy sauce]]
+- [ ] [[Larder/Pantry/Ground beef|Ground beef]]

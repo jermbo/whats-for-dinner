@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { slide } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { FoodNote } from '../../note';
@@ -37,6 +37,7 @@
 	import OnTheList from './OnTheList.svelte';
 	import OutTag from './OutTag.svelte';
 	import StockLine from './StockLine.svelte';
+	import { scrollToTop } from '../scroll-to-top';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
 	const headId = $props.id();
@@ -186,8 +187,9 @@
 	}
 
 	// A card that opens out of view, such as after "Add to pantry", comes into view.
+	// An open card moves to the top of the screen, under the head of the part.
 	function intoView(node: HTMLElement) {
-		node.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion.current ? 'auto' : 'smooth' });
+		scrollToTop(node);
 	}
 </script>
 
@@ -281,7 +283,8 @@
 
 	<!-- The card of a food item in one place, or the form of the food item. -->
 	{#snippet cardOf(food: FoodNote, place: string)}
-		<div class="wfd-pantry__open" transition:slide={{ duration }} use:intoView>
+		<!-- The card shows at its full height at once, so that no frame needs a new layout of the bins. -->
+		<div class="wfd-pantry__open" in:fade={{ duration }} use:intoView>
 			{#if open?.form}
 				{@const start = nextSize(food.item, place) ?? ''}
 				<FoodForm
@@ -347,7 +350,7 @@
 
 	<!-- A new sequence comes in as new bins. A filter or a search moves only the rows that change. -->
 	{#key bar.sort}
-		<div class="wfd-pantry__bins">
+		<div class="wfd-pantry__bins" class:wfd-pantry__bins--focus={open !== null}>
 			<!-- In the sequence "Low first", the food that is out is the most empty, so it is first. -->
 			{#if bar.sort === 'low'}{@render outBin(0)}{/if}
 
@@ -363,7 +366,7 @@
 						at={bar.sort === 'low' && out.length ? at + 1 : at}
 					>
 						{#each group.rows as row (row.key)}
-							<div transition:slide={{ duration }}>
+							<div class="wfd-pantry__row" transition:slide={{ duration }}>
 								{#if isOpen(row.food.item.name, row.place)}
 									{@render cardOf(row.food, row.place)}
 								{:else}
@@ -442,8 +445,30 @@
 		column-gap: var(--wfd-space-section);
 	}
 
+	.wfd-pantry__bins > div,
+	.wfd-pantry__row {
+		transition: opacity var(--wfd-card-motion);
+	}
+
 	.wfd-pantry__bins > div {
 		break-inside: avoid;
+	}
+
+	/*
+	 * While a card is open, the other bins step back, and so do the other lines of its bin. Only
+	 * their opacity changes, so the browser needs no new layout and no new paint. A hover brings
+	 * one forward again.
+	 */
+	.wfd-pantry__bins--focus > div:not(:has(.wfd-pantry__open)),
+	.wfd-pantry__bins--focus > div:has(.wfd-pantry__open) .wfd-pantry__row:not(:has(.wfd-pantry__open)) {
+		opacity: 0.45;
+	}
+
+	@media (hover: hover) {
+		.wfd-pantry__bins--focus > div:hover,
+		.wfd-pantry__bins--focus .wfd-pantry__row:hover {
+			opacity: 1;
+		}
 	}
 
 	.wfd-pantry__open {

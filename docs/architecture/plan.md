@@ -25,7 +25,7 @@ A dinner is usually more than one dish. So a meal is a main dish, such as beef t
 
 ## You flag the meal for tonight
 
-On the day, you tap "☆ Tonight" on the meal that you plan to cook. It goes into the section "Tonight" at the top of the Plan, as a large dark card, and the other meals are below it as "Other options". So you see at a glance what you selected. One meal has the flag at a time: a new flag takes the old one off. A second tap takes the flag off, and the meal goes back into the list.
+On the day, you tap "☆ Tonight" on the meal that you plan to cook. It goes into the section "Tonight" at the top of the Plan, as a large dark card whose ink spreads from the star, and the other meals are below it as "Other options". So you see at a glance what you selected. One meal has the flag at a time: a new flag takes the old one off. A second tap takes the flag off, and the meal goes back into the list.
 
 The flag is optional. Each card has "Cook", with or with no flag, so a change of mind needs no step. "Cook" opens the main dish in [Cook Mode](cook-mode.md). Each side that is a recipe has its own "Cook".
 

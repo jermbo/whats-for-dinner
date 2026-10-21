@@ -2,7 +2,7 @@
 title: Pieces
 summary: "The shared pieces of the screen, each with its kinds and when to use it, so that a thing looks the same in each part."
 parent: look.md
-updated: 2026-10-20
+updated: 2026-10-21
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Pieces
@@ -21,9 +21,11 @@ A screen keeps a local control only when no piece fits, such as a photo tile, a 
 
 | Piece    | Kinds                                       | Use it for                                                                                                         |
 | -------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| Button   | `main`, `quiet`, `olive`, `danger`, `link`  | Each action. `main` is the one action of a card, `quiet` a second action, `olive` an action that completes a task, such as "Update the pantry", `danger` an action that removes a thing, and `link` an action that is not important. A link has the colour of the text around it, so it reads on ink and on the dark frame too. |
+| Button   | `main`, `quiet`, `olive`, `plain`, `danger`, `link` | Each action. `olive` is the pill: an action that completes a task or goes forward, such as "Cook", "Done", or "Update the pantry", with round ends in the accent colour. An `arrow` puts an arrow in a circle at its end, for an action that opens a different screen. `main` is the main action of a form, such as "Save". `quiet` is a second action, and `plain` a second action on an open card, with no edge and a small `mark` before its label. `danger` removes a thing, and `link` is an action that is not important. A link has the colour of the text around it, so it reads on ink and on the dark frame too. |
 | Chip     | on, off                                     | A filter or a choice that you switch with one tap.                                                                 |
 | Pick one | —                                           | A row of chips of which one is on, with a field for a value that no chip has.                                     |
+
+Each button gets the [press](motion.md): a small circle at the finger. A button does not move down.
 
 ## The pieces of a form and a card
 
@@ -31,7 +33,8 @@ A screen keeps a local control only when no piece fits, such as a photo tile, a 
 | ---------- | -------------------------------------- | -------------------------------------------------------------------------------------------- |
 | Field      | `plain`, `new`, `number`               | Each text field, date field, text area, and select of a form, with its label above it. `new` has a dashed edge: a value that is not an option yet, such as a new place. `number` has the font of the numbers, such as a price. Its focus ring is `--wfd-color-focus`. |
 | Find field | —                                      | The find field of the bar. It is a piece of its own, with room for its icons, and it has the look of a field. |
-| Panel      | `surface`, `form`, `ink`, `empty`      | The surface of a card: its background, its edge, its corner, and its padding. `form` has an edge and holds a form. `ink` is the open card of a food item. `empty` is a dashed edge with no card, such as the place of the food that is out. A flush panel has no padding, so that a photo reaches its edge. |
+| Ink card   | open, closed                           | The card of a recipe, of a food item, and of the meal of tonight. Its ink spreads from your tap when it opens, and paper spreads over the ink for a form. See [open card](open-card.md). |
+| Panel      | `surface`, `form`, `ink`, `empty`      | The surface of a card: its background, its edge, its corner, and its padding. `form` has an edge and holds a form. `ink` is a dark card with no circle. `empty` is a dashed edge with no card, such as the place of the food that is out. A flush panel has no padding, so that a photo reaches its edge. |
 
 On the ink panel, the roles of the text, the edges, and the controls take the colour on the ink. So a quiet button or a link inside the open card reads with no rule of its own. A white panel inside it gives the roles of the scheme back.
 

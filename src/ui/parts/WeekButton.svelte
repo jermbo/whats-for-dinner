@@ -61,8 +61,5 @@
 			scale: 0.3;
 			rotate: -90deg;
 		}
-		70% {
-			scale: 1.25;
-		}
 	}
 </style>

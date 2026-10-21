@@ -50,7 +50,7 @@
 	/>
 
 	<StageFoot>
-		<Button kind="main" onclick={onshop}>Go shopping <span aria-hidden="true">→</span></Button>
+		<Button kind="olive" arrow onclick={onshop}>Go shopping</Button>
 	</StageFoot>
 </section>
 

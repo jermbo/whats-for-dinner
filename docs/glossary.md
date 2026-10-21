@@ -113,6 +113,12 @@ The kitchen uses "part", "card", "row", and "line" for its own things. So the lo
 | Piece token   | A token of one piece that points to a role token, such as the motion of a card. You change it to try a different value on that piece only.      |
 | Piece         | One shared thing of the screen with its own look, such as a button, a chip, or a sticker. Each screen uses the same [piece](architecture/pieces.md). |
 | Frame         | The dark area around Cook Mode and the gallery. It is dark in the light scheme and in the dark scheme.                                          |
+| Circle        | The shape of each change of a card or a screen. It grows from the point of your tap, and goes back to it. See [open card](architecture/open-card.md). |
+| Ink           | The dark circle that opens a card. The text changes to the colour on the ink when the circle covers about half the card.                        |
+| Paper         | The light circle over the ink of a card that holds a form, such as the edit form of a recipe.                                                   |
+| Step back     | What the other cards do while a card is open: they get lighter.                                                                                 |
+| Pill          | The button of an action that completes a task or goes forward: round ends, the accent colour, and an arrow in a circle when it opens a different screen. |
+| Meter         | The bar of an open recipe, with one piece for each ingredient, in the colour of its state.                                                      |
 | Style guide   | The pages that tell the tokens, the scales, and the pieces, and when to use each one: [look](architecture/look.md) and the pages below it.       |
 
 ## The tests

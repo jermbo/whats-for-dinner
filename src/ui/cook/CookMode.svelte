@@ -340,7 +340,7 @@
 			<Button onclick={() => (page === 0 ? leave() : go(page - 1))}>← Back</Button>
 			{#if page < last}
 				<Button kind="olive" onclick={() => go(page + 1)}>
-					{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'} →
+					{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'}
 				</Button>
 			{:else}
 				<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>

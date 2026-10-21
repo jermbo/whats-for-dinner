@@ -364,9 +364,7 @@
 				</p>
 			{/if}
 			{#if inCart.length}
-				<Button kind="main" onclick={onputaway}>
-					Put away {inCart.length} <span aria-hidden="true">→</span>
-				</Button>
+				<Button kind="olive" arrow onclick={onputaway}>Put away {inCart.length}</Button>
 			{/if}
 		</StageFoot>
 	{/if}

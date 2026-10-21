@@ -20,6 +20,7 @@
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import PartTop from '../parts/PartTop.svelte';
+	import { coverThen } from '../cover';
 	import RecipeCard from './RecipeCard.svelte';
 
 	type Props = {
@@ -31,6 +32,14 @@
 	const headId = $props.id();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+
+	// When the part opens, the cards come in one after the other. A card that a filter brings back
+	// later only slides in, so the deal is for the first moment only.
+	let dealing = $state(true);
+	$effect(() => {
+		const timer = setTimeout(() => (dealing = false), 1000);
+		return () => clearTimeout(timer);
+	});
 
 	// After "Convert", the line of that note is in the list for the first frame, and then it goes
 	// out with a motion. The list is open, so that you see it.
@@ -86,9 +95,18 @@
 		}));
 	});
 
+	// One recipe is open at a time. The other cards step back while it is open.
+	let openPath = $state<string | null>(null);
+	const toggle = (path: string) => (openPath = openPath === path ? null : path);
+	function onkeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && openPath) openPath = null;
+	}
+
 	const toggleWeek = (path: string) =>
 		kitchen.plan.isPlanned(path) ? kitchen.plan.removeFromPlan(path) : kitchen.plan.addToPlan(path);
 </script>
+
+<svelte:window {onkeydown} />
 
 <section class="wfd-recipes" aria-labelledby={headId}>
 	<PartTop>
@@ -96,7 +114,10 @@
 			{#snippet side()}
 				<div class="wfd-recipes__side">
 					<Count have={readyCount} of={kitchen.recipes.length} label="ready" />
-					<Button onclick={() => kitchen.openPage({ is: 'intake' })}>Add recipe</Button>
+					<Button
+						onclick={(event) => coverThen(event, 'bg', () => kitchen.openPage({ is: 'intake' }))}
+						>Add recipe</Button
+					>
 				</div>
 			{/snippet}
 		</PartHead>
@@ -150,18 +171,29 @@
 		{#if group.title}
 			<GroupHead title={group.title} note={String(group.entries.length)} />
 		{/if}
-		<ul class="wfd-recipes__list">
-			{#each group.entries as entry (entry.path)}
-				<li transition:slide={{ duration }}>
+		<ul
+			class="wfd-recipes__list"
+			class:wfd-recipes__list--deal={dealing}
+			class:wfd-recipes__list--focus={openPath !== null}
+		>
+			{#each group.entries as entry, index (entry.path)}
+				<li
+					class="wfd-recipes__item"
+					class:wfd-recipes__item--open={entry.path === openPath}
+					style:--wfd-deal={Math.min(index, 12)}
+					transition:slide={{ duration }}
+				>
 					<RecipeCard
+						{kitchen}
 						{entry}
 						planned={kitchen.plan.isPlanned(entry.path)}
+						open={entry.path === openPath}
+						ontoggle={() => toggle(entry.path)}
 						onweek={() => toggleWeek(entry.path)}
-						oncook={() => oncook(entry.path)}
-						onopen={() => kitchen.open(entry.path)}
-						onedit={() => kitchen.openPage({ is: 'edit', path: entry.path })}
+						oncook={(event) => coverThen(event, 'frame', () => oncook(entry.path))}
 						photo={entry.photo ? kitchen.photoUrl(entry.photo, entry.path) : null}
-						ongallery={() => kitchen.openPage({ is: 'gallery', path: entry.path })}
+						ongallery={(event) =>
+							coverThen(event, 'frame', () => kitchen.openPage({ is: 'gallery', path: entry.path }))}
 					/>
 				</li>
 			{/each}
@@ -183,7 +215,11 @@
 					<li class="wfd-recipes__reason" transition:slide={{ duration }}>
 						<span class="wfd-recipes__path">{path}</span>
 						<span class="wfd-recipes__why">{reason}</span>
-						<Button onclick={() => kitchen.openPage({ is: 'convert', path })}>Convert</Button>
+						<Button
+							onclick={(event) =>
+								coverThen(event, 'bg', () => kitchen.openPage({ is: 'convert', path }))}
+							>Convert</Button
+						>
 					</li>
 				{/each}
 			</ul>
@@ -216,14 +252,48 @@
 		color: var(--wfd-color-text-muted);
 	}
 
+	/*
+	 * The cards flow down in columns, as the bins of the Pantry. An open card makes only its own
+	 * column longer, so no space is empty next to it. The sequence goes down each column.
+	 */
 	.wfd-recipes__list {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
-		gap: var(--wfd-space-stack);
-		align-items: start;
+		columns: 22rem;
+		column-gap: var(--wfd-space-stack);
 		margin: 0;
 		padding: 0;
 		list-style: none;
+	}
+
+	.wfd-recipes__item {
+		margin-block-end: var(--wfd-space-stack);
+		break-inside: avoid;
+		transition: opacity var(--wfd-card-motion);
+	}
+
+	/*
+	 * While a recipe is open, the other cards step back. Only their opacity changes, so the
+	 * browser needs no new layout and no new paint. A hover brings one forward again.
+	 */
+	.wfd-recipes__list--focus .wfd-recipes__item:not(.wfd-recipes__item--open) {
+		opacity: 0.45;
+	}
+
+	@media (hover: hover) {
+		.wfd-recipes__list--focus .wfd-recipes__item:hover {
+			opacity: 1;
+		}
+	}
+
+	.wfd-recipes__list--deal .wfd-recipes__item {
+		animation: wfd-deal calc(var(--wfd-motion-move) * 1.6) var(--wfd-ease-out) backwards;
+		animation-delay: calc(var(--wfd-deal) * var(--wfd-motion-move) * 0.12);
+	}
+
+	@keyframes wfd-deal {
+		from {
+			opacity: 0;
+			translate: 0 24px;
+		}
 	}
 
 	.wfd-recipes__rejected {

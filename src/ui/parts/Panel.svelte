@@ -61,13 +61,5 @@
 		--wfd-color-focus: var(--wfd-color-on-selected);
 
 		background: var(--wfd-color-selected);
-		animation: wfd-panel-in var(--wfd-card-motion) backwards;
-	}
-
-	/* The open card settles as it opens. With a bounce for the card motion, it goes past and comes back. */
-	@keyframes wfd-panel-in {
-		from {
-			scale: 0.97;
-		}
 	}
 </style>
