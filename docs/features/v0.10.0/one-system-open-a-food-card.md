@@ -20,7 +20,10 @@ As the [keeper](../../personas.md), I want the card of a food item to open as a 
    - a. The ink spreads from the finger, and the text changes after 140 ms
    - b. The card moves to the top of the screen, under the head of the part
    - c. The other lines and bins step back
-   - d. The ink goes back to the point of "Done", "Cancel", or the tap that closes it
+   - d. The ink goes back to the point of "Done", "Cancel", or the tap that closes it, in 0.3 s
+   - e. The card closes in two steps: while the ink goes back, the card stays in its place, its content fades, and then the card fades. Then the line takes its place. The card and its line are never on the screen together
+   - g. When the card opens or closes, each bin and line that it pushes glides to its new place in 0.32 s, also into a different column. A bin that gets shorter has a copy of its surface under it, which gets short with it
+   - f. A tap on a different line closes the open card at once, so the new card does not move after it gets to the top
 2. The card shows at its full height at once
    - a. The bar, the scale, and the buttons show when the card opens
    - b. A press on the bar works from the first frame
@@ -34,6 +37,8 @@ As the [keeper](../../personas.md), I want the card of a food item to open as a 
 2. GIVEN Milk is the last line on the screen of a phone WHEN the keeper opens it THEN the card moves up under the head of the part
 3. GIVEN the card of Milk opens WHEN the keeper presses the bar at once THEN the handle is on the package under the thumb
 4. GIVEN the card of Milk is open WHEN the keeper taps "Done" THEN the ink goes back to "Done", and the other lines come back to full
+   - a. AND the line of Milk shows only when the card is gone, with no line under the card
+5. GIVEN the card of Milk is open WHEN the keeper taps the line of Eggs THEN the card of Milk is a line at once, and the card of Eggs moves to the top and stays there
 
 ## Depends on
 

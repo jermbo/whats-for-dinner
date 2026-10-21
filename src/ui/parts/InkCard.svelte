@@ -3,8 +3,9 @@
 	import { inkLength, spread } from '../ink';
 
 	// The open card of each part. Ink spreads from the point of the tap until it covers the card,
-	// and goes back to the point of the tap that closes it. Paper spreads over the ink for a form.
-	// A card that opens as it comes, such as the card of a food item, spreads its ink at once.
+	// and goes back to the point of the tap that closes it, in half the time. Paper spreads over the
+	// ink for a form. A card that opens as it comes, such as the card of a food item, spreads its
+	// ink at once. A card that goes away goes at once: the screen closes it first, with `open`.
 	type Props = {
 		open: boolean;
 		// Paper over the ink: the card holds a form.
@@ -29,7 +30,7 @@
 	$effect(() => {
 		const inkTo = open;
 		const paperTo = open && paper;
-		const time = length;
+		const time = inkTo ? length : length / 2;
 		if (!card || !ink || !sheet) return;
 		const [node, inkLayer, paperLayer] = [card, ink, sheet];
 		const frame = requestAnimationFrame(() => {
@@ -44,17 +45,9 @@
 	let inked = $state(false);
 	$effect(() => {
 		const to = open && !paper;
-		const timer = setTimeout(() => (inked = to), length ? (to ? 140 : 160) : 0);
+		const timer = setTimeout(() => (inked = to), length ? (to ? 140 : 100) : 0);
 		return () => clearTimeout(timer);
 	});
-
-	// A card that goes away while it is open takes its ink back to the last tap first.
-	function retract(node: HTMLElement) {
-		if (!ink || !open) return { duration: 0 };
-		spread(node, ink, false, length / 2);
-		setTimeout(() => node.classList.remove('wfd-ink--inked'), length / 4);
-		return { duration: length / 2 };
-	}
 </script>
 
 <article
@@ -62,7 +55,7 @@
 	class:wfd-ink--inked={inked}
 	class:wfd-ink--flush={flush}
 	bind:this={card}
-	out:retract|global
+	data-glide-bg
 >
 	<span class="wfd-ink__layer wfd-ink__ink" aria-hidden="true" bind:this={ink}></span>
 	<span class="wfd-ink__layer wfd-ink__paper" aria-hidden="true" bind:this={sheet}></span>

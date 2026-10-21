@@ -22,7 +22,7 @@
 
 <!-- One place of the pantry. Its head tells what needs you before you read its lines. -->
 <section class="wfd-bin" class:wfd-bin--out={out} style:--at={at} aria-labelledby={headId}>
-	<Panel kind={out ? 'empty' : 'surface'}>
+	<Panel kind={out ? 'empty' : 'surface'} data-glide-bg>
 		<header class="wfd-bin__head">
 			<h3 class="wfd-bin__title wfd-display" id={headId}>{title}</h3>
 			<span class="wfd-bin__count wfd-number">{count}</span>

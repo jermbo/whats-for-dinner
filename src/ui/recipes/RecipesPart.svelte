@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { flushSync } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { RecipeEntry } from '../../recipes/types';
@@ -21,6 +22,7 @@
 	import PartHead from '../parts/PartHead.svelte';
 	import PartTop from '../parts/PartTop.svelte';
 	import { coverThen } from '../cover';
+	import { glide } from '../glide';
 	import RecipeCard from './RecipeCard.svelte';
 
 	type Props = {
@@ -97,9 +99,38 @@
 
 	// One recipe is open at a time. The other cards step back while it is open.
 	let openPath = $state<string | null>(null);
-	const toggle = (path: string) => (openPath = openPath === path ? null : path);
+	// A card closes in two steps: first its ink goes back and its inside fades, in its place. Then
+	// the inside goes, and each card that it pushed glides back.
+	let closingPath = $state<string | null>(null);
+	let closeTimer: ReturnType<typeof setTimeout> | undefined;
+	let listBox = $state<HTMLElement>();
+	const change = (next: () => void) =>
+		glide(listBox, '.wfd-recipes__item', () => flushSync(next));
+
+	function close() {
+		if (!openPath) return;
+		clearTimeout(closeTimer);
+		closingPath = openPath;
+		openPath = null;
+		closeTimer = setTimeout(
+			() => change(() => (closingPath = null)),
+			prefersReducedMotion.current ? 0 : 300
+		);
+	}
+
+	// A tap on a different card closes the open one at once, so the new card does not move after
+	// it gets to the top of the screen.
+	function toggle(path: string) {
+		if (openPath === path) return close();
+		clearTimeout(closeTimer);
+		change(() => {
+			closingPath = null;
+			openPath = path;
+		});
+	}
+
 	function onkeydown(event: KeyboardEvent) {
-		if (event.key === 'Escape' && openPath) openPath = null;
+		if (event.key === 'Escape') close();
 	}
 
 	const toggleWeek = (path: string) =>
@@ -108,7 +139,7 @@
 
 <svelte:window {onkeydown} />
 
-<section class="wfd-recipes" aria-labelledby={headId}>
+<section class="wfd-recipes" aria-labelledby={headId} bind:this={listBox}>
 	<PartTop>
 		<PartHead id={headId} title="Recipes">
 			{#snippet side()}
@@ -182,12 +213,14 @@
 					class:wfd-recipes__item--open={entry.path === openPath}
 					style:--wfd-deal={Math.min(index, 12)}
 					transition:slide={{ duration }}
+					data-glide-surface
 				>
 					<RecipeCard
 						{kitchen}
 						{entry}
 						planned={kitchen.plan.isPlanned(entry.path)}
 						open={entry.path === openPath}
+						leaving={entry.path === closingPath}
 						ontoggle={() => toggle(entry.path)}
 						onweek={() => toggleWeek(entry.path)}
 						oncook={(event) => coverThen(event, 'frame', () => oncook(entry.path))}

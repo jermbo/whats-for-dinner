@@ -25,6 +25,8 @@ The four parts share their tokens, but each part has its own patterns: how a car
 
 > "I dont think the wave is doing anything to sell the effects. When testing on desktop it is choppy. I think the phone is going to be way worse. Lets remove it and focus on performance."
 
+> "It jumps weird when closed. Like its not smooth and things that were pushed are not smoothly moving back into place."
+
 ## The patterns today
 
 | Pattern          | Pantry                         | Plan                                   | Recipes                                 | Shop                     |
@@ -67,7 +69,7 @@ The question: where does an open recipe go, so that it is the focus and uses the
 17. **You edit a recipe in its card. Each other screen keeps its page, and opens with a circle from the button that you tapped.** These are "Add recipe", "Convert", the gallery, and Cook Mode. A change from one part to a different part stays a fade. The reason: an edit is part of the card, but a new recipe or Cook Mode is a task of its own. An option that was rejected: each edit and each new item in place, with "Add recipe".
 18. **Each button gets the press of decision 10: a small circle at the finger.** It replaces the move down of 2 px. The reason: each button feels the same in each part. An option that was rejected: the press only on the buttons of an open card.
 
-19. **A motion moves only the scale or the opacity of a thing.** The circles of the ink, the paper, the press, and the cover are round layers that grow, not a clip that changes each frame. A card gets its full height at once, and the name changes its size at once. A card that steps back changes only its opacity. The reason: the browser moves the scale and the opacity on the graphics chip with no new layout and no new paint, so the motion stays smooth on a phone. Options that were rejected: a clip that grows, a height that grows, a font size that grows, and a blur or a grey filter on the cards that step back.
+19. **A motion moves only the scale or the opacity of a thing.** The circles of the ink, the paper, the press, and the cover are round layers that grow, not a clip that changes each frame. A card gets its full height at once, and the name changes its size at once. A card that steps back changes only its opacity. The things that a card pushes glide to their new place: the plugin measures each one before and after the change, and slides it from its old place. A bin or a card that gets shorter leaves a copy of its surface under it, which gets short with it. A card closes in two steps: first its ink goes back and it fades in its place, then the things around it glide back. The reason: the browser moves the scale and the opacity on the graphics chip with no new layout and no new paint, so the motion stays smooth on a phone. Options that were rejected: a clip that grows, a height that grows, a font size that grows, a blur or a grey filter on the cards that step back, and things that jump to their new place in one frame.
 
 ## Questions that are open
 

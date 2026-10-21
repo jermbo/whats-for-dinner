@@ -41,7 +41,7 @@ Go to: Recipes.
 - [ ] The motion is smooth on the phone: no stop and no jump while the ink spreads and the card moves up. (4, requirement 4 b)
 - [ ] On the desktop: the description and the actions are in a column at the right of the food. (5, AC 4)
 - [ ] With Chicken noodle soup open, open Thai green curry. Chicken noodle soup folds, and Thai green curry moves to the top. (4, AC 3)
-- [ ] Press Escape. The card closes, and the other cards come back to full. (4, AC 5)
+- [ ] Press Escape. The ink goes back and the inside fades, and then the cards below glide back up, with no jump. On the desktop, a card that changes column glides there. (4, AC 5; requirement 4 c)
 - [ ] On the phone, scroll until Garlic butter spaghetti is the last card on the screen. Open it. It moves up until its top is just under the head of the part. (4, AC 2)
 
 ## E. Edit in the card
@@ -59,7 +59,8 @@ Go to: Recipes.
 
 ## G. The Pantry and the Plan
 
-- [ ] Go to: Pantry. Tap the line of Milk. The ink spreads from the finger, the bar shows at once, and the other lines step back. Drag the bar at once: the handle follows. Tap "Cancel". (8, AC 1 and 3)
+- [ ] Go to: Pantry. Tap the line of Milk. The ink spreads from the finger, the bar shows at once, and the other lines step back. Drag the bar at once: the handle follows. Tap "Cancel". The ink goes back to "Cancel" while the card stays and fades, and then the line of Milk takes its place. No line shows under the card. The lines and bins below glide back up, and the edge of the bin comes up with them: nothing jumps. (8, AC 1, 3, and 4)
+- [ ] Open Milk, and tap the line of Eggs. Milk is a line at once, and the card of Eggs moves to the top and stays there. (8, AC 5)
 - [ ] Go to: Plan. Take the flag off Boiled eggs. Tap "☆ Tonight" on Spinach omelette. The ink spreads from its star. Boiled eggs and Chicken noodle soup stay at full. (9, AC 1)
 - [ ] Tap "★ Tonight". The ink goes back to the star, and Spinach omelette is in the list. (9, AC 2)
 

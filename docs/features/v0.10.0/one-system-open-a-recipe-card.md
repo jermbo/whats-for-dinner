@@ -26,10 +26,11 @@ As the [planner](../../personas.md), I want an open recipe to be the focus of th
    - d. To close, the circle goes back to the point of the tap that closes it, and the text changes back after 160 ms
 3. The name changes from the size `name` to the size `title` at once
 4. The inside shows at its full height at once, and fades in, in 0.2 s
-   - a. To close, the inside goes at once, and the ink goes back
+   - a. To close, the ink goes back and the inside fades, in 0.3 s, with the card at its height. Then the inside goes
+   - c. When a card opens or closes, each card that it pushes glides to its new place in 0.32 s, also into a different column. A card that gets shorter has a copy of its surface under it, which gets short with it. A card that gets longer shows its new part from the top down
    - b. Each motion moves only the scale or the opacity of a thing: the ink is a round layer that grows
 5. The open card moves to the top of the screen, under the head of the part, with 12 px between them
-   - a. It moves in one smooth scroll, which starts in the frame after the card opens, when the card above it is closed
+   - a. It moves in one smooth scroll. The plugin measures the card in the change that opens it, before the cards around it glide
    - b. A card that cannot go higher, at the end of the list, moves as high as it can
 6. The other cards step back while a card is open
    - a. Their opacity is 0.45

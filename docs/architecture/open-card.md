@@ -13,11 +13,11 @@ A recipe, a food item, and the meal of tonight each open as one card. If each pa
 
 ## Ink spreads from your finger
 
-You tap the name of Chicken noodle soup. A circle of ink grows from that point until it covers the card, in 0.6 s. When it covers about half, the text changes to the colour on the ink. A tap that closes the card takes the ink back to that tap, such as "Close" or "Done". A card that opens from a key starts at the middle of its head. The star of "Tonight" is the start of the ink of its meal, so the ink starts there also when the card moves into the section.
+You tap the name of Chicken noodle soup. A circle of ink grows from that point until it covers the card, in 0.6 s. When it covers about half, the text changes to the colour on the ink. A tap that closes the card takes the ink back to that tap, such as "Close" or "Done", in half the time. While the ink goes back, the card stays in its place and its content fades. Then the closed card or the line takes its place, in one change, so the two are never on the screen together. A card that opens from a key starts at the middle of its head. The star of "Tonight" is the start of the ink of its meal, so the ink starts there also when the card moves into the section.
 
-## Only the scale and the opacity move
+## Only the position, the scale, and the opacity move
 
-A phone has little time for each frame. So the circle is a round layer that grows, and the browser moves its scale on the graphics chip, with no new layout and no new paint. The card gets its full height at once, and its inside fades in. When the circle covers the card, it becomes a plain layer, so a card that grows later stays covered. The meter of a recipe fills piece by piece, and its stickers press on one after the other.
+A phone has little time for each frame. So the circle is a round layer that grows, and the browser moves its scale on the graphics chip, with no new layout and no new paint. The card gets its full height at once, and its inside fades in. When the circle covers the card, it becomes a plain layer, so a card that grows later stays covered. The things that a card pushes glide: the plugin measures each bin, line, and card before and after the change, and slides each one from its old place to its new one, also into a different column. A bin that gets shorter leaves a copy of its surface under it, which gets short with it. The meter of a recipe fills piece by piece, and its stickers press on one after the other.
 
 ## The card moves to the top
 

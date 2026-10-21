@@ -1,3 +1,2 @@
-- [ ] [[Recipes/Boiled eggs|Boiled eggs]]
 - [ ] [[Recipes/Spinach omelette|Spinach omelette]]
 - [ ] [[Recipes/Chicken noodle soup|Chicken noodle soup]]

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { flushSync } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
@@ -37,6 +38,7 @@
 	import OnTheList from './OnTheList.svelte';
 	import OutTag from './OutTag.svelte';
 	import StockLine from './StockLine.svelte';
+	import { glide } from '../glide';
 	import { scrollToTop } from '../scroll-to-top';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
@@ -112,8 +114,37 @@
 	type Open = { name: string; place: string; add: boolean; form: boolean };
 	let open = $state<Open | null>(null);
 	const isOpen = (name: string, place: string) => open?.name === name && open.place === place;
+
+	// A card closes in two steps, so that the card and its line are never on the screen together.
+	// First the ink goes back and the card fades, in its place. Then the line takes the place of
+	// the card, and each bin and line that the card pushed glides back.
+	let closing = $state<Open | null>(null);
+	let binsBox = $state<HTMLElement>();
+	const GLIDE = '.wfd-pantry__bins > div, .wfd-pantry__row';
+	const change = (next: () => void) => glide(binsBox, GLIDE, () => flushSync(next));
+	let closeTimer: ReturnType<typeof setTimeout> | undefined;
+	const isClosing = (name: string, place: string) =>
+		closing?.name === name && closing.place === place;
+	const isShown = (name: string, place: string) => isOpen(name, place) || isClosing(name, place);
+	function close() {
+		if (!open) return;
+		clearTimeout(closeTimer);
+		closing = open;
+		open = null;
+		closeTimer = setTimeout(
+			() => change(() => (closing = null)),
+			prefersReducedMotion.current ? 0 : 300
+		);
+	}
+	// A tap on a different line closes the open card at once. A card that closed in two steps
+	// above the new card would move the new card after it got to the top of the screen.
 	function toggle(name: string, place: string) {
-		open = isOpen(name, place) ? null : { name, place, add: false, form: false };
+		if (isOpen(name, place)) return close();
+		clearTimeout(closeTimer);
+		change(() => {
+			closing = null;
+			open = { name, place, add: false, form: false };
+		});
 	}
 
 	// "Add to pantry", and the name that its field starts with.
@@ -122,7 +153,7 @@
 	function startNew(name: string) {
 		newName = name;
 		adding = true;
-		open = null;
+		close();
 	}
 
 	let auditing = $state(false);
@@ -283,9 +314,16 @@
 
 	<!-- The card of a food item in one place, or the form of the food item. -->
 	{#snippet cardOf(food: FoodNote, place: string)}
+		{@const shown = isOpen(food.item.name, place) ? open : closing}
+		{@const leaving = !isOpen(food.item.name, place)}
 		<!-- The card shows at its full height at once, so that no frame needs a new layout of the bins. -->
-		<div class="wfd-pantry__open" in:fade={{ duration }} use:intoView>
-			{#if open?.form}
+		<div
+			class="wfd-pantry__open"
+			class:wfd-pantry__open--leaving={leaving}
+			in:fade={{ duration }}
+			use:intoView
+		>
+			{#if shown?.form}
 				{@const start = nextSize(food.item, place) ?? ''}
 				<FoodForm
 					item={food.item}
@@ -301,9 +339,10 @@
 					item={food.item}
 					{place}
 					places={kitchen.places}
-					addFirst={open?.add}
-					ondone={(rows) => ((open = null), write(food, rows))}
-					oncancel={() => (open = null)}
+					open={!leaving}
+					addFirst={shown?.add}
+					ondone={(rows) => (close(), write(food, rows))}
+					oncancel={close}
 					onfood={() => open && (open = { ...open, form: true, add: false })}
 				/>
 			{/if}
@@ -337,7 +376,7 @@
 			<div out:slide={{ duration }}>
 				<Bin title="Out" count={out.length} out {at}>
 					{#each out as food (food.path)}
-						{#if isOpen(food.item.name, outPlace)}
+						{#if isShown(food.item.name, outPlace)}
 							{@render cardOf(food, outPlace)}
 						{:else}
 							<OutTag name={food.item.name} onclick={() => toggle(food.item.name, outPlace)} />
@@ -350,13 +389,17 @@
 
 	<!-- A new sequence comes in as new bins. A filter or a search moves only the rows that change. -->
 	{#key bar.sort}
-		<div class="wfd-pantry__bins" class:wfd-pantry__bins--focus={open !== null}>
+		<div
+			class="wfd-pantry__bins"
+			class:wfd-pantry__bins--focus={open !== null}
+			bind:this={binsBox}
+		>
 			<!-- In the sequence "Low first", the food that is out is the most empty, so it is first. -->
 			{#if bar.sort === 'low'}{@render outBin(0)}{/if}
 
 			{#each groups as group, at (group.title)}
 				{@const attention = attentionOf(group.rows, kitchen.today, soonDays)}
-				<div out:slide={{ duration }}>
+				<div out:slide={{ duration }} data-glide-surface>
 					<Bin
 						title={group.title}
 						count={group.rows.length}
@@ -367,9 +410,10 @@
 					>
 						{#each group.rows as row (row.key)}
 							<div class="wfd-pantry__row" transition:slide={{ duration }}>
-								{#if isOpen(row.food.item.name, row.place)}
+								{#if isShown(row.food.item.name, row.place)}
 									{@render cardOf(row.food, row.place)}
 								{:else}
+									<div in:fade={{ duration }}>
 									<StockLine
 										name={row.food.item.name}
 										note={noteOf(row)}
@@ -381,6 +425,7 @@
 										soon={isSoon(row, kitchen.today, soonDays)}
 										onclick={() => toggle(row.food.item.name, row.place)}
 									/>
+									</div>
 								{/if}
 							</div>
 						{/each}
@@ -473,5 +518,22 @@
 
 	.wfd-pantry__open {
 		padding-block: var(--wfd-space-inset);
+	}
+
+	/*
+	 * The first step of a close: the content fades while the ink goes back, and then the card
+	 * fades, in its place. The second step glides the bins and the lines back.
+	 */
+	.wfd-pantry__open {
+		transition: opacity var(--wfd-motion-change) var(--wfd-ease-out) var(--wfd-motion-press);
+	}
+
+	.wfd-pantry__open :global(.wfd-card) {
+		transition: opacity var(--wfd-chip-motion);
+	}
+
+	.wfd-pantry__open--leaving,
+	.wfd-pantry__open--leaving :global(.wfd-card) {
+		opacity: 0;
 	}
 </style>

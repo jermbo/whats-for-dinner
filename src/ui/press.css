@@ -1,6 +1,10 @@
-/* The tab is the place of the layers of the press, so that they scroll with the content. */
+/*
+ * The tab is the place of the layers of the press and of the glide, so that they scroll with the
+ * content. It is its own stack, so that a layer under the content is still over the tab.
+ */
 .view-content.wfd {
 	position: relative;
+	isolation: isolate;
 }
 
 /* The finger goes through the layer to the button under it. The layer fades as the circle grows. */

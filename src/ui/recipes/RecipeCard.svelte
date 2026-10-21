@@ -18,6 +18,8 @@
 		entry: RecipeEntry;
 		planned: boolean;
 		open: boolean;
+		// The card closes: its ink goes back and its inside fades, before the inside goes.
+		leaving: boolean;
 		ontoggle: () => void;
 		onweek: () => void;
 		oncook: (event: MouseEvent) => void;
@@ -25,7 +27,7 @@
 		photo: string | null;
 		ongallery: (event: MouseEvent) => void;
 	};
-	let { kitchen, entry, planned, open, ontoggle, onweek, oncook, photo, ongallery }: Props =
+	let { kitchen, entry, planned, open, leaving, ontoggle, onweek, oncook, photo, ongallery }: Props =
 		$props();
 
 	const uid = $props.id();
@@ -131,9 +133,10 @@
 			<WeekButton name={recipe.title} {planned} onclick={onweek} />
 		</div>
 
-		{#if open}
+		{#if open || leaving}
 			<div
 				class="wfd-recipe__body"
+				class:wfd-recipe__body--leaving={leaving}
 				id="{uid}-body"
 				in:fade={{ duration }}
 			>
@@ -258,6 +261,11 @@
 
 	.wfd-recipe__body {
 		padding: 0 var(--wfd-space-inset) var(--wfd-space-inset);
+		transition: opacity var(--wfd-chip-motion);
+	}
+
+	.wfd-recipe__body--leaving {
+		opacity: 0;
 	}
 
 </style>
