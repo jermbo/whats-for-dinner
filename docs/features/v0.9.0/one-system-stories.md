@@ -1,6 +1,6 @@
 ---
 title: One system stories
-summary: "The user stories of version 0.10.0 that give the four parts one design system: one easing, the press, the pill, the open card with its circle, edit in place, and the circles of the Shop and of Cook Mode."
+summary: "The user stories of version 0.9.0 that give the four parts one design system: one easing, the press, the pill, the open card with its circle, edit in place, and the circles of the Shop and of Cook Mode."
 parent: ../README.md
 updated: 2026-10-21
 ---
@@ -9,7 +9,7 @@ updated: 2026-10-21
 
 # One system stories
 
-The four parts share their tokens, but each part opens a card, shows its main action, and moves in its own way. So the plugin feels like four design systems. This page lists the eleven user stories of version 0.10.0 that make it one system, on the look of the Pantry.
+The four parts share their tokens, but each part opens a card, shows its main action, and moves in its own way. So the plugin feels like four design systems. This page lists the eleven user stories of version 0.9.0 that make it one system, on the look of the Pantry.
 
 ## The goal of the feature
 
@@ -58,4 +58,4 @@ Stories 1 and 3 change different files, so you can build them at the same time. 
 
 ## Further reading
 
-- [Plan stories](../v0.9.0/plan-stories.md): the stories of the version before this one.
+- [Plan stories](plan-stories.md): the other stories of this version.
