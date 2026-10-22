@@ -42,7 +42,7 @@ Stories 1 to 5 change the stage Shop, so they go one after the other. Story 6 ch
 
 | Page                                         | Stories that update it                                               |
 | -------------------------------------------- | -------------------------------------------------------------------- |
-| [Shopping](../../architecture/shopping.md)   | 1: the bins. 2: the tick. 3: the shelf and the cart. 4: the cart view. 5: the undo bar. |
+| [Shopping](../../architecture/shopping.md)   | 1: the bins and the labels. 2: the tick. 3: the shelf, the cart, and the bar. 4: the cart view. 5: the undo bar. |
 | [Put away](../../architecture/put-away.md)   | 6: the arrow and the buttons of a line.                              |
 | [Motion](../../architecture/motion.md)       | 2: the flying name, and the squeeze of the cart.                     |
 | [Pieces](../../architecture/pieces.md)       | 2: the check of a row. 3: the shelf and the cart buttons.            |

@@ -1,8 +1,7 @@
 <script lang="ts">
-	import { flushSync, type Snippet } from 'svelte';
+	import type { Snippet } from 'svelte';
 	import { SvelteSet } from 'svelte/reactivity';
 	import type { ShoppingRow } from '../../shop/shopping-list';
-	import { glide } from '../glide';
 	import { timeOf } from '../motion';
 
 	type Props = {
@@ -20,28 +19,24 @@
 	const headId = $props.id();
 	const leaving = new SvelteSet<string>();
 
-	// The row fades in its place first, then it goes and the rows below glide up.
+	// The row fades in its place first. Then it goes, and the rows below glide up.
 	function back(row: ShoppingRow, event: MouseEvent) {
 		if (leaving.has(row.key) || !(event.currentTarget instanceof HTMLElement)) return;
 		const from = event.currentTarget;
 		leaving.add(row.key);
 		setTimeout(
-			() =>
-				glide(box, '.wfd-cart-view__item', () =>
-					flushSync(() => {
-						leaving.delete(row.key);
-						onback(row, from);
-					})
-				),
+			() => {
+				leaving.delete(row.key);
+				onback(row, from);
+			},
 			box ? timeOf(box, 'move') : 0
 		);
 	}
 </script>
 
 <!--
-	The cart fills the stage as a dark view, as the frame of Cook Mode, so that you see at once
-	that you are in the cart and not in the list. A row is the list row in reverse: a tap puts it
-	back.
+	The cart fills the stage as a dark view, as the frame of Cook Mode, so that you see at once that
+	you are in the cart and not in the list. A row is the list row in reverse: a tap puts it back.
 -->
 <section class="wfd-cart-view" aria-labelledby={headId} bind:this={box}>
 	<header class="wfd-cart-view__head">
@@ -77,6 +72,7 @@
 </section>
 
 <style>
+	/* A dark view, with the roles of the frame. */
 	.wfd-cart-view {
 		--wfd-color-text: var(--wfd-color-on-frame);
 		--wfd-color-text-muted: var(--wfd-color-on-frame);
@@ -102,11 +98,13 @@
 	.wfd-cart-view__title {
 		margin: 0;
 		font-size: var(--wfd-font-size-title);
+		font-weight: 800;
 	}
 
 	.wfd-cart-view__rows {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr);
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+		column-gap: var(--wfd-space-section);
 		margin: 0;
 		padding: 0;
 		list-style: none;

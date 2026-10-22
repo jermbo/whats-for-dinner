@@ -15,7 +15,10 @@
 </button>
 
 <style>
+	/* On a wide tab, the bar keeps the width of a phone, in the middle. */
 	button.wfd-undo-bar {
+		justify-self: center;
+		inline-size: min(100%, 28rem);
 		display: flex;
 		gap: var(--wfd-space-stack);
 		align-items: center;

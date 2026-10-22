@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { onMount, type Snippet } from 'svelte';
 	import type { ShoppingRow } from '../../shop/shopping-list';
-	import Button from '../parts/Button.svelte';
 	import ListLine from '../parts/ListLine.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 
@@ -9,16 +8,24 @@
 		row: ShoppingRow;
 		// The regular price, or no text.
 		price: string;
+		// The package that you look for on the shelf: the photo of a brand, its name, or nothing.
+		pack: { url: string } | { name: string } | null;
+		// The list has rows for a meal and extras, so the sticker "Extra" tells something.
+		mixed: boolean;
 		// Ticked: the check is full, and the row fades in its place.
 		ticked: boolean;
 		// The row came back from the cart: it shows its tick for one moment.
 		back: boolean;
+		// The brands show below the row.
+		open: boolean;
 		ontick: () => void;
 		onback: () => void;
+		onpack: () => void;
 		onremove?: () => void;
 		brands?: Snippet;
 	};
-	let { row, price, ticked, back, ontick, onback, onremove, brands }: Props = $props();
+	let { row, price, pack, mixed, ticked, back, open, ontick, onback, onpack, onremove, brands }: Props =
+		$props();
 
 	// A row that comes back starts ticked for one frame, so that the tick can go back.
 	let settled = $state(false);
@@ -28,11 +35,13 @@
 		return () => (cancelAnimationFrame(frame), clearTimeout(timer));
 	});
 	const shown = $derived(ticked || (back && !settled));
+	const small = $derived(row.recipes.join(', ') || (mixed ? undefined : 'Extra'));
 </script>
 
 <!--
-	One tap ticks the row. The row has its own answer to the finger, the check, so the press of the
-	kitchen stays off it: a circle across a long row looked forced.
+	A row is a label: the check, the package that you look for, the name, and the amount at the
+	right edge. The row has its own answer to the finger, the check, so the press of the kitchen
+	stays off it.
 -->
 <div class="wfd-shop-row" class:wfd-shop-row--ticked={shown} class:wfd-shop-row--leaving={ticked}>
 	<button
@@ -42,39 +51,61 @@
 		onpointerdown={(event) => event.stopPropagation()}
 		onclick={ontick}
 	>
-		<ListLine
-			name={row.name}
-			small={row.recipes.join(', ') || undefined}
-			number={row.amount || undefined}
-			numberSmall={price || undefined}
-		>
+		<ListLine name={row.name} {small} number={row.amount || undefined} numberSmall={price || undefined}>
 			{#snippet mark()}
 				<span class="wfd-shop-row__check" data-check aria-hidden="true">
 					<span class="wfd-shop-row__fill"></span>
 					<svg class="wfd-shop-row__mark" viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9" /></svg>
 				</span>
+				<span class="wfd-shop-row__room"></span>
 			{/snippet}
 			{#snippet tag()}
-				{#if row.extra}<Sticker label="Extra" />{/if}
+				{#if row.extra && mixed}<Sticker label="Extra" />{/if}
 			{/snippet}
 		</ListLine>
 	</button>
+	<!-- The package is its own button, at the left of the name, because a button cannot be in a button. -->
+	<button
+		class="wfd-shop-row__pack"
+		class:wfd-shop-row__pack--none={!pack}
+		type="button"
+		aria-expanded={open}
+		aria-label={pack ? `The brands of ${row.name}` : `A photo of ${row.name}`}
+		onclick={onpack}
+	>
+		{#if pack && 'url' in pack}
+			<img src={pack.url} alt="" />
+		{:else if pack}
+			<span class="wfd-shop-row__pack-name">{pack.name}</span>
+		{:else}
+			<svg viewBox="0 0 24 24" aria-hidden="true">
+				<path d="M4 8h3l2-2.5h6L17 8h3v11H4z" />
+				<circle cx="12" cy="13.5" r="3.2" />
+			</svg>
+		{/if}
+	</button>
 	{#if onremove}
-		<Button kind="plain" mark="✕" aria-label="Remove {row.name}" onclick={onremove}>Remove</Button>
+		<button class="wfd-shop-row__remove" type="button" aria-label="Remove {row.name}" onclick={onremove}>
+			✕
+		</button>
 	{/if}
-	{#if brands}
+	{#if open && brands}
 		<div class="wfd-shop-row__brands">{@render brands()}</div>
 	{/if}
 </div>
 
 <style>
-	/* The row is the button. "Remove" is next to it, because a button cannot be in a button. */
+	/*
+	 * The tick button covers the full row. The package sits over its left part, after the check,
+	 * so the text of the row keeps its place in the line, and the remove mark sits at the end.
+	 */
 	.wfd-shop-row {
 		--box-size: 28px;
+		--pack-size: var(--wfd-control-min);
 
+		position: relative;
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
-		gap: var(--wfd-space-group);
 		align-items: center;
 		transition: opacity var(--wfd-row-motion);
 	}
@@ -91,7 +122,7 @@
 		inline-size: 100%;
 		block-size: auto;
 		min-block-size: 64px;
-		padding: var(--wfd-space-inset) 0;
+		padding: var(--wfd-space-group) 0;
 		border: 0;
 		border-radius: 0;
 		background: none;
@@ -109,7 +140,11 @@
 		}
 	}
 
-	/* The check answers the finger at once: it gets a bit smaller under it. */
+	/* The mark of the list line holds the check and the room for the package. */
+	.wfd-shop-row__room {
+		inline-size: var(--pack-size);
+	}
+
 	.wfd-shop-row__check {
 		position: relative;
 		display: grid;
@@ -190,9 +225,88 @@
 		scale: 1 1;
 	}
 
-	/* The photos are below the text of the row, in line with the name. */
+	/* The package: the photo that you look for on the shelf, after the check. */
+	button.wfd-shop-row__pack {
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: calc(var(--box-size) + var(--wfd-space-group));
+		display: grid;
+		place-items: center;
+		inline-size: var(--pack-size);
+		block-size: var(--pack-size);
+		margin-block-start: calc(var(--pack-size) / -2);
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		border-radius: var(--wfd-radius-sticker);
+		background: var(--wfd-color-control);
+		box-shadow: none;
+		color: var(--wfd-color-text-faint);
+		cursor: pointer;
+
+		& img {
+			inline-size: 100%;
+			block-size: 100%;
+			object-fit: cover;
+		}
+
+		& svg {
+			inline-size: 18px;
+			block-size: 18px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2;
+			stroke-linejoin: round;
+		}
+
+		&:focus-visible {
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
+			outline-offset: 2px;
+		}
+	}
+
+	/* No photo: a hatched tile, the mark of an empty place in the Larder look. */
+	button.wfd-shop-row__pack--none {
+		border: var(--wfd-border-thin) solid var(--wfd-color-track);
+		background: repeating-linear-gradient(
+			135deg,
+			var(--wfd-color-track) 0 var(--wfd-border),
+			transparent var(--wfd-border) var(--wfd-space-group)
+		);
+	}
+
+	.wfd-shop-row__pack-name {
+		padding: var(--wfd-space-tight);
+		color: var(--wfd-color-text-muted);
+		font-size: var(--wfd-font-size-label);
+		font-weight: 800;
+		line-height: var(--wfd-line-height-single);
+		text-align: center;
+	}
+
+	/* Remove is a quiet mark at the end: the row is about the food, not about the action. */
+	button.wfd-shop-row__remove {
+		display: grid;
+		place-items: center;
+		inline-size: var(--wfd-control-min);
+		block-size: var(--wfd-control-min);
+		padding: 0;
+		border: 0;
+		border-radius: var(--wfd-radius-pill);
+		background: none;
+		box-shadow: none;
+		color: var(--wfd-color-text-faint);
+		font-size: var(--wfd-font-size-text);
+		cursor: pointer;
+
+		&:focus-visible {
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
+		}
+	}
+
 	.wfd-shop-row__brands {
 		grid-column: 1 / -1;
-		padding: 0 0 var(--wfd-space-inset) calc(var(--box-size) + var(--wfd-space-stack));
+		padding: 0 0 var(--wfd-space-inset)
+			calc(var(--box-size) + var(--pack-size) + var(--wfd-space-group) + var(--wfd-space-stack));
 	}
 </style>

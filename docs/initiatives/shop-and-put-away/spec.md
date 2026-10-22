@@ -23,6 +23,8 @@ The Shop list is in bins, as the Pantry. A tick acts at once: the check fills, t
 ## In scope
 
 1. The list is in bins, in columns: one bin for "A to Z", one bin for each meal (decision 7)
+   - a. A bin is a title in the display font over a rule of 4 px, with no card
+   - b. One bin takes the full width, and its rows flow in columns
 2. A tick acts at once (decisions 5 and 9)
    - a. The check fills from its middle and draws its mark, and a line strikes the name from the left
    - b. The name of the item flies to the cart button, and the cart button gives a small squeeze when it lands
@@ -32,8 +34,9 @@ The Shop list is in bins, as the Pantry. A tick acts at once: the check fills, t
    - f. No ink across the row, and no press circle on the row
 3. The shelf and the cart are two buttons at the top, under the stages (decision 10)
    - a. The shelf, at the left, has the count of the items to get. The cart, at the right, has its count
-   - b. The button of the view that is open is ink
-4. The cart view (decision 10)
+   - b. The button of the view that is open is ink. On a wide tab, the two are together at the right
+   - c. Below them, a bar with one piece for each item of the trip. The pieces of the cart are ink
+4. The cart view, at each width (decision 10)
    - a. A tap on the cart grows a dark circle from it, and the cart view fills the stage
    - b. Each item of the cart is a row with a check, its name, its amount, and its price, and the total
    - c. A tap on a row flies its name to the shelf, and the row fades and leaves
@@ -49,12 +52,18 @@ The Shop list is in bins, as the Pantry. A tick acts at once: the check fills, t
    - d. The chip "Sale" stays on the closed line (decision 6)
 7. Each row or group that comes or goes moves only its position, its scale, or its opacity (decision 4)
 8. With less motion, no name flies, no circle grows, and each change shows at once
+9. The rows are labels (decision 14)
+    - a. The photo of the package at the left, or a hatched tile with a camera. A tap shows the brands below the row
+    - b. The amount in one column at the right edge, with the price below it
+    - c. "Extra" is a quiet word under the name, and a sticker only when the list mixes meals and extras
+    - d. "Remove" is a quiet ✕
+    - e. The store, the find field, and the sequence are in one row
 
 ## Out of scope
 
 1. The Shop as flat lines (decision 7)
 2. Rows that wait until you stop before they leave, or that sink in their bin (decision 9)
-3. The shelf and the cart at the bottom (decision 10)
+3. The shelf and the cart at the bottom, one button with a large count, and a cart column on a computer (decision 10)
 4. An ink card for a line of Put away (decision 11)
 5. A summary card at the end of a trip (decision 13)
 6. A new look for the receipt (decision 12)

@@ -13,7 +13,7 @@
 	import ShopStage from './ShopStage.svelte';
 	import { stageWithWork, type Stage } from './stage';
 	import StageStrip from './StageStrip.svelte';
-	import TripButtons from './TripButtons.svelte';
+	import TripHead from './TripHead.svelte';
 
 	type Props = {
 		kitchen: Kitchen;
@@ -72,10 +72,11 @@
 		<PartHead id={headId} title="Shop" />
 		<StageStrip {counts} value={going ?? shown} onchange={open} />
 		{#if shown === 'shop'}
-			<TripButtons
+			<TripHead
 				{view}
-				toGet={moves.toGet}
 				inCart={moves.inCart}
+				total={moves.list.length + moves.cart.length}
+				toGet={moves.toGet}
 				shelfLanded={landed.shelf}
 				cartLanded={landed.cart}
 				onshow={show}

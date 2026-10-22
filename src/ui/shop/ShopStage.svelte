@@ -74,6 +74,9 @@
 		shopListGroups(shown, bar.sort, hasOrder, kitchen.storeOrder)
 	);
 
+	// The store is a small button in the bar. Its choice opens below the bar.
+	let picking = $state(false);
+
 	// When you select a store with an order, the list follows it at once.
 	function pickStore(store: string) {
 		kitchen.shop.setTripStore(store);
@@ -84,8 +87,9 @@
 	// --- The tick, and the way back. ---
 
 	let listBox = $state<HTMLElement>();
-	const change = (next: () => void) =>
-		glide(listBox, '.wfd-shop__bin, .wfd-shop__item', () => flushSync(next));
+	let layoutBox = $state<HTMLElement>();
+	const ITEMS = '.wfd-shop__bin, .wfd-shop__item, .wfd-cart-view__item';
+	const change = (next: () => void) => glide(layoutBox, ITEMS, () => flushSync(next));
 	const tabOf = (node: Element | undefined) => node?.closest<HTMLElement>('.wfd') ?? null;
 	const middleOf = (node: Element | null | undefined) => {
 		const box = node?.getBoundingClientRect();
@@ -94,7 +98,7 @@
 	const checkOf = (key: string) =>
 		listBox?.querySelector(`[data-row="${CSS.escape(key)}"] [data-check]`);
 	const buttonOf = (on: 'shelf' | 'cart') =>
-		tabOf(listBox)?.querySelector(`[data-fly="${on}"]`);
+		tabOf(layoutBox)?.querySelector(`[data-fly="${on}"]`);
 
 	// The name of an item flies from one point to the shelf or the cart, or to the check of its row.
 	function fly(name: string, from: { x: number; y: number } | null, to: Element | null | undefined, onlanded = () => {}) {
@@ -169,10 +173,11 @@
 		void kitchen.shop.removeExtra(key);
 	}
 
-	// A tap on a row of the cart view. The row has faded, so the rows below it glide up.
+	// A tap on a row of the cart view. The row has faded, so the rows below it glide up, and its
+	// name flies to the shelf.
 	function backFromCart(row: ShoppingRow, from: HTMLElement) {
 		fly(row.name, middleOf(from), buttonOf('shelf'), () => onland('shelf'));
-		putBack(row);
+		change(() => putBack(row));
 	}
 
 	// --- The photos of the brands. ---
@@ -180,6 +185,18 @@
 	const urlFor = (row: ShoppingRow) => (photo: string) =>
 		kitchen.photoUrl(photo, row.food?.path ?? '');
 	const brandsOf = (row: ShoppingRow) => row.food?.item.brands ?? [];
+
+	// The package of a row: the photo of its first brand, or its name, or nothing.
+	function packOf(row: ShoppingRow): { url: string } | { name: string } | null {
+		const brand = brandsOf(row)[0];
+		const url = brand?.photos[0] ? urlFor(row)(brand.photos[0]) : null;
+		if (url) return { url };
+		return brand?.name ? { name: brand.name } : null;
+	}
+
+	// The rows that show their brands below them. A tap on the package opens them.
+	const packsOpen = new SvelteSet<string>();
+	const flipPack = (key: string) => (packsOpen.has(key) ? packsOpen.delete(key) : packsOpen.add(key));
 
 	// The photo that shows large: its row, the name of its file, and the small photo that it grows
 	// from. The brand comes from the note, so a new photo gets its brand when the note is read.
@@ -246,6 +263,9 @@
 	const sumOf = (rows: ShoppingRow[]) =>
 		regularPriceSum(rows, (key) => kitchen.regularOf(key), readPrice);
 	const priced = $derived(anyRegularPrice(all, (key) => kitchen.regularOf(key), readPrice));
+	const total = $derived(
+		priced ? `About ${sumOf(inCart).toFixed(2)} in the cart · ${sumOf(all).toFixed(2)} in all` : ''
+	);
 
 	// --- The screen stays on in the store, if the settings say so. ---
 
@@ -276,99 +296,126 @@
 <section class="wfd-shop" aria-labelledby="{uid}-name">
 	<HiddenName id="{uid}-name" text="Shop" />
 
-	{#if view === 'list'}
-		<TripStore store={kitchen.tripStore} stores={kitchen.stores} onchange={pickStore} />
+	<!-- The list, or the cart. The shelf and the cart in the top of the part change between them. -->
+	<div class="wfd-shop__layout" data-view={view} bind:this={layoutBox}>
+		<div class="wfd-shop__list">
+			<Bar
+				label="Find an item or a meal"
+				sequence="Sequence of the list"
+				{sorts}
+				{count}
+				bind:find={bar.find}
+				bind:sort={bar.sort}
+				bind:open={bar.open}
+			>
+				{#snippet chips()}
+					{#if mixed}
+						<Chip label="For a meal" on={bar.only.has('meal')} onclick={() => bar.flip('meal')} />
+						<Chip label="Extras" on={bar.only.has('extra')} onclick={() => bar.flip('extra')} />
+					{/if}
+				{/snippet}
+				{#snippet end()}
+					<button
+						class="wfd-shop__store"
+						type="button"
+						aria-expanded={picking}
+						onclick={() => (picking = !picking)}
+					>
+						{kitchen.tripStore || 'Store'}
+						<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 8l5 5 5-5" /></svg>
+					</button>
+				{/snippet}
+			</Bar>
 
-		<Bar
-			label="Find an item or a meal"
-			sequence="Sequence of the list"
-			{sorts}
-			{count}
-			bind:find={bar.find}
-			bind:sort={bar.sort}
-			bind:open={bar.open}
-		>
-			{#snippet chips()}
-				{#if mixed}
-					<Chip label="For a meal" on={bar.only.has('meal')} onclick={() => bar.flip('meal')} />
-					<Chip label="Extras" on={bar.only.has('extra')} onclick={() => bar.flip('extra')} />
-				{/if}
-			{/snippet}
-		</Bar>
+			{#if picking}
+				<TripStore
+					store={kitchen.tripStore}
+					stores={kitchen.stores}
+					onchange={pickStore}
+					ondone={() => (picking = false)}
+				/>
+			{/if}
 
-		{#if canAdd}
-			<AddToCart
-				{text}
-				{proposals}
-				onadd={(path) => take(() => kitchen.shop.addToCart(path))}
-				onaddnew={(name) => take(() => kitchen.shop.addNewToCart(name))}
-			/>
-		{:else if !needed.length}
-			<p class="wfd-shop__empty">{inCart.length ? 'Each item is in the cart.' : 'Nothing to get.'}</p>
-		{:else if !shown.length}
-			<div class="wfd-shop__none" aria-live="polite">
-				<p class="wfd-shop__empty">
-					No item {text ? `with "${text}" ` : ''}passes
-					{count === 1 ? 'this filter' : 'these filters'}.
-				</p>
-				{#if count}
-					<Button onclick={() => bar.clear()}>Remove the filters</Button>
-				{/if}
-			</div>
-		{/if}
-
-		<!-- The bins flow down in columns, as the bins of the Pantry. -->
-		<div class="wfd-shop__bins" bind:this={listBox}>
-			{#each groups as group (group.title)}
-				<div class="wfd-shop__bin" data-glide-surface>
-					<ShopBin title={group.title || 'To get'} count={group.rows.length}>
-						{#each group.rows as row (row.key)}
-							<li class="wfd-shop__item" data-row={row.key}>
-								<ShopRow
-									{row}
-									price={priceOf(row.key)}
-									ticked={moves.ticking.has(row.key)}
-									back={moves.back.has(row.key)}
-									ontick={() => tick(row)}
-									onback={() => moves.back.delete(row.key)}
-									onremove={row.extra ? () => remove(row.key) : undefined}
-								>
-									{#snippet brands()}
-										{#if row.food}
-											<BrandStrip
-												brands={tilesOf(brandsOf(row), urlFor(row))}
-												of={row.name}
-												tapChips={false}
-												ontap={(at, tile) => showLarge(row, at, tile)}
-												onrest={() => tick(row)}
-												ontake={(photo, tile) => takeNew(row, photo, tile)}
-											/>
-										{/if}
-									{/snippet}
-								</ShopRow>
-							</li>
-						{/each}
-					</ShopBin>
+			{#if canAdd}
+				<AddToCart
+					{text}
+					{proposals}
+					onadd={(path) => take(() => kitchen.shop.addToCart(path))}
+					onaddnew={(name) => take(() => kitchen.shop.addNewToCart(name))}
+				/>
+			{:else if !needed.length}
+				<p class="wfd-shop__empty">{inCart.length ? 'Each item is in the cart.' : 'Nothing to get.'}</p>
+			{:else if !shown.length}
+				<div class="wfd-shop__none" aria-live="polite">
+					<p class="wfd-shop__empty">
+						No item {text ? `with "${text}" ` : ''}passes
+						{count === 1 ? 'this filter' : 'these filters'}.
+					</p>
+					{#if count}
+						<Button onclick={() => bar.clear()}>Remove the filters</Button>
+					{/if}
 				</div>
-			{/each}
+			{/if}
+
+			<!-- The bins flow down in columns, as the places of the Pantry. -->
+			<div class="wfd-shop__bins" bind:this={listBox}>
+				{#each groups as group (group.title)}
+					<div class="wfd-shop__bin">
+						<ShopBin title={group.title || 'To get'} count={group.rows.length}>
+							{#each group.rows as row (row.key)}
+								<li class="wfd-shop__item" data-row={row.key}>
+									<ShopRow
+										{row}
+										price={priceOf(row.key)}
+										pack={packOf(row)}
+										{mixed}
+										ticked={moves.ticking.has(row.key)}
+										back={moves.back.has(row.key)}
+										open={packsOpen.has(row.key)}
+										ontick={() => tick(row)}
+										onback={() => moves.back.delete(row.key)}
+										onpack={() => flipPack(row.key)}
+										onremove={row.extra ? () => remove(row.key) : undefined}
+									>
+										{#snippet brands()}
+											{#if row.food}
+												<BrandStrip
+													brands={tilesOf(brandsOf(row), urlFor(row))}
+													of={row.name}
+													tapChips={false}
+													ontap={(at, tile) => showLarge(row, at, tile)}
+													onrest={() => tick(row)}
+													ontake={(photo, tile) => takeNew(row, photo, tile)}
+												/>
+											{/if}
+										{/snippet}
+									</ShopRow>
+								</li>
+							{/each}
+						</ShopBin>
+					</div>
+				{/each}
+			</div>
 		</div>
-	{:else}
-		<CartView cart={inCart} {priceOf} onback={backFromCart}>
-			{#snippet brands(row)}
-				{@const all = brandsOf(row)}
-				{@const chosen = cartBrandOf(row)}
-				{@const only = chosen !== null && !opened.has(row.key)}
-				{#if all.length}
-					<BrandStrip
-						brands={tilesOf(chosen !== null && only ? [all[chosen]] : all, urlFor(row))}
-						of={row.name}
-						tapChips={false}
-						ontap={(at, tile) => (only ? opened.add(row.key) : showLarge(row, at, tile))}
-					/>
-				{/if}
-			{/snippet}
-		</CartView>
-	{/if}
+
+		<div class="wfd-shop__cart">
+			<CartView cart={inCart} {priceOf} onback={backFromCart}>
+				{#snippet brands(row)}
+					{@const all = brandsOf(row)}
+					{@const chosen = cartBrandOf(row)}
+					{@const only = chosen !== null && !opened.has(row.key)}
+					{#if all.length}
+						<BrandStrip
+							brands={tilesOf(chosen !== null && only ? [all[chosen]] : all, urlFor(row))}
+							of={row.name}
+							tapChips={false}
+							ontap={(at, tile) => (only ? opened.add(row.key) : showLarge(row, at, tile))}
+						/>
+					{/if}
+				{/snippet}
+			</CartView>
+		</div>
+	</div>
 
 	{#if large}
 		<BrandPhoto
@@ -381,18 +428,14 @@
 		</BrandPhoto>
 	{/if}
 
-	{#if view === 'list' && last}
+	<!-- The undo bar is under the thumb in the list. The cart view has the total and "Put away". -->
+	{#if last && view === 'list'}
 		<StageFoot>
 			<UndoBar name={last.name} onundo={undo} />
 		</StageFoot>
-	{:else if view === 'cart' && (inCart.length || priced)}
+	{:else if view === 'cart' && (inCart.length || total)}
 		<StageFoot>
-			{#if priced}
-				<p class="wfd-shop__totals">
-					About <strong class="wfd-number">{sumOf(inCart).toFixed(2)}</strong> in the cart ·
-					<strong class="wfd-number">{sumOf(all).toFixed(2)}</strong> in all
-				</p>
-			{/if}
+			{#if total}<p class="wfd-shop__totals">{total}</p>{/if}
 			{#if inCart.length}
 				<Button kind="olive" arrow onclick={onputaway}>Put away {inCart.length}</Button>
 			{/if}
@@ -407,6 +450,62 @@
 		gap: var(--wfd-space-stack);
 	}
 
+	.wfd-shop__layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--wfd-space-section);
+		align-items: start;
+	}
+
+	.wfd-shop__list {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--wfd-space-stack);
+		min-inline-size: 0;
+	}
+
+	.wfd-shop__layout[data-view='list'] .wfd-shop__cart,
+	.wfd-shop__layout[data-view='cart'] .wfd-shop__list {
+		display: none;
+	}
+
+	/* The store is a small button in the row of the find field, with the look of the sequence. */
+	button.wfd-shop__store {
+		display: inline-flex;
+		gap: var(--wfd-space-tight);
+		align-items: center;
+		block-size: var(--wfd-control);
+		padding: 0 var(--wfd-space-inset);
+		border: var(--wfd-border) solid var(--wfd-color-border);
+		border-radius: var(--wfd-radius-button);
+		background: var(--wfd-color-control);
+		box-shadow: none;
+		color: var(--wfd-color-text);
+		font-family: inherit;
+		font-size: var(--wfd-font-size-small);
+		font-weight: 700;
+		white-space: nowrap;
+		cursor: pointer;
+
+		& svg {
+			inline-size: 16px;
+			block-size: 16px;
+			fill: none;
+			stroke: currentColor;
+			stroke-width: 2.5;
+			transition: rotate var(--wfd-motion-change) var(--wfd-ease-out);
+		}
+
+		&[aria-expanded='true'] svg {
+			rotate: 180deg;
+		}
+
+		&:focus-visible {
+			outline: var(--wfd-border) solid var(--wfd-color-focus);
+			outline-offset: 2px;
+		}
+	}
+
 	.wfd-shop__empty {
 		margin: 0;
 		color: var(--wfd-color-text-muted);
@@ -418,10 +517,15 @@
 		justify-items: start;
 	}
 
-	/* The bins flow down in columns, as the bins of the Pantry, one column on a phone. */
+	/* The bins flow down in columns, as the places of the Pantry, one column on a phone. */
 	.wfd-shop__bins {
 		columns: 20rem;
-		column-gap: var(--wfd-space-section);
+		column-gap: calc(2 * var(--wfd-space-section));
+	}
+
+	/* One bin, as "A to Z", takes the full width, and its rows flow in columns inside it. */
+	.wfd-shop__bins:has(> .wfd-shop__bin:only-child) {
+		columns: auto;
 	}
 
 	.wfd-shop__bin {
@@ -435,10 +539,5 @@
 		font-size: var(--wfd-font-size-small);
 		font-weight: 600;
 		text-align: end;
-
-		& strong {
-			color: var(--wfd-color-text);
-			font-size: var(--wfd-font-size-text);
-		}
 	}
 </style>

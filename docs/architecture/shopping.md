@@ -50,7 +50,9 @@ The cart is in a note, because Obsidian moves a note from one device to the othe
 
 In the store, you hold the phone in one hand and a basket in the other. So each item takes one tap, and the screen tells you at once where the item went.
 
-The stage Shop has the list in bins, as the bins of the [Pantry](pantry.md): white cards in columns, one column on a phone. "A to Z" has one bin, "To get". "By meal" has one bin for each meal, and a bin "Extras". A row shows the meals that need the item, or the sticker "Extra". Below that, it shows the [brands](brands.md) of its food item: the photo of each package, small, in the order of the note. A brand with no photo shows its name as a chip.
+The stage Shop has the list in bins, as the places of the [Pantry](pantry.md): a title over a heavy rule, in columns, one column on a phone. "A to Z" has one bin, "To get". One bin takes the full width, and on a computer its rows flow in columns inside it, so the screen has no empty half. "By meal" has one bin for each meal, and a bin "Extras". The store, the find field, and the sequence are in one row above the bins.
+
+Each row is a label. In the store you look for a package, so the row starts with the photo of its [brand](brands.md): the brand that you took, or the first brand. An item with no photo has a hatched tile with a camera. A tap on the photo shows each brand of the item below the row, with the camera tile; a brand with no photo shows its name as a chip. The name comes next, with the meals that need the item below it in small text, or "Extra". The amount is at the right edge of each row, in the large font, with the regular price below it, so your eye reads one column of numbers. The sticker "Extra" shows only when the list has rows for a meal and extras, because a word that is on each row tells nothing. An extra has a quiet ✕ to remove it.
 
 A tap on a row ticks it at once. Its round check fills with the accent colour and draws its mark, and a line strikes the name. The name of the item flies on a small pill to the cart button, at the top right. The row fades in its place, and then the item goes into the cart and the rows below glide up. A second tap on the row while it fades takes the tick off, and the item stays on the list. A tap on a chip of a brand, or on the row outside the photos, ticks the row too. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
 
@@ -64,9 +66,9 @@ The row of a food item has a small camera tile after its photos. A row with no b
 
 ## The shelf and the cart
 
-Two buttons are at the top of the stage, under the strip of the stages, so they stay in view while the list scrolls. The shelf is at the left, with the number of the items to get. The cart is at the right, with the number of the items in the cart. The button of the view that is open is ink.
+Two buttons are at the top of the stage, under the strip of the stages, so they stay in view while the list scrolls. The shelf is at the left, with the number of the items to get. The cart is at the right, with the number of the items in the cart. The button of the view that is open is ink. On a computer, the two are together at the right, so your eye does not cross the screen from one to the other. Below them, a bar has one piece for each item of the trip, and the pieces of the cart are ink, so you see how far you are.
 
-A tap on the cart grows a dark circle from it, and the cart view fills the stage. Each item of the cart is a row there, with the photo of its brand. A tap on the photo shows it large, with "In cart", so you can take a different brand. A tap on the row puts the item back on the list: its name flies to the shelf, and the row goes. "Put away" is at the lower edge of the cart view. A tap on the shelf grows paper back into the list.
+A tap on the cart grows a dark circle from it, and the cart view fills the stage, on a phone and on a computer. Each item of the cart is a row there, with the photo of its brand. A tap on the photo shows it large, with "In cart", so you can take a different brand. A tap on the row puts the item back on the list: its name flies to the shelf, and the row goes. "Put away" is at the lower edge of the cart view. A tap on the shelf grows paper back into the list.
 
 A wrong tap must cost nothing. So after each tick, a bar is above the lower edge for 4 seconds: "✓ Eggs ↶ Undo". The full bar is one button, under your thumb. A new tick replaces its item. After the 4 seconds, the cart view is the way back.
 

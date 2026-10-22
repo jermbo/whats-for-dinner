@@ -12,19 +12,27 @@ The stories are: 1 [The list in bins](../docs/features/v0.9.0/shop-the-list-in-b
 
 ## A. The list in bins
 
-Go to: Shop, stage "2 Shop".
+Go to: Shop, stage "2 Shop", on the phone.
 
-- [ ] With "A to Z", the rows are in one white bin "To get", with the count of its rows. (1, AC 1)
+- [ ] With "A to Z", the rows are in one bin "To get": the title and its count over a heavy rule, with no card. (1, AC 1)
+- [ ] Above the bin, one row: the find field, the sequence, and a small store button. Tap the store button: the stores show below the row, with "✓ Done". Tap "✓ Done". (1, AC 7)
+- [ ] The row of Sugar: the check, a hatched tile with a camera, "Sugar" with "Extra" in small text below it, "1 kg" at the right edge, and a quiet ✕. No row has the sticker "Extra". (1, AC 4)
+- [ ] The row of Taco seasoning: the photo of its first brand, and "28 g" with "2.49" below it. (1, AC 5)
+- [ ] Tap the hatched tile of Sugar. The camera tile shows below the row. Tap the hatched tile again: it goes. (1, AC 6)
 - [ ] Select "By meal". Each meal has its own bin, with its title and its count. (1, AC 2)
 - [ ] On the desktop, 1000 px wide, with "By meal": the bins are in 2 columns. (1, AC 3)
-- [ ] Go to: "1 Extras". Type "Batteries" in "Add an item", and add it. Go to: "2 Shop". The row of Batteries has the sticker "Extra" and the plain button "✕ Remove", with no edge. (1, AC 4)
-- [ ] Tap "✕ Remove" on Batteries. The row goes, and the rows below glide up. Select "A to Z" again. (1, requirement 4)
+- [ ] On the desktop, with "A to Z": the bin "To get" takes the full width, and its rows are in 2 columns. (1, AC 3 a)
+- [ ] Go to: "1 Extras". Type "Batteries" in "Add an item", and add it. Go to: "2 Shop". The row of Batteries has "Extra" below its name and a quiet ✕. (1, requirement 3 e)
+- [ ] Tap the ✕ of Batteries. The row goes, and the rows below glide up. Select "A to Z" again. (1, requirement 7)
 
 ## B. The shelf and the cart
 
 - [ ] Under the strip of the stages: the shelf at the left with "To get" and the count of the list, in ink. The cart at the right with its count and "Cart", in white. (3, AC 1)
-- [ ] Scroll down the list. The shelf and the cart stay in view at the top. (3, AC 2)
-- [ ] Go to: "3 Put away". The head has no shelf and no cart. Go to: "2 Shop". (3, AC 3)
+- [ ] Below them, a bar with one piece for each item, and one ink piece for each item of the cart. (3, AC 1 b)
+- [ ] Scroll down the list. The shelf, the cart, and the bar stay in view at the top. (3, AC 2)
+- [ ] On the desktop: the shelf and the cart are together at the right of the row. (3, requirement 1 d)
+- [ ] On the desktop, tick a row: the undo bar has the width of a phone, in the middle. (5, requirement 1 e)
+- [ ] Go to: "3 Put away". The head has no shelf, no cart, and no bar. Go to: "2 Shop". (3, AC 3)
 
 ## C. A tick
 
@@ -40,7 +48,7 @@ Go to: Shop, stage "2 Shop".
 
 ## E. The cart view
 
-- [ ] Tap the cart. A dark circle grows from it, and the cart view shows "In the cart" with its count. The cart button is ink. (4, AC 1)
+- [ ] Tap the cart. A dark circle grows from it, and the cart view shows "In the cart" with its count. The cart button is ink. Do it on the phone and on the desktop. (4, AC 1)
 - [ ] The cart view has the total "About … in the cart · … in all", and the pill "Put away" at the lower edge. (4, requirement 2 d and 4)
 - [ ] Tap the row of Bread. A pill "Bread" flies to the shelf, the shelf gives a squeeze, and the row fades and goes. The note has `- [ ] [[Larder/Pantry/Bread|Bread]]`. (4, AC 2)
 - [ ] Tap the shelf. A circle of paper grows from it, and the list shows. The row of Bread shows its tick for one moment, and the tick goes. (4, AC 4)

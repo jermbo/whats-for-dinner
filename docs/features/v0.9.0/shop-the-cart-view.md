@@ -16,7 +16,7 @@ As the [shopper](../../personas.md), I want to open the cart as a view of its ow
 
 ## Requirements
 
-1. A tap on the cart button opens the cart view
+1. A tap on the cart button opens the cart view, on a phone and on a computer
    - a. A dark circle grows from the cart button over the stage, and the cart view shows under it, as Cook Mode opens
    - b. The cart button is ink, and the shelf is white
 2. The cart view is a dark card that fills the stage

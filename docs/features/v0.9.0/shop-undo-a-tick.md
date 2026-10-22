@@ -21,6 +21,7 @@ As the [shopper](../../personas.md), I want to undo a wrong tick at once, under 
    - b. It is ink, with round ends, 50 px high
    - c. It comes in from below, and goes the same way
    - d. A new tick replaces the item of the bar, and the 4 s start again
+   - e. On a wide tab, it is 28 rem wide at most, in the middle
 2. A tap on the bar puts the item back on the list
    - a. Its name flies from the cart to the check of its row
    - b. The row comes back into its bin with its tick, and the tick goes, in 0.4 s
