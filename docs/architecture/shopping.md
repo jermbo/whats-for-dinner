@@ -48,7 +48,13 @@ The cart is in a note, because Obsidian moves a note from one device to the othe
 
 ## In the store, one tap
 
-The stage Shop has the list under the heading "To get". A tap on a row ticks its box, and the item goes into the cart. A row shows the meals that need the item, or the sticker "Extra". Below that, it shows the [brands](brands.md) of its food item: the photo of each package, small, in the order of the note. A brand with no photo shows its name as a chip. A tap on the chip, or on the row outside the photos, ticks the row. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
+In the store, you hold the phone in one hand and a basket in the other. So each item takes one tap, and the screen tells you at once where the item went.
+
+The stage Shop has the list in bins, as the bins of the [Pantry](pantry.md): white cards in columns, one column on a phone. "A to Z" has one bin, "To get". "By meal" has one bin for each meal, and a bin "Extras". A row shows the meals that need the item, or the sticker "Extra". Below that, it shows the [brands](brands.md) of its food item: the photo of each package, small, in the order of the note. A brand with no photo shows its name as a chip.
+
+A tap on a row ticks it at once. Its round check fills with the accent colour and draws its mark, and a line strikes the name. The name of the item flies on a small pill to the cart button, at the top right. The row fades in its place, and then the item goes into the cart and the rows below glide up. A second tap on the row while it fades takes the tick off, and the item stays on the list. A tap on a chip of a brand, or on the row outside the photos, ticks the row too. The screen stays on while the stage is open, if the setting "Keep the screen on" is on.
+
+You tap the row of eggs. The check fills, "Eggs" flies to the cart, the cart goes from 6 to 7, and the row of eggs is gone.
 
 ## The photo of the package
 
@@ -56,9 +62,15 @@ A tap on a photo shows it large, over the stage, with the name of the brand belo
 
 The row of a food item has a small camera tile after its photos. A row with no brand shows only the tile. A new package on the shelf gets its photo there: the photo is a new brand with no name, in the note at once, and it shows large with "In cart". Batteries have no food item note, so their row has no tile.
 
-## The cart
+## The shelf and the cart
 
-The cart is one closed line under the list: "In the cart", with the number of its items. You open it to see the items, each with the photo of its brand, and "Undo" puts an item back on the list. An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
+Two buttons are at the top of the stage, under the strip of the stages, so they stay in view while the list scrolls. The shelf is at the left, with the number of the items to get. The cart is at the right, with the number of the items in the cart. The button of the view that is open is ink.
+
+A tap on the cart grows a dark circle from it, and the cart view fills the stage. Each item of the cart is a row there, with the photo of its brand. A tap on the photo shows it large, with "In cart", so you can take a different brand. A tap on the row puts the item back on the list: its name flies to the shelf, and the row goes. "Put away" is at the lower edge of the cart view. A tap on the shelf grows paper back into the list.
+
+A wrong tap must cost nothing. So after each tick, a bar is above the lower edge for 4 seconds: "✓ Eggs ↶ Undo". The full bar is one button, under your thumb. A new tick replaces its item. After the 4 seconds, the cart view is the way back.
+
+An item stays in the cart when its meal goes out of the plan. You took the item, so you put it away.
 
 You see batteries that are not on the list. You type "batt" into the field to find. The field finds no row, so it proposes the note "Batteries", and "Add to cart" puts it in the cart at once.
 
@@ -66,7 +78,7 @@ You see batteries that are not on the list. You type "batt" into the field to fi
 
 You buy a box of 12 eggs, not the 28 eggs that make the food item full. So a row shows the newest amount of the receipts in the unit of the food item. When the meals need more than that, the row shows what the meals need. With no such receipt, the row shows what the meals need, or what makes a staple full. Put away starts from the same amount.
 
-Each row also shows its regular price: the price of the newest receipt row with no sale mark. Below the list, one line adds them up: "About 9.40 in the cart · 14.18 in all". It is "about", because the price is for the amount of the receipt.
+Each row also shows its regular price: the price of the newest receipt row with no sale mark. The cart view adds them up: "About 9.40 in the cart · 14.18 in all". It is "about", because the price is for the amount of the receipt.
 
 ## The store has an order
 

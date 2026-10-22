@@ -1,2 +1,2 @@
 - [ ] [[Recipes/Chicken noodle soup|Chicken noodle soup]]
-- [ ] [[Recipes/Black bean soup|Black bean soup]]
+- [ ] [[Recipes/Black bean soup|Black bean soup]] · 2026-10-21

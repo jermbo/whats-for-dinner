@@ -52,6 +52,10 @@ The circles of the [open card](open-card.md), the glide of the things around it,
 
 A circle that covers is a bit larger than the window. With the soft end of the easing, it covers the window at half its time, so the new screen opens then, and the circle grows on over it. A screen of its own, such as Cook Mode, opens and closes with such a circle, and so does a stage of the [Shop](shopping.md).
 
+## A name that flies
+
+A tick in the Shop sends the name of the item to the cart button, so you see where the item went. The name is on a small pill in the accent colour. It moves to the side fast and up slow, so its path is an arc, and it gets small as it lands, in 1.8 moves. The button gives a squeeze when the name lands: its icon starts at 70 % of its size and grows back, with no bounce. A tap in the cart view sends the name back to the shelf the same way. Only the position, the scale, and the opacity of the pill move.
+
 ## Less motion is no motion
 
 A device can have the setting for less motion. Then the file of the tokens sets each duration to 0. Each transition and each animation of a screen uses a token, so no screen needs a rule of its own for less motion.

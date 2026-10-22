@@ -9,9 +9,11 @@
 	import ExtrasStage from './ExtrasStage.svelte';
 	import type { PutAwayDraft } from './put-away-draft.svelte';
 	import PutAway from './PutAway.svelte';
+	import { ShopMoves } from './shop-moves.svelte';
 	import ShopStage from './ShopStage.svelte';
 	import { stageWithWork, type Stage } from './stage';
 	import StageStrip from './StageStrip.svelte';
+	import TripButtons from './TripButtons.svelte';
 
 	type Props = {
 		kitchen: Kitchen;
@@ -28,11 +30,28 @@
 	const start = untrack(() => stageWithWork(kitchen));
 	const shown = $derived(stage ?? start);
 
+	// The list and the cart as the screen shows them while a tick moves a row.
+	const moves = new ShopMoves(() => ({ list: kitchen.list, cart: kitchen.cart }));
+	$effect(() => moves.settle());
+
 	const counts = $derived({
 		extras: kitchen.suggestions.length,
-		shop: kitchen.list.length,
-		away: kitchen.cart.length
+		shop: moves.toGet,
+		away: moves.inCart
 	});
+
+	// The stage Shop shows the list or the cart. A dark circle grows from the cart into the cart,
+	// and paper grows from the shelf back into the list.
+	let view = $state<'list' | 'cart'>('list');
+	function show(next: 'list' | 'cart', event: MouseEvent) {
+		const source = event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined;
+		if (next === view || !source || !stageBox) return;
+		cover(source, next === 'cart' ? 'frame' : 'bg', () => (view = next), stageBox);
+	}
+
+	// Each name that lands gives its button one squeeze.
+	let landed = $state({ shelf: 0, cart: 0 });
+	const onland = (on: 'shelf' | 'cart') => (landed[on] += 1);
 
 	// The new stage comes in under a circle of paper from the button that you tapped. The circle
 	// covers only the stage, so the strip stays in view.
@@ -42,7 +61,7 @@
 	function open(next: Stage, source: HTMLElement | undefined = stageBox) {
 		if (next === (going ?? shown) || !source || !stageBox) return void (stage = next);
 		going = next;
-		cover(source, 'bg', () => ((stage = next), (going = null)), stageBox);
+		cover(source, 'bg', () => ((stage = next), (going = null), (view = 'list')), stageBox);
 	}
 	const fromButton = (next: Stage) => (event: MouseEvent) =>
 		open(next, event.currentTarget instanceof HTMLElement ? event.currentTarget : undefined);
@@ -52,6 +71,16 @@
 	<PartTop>
 		<PartHead id={headId} title="Shop" />
 		<StageStrip {counts} value={going ?? shown} onchange={open} />
+		{#if shown === 'shop'}
+			<TripButtons
+				{view}
+				toGet={moves.toGet}
+				inCart={moves.inCart}
+				shelfLanded={landed.shelf}
+				cartLanded={landed.cart}
+				onshow={show}
+			/>
+		{/if}
 	</PartTop>
 
 	<div bind:this={stageBox}>
@@ -59,7 +88,7 @@
 			{#if shown === 'extras'}
 				<ExtrasStage {kitchen} onshop={fromButton('shop')} />
 			{:else if shown === 'shop'}
-				<ShopStage {kitchen} {bar} onputaway={fromButton('away')} />
+				<ShopStage {kitchen} {bar} {moves} {view} {onland} onputaway={fromButton('away')} />
 			{:else}
 				<PutAway {kitchen} {draft} ondone={() => open(stageWithWork(kitchen))} />
 			{/if}

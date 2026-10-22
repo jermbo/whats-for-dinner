@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
-	import { crossfade, slide } from 'svelte/transition';
+	import { flushSync, untrack } from 'svelte';
+	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { SvelteSet } from 'svelte/reactivity';
+	import { fade } from 'svelte/transition';
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { priceOfBrand, type CartItem, type Facts } from '../../shop/facts';
@@ -13,6 +14,8 @@
 		type PutAwayLine as Line
 	} from '../../shop/put-away-view';
 	import { readPrice } from '../../shop/price';
+	import { glide, glideOnNextChange } from '../glide';
+	import { timeOf } from '../motion';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
@@ -48,6 +51,11 @@
 	// items that need you.
 	const known = $derived(putAwayKnown(lines));
 	let knownOpen = $state(false);
+	// The count of the known items runs to its new number, so that you see the items go in.
+	const knownCount = new Tween(untrack(() => known.length));
+	$effect(() => {
+		knownCount.set(known.length, { duration: prefersReducedMotion.current ? 0 : 300 });
+	});
 
 	// The receipt starts when the stage opens with a cart, and it gets a row for each item that you
 	// tick later. The stage does not read its own write, so the call is out of the effect.
@@ -66,9 +74,29 @@
 	// fridge. The items that do not go into the pantry come last.
 	const groups = $derived(putAwayGroups(lines, open));
 
-	// A line that gets a new place moves into the group of that place. A line that comes or goes
-	// alone, such as an item that you did not buy, slides.
-	const [send, receive] = crossfade({ fallback: (node) => slide(node, { duration }) });
+	// A line that opens, closes, or goes changes the place of the lines after it. They glide to
+	// their new place, so nothing jumps.
+	let box = $state<HTMLElement>();
+	const LINES = '.wfd-away__group, .wfd-away__line';
+	const glideLines = (next: () => void) => glide(box, LINES, () => flushSync(next));
+
+	// A line that goes fades in its place first. The vault takes it out some time after the write,
+	// and the lines after it glide up then.
+	const fading = new SvelteSet<string>();
+	$effect(() => {
+		void kitchen.toPutAway;
+		untrack(() => fading.clear());
+	});
+	function fadeThen(keys: string[], action: () => Promise<void>) {
+		for (const key of keys) fading.add(key);
+		setTimeout(
+			() => {
+				glideOnNextChange(box, LINES);
+				void action().finally(() => keys.forEach((key) => fading.delete(key)));
+			},
+			box ? timeOf(box, 'move') : 0
+		);
+	}
 
 	// The pantry does not have the place of a first food yet, so the options get it.
 	const placesFor = ({ start }: CartItem) => [...new Set([...kitchen.places, start.place])];
@@ -77,7 +105,7 @@
 	const placeIsGuess = ({ key, item }: Line) => item.placeIsGuess && !draft.changed(key, 'place');
 
 	function toggle(line: Line) {
-		open = open?.key === line.key ? null : { key: line.key, group: placeGroup(line) };
+		glideLines(() => (open = open?.key === line.key ? null : { key: line.key, group: placeGroup(line) }));
 	}
 
 	// A line needs a place. With no option and no text, it is the place that the plugin proposes.
@@ -123,22 +151,25 @@
 	// cart is empty in that time, because the trip is not at its end yet.
 	let busy = $state(false);
 
-	// The open line stays open while its item goes into the pantry, so that it slides out as you
-	// left it. The last item ends the trip.
+	// The open line stays open while its item goes into the pantry, so that it fades as you left
+	// it. The last item ends the trip.
 	function putOne({ key, facts }: Line) {
-		return run(() => kitchen.shop.putAway(new Map([[key, facts]])));
+		fadeThen([key], () => run(() => kitchen.shop.putAway(new Map([[key, facts]]))));
 	}
 
 	function putKnown() {
-		return run(() => kitchen.shop.putAway(new Map(known.map(({ key, facts }) => [key, facts]))));
+		const keys = known.map(({ key }) => key);
+		fadeThen(keys, () => run(() => kitchen.shop.putAway(new Map(known.map(({ key, facts }) => [key, facts])))));
 	}
 
 	// The last line of a trip that has food in the pantry already ends it. With no such food, the
 	// trip stays open, and the cart is empty.
 	function notBought({ key, item }: Line) {
-		if (open?.key === key) open = null;
 		draft.forgetItem(item.key);
-		return run(() => kitchen.shop.notBought(key));
+		fadeThen([key], () => {
+			if (open?.key === key) open = null;
+			return run(() => kitchen.shop.notBought(key));
+		});
 	}
 
 	async function run(action: () => Promise<boolean>) {
@@ -158,11 +189,7 @@
 <!-- One item of the cart. A line moves between the groups, so it has the same form in each. -->
 {#snippet lineOf(line: Line)}
 	{@const { item, facts } = line}
-	<li
-		class="wfd-away__line"
-		in:receive={{ key: line.key, duration }}
-		out:send={{ key: line.key, duration }}
-	>
+	<li class="wfd-away__line" class:wfd-away__line--fading={fading.has(line.key)}>
 		<PutAwayLine
 			{item}
 			{facts}
@@ -184,7 +211,7 @@
 	</li>
 {/snippet}
 
-<section class="wfd-away" aria-labelledby="{uid}-name">
+<section class="wfd-away" aria-labelledby="{uid}-name" bind:this={box}>
 	<HiddenName id="{uid}-name" text="Put away" />
 	{#if !lines.length && !busy}
 		<p class="wfd-away__empty">The cart is empty.</p>
@@ -207,24 +234,22 @@
 				/>
 			</div>
 			{#if known.length}
-				<section class="wfd-away__known" transition:slide={{ duration }}>
+				<section class="wfd-away__known wfd-away__group">
 					<button
 						class="wfd-away__known-head"
 						type="button"
 						aria-expanded={knownOpen}
 						aria-controls="wfd-away-known"
-						onclick={() => (knownOpen = !knownOpen)}
+						onclick={() => glideLines(() => (knownOpen = !knownOpen))}
 					>
 						<span class="wfd-away__known-title wfd-display">Known</span>
-						{#key known.length}
-							<span class="wfd-away__known-count wfd-number">{known.length}</span>
-						{/key}
+						<span class="wfd-away__known-count wfd-number">{Math.round(knownCount.current)}</span>
 						<svg class="wfd-away__arrow" viewBox="0 0 20 20" aria-hidden="true">
 							<path d="M5 8l5 5 5-5" />
 						</svg>
 					</button>
 					{#if knownOpen}
-						<ul class="wfd-away__lines" id="wfd-away-known" transition:slide={{ duration }}>
+						<ul class="wfd-away__lines" id="wfd-away-known" in:fade={{ duration }}>
 							{#each known as line (line.key)}
 								{@render lineOf(line)}
 							{/each}
@@ -233,7 +258,7 @@
 				</section>
 			{/if}
 			{#each groups as group (group.title)}
-				<section class="wfd-away__group" transition:slide={{ duration }}>
+				<section class="wfd-away__group">
 					<GroupHead title={group.title} note={String(group.lines.length)} />
 					<ul class="wfd-away__lines">
 						{#each group.lines as line (line.key)}
@@ -248,7 +273,7 @@
 			<div class="wfd-away__sums" aria-live="polite">
 				<p class="wfd-away__total">Total <strong class="wfd-number">{total.toFixed(2)}</strong></p>
 				{#if missing}
-					<p class="wfd-away__missing" transition:slide={{ duration }}>
+					<p class="wfd-away__missing" transition:fade={{ duration }}>
 						{missing === 1 ? '1 price is missing' : `${missing} prices are missing`}
 					</p>
 				{/if}
@@ -332,11 +357,6 @@
 		font-size: var(--wfd-font-size-title);
 	}
 
-	/* A count that changes makes a small jump, so that you see that the items went in. */
-	.wfd-away__known-count {
-		animation: jump var(--wfd-motion-move) var(--wfd-ease-out);
-	}
-
 	.wfd-away__arrow {
 		inline-size: 20px;
 		block-size: 20px;
@@ -348,12 +368,6 @@
 
 	[aria-expanded='true'] .wfd-away__arrow {
 		rotate: 180deg;
-	}
-
-	@keyframes jump {
-		40% {
-			translate: 0 -5px;
-		}
 	}
 
 	/* On a wide tab, the lines are in columns, as the rows of the list. */
@@ -369,6 +383,11 @@
 
 	.wfd-away__line {
 		border-block-end: var(--wfd-border-thin) dotted var(--wfd-color-text-faint);
+		transition: opacity var(--wfd-row-motion);
+	}
+
+	.wfd-away__line--fading {
+		opacity: 0;
 	}
 
 	.wfd-away__sums {

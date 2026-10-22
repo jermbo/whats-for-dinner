@@ -1,6 +1,7 @@
 /*
- * The tab is the place of the layers of the press and of the glide, so that they scroll with the
- * content. It is its own stack, so that a layer under the content is still over the tab.
+ * The tab is the place of the layers of the press, of the glide, and of the name that flies, so
+ * that they have the tokens of the kitchen. It is its own stack, so that a layer under the content
+ * is still over the tab.
  */
 .view-content.wfd {
 	position: relative;
@@ -40,4 +41,23 @@
 /* A surface that grows is clear while the copy of the glide grows under it. */
 .wfd [data-glide-clear] {
 	background-color: transparent !important;
+}
+
+/* The name that flies: a small pill in the accent colour, over each thing of the tab. */
+.wfd-fly {
+	position: fixed;
+	z-index: 60;
+	pointer-events: none;
+}
+
+.wfd-fly__name {
+	translate: -50% -50%;
+	padding: var(--wfd-space-tight) var(--wfd-space-inset);
+	border-radius: var(--wfd-radius-pill);
+	background: var(--wfd-color-primary);
+	color: var(--wfd-color-on-primary);
+	font-size: var(--wfd-font-size-small);
+	font-weight: 700;
+	white-space: nowrap;
+	will-change: transform;
 }

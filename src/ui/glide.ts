@@ -65,16 +65,17 @@ function resizeSurface(node: HTMLElement, from: Place, to: Place, dx: number, dy
 	};
 }
 
-// Makes the change, and glides each thing of `selector` in `root` to its new place.
-export function glide(root: HTMLElement | undefined, selector: string, change: () => void) {
-	const length = root ? timeOf(root, 'move') : 0;
-	if (!root || !length) return change();
-	const easing = easeOf(root);
+// The place of each thing of `selector` in `root`, before a change.
+function measure(root: HTMLElement, selector: string) {
 	const before = new Map<HTMLElement, Place>();
 	for (const node of root.querySelectorAll<HTMLElement>(selector)) before.set(node, placeOf(node));
+	return before;
+}
 
-	change();
-
+// Slides each thing that moved from its place in `before` to its new place.
+function slideFrom(root: HTMLElement, selector: string, before: Map<HTMLElement, Place>) {
+	const length = timeOf(root, 'move');
+	const easing = easeOf(root);
 	const moves = new Map<HTMLElement, { dx: number; dy: number }>();
 	for (const node of root.querySelectorAll<HTMLElement>(selector)) {
 		const from = before.get(node);
@@ -100,4 +101,28 @@ export function glide(root: HTMLElement | undefined, selector: string, change: (
 			resizeSurface(node, from, to, from.left - to.left, from.top - to.top);
 		}
 	}
+}
+
+// Makes the change, and glides each thing of `selector` in `root` to its new place.
+export function glide(root: HTMLElement | undefined, selector: string, change: () => void) {
+	if (!root || !timeOf(root, 'move')) return change();
+	const before = measure(root, selector);
+	change();
+	slideFrom(root, selector, before);
+}
+
+// A change that the vault makes comes some time after the write, so the screen cannot make it in
+// one call. This measures now, and glides when `root` changes next. After `WAIT`, it stops.
+const WAIT = 3000;
+
+export function glideOnNextChange(root: HTMLElement | undefined, selector: string) {
+	if (!root || !timeOf(root, 'move')) return;
+	const before = measure(root, selector);
+	const watch = new MutationObserver(() => {
+		watch.disconnect();
+		clearTimeout(timer);
+		slideFrom(root, selector, before);
+	});
+	watch.observe(root, { childList: true, subtree: true });
+	const timer = setTimeout(() => watch.disconnect(), WAIT);
 }

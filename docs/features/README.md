@@ -46,7 +46,7 @@ You write the preparation in the recipe note, as a callout of the type "prep". A
 
 ## The shopping list has only the missing items
 
-The [list](../architecture/shopping.md) is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, one tap marks an item.
+The [list](../architecture/shopping.md) is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, the list is in bins, as the Pantry. One tap ticks an item: its name flies to the cart at the top right, and the row leaves. A wrong tap costs nothing: "Undo" is under your thumb for a few seconds, and later a tap on the item in the cart puts it back.
 
 Some food you want always, plan or no plan: bread, eggs, salt. You label such food as a [staple](../architecture/staples.md), and you tell how often you buy it. The plugin then suggests it when it needs a look: it is low, its date is near, or its time is over. One tap puts it on the list, and one tap skips it. Food that a meal needs gets a suggestion too, when the pantry has it [past its date](../architecture/past-its-date.md).
 
