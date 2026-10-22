@@ -7,4 +7,4 @@ bought: 2026-10-11
 
 | Place          | Left | Size | Use by |
 | -------------- | ---- | ---- | ------ |
-| Kitchen pantry | 2    | 3    |        |
+| Kitchen pantry | 1    | 3    |        |

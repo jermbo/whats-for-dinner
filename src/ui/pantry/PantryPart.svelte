@@ -406,7 +406,7 @@
 
 			{#each groups as group, at (group.title)}
 				{@const attention = attentionOf(group.rows, kitchen.today, soonDays)}
-				<div out:slide={{ duration }} data-glide-surface>
+				<div out:slide={{ duration }}>
 					<Bin
 						title={group.title}
 						count={group.rows.length}
@@ -494,21 +494,17 @@
 	}
 
 	/*
-	 * The bins flow in columns: a bin starts under the bin before it, so no bin waits for the
-	 * height of the bin next to it. A phone has one column.
+	 * Each bin takes the full width, and the next bin starts under it. Its lines fill columns
+	 * inside it, so no bin waits for a column and no column is empty.
 	 */
 	.wfd-pantry__bins {
-		columns: 20rem;
-		column-gap: var(--wfd-space-section);
+		display: grid;
+		gap: calc(2 * var(--wfd-space-section));
 	}
 
 	.wfd-pantry__bins > div,
 	.wfd-pantry__row {
 		transition: opacity var(--wfd-card-motion);
-	}
-
-	.wfd-pantry__bins > div {
-		break-inside: avoid;
 	}
 
 	/*

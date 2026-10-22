@@ -25,3 +25,7 @@ The broth and the elbow pasta are low, and the celery is missing.
 3. Take out the chicken. Pull it into small pieces with two forks.
 4. Add the pasta to the pot. Cook for 8 minutes.
 5. Put the chicken back. Add salt and pepper.
+
+## Cooked
+
+- 2026-10-21 · ★★★★★ · asdasdasdasd

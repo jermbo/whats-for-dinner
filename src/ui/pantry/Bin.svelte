@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import Panel from '../parts/Panel.svelte';
 	import Sticker from '../parts/Sticker.svelte';
 
 	type Props = {
@@ -10,7 +9,7 @@
 		past?: number;
 		soon?: number;
 		low?: number;
-		// Food that is out: a dashed bin of tags, with no card.
+		// Food that is out: a bin of dashed tags, under a dashed rule.
 		out?: boolean;
 		// The position of the bin, so that the bins come in one after the other.
 		at: number;
@@ -20,30 +19,29 @@
 	const headId = $props.id();
 </script>
 
-<!-- One place of the pantry. Its head tells what needs you before you read its lines. -->
+<!--
+	One place of the pantry. Its head tells what needs you before you read its lines. A rule across
+	the width shows where the place starts, as the bins of the Shop list, so it needs no card.
+-->
 <section class="wfd-bin" class:wfd-bin--out={out} style:--at={at} aria-labelledby={headId}>
-	<Panel kind={out ? 'empty' : 'surface'} data-glide-bg>
-		<header class="wfd-bin__head">
-			<h3 class="wfd-bin__title wfd-display" id={headId}>{title}</h3>
-			<span class="wfd-bin__count wfd-number">{count}</span>
-			<span class="wfd-bin__stickers">
-				{#if past}<Sticker label="{past} past" kind="tomato" />{/if}
-				{#if soon}<Sticker label="{soon} soon" />{/if}
-				{#if low}<Sticker label="{low} low" kind="amber" />{/if}
-			</span>
-		</header>
-		<div class="wfd-bin__lines">{@render children()}</div>
-	</Panel>
+	<header class="wfd-bin__head">
+		<h3 class="wfd-bin__title wfd-display" id={headId}>{title}</h3>
+		<span class="wfd-bin__count wfd-number">{count}</span>
+		<span class="wfd-bin__stickers">
+			{#if past}<Sticker label="{past} past" kind="tomato" />{/if}
+			{#if soon}<Sticker label="{soon} soon" />{/if}
+			{#if low}<Sticker label="{low} low" kind="amber" />{/if}
+		</span>
+	</header>
+	<div class="wfd-bin__lines">{@render children()}</div>
 </section>
 
 <style>
-	/* The card holds the group, so the rules between its lines are soft, and the bars are thin. */
+	/* The heavy rule holds the group, so the rules between its lines are soft, and the bars are thin. */
 	.wfd-bin {
 		--wfd-row-rule: var(--wfd-color-track);
 		--wfd-pbar-size: 6px;
 
-		break-inside: avoid;
-		margin-block-end: var(--wfd-space-section);
 		animation: wfd-bin-in var(--wfd-row-motion) backwards;
 		animation-delay: calc(var(--at) * var(--wfd-motion-press) / 2);
 	}
@@ -60,8 +58,8 @@
 		flex-wrap: wrap;
 		gap: var(--wfd-space-group) var(--wfd-space-stack);
 		align-items: center;
-		padding-block-end: var(--wfd-space-inset);
-		border-block-end: var(--wfd-border) solid var(--wfd-color-border);
+		padding-block-end: var(--wfd-space-group);
+		border-block-end: var(--wfd-border-rule) solid var(--wfd-color-border);
 	}
 
 	.wfd-bin__title {
@@ -76,29 +74,46 @@
 
 	.wfd-bin__stickers {
 		display: flex;
+		flex-wrap: wrap;
 		gap: var(--wfd-space-group);
-		margin-inline-start: auto;
 	}
 
-	.wfd-bin__lines > :global(:last-child .wfd-line) {
-		border-block-end: 0;
+	/*
+	 * The lines fill the width in columns, so that a long place does not leave the width empty. Each
+	 * bin has the same columns, so the lines of all bins line up. A line of the Pantry has no photo,
+	 * so its columns are narrower than the rows of the Shop.
+	 */
+	.wfd-bin__lines {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+		column-gap: calc(2 * var(--wfd-space-section));
 	}
 
-	/* An open card sits on the paper, so that it stands out of the bin. */
+	/* An open card needs the width for its bar and its buttons, so it takes the full row. */
+	.wfd-bin__lines > :global(:has(.wfd-pantry__open)),
+	.wfd-bin__lines > :global(.wfd-pantry__open) {
+		grid-column: 1 / -1;
+	}
+
+	/* The bin has no card, so an open card sits on the surface colour to stand out of the paper. */
 	.wfd-bin__lines :global(.wfd-pantry__open) {
-		margin-inline: calc(-1 * var(--wfd-space-inset));
+		margin-block: var(--wfd-space-group);
 		padding: var(--wfd-space-inset);
-		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-color-bg);
+		border-radius: var(--wfd-radius-card);
+		background: var(--wfd-color-surface);
 	}
 
-	/* Food that is out has no amount and no bar, so it is a set of tags with no card. */
+	/* Food that is out has no amount and no bar, so it is a set of tags under a dashed rule. */
+	.wfd-bin--out .wfd-bin__head {
+		border-block-end-style: dashed;
+		border-block-end-color: var(--wfd-color-text-faint);
+	}
 
 	.wfd-bin--out .wfd-bin__lines {
 		display: flex;
 		flex-wrap: wrap;
 		gap: var(--wfd-space-group);
-		padding-block: var(--wfd-space-inset) var(--wfd-space-group);
+		padding-block-start: var(--wfd-space-inset);
 	}
 
 	.wfd-bin--out .wfd-bin__lines :global(.wfd-pantry__open) {

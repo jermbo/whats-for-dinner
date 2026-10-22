@@ -22,6 +22,8 @@ The plugin does not assume that a food is there. Water is a food item too: you r
 
 Each package is one row, with its own size and its own use-by date, so the half jug and the new jug of milk each keep their date. The pantry shows one line for each food in each place, such as "Beans · 3.2 kg · 8 packages", with one bar that has a part for each package, in all places. Each package has a [level](../architecture/level.md), such as 1/4, or a count, such as 4 of 12 eggs. When one package is left and it is nearly empty, the bar is amber, so you see what gets low before it is out. To correct a package, you open the [card](../architecture/card.md) of the line and drag the package to what you see: a quarter of a jug, or 4 eggs. One tap adds a carton. Once a week, the [audit](../architecture/audit.md) walks each place with you, and the food that a meal could not count comes first.
 
+On a wide screen, each place goes across the full width, and its lines fill columns under its name, so the whole pantry fits in a few screens and no column is empty.
+
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
 
 ## The recipes that use your food come first
