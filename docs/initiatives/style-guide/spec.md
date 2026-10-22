@@ -76,7 +76,7 @@ Pages that change:
 
 - [Code standards](../../standards/code-standards.md): the rule "use a token, not a value".
 - [Settings](../../architecture/settings.md): the accent colour replaces the role `primary`.
-- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the [roadmap](../../features/roadmap.md).
+- The wiki [glossary](../../glossary.md), the [features](../../features/README.md) page, and the roadmap.
 
 No note of the vault and no data file changes.
 

@@ -16,7 +16,7 @@ You stand at the fridge with the milk in your hand. You do not know that it has 
 
 ## A tap on a line opens its card
 
-The card has the name, the place, the count of packages here and of places, and a large total of all places: "Milk · Fridge · 2 here · 1 1/4 gal". Below is one bar of 44 pixels, with one part for each package, as the line has it: the packages of this place first and dark, other places grey, and amber when the food item is [low](level.md). A thin line of the card is between two parts.
+The card opens as an [open card](open-card.md): its ink spreads from your tap, and it moves to the top of the screen. Its bar is ready at once. The card has the name, the place, the count of packages here and of places, and a large total of all places: "Milk · Fridge · 2 here · 1 1/4 gal". Below is one bar of 44 pixels, with one part for each package, as the line has it: the packages of this place first and dark, other places grey, and amber when the food item is [low](level.md). A thin line of the card is between two parts.
 
 The sequence of the parts stays while the card is open. A can of beans that you drag to full is not open any more, but it does not move behind the other cans under your thumb.
 

@@ -10,7 +10,7 @@
 	type Props = {
 		kitchen: Kitchen;
 		// Opens the stage Shop.
-		onshop: () => void;
+		onshop: (event: MouseEvent) => void;
 	};
 	let { kitchen, onshop }: Props = $props();
 
@@ -50,7 +50,7 @@
 	/>
 
 	<StageFoot>
-		<Button kind="main" onclick={onshop}>Go shopping <span aria-hidden="true">→</span></Button>
+		<Button kind="olive" arrow onclick={onshop}>Go shopping</Button>
 	</StageFoot>
 </section>
 

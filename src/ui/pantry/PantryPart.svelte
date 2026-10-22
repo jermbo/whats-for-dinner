@@ -1,6 +1,7 @@
 <script lang="ts">
+	import { flushSync } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { slide } from 'svelte/transition';
+	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { FoodNote } from '../../note';
@@ -37,6 +38,9 @@
 	import OnTheList from './OnTheList.svelte';
 	import OutTag from './OutTag.svelte';
 	import StockLine from './StockLine.svelte';
+	import { glide } from '../glide';
+	import { timeOf } from '../motion';
+	import { scrollToTop } from '../scroll-to-top';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
 	const headId = $props.id();
@@ -111,8 +115,43 @@
 	type Open = { name: string; place: string; add: boolean; form: boolean };
 	let open = $state<Open | null>(null);
 	const isOpen = (name: string, place: string) => open?.name === name && open.place === place;
+
+	// A card closes in two steps, so that the card and its line are never on the screen together.
+	// First the ink goes back and the card fades, in its place. Then the line takes the place of
+	// the card, and each bin and line that the card pushed glides back.
+	let closing = $state<Open | null>(null);
+	let binsBox = $state<HTMLElement>();
+	const GLIDE = '.wfd-pantry__bins > div, .wfd-pantry__row';
+	const change = (next: () => void) => glide(binsBox, GLIDE, () => flushSync(next));
+	let closeTimer: ReturnType<typeof setTimeout> | undefined;
+	const isClosing = (name: string, place: string) =>
+		closing?.name === name && closing.place === place;
+	const isShown = (name: string, place: string) => isOpen(name, place) || isClosing(name, place);
+	function close() {
+		if (!open) return;
+		clearTimeout(closeTimer);
+		// The card and the button in it that had the focus go away. The focus goes to the line that
+		// takes the place of the card, so that a keyboard and a screen reader keep their place.
+		const row = binsBox?.querySelector(
+			`[data-name="${CSS.escape(open.name)}"][data-place="${CSS.escape(open.place)}"]`
+		);
+		const hadFocus = row?.contains(document.activeElement) ?? false;
+		closing = open;
+		open = null;
+		closeTimer = setTimeout(() => {
+			change(() => (closing = null));
+			if (hadFocus) row?.querySelector<HTMLElement>('button')?.focus({ preventScroll: true });
+		}, binsBox ? timeOf(binsBox, 'move') : 0);
+	}
+	// A tap on a different line closes the open card at once. A card that closed in two steps
+	// above the new card would move the new card after it got to the top of the screen.
 	function toggle(name: string, place: string) {
-		open = isOpen(name, place) ? null : { name, place, add: false, form: false };
+		if (isOpen(name, place)) return close();
+		clearTimeout(closeTimer);
+		change(() => {
+			closing = null;
+			open = { name, place, add: false, form: false };
+		});
 	}
 
 	// "Add to pantry", and the name that its field starts with.
@@ -121,7 +160,7 @@
 	function startNew(name: string) {
 		newName = name;
 		adding = true;
-		open = null;
+		close();
 	}
 
 	let auditing = $state(false);
@@ -186,8 +225,9 @@
 	}
 
 	// A card that opens out of view, such as after "Add to pantry", comes into view.
+	// An open card moves to the top of the screen, under the head of the part.
 	function intoView(node: HTMLElement) {
-		node.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion.current ? 'auto' : 'smooth' });
+		scrollToTop(node);
 	}
 </script>
 
@@ -281,8 +321,16 @@
 
 	<!-- The card of a food item in one place, or the form of the food item. -->
 	{#snippet cardOf(food: FoodNote, place: string)}
-		<div class="wfd-pantry__open" transition:slide={{ duration }} use:intoView>
-			{#if open?.form}
+		{@const shown = isOpen(food.item.name, place) ? open : closing}
+		{@const leaving = !isOpen(food.item.name, place)}
+		<!-- The card shows at its full height at once, so that no frame needs a new layout of the bins. -->
+		<div
+			class="wfd-pantry__open"
+			class:wfd-pantry__open--leaving={leaving}
+			in:fade={{ duration }}
+			use:intoView
+		>
+			{#if shown?.form}
 				{@const start = nextSize(food.item, place) ?? ''}
 				<FoodForm
 					item={food.item}
@@ -298,9 +346,10 @@
 					item={food.item}
 					{place}
 					places={kitchen.places}
-					addFirst={open?.add}
-					ondone={(rows) => ((open = null), write(food, rows))}
-					oncancel={() => (open = null)}
+					open={!leaving}
+					addFirst={shown?.add}
+					ondone={(rows) => (close(), write(food, rows))}
+					oncancel={close}
 					onfood={() => open && (open = { ...open, form: true, add: false })}
 				/>
 			{/if}
@@ -334,7 +383,7 @@
 			<div out:slide={{ duration }}>
 				<Bin title="Out" count={out.length} out {at}>
 					{#each out as food (food.path)}
-						{#if isOpen(food.item.name, outPlace)}
+						{#if isShown(food.item.name, outPlace)}
 							{@render cardOf(food, outPlace)}
 						{:else}
 							<OutTag name={food.item.name} onclick={() => toggle(food.item.name, outPlace)} />
@@ -347,7 +396,11 @@
 
 	<!-- A new sequence comes in as new bins. A filter or a search moves only the rows that change. -->
 	{#key bar.sort}
-		<div class="wfd-pantry__bins">
+		<div
+			class="wfd-pantry__bins"
+			class:wfd-pantry__bins--focus={open !== null}
+			bind:this={binsBox}
+		>
 			<!-- In the sequence "Low first", the food that is out is the most empty, so it is first. -->
 			{#if bar.sort === 'low'}{@render outBin(0)}{/if}
 
@@ -363,10 +416,16 @@
 						at={bar.sort === 'low' && out.length ? at + 1 : at}
 					>
 						{#each group.rows as row (row.key)}
-							<div transition:slide={{ duration }}>
-								{#if isOpen(row.food.item.name, row.place)}
+							<div
+								class="wfd-pantry__row"
+								transition:slide={{ duration }}
+								data-name={row.food.item.name}
+								data-place={row.place}
+							>
+								{#if isShown(row.food.item.name, row.place)}
 									{@render cardOf(row.food, row.place)}
 								{:else}
+									<div in:fade={{ duration }}>
 									<StockLine
 										name={row.food.item.name}
 										note={noteOf(row)}
@@ -378,6 +437,7 @@
 										soon={isSoon(row, kitchen.today, soonDays)}
 										onclick={() => toggle(row.food.item.name, row.place)}
 									/>
+									</div>
 								{/if}
 							</div>
 						{/each}
@@ -434,19 +494,54 @@
 	}
 
 	/*
-	 * The bins flow in columns: a bin starts under the bin before it, so no bin waits for the
-	 * height of the bin next to it. A phone has one column.
+	 * Each bin takes the full width, and the next bin starts under it. Its lines fill columns
+	 * inside it, so no bin waits for a column and no column is empty.
 	 */
 	.wfd-pantry__bins {
-		columns: 20rem;
-		column-gap: var(--wfd-space-section);
+		display: grid;
+		gap: calc(2 * var(--wfd-space-section));
 	}
 
-	.wfd-pantry__bins > div {
-		break-inside: avoid;
+	.wfd-pantry__bins > div,
+	.wfd-pantry__row {
+		transition: opacity var(--wfd-card-motion);
+	}
+
+	/*
+	 * While a card is open, the other bins step back, and so do the other lines of its bin. Only
+	 * their opacity changes, so the browser needs no new layout and no new paint. A hover brings
+	 * one forward again.
+	 */
+	.wfd-pantry__bins--focus > div:not(:has(.wfd-pantry__open)),
+	.wfd-pantry__bins--focus > div:has(.wfd-pantry__open) .wfd-pantry__row:not(:has(.wfd-pantry__open)) {
+		opacity: 0.45;
+	}
+
+	@media (hover: hover) {
+		.wfd-pantry__bins--focus > div:hover,
+		.wfd-pantry__bins--focus .wfd-pantry__row:hover {
+			opacity: 1;
+		}
 	}
 
 	.wfd-pantry__open {
 		padding-block: var(--wfd-space-inset);
+	}
+
+	/*
+	 * The first step of a close: the content fades while the ink goes back, and then the card
+	 * fades, in its place. The second step glides the bins and the lines back.
+	 */
+	.wfd-pantry__open {
+		transition: opacity var(--wfd-motion-change) var(--wfd-ease-out) var(--wfd-motion-press);
+	}
+
+	.wfd-pantry__open :global(.wfd-card) {
+		transition: opacity var(--wfd-chip-motion);
+	}
+
+	.wfd-pantry__open--leaving,
+	.wfd-pantry__open--leaving :global(.wfd-card) {
+		opacity: 0;
 	}
 </style>

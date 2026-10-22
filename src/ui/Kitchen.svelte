@@ -5,7 +5,6 @@
 	import { fade, fly } from 'svelte/transition';
 	import type { Kitchen, Part } from '../kitchen-state.svelte';
 	import type { Only as PantryOnly, Sort as PantrySort } from '../pantry/views';
-	import type { Only as PlanOnly, Sort as PlanSort } from '../plan/browse';
 	import type { Only as RecipeOnly, Sort as RecipeSort } from '../recipes/browse';
 	import type { Only as ShopOnly, Sort as ShopSort } from '../shop/browse';
 	import { BarState } from './bar-state.svelte';
@@ -28,7 +27,7 @@
 
 	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop'];
 
-	const toCook = $derived(kitchen.meals.filter((meal) => !meal.cooked).length);
+	const toCook = $derived(kitchen.meals.length);
 	const options = $derived([
 		{ value: 'pantry' as const, label: 'Pantry' },
 		{ value: 'recipes' as const, label: 'Recipes' },
@@ -51,7 +50,6 @@
 	const bars = {
 		pantry: new BarState<PantrySort, PantryOnly>('place'),
 		recipes: new BarState<RecipeSort, RecipeOnly>('match'),
-		plan: new BarState<PlanSort, PlanOnly>('type'),
 		shop: new BarState<ShopSort, ShopOnly>('name')
 	};
 
@@ -60,13 +58,12 @@
 		kitchen.showPart(next);
 	}
 
-	// The plan asks for the recipes of one type, to add a meal of that type. Only that filter is
-	// on, and the open bar shows why the list is short.
-	function browse(type: string) {
+	// "Add a meal" shows each recipe, the recipes that use up the pantry first.
+	function addMeal() {
 		bars.recipes.clear();
 		bars.recipes.find = '';
-		bars.recipes.one = type;
-		bars.recipes.open = true;
+		bars.recipes.sort = 'match';
+		bars.recipes.open = false;
 		show('recipes');
 	}
 
@@ -145,7 +142,7 @@
 				{:else if part === 'recipes'}
 					<RecipesPart {kitchen} oncook={cook} bar={bars.recipes} />
 				{:else if part === 'plan'}
-					<PlanPart {kitchen} oncook={cook} onbrowse={browse} bar={bars.plan} />
+					<PlanPart {kitchen} oncook={cook} onadd={addMeal} />
 				{:else}
 					<ShopPart {kitchen} bar={bars.shop} {draft} bind:stage={shopStage} />
 				{/if}

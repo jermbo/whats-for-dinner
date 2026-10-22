@@ -20,7 +20,7 @@ Each food is one note in the pantry folder: `Rice`, `Eggs`, `Elbow pasta`. This 
 
 You name the places before food is there. The [settings](settings.md) keep the list of names, so that add food and the filters show a place that has no row yet.
 
-The pantry screen shows one line for each food item in each place, in a group for each place. Each group is a [bin](../initiatives/pantry-bins/decision-log.md): a card with its title, its number of lines, and a sticker for the lines that are past their date, soon, or low. The bins flow in columns, so a wide tab has no empty space and a phone has one column. A line has the total of all places and the count of packages: eight cans of beans are one line, "3.2 kg · 8 packages". The badge of the line comes from the first date of its packages. You see what is in the outside fridge and you do not have to go there.
+The pantry screen shows one line for each food item in each place, in a group for each place. Each group is a [bin](../initiatives/pantry-bins/decision-log.md): its title, its number of lines, and a sticker for the lines that are past their date, soon, or low, over a heavy rule, as the bins of the Shop list. A bin takes the full width, and its lines fill columns inside it, so a wide tab has no empty space and a phone has one column. A line has the total of all places and the count of packages: eight cans of beans are one line, "3.2 kg · 8 packages". The badge of the line comes from the first date of its packages. You see what is in the outside fridge and you do not have to go there.
 
 ## One bar shows each package
 
@@ -42,7 +42,7 @@ Once a week, the [audit](audit.md) walks each place, and you confirm or correct 
 
 A food item is low when one package is left, and it is at 1/4. Then its bar is amber.
 
-A food item with no package is out. It stays in view as a dashed tag with its name in the bin "Out", so that you buy it again. A tap on the tag opens its card.
+A food item with no package is out. It stays in view as a dashed tag with its name in the bin "Out", under a dashed rule, so that you buy it again. A tap on the tag opens its card.
 
 ## The pantry does not assume
 

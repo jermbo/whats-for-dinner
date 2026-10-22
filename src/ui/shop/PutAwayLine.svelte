@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
-	import { slide } from 'svelte/transition';
 	import { showDate } from '../../dates';
 	import { prefersReducedMotion as reduced } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
@@ -141,9 +140,9 @@
 			numberSmall={paid}
 		>
 			{#snippet mark()}
-				<span class="wfd-away-line__mark" class:wfd-away-line__mark--open={open} aria-hidden="true">
-					›
-				</span>
+				<svg class="wfd-away-line__mark" class:wfd-away-line__mark--open={open} viewBox="0 0 20 20" aria-hidden="true">
+					<path d="M5 8l5 5 5-5" />
+				</svg>
 				{#if chosenUrl}
 					<img class="wfd-away-line__brand" src={chosenUrl} alt="" in:fade={{ duration }} />
 				{:else if chosen}
@@ -158,7 +157,7 @@
 	</div>
 
 	{#if open}
-		<div class="wfd-away-line__facts" id="{uid}-facts" transition:slide={{ duration }}>
+		<div class="wfd-away-line__facts" id="{uid}-facts" in:fade={{ duration }}>
 			{#if item.brands}
 				<BrandStrip
 					brands={tilesOf(brands, urlOf)}
@@ -211,7 +210,7 @@
 				/>
 			{/if}
 			{#if badAmount}
-				<p class="wfd-away-line__refused" role="alert" transition:slide={{ duration }}>
+				<p class="wfd-away-line__refused" role="alert" transition:fade={{ duration }}>
 					Select a size. {refusal}
 				</p>
 			{/if}
@@ -224,15 +223,15 @@
 				>
 					Put away
 				</Button>
-				<Button aria-label="Not bought: {item.name}" disabled={busy} onclick={onnotbought}>
+				<Button kind="plain" mark="✕" aria-label="Not bought: {item.name}" disabled={busy} onclick={onnotbought}>
 					Not bought
 				</Button>
+				{#if facts.intoPantry}
+					<Button kind="plain" mark="+" aria-label="One more package: {item.name}" disabled={busy} onclick={onaddpackage}>
+						Package
+					</Button>
+				{/if}
 			</div>
-			{#if facts.intoPantry}
-				<Button kind="link" aria-label="One more package: {item.name}" disabled={busy} onclick={onaddpackage}>
-					+ package
-				</Button>
-			{/if}
 		</div>
 	{/if}
 </div>
@@ -280,15 +279,19 @@
 		}
 	}
 
+	/* The chevron of "Known" and of the cart: one mark for each part that opens. */
 	.wfd-away-line__mark {
-		font-size: var(--wfd-font-size-title);
-		font-weight: 700;
-		line-height: var(--wfd-line-height-display);
+		inline-size: 20px;
+		block-size: 20px;
+		align-self: center;
+		fill: none;
+		stroke: currentColor;
+		stroke-width: 2.5;
 		transition: rotate var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-away-line__mark--open {
-		rotate: 90deg;
+		rotate: 180deg;
 	}
 
 	/* The brand of the line, small, before the name. */

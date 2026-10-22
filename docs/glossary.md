@@ -67,8 +67,11 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Source photo | A photo of the original of a recipe, such as the card or the page of the cookbook. [Intake](architecture/intake.md) puts it below the title. |
 | Step photo  | A photo that shows one [step](architecture/steps.md) of a recipe, in the note below that step. The mark `\|best` tells the best one. |
 | Gallery     | The [view](architecture/gallery.md) of the records of a recipe that have a photo: each photo with its date, its rating, and its note. |
-| Meal        | A recipe that is in the [plan](architecture/plan.md).                                                     |
-| Week        | The meals of the plan that you did not cook.                                                              |
+| Meal        | A main dish and its sides, which you eat at one time. A meal is in the [plan](architecture/plan.md) until you cook it. |
+| Dish        | One part of a meal: a recipe, or only a name, such as "Salad".                                           |
+| Main dish   | The first dish of a meal: a recipe. The card of the meal has its name.                                    |
+| Side        | A dish that goes with a main dish, such as mashed potatoes. "Side" is also the type of a recipe with the tag "side".                  |
+| Week        | The meals of the plan: the options that you planned at a calm moment.                                     |
 
 ## The store and the stove
 
@@ -82,6 +85,10 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Extra         | An item that is on the list because you put it there: a suggestion that you accepted, or an item of your own.                                                                                                                                                                             |
 | Stage         | One of the three moments of a trip in the Shop part: "Extras", "Shop", and "Put away". A strip at the top opens each [stage](architecture/shopping.md).                                                                                                                                   |
 | Cart          | The items that you marked in the store. Each of them is a task with a mark in the shopping note.                                                                                                                                                                                          |
+| Tick          | A tap on a row of the Shop. The check fills, the name is struck, the name flies to the cart, and the item goes into the cart. |
+| Shelf         | The button at the top left of the stage Shop, with the number of the items to get. It opens the list.                     |
+| Cart view     | The dark view of the cart. It grows from the cart button, at the top right, and fills the stage.                          |
+| Undo bar      | The bar above the lower edge for 4 seconds after a tick: "✓ Eggs ↶ Undo".                                                  |
 | Put away      | The [third stage and its button](architecture/put-away.md) that add the cart to the pantry, and that end the trip.                                                                                                                                                                        |
 | Fact          | One of the six things that you give for an item at [put away](architecture/put-away-facts.md): the amount, the place, the use-by date, the price, the mark "Sale", and the brand.                                                                                                       |
 | Bought brand  | The brand on a row of a receipt or a cart task: the brand that you took in the store, or that put away selected. The row links to its photo, or has its name.                                                                                                                         |
@@ -110,6 +117,12 @@ The kitchen uses "part", "card", "row", and "line" for its own things. So the lo
 | Piece token   | A token of one piece that points to a role token, such as the motion of a card. You change it to try a different value on that piece only.      |
 | Piece         | One shared thing of the screen with its own look, such as a button, a chip, or a sticker. Each screen uses the same [piece](architecture/pieces.md). |
 | Frame         | The dark area around Cook Mode and the gallery. It is dark in the light scheme and in the dark scheme.                                          |
+| Circle        | The shape of each change of a card or a screen. It grows from the point of your tap, and goes back to it. See [open card](architecture/open-card.md). |
+| Ink           | The dark circle that opens a card. The text changes to the colour on the ink when the circle covers about half the card.                        |
+| Paper         | The light circle over the ink of a card that holds a form, such as the edit form of a recipe.                                                   |
+| Step back     | What the other cards do while a card is open: they get lighter.                                                                                 |
+| Pill          | The button of an action that completes a task or goes forward: round ends, the accent colour, and an arrow in a circle when it opens a different screen. |
+| Meter         | The bar of an open recipe, with one piece for each ingredient, in the colour of its state.                                                      |
 | Style guide   | The pages that tell the tokens, the scales, and the pieces, and when to use each one: [look](architecture/look.md) and the pages below it.       |
 
 ## The tests

@@ -22,11 +22,11 @@ The lines are in one group for each place, from A to Z. You put the food away on
 
 A tap on a line opens it. Each fact has options: the amounts that you bought before, "3 days" to "1 month" for the use-by date, and the places of the pantry. A field takes a value that no option has.
 
-The open line stays in its group while you correct it, so it does not move under your thumb. When it closes, it goes into the group of its place.
+A line opens with the same chevron as the group "Known", and the chevron turns when it opens. The open line stays in its group while you correct it, so it does not move under your thumb. When it closes, it goes into the group of its place.
 
 The open line has "+ package". It adds a line with the amount, the place, the date, and the price of the open line, for a package that the plugin did not expect. The new line slides in below the open line. A correction of one line does not change the other lines of the item.
 
-"Not bought" takes one line out, for a wrong tap in the store. The task stays in the cart while the item has a line. "Not bought" on the last line of an item takes the item out of the cart. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store when it is complete.
+"✕ Not bought" takes one line out, for a wrong tap in the store. The task stays in the cart while the item has a line. "Not bought" on the last line of an item takes the item out of the cart. The stage also has the store of the trip: the store that you selected in the stage Shop. A change here changes the open note, and the [receipt](receipt.md) gets the store when it is complete.
 
 ## The brand is one tap
 

@@ -22,3 +22,7 @@ A meal for a day with no time. The recipe says only "pasta", so each kind of pas
 3. Cut the onion and the garlic. Cook them in a pan for 5 minutes.
 4. Add the tomato sauce. Cook with low heat for 5 minutes.
 5. Mix the pasta with the sauce. Put the cheese on top.
+
+## Cooked
+
+- 2026-10-21

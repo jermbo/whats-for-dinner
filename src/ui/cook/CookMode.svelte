@@ -19,6 +19,7 @@
 	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
+	import { cover } from '../cover';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -48,6 +49,7 @@
 		from = cookSlideFrom(page, to);
 		page = Math.max(0, Math.min(last, to));
 		noteOpen = false;
+		asking = false;
 	}
 
 	// The ingredients that are on the counter. You mark them before you start.
@@ -138,10 +140,29 @@
 
 	let saving = $state(false);
 
+	// A timer stops when Cook Mode closes, so a running timer asks first. A timer that rang waits
+	// for your "OK", so it counts too.
+	let asking = $state(false);
+	const question = $derived(
+		timers.length === 1
+			? '1 timer is running. Exit and stop it?'
+			: `${timers.length} timers are running. Exit and stop them?`
+	);
+
+	// Cook Mode closes with a circle of paper from the button, as "Cook" opened it with a dark one.
+	const closeFrom = (source: EventTarget | null | undefined) =>
+		source instanceof HTMLElement ? cover(source, 'bg', onclose) : onclose();
+
+	function leave(event: MouseEvent) {
+		if (timers.length) asking = true;
+		else closeFrom(event.currentTarget);
+	}
+
+	let nav = $state<HTMLElement>();
 	async function finish(result: CookResult) {
 		if (!(await kitchen.cook.finishCooking(entry.path, result))) return;
 		kitchen.notify('The pantry is correct again.');
-		onclose();
+		closeFrom(nav?.querySelector('button[type="submit"]'));
 	}
 </script>
 
@@ -157,7 +178,7 @@
 				></span>
 			{/each}
 		</div>
-		<Button kind="link" onclick={onclose}>Exit</Button>
+		<Button kind="link" onclick={leave}>Exit</Button>
 	</header>
 
 	{#if others.length}
@@ -314,17 +335,24 @@
 	{/key}
 
 	<!-- The two buttons have the same size and the same place on each page. -->
-	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav">
+	<nav class="wfd-cook__nav" aria-labelledby="{uid}-nav" bind:this={nav}>
 		<HiddenName id="{uid}-nav" text="Steps" />
-		<Button disabled={page === 0} onclick={() => go(page - 1)}>← Back</Button>
-		{#if page < last}
-			<Button kind="olive" onclick={() => go(page + 1)}>
-				{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'} →
-			</Button>
+		{#if asking}
+			<p class="wfd-cook__question" role="alert">{question}</p>
+			<Button kind="danger" onclick={(event) => closeFrom(event.currentTarget)}>Exit</Button>
+			<Button kind="olive" onclick={() => (asking = false)}>Keep cooking</Button>
 		{:else}
-			<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>
-				{saving ? 'One moment' : 'Update the pantry'}
-			</Button>
+			<!-- On "Get out", the thumb is on "Back" already, so it is a way out too. -->
+			<Button onclick={(event) => (page === 0 ? leave(event) : go(page - 1))}>← Back</Button>
+			{#if page < last}
+				<Button kind="olive" onclick={() => go(page + 1)}>
+					{page === last - 1 ? 'Finish' : page === 0 ? 'Step 1' : 'Next'}
+				</Button>
+			{:else}
+				<Button kind="olive" type="submit" form="{uid}-finish" disabled={saving}>
+					{saving ? 'One moment' : 'Update the pantry'}
+				</Button>
+			{/if}
 		{/if}
 	</nav>
 </article>
@@ -377,8 +405,24 @@
 		background: var(--wfd-color-on-frame);
 	}
 
+	/* The piece of the step that you go to fills from the left, so the bar tells the move too. */
 	.wfd-cook__piece--now {
-		background: var(--wfd-color-primary);
+		position: relative;
+
+		&::after {
+			content: '';
+			position: absolute;
+			inset: 0;
+			background: var(--wfd-color-primary);
+			transform-origin: left;
+			animation: wfd-cook-fill var(--wfd-card-motion) backwards;
+		}
+	}
+
+	@keyframes wfd-cook-fill {
+		from {
+			scale: 0 1;
+		}
 	}
 
 	.wfd-cook__timers {
@@ -680,6 +724,14 @@
 		flex: none;
 		grid-template-columns: 1fr 2fr;
 		gap: var(--wfd-space-stack);
+	}
+
+	.wfd-cook__question {
+		grid-column: 1 / -1;
+		margin: 0;
+		font-size: var(--wfd-font-size-name);
+		font-weight: 700;
+		text-align: center;
 	}
 
 	.wfd-cook__nav :global(button.wfd-button) {

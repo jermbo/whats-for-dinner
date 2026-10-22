@@ -70,22 +70,26 @@
 	--wfd-radius-card: 12px;
 	--wfd-radius-button: 8px;
 	--wfd-radius-sticker: 2px;
+	/* More than half of each height, so that the ends of a pill are round at each size. */
+	--wfd-radius-pill: 999px;
 
 	/* A target is for the finger, and a finger does not grow with the text. So these stay in px. */
 	--wfd-control-min: 44px;
 	--wfd-control: 50px;
+	--wfd-control-pill: 60px;
 
 	--wfd-motion-press: 0.1s;
 	--wfd-motion-change: 0.2s;
 	--wfd-motion-move: 0.3s;
-	--wfd-ease-out: ease-out;
-	--wfd-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+	/* A fast start and a long, soft end. A motion lands and stops: no curve goes past its end. */
+	--wfd-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
 	/* A piece with its own motion. Point one to a different role token to try it on that piece only. */
 	--wfd-card-motion: var(--wfd-motion-move) var(--wfd-ease-out);
 	--wfd-row-motion: var(--wfd-motion-move) var(--wfd-ease-out);
 	--wfd-chip-motion: var(--wfd-motion-change) var(--wfd-ease-out);
 	--wfd-button-motion: var(--wfd-motion-press) var(--wfd-ease-out);
+	--wfd-press-motion: calc(var(--wfd-motion-move) * 1.6) var(--wfd-ease-out);
 }
 
 /*

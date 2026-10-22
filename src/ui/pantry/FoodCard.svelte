@@ -21,6 +21,7 @@
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
+	import InkCard from '../parts/InkCard.svelte';
 	import Panel from '../parts/Panel.svelte';
 
 	type Props = {
@@ -30,13 +31,16 @@
 		places: string[];
 		// The card opens with one new package, as after "+ Add package".
 		addFirst?: boolean;
+		// False while the card closes: its ink goes back.
+		open?: boolean;
 		// The rows to write, or null when nothing changed.
 		ondone: (rows: Stock[] | null) => void;
 		oncancel: () => void;
 		// Opens the form of the food item: its size, its other names, its staple, and its brands.
 		onfood: () => void;
 	};
-	let { item, place, places, addFirst = false, ondone, oncancel, onfood }: Props = $props();
+	let { item, place, places, addFirst = false, open = true, ondone, oncancel, onfood }: Props =
+		$props();
 
 	const uid = $props.id();
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
@@ -148,7 +152,8 @@
 	const done = () => ondone(cardRows(item.stocks, packages, emptied));
 </script>
 
-<Panel kind="ink">
+<!-- The card opens with its ink, and the bar is ready under the thumb at once. -->
+<InkCard {open}>
 	<div class="wfd-card" class:wfd-card--low={low}>
 		<div class="wfd-card__top">
 			<div class="wfd-card__head">
@@ -250,7 +255,7 @@
 			</div>
 		{/if}
 	</div>
-</Panel>
+</InkCard>
 
 <style>
 	.wfd-card {

@@ -55,7 +55,7 @@ Each story updates wiki pages **before** its code, in the **Elevate** step of [i
 | [Setup](../../architecture/setup.md) | 3 to 6: the setup flow, its steps, and the screen for a vault with notes. |
 | [Glossary](../../glossary.md) | 4: **Larder** and **plugin home**, with links to the [initiative glossary](../../initiatives/pantry-onboarding/glossary.md). |
 
-Story 6 updates [Features](../README.md) when you add a short “first run” paragraph there. Update [roadmap](../roadmap.md) only if it still lists onboarding as future work.
+Story 6 updates [Features](../README.md) when you add a short “first run” paragraph there.
 
 ## What the vault needs
 

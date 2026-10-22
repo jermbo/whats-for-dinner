@@ -44,6 +44,7 @@ function omelette(pantry: FoodNote[], cooked = false): Meal {
 		cooked,
 		day: null,
 		prepDone: false,
+		sides: [],
 		entry: { path, recipe: result.recipe, rating: null, match, prep: null, photo: null }
 	};
 }
@@ -71,6 +72,19 @@ describe('the rows of the shopping list', () => {
 		const meal = omelette([OPEN_CARTON, SPINACH]);
 		const { missing } = listOf([meal, meal]);
 		expect(missing.filter((row) => row.name === 'Eggs').map((row) => row.amount)).toEqual(['2']);
+	});
+
+	it('the beef tacos with the side spinach omelette and no eggs in the pantry give a row of the eggs with 3, for the beef tacos', () => {
+		const side = omelette([NO_EGGS, SPINACH]);
+		const tacos: Meal = {
+			...side,
+			path: 'Recipes/Beef tacos.md',
+			entry: null,
+			sides: [{ path: side.path, name: 'Spinach omelette', entry: side.entry }]
+		};
+		const { missing } = listOf([tacos]);
+		expect(rowOf(missing, 'Eggs')?.amount).toBe('3');
+		expect(missing.find((row) => row.name === 'Eggs')?.recipes).toEqual(['Beef tacos']);
 	});
 
 	it('the cooked spinach omelette with no eggs in the pantry gives no row of the eggs', () => {

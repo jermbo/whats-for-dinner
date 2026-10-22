@@ -22,3 +22,8 @@ Move the eggs to cold water for 1 minute. Remove the shells.
 ## Tips
 
 Use eggs that are not too fresh. Their shells come off more easily.
+
+## Cooked
+
+- 2026-10-21 · ★★★★★ · Test
+- 2026-10-21

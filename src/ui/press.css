@@ -1,0 +1,63 @@
+/*
+ * The tab is the place of the layers of the press, of the glide, and of the name that flies, so
+ * that they have the tokens of the kitchen. It is its own stack, so that a layer under the content
+ * is still over the tab.
+ */
+.view-content.wfd {
+	position: relative;
+	isolation: isolate;
+}
+
+/* The finger goes through the layer to the button under it. The layer fades as the circle grows. */
+.wfd-press {
+	position: absolute;
+	z-index: 10;
+	overflow: hidden;
+	pointer-events: none;
+	opacity: 0;
+	animation: wfd-press-fade var(--wfd-press-motion);
+}
+
+.wfd-press__circle {
+	position: absolute;
+	border-radius: 50%;
+	background: color-mix(in oklch, currentcolor 16%, transparent);
+	animation: wfd-press-grow var(--wfd-press-motion);
+}
+
+@keyframes wfd-press-fade {
+	from,
+	70% {
+		opacity: 1;
+	}
+}
+
+@keyframes wfd-press-grow {
+	from {
+		transform: scale(0);
+	}
+}
+
+/* A surface that grows is clear while the copy of the glide grows under it. */
+.wfd [data-glide-clear] {
+	background-color: transparent !important;
+}
+
+/* The name that flies: a small pill in the accent colour, over each thing of the tab. */
+.wfd-fly {
+	position: fixed;
+	z-index: 60;
+	pointer-events: none;
+}
+
+.wfd-fly__name {
+	translate: -50% -50%;
+	padding: var(--wfd-space-tight) var(--wfd-space-inset);
+	border-radius: var(--wfd-radius-pill);
+	background: var(--wfd-color-primary);
+	color: var(--wfd-color-on-primary);
+	font-size: var(--wfd-font-size-small);
+	font-weight: 700;
+	white-space: nowrap;
+	will-change: transform;
+}
