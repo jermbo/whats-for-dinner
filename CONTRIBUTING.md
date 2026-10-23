@@ -9,7 +9,7 @@ This page is for you if you want to build What's for Dinner from its source, or 
 
 ## How to run it
 
-The repository has a vault for tests, `test-vault/`. The build puts the plugin into that vault.
+The repository has a vault for tests, `test-vault/`. The development build puts the plugin into that vault.
 
 1. Install the packages: `npm install`.
 2. Start the build: `npm run dev`. It builds the plugin again after each change of a file.
@@ -22,8 +22,8 @@ Obsidian does not load a new build by itself. After a change, use the command "R
 
 | Command         | What it does                                                      |
 | --------------- | ----------------------------------------------------------------- |
-| `npm run dev`   | Builds the plugin with a source map, and again after each change. |
-| `npm run build` | Builds the plugin for use: small, with no source map.             |
+| `npm run dev`   | Builds the plugin into `test-vault/` with a source map, and again after each change. |
+| `npm run build` | Builds the plugin for a release into `dist/`: small, with no source map. |
 | `npm run check` | Checks the types of the code.                                     |
 | `npm test`      | Runs the unit tests.                                              |
 

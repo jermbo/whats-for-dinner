@@ -10,6 +10,7 @@ _old
 .wrangler
 /.svelte-kit
 /build
+/dist
 
 # Obsidian test vault
 test-vault/.obsidian
