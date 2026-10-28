@@ -10,6 +10,8 @@ export type Brand = {
 	name: string;
 	// Null: you did not decide.
 	verdict: Verdict | null;
+	// The barcode of its package, so that a second scan finds the brand with no connection.
+	barcode: string | null;
 	// The names of the image files, as the links have them. The first photo is the photo that shows.
 	photos: string[];
 };
@@ -56,23 +58,28 @@ export function brandLines(lines: string[]): (BrandLines & { brand: Brand })[] {
 
 const photosIn = (text: string) => [...text.matchAll(PHOTO)].map((match) => match[1].trim());
 
-// The verdict is the text after the last middle dot, on the line of the item.
+// After the name, the line of the item can have a verdict and then a barcode, each after a middle
+// dot. A barcode is only digits, so it does not clash with a verdict or a name.
+const BARCODE = /(?:^|\s)·\s*(\d{8,14})\s*$/;
 const VERDICT = /(?:^|\s)·\s*(buy again|avoid)\s*$/i;
 
 function brandOf(own: string, below: string[]): Brand | null {
-	const text = own.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim();
+	let text = own.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim();
+	const code = BARCODE.exec(text);
+	const barcode = code ? code[1] : null;
+	if (code) text = text.slice(0, code.index).trim();
 	const found = VERDICT.exec(text);
 	const verdict = found ? (found[1].toLowerCase() as Verdict) : null;
 	const name = found ? text.slice(0, found.index).trim() : text;
 	const photos = [own, ...below].flatMap(photosIn);
-	return name || photos.length || verdict ? { name, verdict, photos } : null;
+	return name || photos.length || verdict || barcode ? { name, verdict, barcode, photos } : null;
 }
 
-// The text of the line of a brand: its name, and its verdict after a middle dot.
-export function brandText(name: string, verdict: Verdict | null): string {
+// The text of the line of a brand: its name, then its verdict and its barcode after a middle dot.
+export function brandText(name: string, verdict: Verdict | null, barcode: string | null = null): string {
 	const own = name.trim();
-	if (!verdict) return own;
-	return own ? `${own} · ${verdict}` : `· ${verdict}`;
+	const after = [verdict, barcode].flatMap((part) => (part ? [`· ${part}`] : [])).join(' ');
+	return [own, after].filter(Boolean).join(' ');
 }
 
 export const readBrands = (text: string): Brand[] =>

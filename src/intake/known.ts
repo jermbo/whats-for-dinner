@@ -1,5 +1,6 @@
 // What intake knows from the recipes of the vault: their tags, and their titles.
 
+import { showName } from '../match/names';
 import type { Recipe } from '../recipemd/types';
 
 // Each tag of the recipes, one time, from A to Z. Capital and small letters are the same.
@@ -12,9 +13,12 @@ export function tagsOf(recipes: Recipe[]): string[] {
 }
 
 // The title of a recipe of the vault that is the same as this title, or null. Two versions of a
-// recipe can both be correct, so this only tells you.
+// recipe can both be correct, so this only tells you. A title that is a link is the same as its
+// name: "[[Apple Pie]]" and "Apple Pie".
 export function titleInUse(title: string, recipes: Recipe[]): string | null {
-	const wanted = title.trim().toLowerCase();
+	const key = (text: string) => showName(text).trim().toLowerCase();
+	const wanted = key(title);
 	if (!wanted) return null;
-	return recipes.find((recipe) => recipe.title.trim().toLowerCase() === wanted)?.title ?? null;
+	const found = recipes.find((recipe) => key(recipe.title) === wanted);
+	return found ? showName(found.title) : null;
 }

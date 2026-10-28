@@ -35,7 +35,7 @@ type TextKey =
 	| 'newPlace'
 	| 'fontName';
 type NumberKey = 'volume' | 'soonDays';
-type SwitchKey = 'vibrate' | 'keepScreenOn';
+type SwitchKey = 'vibrate' | 'keepScreenOn' | 'lookUpBarcodes';
 
 const days = (count: number) => `${count} ${count === 1 ? 'day' : 'days'}`;
 
@@ -189,6 +189,11 @@ export class KitchenSettingTab extends PluginSettingTab {
 			1,
 			14,
 			1
+		);
+		this.switch(
+			'lookUpBarcodes',
+			'Look up barcodes online',
+			'A scan of a new barcode asks Open Food Facts for the product. Only the barcode number leaves the device.'
 		);
 	}
 

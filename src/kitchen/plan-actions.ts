@@ -1,3 +1,4 @@
+import { showName } from '../match/names';
 import type { PlannedMeal, PlannedSide } from '../plan/plan-note';
 import { addMeal, addSide, changeMeal, flagMeal, removeMeal, removeSide } from '../plan/plan-note';
 import type { Meal } from '../plan/types';
@@ -23,7 +24,7 @@ function isTonight(host: PlanActionsHost, meal: Pick<PlannedMeal, 'cooked' | 'da
 
 async function addToPlan(host: PlanActionsHost, path: string) {
 	const entry = host.recipes.find((recipe) => recipe.path === path);
-	const title = entry?.recipe.title ?? path.replace(/\.md$/, '');
+	const title = showName(entry?.recipe.title ?? path.replace(/\.md$/, ''));
 	await host.writePlan((text) => addMeal(text, path, title));
 }
 

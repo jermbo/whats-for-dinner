@@ -29,7 +29,7 @@ A recipe card in the Recipes part shows the photo of the newest record with a ph
 
 A tap on the photo of a card opens the gallery. The command "Open the gallery" of Obsidian opens it for the recipe note that is open in the editor.
 
-The gallery fills the tab. It shows one record at a time: the photo, the date, the stars, and the note. The newest record is first. A swipe to the left goes to the older record, and a swipe to the right goes back. On the computer, the arrow keys do the same while the gallery has the focus, and Escape closes it. The gallery takes the focus when it opens, so an arrow key in the editor of a different pane does not move it. "Close" goes back to the Recipes part.
+The gallery fills the tab. It shows one record at a time: the photo, the date, the stars, and the note. The newest record is first. A swipe to the left goes to the older record, and a swipe to the right goes back. The photo keeps each swipe that starts on it, so Obsidian does not open a side panel. On the computer, the arrow keys do the same while the gallery has the focus, and Escape closes it. The gallery takes the focus when it opens, so an arrow key in the editor of a different pane does not move it. "Close" goes back to the Recipes part.
 
 ## An example
 

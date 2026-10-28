@@ -70,6 +70,7 @@ The setting "Keep the screen on" is in this group, but it is also for the store.
 | Setting  | Starts as | What it does                                                                       |
 | -------- | --------- | ---------------------------------------------------------------------------------- |
 | Use soon | 5 days    | Food with a use-by date in this number of days, or less, is food to use soon.      |
+| Look up barcodes online | On | A scan of a barcode that the pantry does not know asks Open Food Facts for the product. Only the barcode number leaves the device. |
 
 ## Where the settings are
 

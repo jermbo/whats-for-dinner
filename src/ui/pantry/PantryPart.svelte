@@ -4,6 +4,7 @@
 	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
+	import { lookUpProduct } from '../../kitchen/product-lookup';
 	import type { FoodNote } from '../../note';
 	import { fullPackage, nextSize } from '../../pantry/card';
 	import { isOut, withFood } from '../../pantry/empty-row';
@@ -30,7 +31,7 @@
 	import Chip from '../parts/Chip.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import PartTop from '../parts/PartTop.svelte';
-	import AddFood from './AddFood.svelte';
+	import AddFood, { type Added } from './AddFood.svelte';
 	import Bin from './Bin.svelte';
 	import Audit from './Audit.svelte';
 	import FoodCard from './FoodCard.svelte';
@@ -110,9 +111,9 @@
 			: allOut.filter((food) => isFound(food, bar.find))
 	);
 
-	// The card that is open: a food item in one place. `add` opens it with a new package, as after
-	// "Add to pantry". `form` shows the form of the food item in place of its card.
-	type Open = { name: string; place: string; add: boolean; form: boolean };
+	// The card that is open: a food item in one place. `form` shows the form of the food item in
+	// place of its card.
+	type Open = { name: string; place: string; form: boolean };
 	let open = $state<Open | null>(null);
 	const isOpen = (name: string, place: string) => open?.name === name && open.place === place;
 
@@ -150,7 +151,7 @@
 		clearTimeout(closeTimer);
 		change(() => {
 			closing = null;
-			open = { name, place, add: false, form: false };
+			open = { name, place, form: false };
 		});
 	}
 
@@ -205,23 +206,16 @@
 		if (form.brands.length) await kitchen.brands.saveBrands(food.item.name, form.brands);
 	}
 
-	// A known food opens its card with a new package: in the place of the filter, or in the place of
-	// its newest package. The filters go, so that the card is in view.
-	function addKnown(food: FoodNote) {
-		const place = placeOn ?? withFood(food.item.stocks).at(-1)?.place ?? outPlace;
-		adding = false;
+	// "Add to pantry" writes one full row for each package, and then the barcode of a scan. The
+	// filters go, so that the new line shows behind the form, which stays open for the next food.
+	async function addPackages({ name, size, place, count, scan }: Added) {
 		bar.clear();
 		bar.find = '';
-		open = { name: food.item.name, place, add: true, form: false };
-	}
-
-	// A new food is a note with one full package. Its card opens when the vault has the note.
-	async function addNew(name: string, size: string, place: string) {
-		adding = false;
-		bar.clear();
-		bar.find = '';
-		await kitchen.pantry.addStock(name, fullPackage(place, size));
-		open = { name, place, add: false, form: false };
+		for (let at = 0; at < count; at++) {
+			if (!(await kitchen.pantry.addStock(name, fullPackage(place, size)))) return false;
+		}
+		if (scan) await kitchen.brands.keepBarcode(name, scan);
+		return true;
 	}
 
 	// A card that opens out of view, such as after "Add to pantry", comes into view.
@@ -312,9 +306,10 @@
 				places={kitchen.places}
 				startName={newName}
 				startPlace={placeOn ?? outPlace}
-				onknown={addKnown}
-				onnew={addNew}
-				oncancel={() => (adding = false)}
+				sizeOf={(food, place) => nextSize(food.item, place)}
+				lookUp={kitchen.settings.lookUpBarcodes ? lookUpProduct : null}
+				onadd={addPackages}
+				ondone={() => (adding = false)}
 			/>
 		</div>
 	{/if}
@@ -347,10 +342,9 @@
 					{place}
 					places={kitchen.places}
 					open={!leaving}
-					addFirst={shown?.add}
 					ondone={(rows) => (close(), write(food, rows))}
 					oncancel={close}
-					onfood={() => open && (open = { ...open, form: true, add: false })}
+					onfood={() => open && (open = { ...open, form: true })}
 				/>
 			{/if}
 			<OnTheList onList={isOnList(food.path)} onadd={() => kitchen.shop.addExtra(food.path)} />

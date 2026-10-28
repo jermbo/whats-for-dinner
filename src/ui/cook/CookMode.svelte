@@ -102,7 +102,7 @@
 
 	function ring(one: Timer) {
 		one.rung = true;
-		kitchen.notify(`${entry.recipe.title}, step ${one.step}: the time is up.`);
+		kitchen.notify(`${showName(entry.recipe.title)}, step ${one.step}: the time is up.`);
 		alarm.ring(kitchen.settings);
 	}
 
@@ -203,7 +203,7 @@
 	{#key page}
 		<div class="wfd-cook__card" in:fly={{ x: from, duration }}>
 			<div class="wfd-cook__side">
-				<p class="wfd-cook__recipe wfd-label">{entry.recipe.title}</p>
+				<p class="wfd-cook__recipe wfd-label">{showName(entry.recipe.title)}</p>
 				{#if page === 0}
 					<h2 class="wfd-cook__title wfd-display">Get out</h2>
 					<Count have={gotOut} of={ingredients.length} label="on the counter" />
@@ -369,7 +369,7 @@
 		gap: var(--wfd-space-stack);
 		block-size: 100%;
 		padding: var(--wfd-space-page) var(--wfd-space-page)
-			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page));
+			calc(max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page)) + var(--wfd-space-bar));
 		overflow-x: clip;
 		background: var(--wfd-color-frame);
 		container-type: inline-size;

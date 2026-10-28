@@ -33,6 +33,9 @@ export type Settings = AlarmOptions & {
 
 	// Food with a use-by date in this number of days, or less, is food to use soon.
 	soonDays: number;
+	// A scan of a barcode that the pantry does not know asks Open Food Facts for the product. Only
+	// the barcode number leaves the device.
+	lookUpBarcodes: boolean;
 	// The last place that the weekly audit finished. The next audit starts at the place after it.
 	auditDone: string;
 };
@@ -53,6 +56,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	vibrate: true,
 	keepScreenOn: true,
 	soonDays: 5,
+	lookUpBarcodes: true,
 	auditDone: ''
 };
 

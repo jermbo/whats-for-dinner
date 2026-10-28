@@ -22,7 +22,7 @@ The sequence of the parts stays while the card is open. A can of beans that you 
 
 ## The handle snaps to a stop
 
-A press on the bar puts the olive handle on the package under your thumb. A drag to the side moves only that package, and a drag up or down still scrolls the list. The fill follows the thumb with no delay, and the handle grows a little while you drag.
+A press on the bar puts the olive handle on the package under your thumb, and sets it to the stop under your thumb. A drag to the side moves only that package, and a drag up or down still scrolls the list. On a phone, a swipe to the side opens a side panel of Obsidian. The bar keeps each drag that starts on it, so Obsidian does not see it as a swipe. The fill follows the thumb with no delay, and the handle grows a little while you drag.
 
 | Package  | Stops                         | Example                      |
 | -------- | ----------------------------- | ---------------------------- |

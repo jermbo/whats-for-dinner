@@ -116,7 +116,7 @@ The plugin also writes to your recipes folder: new recipes, their photos, and a 
 
 ## Privacy
 
-No network calls, no telemetry, no account. The plugin only reads and writes notes in your vault. To use it on more than one device, sync your vault with Obsidian Sync or any folder sync.
+No telemetry, no account. The plugin reads and writes notes in your vault, and it makes one kind of network call: when you scan a barcode it hasn't seen before, it asks [Open Food Facts](https://world.openfoodfacts.org), a free and open food database, for the product and its photo. Only the barcode number is sent. You can turn this off in the settings with "Look up barcodes online", and without a connection you just type the name. To use the plugin on more than one device, sync your vault with Obsidian Sync or any folder sync.
 
 ## Help and ideas
 

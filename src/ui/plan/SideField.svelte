@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { showName } from '../../match/names';
 	import type { PlannedSide } from '../../plan/plan-note';
 	import { typeOf } from '../../recipes/browse';
 	import type { RecipeEntry } from '../../recipes/types';
@@ -21,7 +22,7 @@
 	// A recipe with the type "side" is the side that you usually want, so it comes first.
 	const found = $derived.by(() => {
 		const words = text.toLowerCase();
-		const matches = recipes.filter((entry) => entry.recipe.title.toLowerCase().includes(words));
+		const matches = recipes.filter((entry) => showName(entry.recipe.title).toLowerCase().includes(words));
 		const isSide = (entry: RecipeEntry) => typeOf(entry) === 'side';
 		return [...matches.filter(isSide), ...matches.filter((entry) => !isSide(entry))].slice(0, SHOWN);
 	});
@@ -36,9 +37,9 @@
 				<button
 					class="wfd-side-field__row"
 					type="button"
-					onclick={() => onadd({ path: entry.path, name: entry.recipe.title })}
+					onclick={() => onadd({ path: entry.path, name: showName(entry.recipe.title) })}
 				>
-					<span class="wfd-side-field__name">{entry.recipe.title}</span>
+					<span class="wfd-side-field__name">{showName(entry.recipe.title)}</span>
 					<Count have={entry.match.inPantry} of={entry.match.ingredients.length} />
 				</button>
 			</li>

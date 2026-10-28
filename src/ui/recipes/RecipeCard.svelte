@@ -2,6 +2,7 @@
 	import { linear } from 'svelte/easing';
 	import { prefersReducedMotion, Tween } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import { showName } from '../../match/names';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { isReady } from '../../recipes/browse';
 	import type { RecipeEntry } from '../../recipes/types';
@@ -95,7 +96,7 @@
 				<button
 					class="wfd-recipe__photo"
 					type="button"
-					aria-label="The meals of {recipe.title}"
+					aria-label="The meals of {showName(recipe.title)}"
 					onclick={ongallery}
 				>
 					<img src={photo} alt="" />
@@ -108,7 +109,7 @@
 				aria-controls="{uid}-body"
 				onclick={ontoggle}
 			>
-				<span class="wfd-recipe__name wfd-display">{recipe.title}</span>
+				<span class="wfd-recipe__name wfd-display">{showName(recipe.title)}</span>
 				<span class="wfd-recipe__line">{line}</span>
 				{#if match.useSoon.length || isReady(entry) || entry.prep || entry.rating}
 					<span class="wfd-recipe__flags">
@@ -133,7 +134,7 @@
 			</button>
 
 			<Count have={Math.round(count.current)} of={match.ingredients.length} />
-			<WeekButton name={recipe.title} {planned} onclick={onweek} />
+			<WeekButton name={showName(recipe.title)} {planned} onclick={onweek} />
 		</div>
 
 		{#if open || leaving}

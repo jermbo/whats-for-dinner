@@ -2,6 +2,7 @@ import { ItemView, type WorkspaceLeaf } from 'obsidian';
 import { mount, unmount } from 'svelte';
 import type { Kitchen } from './kitchen-state.svelte';
 import KitchenScreen from './ui/Kitchen.svelte';
+import { listenForBarRoom } from './ui/bar-room';
 import { lookOf } from './ui/look';
 import { listenForPress } from './ui/press';
 import { listenForTaps } from './ui/tap';
@@ -15,6 +16,7 @@ export class KitchenView extends ItemView {
 	private stopLook: (() => void) | undefined;
 	private stopPress: (() => void) | undefined;
 	private stopTaps: (() => void) | undefined;
+	private stopBarRoom: (() => void) | undefined;
 
 	constructor(leaf: WorkspaceLeaf, kitchen: Kitchen) {
 		super(leaf);
@@ -41,6 +43,7 @@ export class KitchenView extends ItemView {
 		this.stopPress = listenForPress(this.contentEl);
 		// Each circle of the motion starts at the last tap.
 		this.stopTaps = listenForTaps(this.contentEl);
+		this.stopBarRoom = listenForBarRoom(this.contentEl);
 		// The font and the accent colour follow the settings while the tab is open.
 		this.stopLook = $effect.root(() => {
 			$effect(() => {
@@ -60,6 +63,7 @@ export class KitchenView extends ItemView {
 		this.stopLook?.();
 		this.stopPress?.();
 		this.stopTaps?.();
+		this.stopBarRoom?.();
 		if (this.screen) await unmount(this.screen);
 	}
 }
