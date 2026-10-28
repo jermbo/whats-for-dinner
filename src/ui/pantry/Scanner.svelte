@@ -7,9 +7,15 @@
 
 	// The scan of a barcode. The live view of the camera reads the code with no shutter. When
 	// Obsidian gives no live view, the camera of the phone takes one photo, and the same reader
-	// looks for the code in it. `onread` gets the code, or null for a photo with no code.
-	type Props = { read: ReadBarcode; onread: (code: string | null) => void; oncancel: () => void };
-	let { read, onread, oncancel }: Props = $props();
+	// looks for the code in it. `onread` gets the code, or null for a photo with no code. Two quiet
+	// ways out: `ontype` is for the digits typed by hand, and `oncancel` goes to the name.
+	type Props = {
+		read: ReadBarcode;
+		onread: (code: string | null) => void;
+		ontype: () => void;
+		oncancel: () => void;
+	};
+	let { read, onread, ontype, oncancel }: Props = $props();
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
 	const uid = $props.id();
@@ -89,7 +95,10 @@
 			/>
 		</label>
 	{/if}
-	<Button kind="link" onclick={oncancel}>Cancel</Button>
+	<div class="wfd-scan__ways">
+		<Button kind="link" onclick={ontype}>Type barcode</Button>
+		<Button kind="link" onclick={oncancel}>Type name</Button>
+	</div>
 </div>
 
 <style>
@@ -120,6 +129,13 @@
 		inset: 35% 10%;
 		border: var(--wfd-border) solid var(--wfd-color-on-frame);
 		border-radius: var(--wfd-radius-button);
+	}
+
+	.wfd-scan__ways {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0 var(--wfd-space-stack);
+		justify-content: center;
 	}
 
 	.wfd-scan__hint {

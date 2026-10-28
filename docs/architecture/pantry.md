@@ -36,7 +36,7 @@ A tap on a line opens its [card](card.md): one large bar, in which you drag each
 
 "Add to pantry" is for a full shelf, so it stays open until "Done". It asks for a name. It finds a food item by its name, by a different name of the food, or by the name of one of its brands: "brand c" finds taco seasoning. A new food asks for its package size, with a unit chip. The last step has the place and a count: 4 cans are 4 full rows with one tap. After "Add", the form starts again at the name, with the same place, and a short line tells what it added.
 
-On a device with a barcode reader, such as an Android phone or a Mac, the name field has a scan button. A [barcode](brands.md#a-barcode-finds-the-package) that a brand has goes straight to the last step of its food item. A new barcode asks Open Food Facts for the product, and the form proposes the food item, the brand, the size, and the photo.
+On a device with a barcode reader, such as an Android phone or a Mac, "Add to pantry" opens on the scan. "Type barcode" is for the digits when the camera does not work, and "Type name" is the path with no code. A [barcode](brands.md#a-barcode-finds-the-package) that a brand has goes straight to the last step of its food item. A new barcode asks Open Food Facts for the product, and the form proposes the food item, the brand, the size, and the photo. You can change the digits of the barcode and look them up again.
 
 Once a week, the [audit](audit.md) walks each place, and you confirm or correct each food item.
 

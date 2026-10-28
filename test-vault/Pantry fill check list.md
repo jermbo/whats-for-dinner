@@ -25,14 +25,16 @@ Go to: Pantry. Tap +.
 
 Go to: Pantry, on the phone. Tap +. The Mac works for each line but flight mode: turn off Wi-Fi in its place.
 
-- [ ] A "Scan" button is next to the name field. (AC 1)
-- [ ] On the Mac: tap "Scan", allow the webcam, and hold the can to it. The form shows the product. If the webcam does not open, pick a photo of the barcode. (AC 2)
-- [ ] Tap "Scan". Obsidian asks for the camera the first time: allow it. The live view shows. Tap "Cancel". The form shows the name step. (AC 8)
-- [ ] Tap "Scan", and point at the barcode of the can. The view closes, and the form shows the product with its size. "Black beans" is first in the list, in bold. (AC 3, 3 a, 3 b)
-- [ ] Tap "Black beans", the count 2, and "Add 2 packages". Black beans in "Kitchen pantry" shows 4 packages. (AC 4)
+- [ ] "Add to pantry" opens on the scan (live view or photo). (AC 1)
+- [ ] On the Mac: allow the webcam, and hold the can to it. The form shows the product. If the webcam does not open, pick a photo of the barcode. (AC 2)
+- [ ] Obsidian asks for the camera the first time: allow it. The live view shows. Tap "Type name". The form shows the name step. (AC 8)
+- [ ] From the name step, tap "Scan", and point at the barcode of the can. The view closes, and the form shows the product with its size and its barcode. "Black beans" is first in the list, in bold. (AC 3, 3 a, 3 b, 3 c)
+- [ ] Tap "Black beans", the count 2, and "Add 2 packages". Black beans in "Kitchen pantry" shows 4 packages, and the form opens on the scan again. (AC 4, 4 c)
 - [ ] Open the note "Black beans". The section "Brands" has a line with the barcode of the can, and a photo in `Larder/Pantry/Photos`. (AC 4 a, 4 b)
 - [ ] Turn on flight mode. Scan the same can. The form goes to the last step of "Black beans". Tap "Cancel". (AC 5)
 - [ ] Still in flight mode, scan a different package that the pantry does not know. The form tells "No product for this barcode." (AC 6)
 - [ ] Turn flight mode off. In the settings, turn off "Look up barcodes online". Scan the different package. The form tells "No product for this barcode." Turn the setting on again. (AC 7)
+- [ ] From the scan, tap "Type barcode", type the digits of the can, and "Look up". The form shows the product. (AC 9)
+- [ ] On the product, change one digit of the barcode and tap "Look up". The form looks up the new code. (AC 10)
 - [ ] If the live view did not show, and the phone camera opened in its place: take a photo of the barcode. The form goes on as above. A photo with no barcode tells "No barcode in the photo." (Requirement 2 b, 2 c)
 - [ ] Remove the 2 new rows of Black beans, and the brand line of the scan.

@@ -20,10 +20,11 @@
 	import Scanner from './Scanner.svelte';
 	import SizeField from './SizeField.svelte';
 
-	// "Add to pantry" is for a full shelf: it stays open until "Done". You give a name, or scan a
-	// barcode. A new food asks for its package size. The last step has the place and a count, and
-	// "Add" writes one full row for each package. Then the form starts again at the name, with the
-	// same place.
+	// "Add to pantry" is for a full shelf: it stays open until "Done". It opens on the scan when the
+	// device can read barcodes. Without a camera, or when the scan does not work, you type the
+	// digits of the barcode, or the name. A new food asks for its package size. The last step has
+	// the place and a count, and "Add" writes one full row for each package. Then the form starts
+	// again at the scan (or the name), with the same place.
 	type Props = {
 		foods: FoodNote[];
 		places: string[];
@@ -40,13 +41,17 @@
 
 	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
 	const COUNTS = [1, 2, 3, 4, 6, 12];
-	// The browser tells which codes it reads only after a moment, so the scan button comes then.
+	// The browser tells which codes it reads only after a moment, so the scan comes then. If the
+	// form is still empty by then, and it did not start from a name, it turns to the scan.
 	let read = $state<ReadBarcode | null>(null);
-	void barcodeReader().then((reader) => (read = reader));
+	void barcodeReader().then((reader) => {
+		read = reader;
+		if (reader && !startName.trim() && !text && !barcode && !product && step === 'name') step = 'scan';
+	});
 
 	const first = () => ({ name: startName, place: startPlace });
 	let name = $state(first().name);
-	let step = $state<'name' | 'scan' | 'looking' | 'size' | 'last'>('name');
+	let step = $state<'name' | 'scan' | 'type-code' | 'looking' | 'size' | 'last'>('name');
 	let size = $state('');
 	let place = $state(first().place);
 	let count = $state(1);
@@ -54,12 +59,18 @@
 	// The barcode of the last scan, and its product when the database knows it.
 	let barcode = $state<string | null>(null);
 	let product = $state<Product | null>(null);
+	// The digits in the barcode field of the name step, and in the step where the code is typed.
+	// A code is 8 to 14 digits: EAN-8, UPC-A, EAN-13 and GTIN-14.
+	let draft = $state('');
+	let typed = $state('');
 	// What the last "Add" wrote, or why a scan found nothing.
 	let told = $state('');
 	let saving = $state(false);
 	let nameField = $state<HTMLInputElement>();
 
 	const text = $derived(name.trim());
+	const validCode = (code: string) => /^\d{8,14}$/.test(code);
+	const digits = (value: string) => value.replace(/\D/g, '');
 	const proposed = $derived(product ? proposedFoods(product, foods) : []);
 	const found = $derived(
 		text
@@ -87,6 +98,8 @@
 			return;
 		}
 		barcode = code;
+		draft = code;
+		typed = '';
 		product = null;
 		const known = foodOfBarcode(foods, code);
 		if (known) return pick(known);
@@ -117,15 +130,30 @@
 		told = `Added ${count} × ${text}`;
 		startAgain();
 		await tick();
-		nameField?.focus();
+		if (step === 'name') nameField?.focus();
 	}
+
+	function lookUpTyped(event: SubmitEvent) {
+		event.preventDefault();
+		if (validCode(typed)) void onread(typed);
+	}
+
+	// A new digit string in the barcode field of the name step takes the place of the old code.
+	function lookUpDraft(event: SubmitEvent) {
+		event.preventDefault();
+		if (validCode(draft) && draft !== barcode) void onread(draft);
+	}
+
+	const typeCode = () => ((told = ''), (typed = ''), (step = 'type-code'));
 
 	function startAgain() {
 		name = '';
 		size = '';
 		barcode = null;
 		product = null;
-		step = 'name';
+		draft = '';
+		typed = '';
+		step = read ? 'scan' : 'name';
 	}
 </script>
 
@@ -133,9 +161,11 @@
 	<div class="wfd-add">
 		<div class="wfd-add__top">
 			<h3 class="wfd-add__title wfd-display">Add to pantry</h3>
-			{#if step === 'name'}
+			{#if step === 'scan' || step === 'name'}
 				<Button kind="link" onclick={ondone}>Done</Button>
-			{:else}
+			{:else if step === 'type-code'}
+				<Button kind="link" onclick={() => (step = read ? 'scan' : 'name')}>Cancel</Button>
+			{:else if step !== 'looking'}
 				<Button kind="link" onclick={() => (step = 'name')}>Cancel</Button>
 			{/if}
 		</div>
@@ -147,7 +177,23 @@
 		{/if}
 
 		{#if step === 'scan' && read}
-			<Scanner {read} {onread} oncancel={() => (step = 'name')} />
+			<Scanner {read} {onread} ontype={typeCode} oncancel={() => (step = 'name')} />
+		{:else if step === 'type-code'}
+			<form class="wfd-add__code" onsubmit={lookUpTyped}>
+				<Field label="Barcode">
+					<!-- svelte-ignore a11y_autofocus -->
+					<input
+						type="text"
+						autofocus
+						inputmode="numeric"
+						autocomplete="off"
+						enterkeyhint="search"
+						value={typed}
+						oninput={(event) => (typed = digits(event.currentTarget.value))}
+					/>
+				</Field>
+				<Button kind="main" type="submit" disabled={!validCode(typed)}>Look up</Button>
+			</form>
 		{:else if step === 'looking'}
 			<p class="wfd-add__what" aria-live="polite">Looking up…</p>
 		{:else if step === 'name'}
@@ -164,6 +210,22 @@
 					</div>
 				</div>
 			{/if}
+			{#if barcode}
+				<!-- The keeper can overwrite a bad scan, and look the new code up. -->
+				<form class="wfd-add__name" onsubmit={lookUpDraft}>
+					<Field label="Barcode">
+						<input
+							type="text"
+							inputmode="numeric"
+							autocomplete="off"
+							enterkeyhint="search"
+							value={draft}
+							oninput={(event) => (draft = digits(event.currentTarget.value))}
+						/>
+					</Field>
+					<Button type="submit" disabled={!validCode(draft) || draft === barcode}>Look up</Button>
+				</form>
+			{/if}
 			<div class="wfd-add__name">
 				<Field label="Name">
 					<!-- svelte-ignore a11y_autofocus -->
@@ -173,6 +235,11 @@
 					<Button onclick={() => ((told = ''), (step = 'scan'))}>Scan</Button>
 				{/if}
 			</div>
+			{#if !barcode}
+				<div class="wfd-add__ways">
+					<Button kind="link" onclick={typeCode}>Type barcode</Button>
+				</div>
+			{/if}
 			{#if text || proposed.length}
 				<ul class="wfd-add__list" in:fade={{ duration }}>
 					{#each proposed as food (food.path)}
@@ -259,12 +326,17 @@
 		color: var(--wfd-color-text-muted);
 	}
 
-	/* The name field and the scan button share one row, so the field stays at the top. */
-	.wfd-add__name {
+	/* A field and its button share one row, so the field stays at the top. */
+	.wfd-add__name,
+	.wfd-add__code {
 		display: grid;
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: var(--wfd-space-group);
 		align-items: end;
+	}
+
+	.wfd-add__ways {
+		display: flex;
 	}
 
 	.wfd-add__product {
