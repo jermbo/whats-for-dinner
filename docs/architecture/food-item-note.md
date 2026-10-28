@@ -85,6 +85,7 @@ The [brands](brands.md) of the food item are below the heading "Brands", of any 
 | A line with an indent below it, with an image | A photo of that brand. The first photo is the photo that shows.  |
 | A list item with only the link of an image    | A brand with that photo and no name.                             |
 | Text after ` · ` on the line of the item      | The verdict: `buy again` or `avoid`, with capital or small letters. |
+| Digits after ` · ` at the end of the line     | The barcode of the brand, 8 to 14 digits: `- Bush's · buy again · 039400016045`. |
 
 A brand with no name and a verdict is `- · avoid`, with its photo on the line below. A note with no section has no brand. The plugin does not read a property `brands`.
 

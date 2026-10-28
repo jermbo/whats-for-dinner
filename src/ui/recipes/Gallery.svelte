@@ -2,6 +2,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import { photoRecords } from '../../cook/record';
+	import { showName } from '../../match/names';
 	import { showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { RecipeEntry } from '../../recipes/types';
@@ -25,7 +26,8 @@
 		at = to;
 	}
 
-	// The photo follows the finger. A swipe of 50 px or more goes to the next record.
+	// The photo follows the finger. A swipe of 50 px or more goes to the next record. The photo keeps
+	// its touches, so that Obsidian does not open a side panel on the same swipe.
 	let start = $state<number | null>(null);
 	let moved = $state(0);
 	function down(event: PointerEvent) {
@@ -65,9 +67,9 @@
 	bind:this={gallery}
 	{onkeydown}
 >
-	<HiddenName id="{uid}-name" text="Meals of {entry.recipe.title}" />
+	<HiddenName id="{uid}-name" text="Meals of {showName(entry.recipe.title)}" />
 	<header class="wfd-gallery__bar">
-		<p class="wfd-gallery__title wfd-label">{entry.recipe.title}</p>
+		<p class="wfd-gallery__title wfd-label">{showName(entry.recipe.title)}</p>
 		<span class="wfd-gallery__count wfd-number">{at + 1}/{records.length}</span>
 		<Button kind="link" onclick={onclose}>Close</Button>
 	</header>
@@ -81,6 +83,8 @@
 				onpointermove={move}
 				onpointerup={up}
 				onpointercancel={up}
+				ontouchstart={(event) => event.stopPropagation()}
+				ontouchmove={(event) => event.stopPropagation()}
 			>
 				<div class="wfd-gallery__frame">
 					{#if url}
@@ -88,7 +92,7 @@
 							class="wfd-gallery__photo"
 							style:translate="{moved}px 0"
 							src={url}
-							alt="{entry.recipe.title}, {showDate(record.date)}"
+							alt="{showName(entry.recipe.title)}, {showDate(record.date)}"
 							draggable="false"
 						/>
 					{/if}
@@ -124,7 +128,7 @@
 		gap: var(--wfd-space-stack);
 		block-size: 100%;
 		padding: var(--wfd-space-page) var(--wfd-space-page)
-			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page));
+			calc(max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-page)) + var(--wfd-space-bar));
 		overflow: hidden;
 		background: var(--wfd-color-frame);
 		color: var(--wfd-color-on-frame);

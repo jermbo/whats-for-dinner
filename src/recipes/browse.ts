@@ -35,6 +35,6 @@ export function inSequence(entries: RecipeEntry[], sort: Sort): RecipeEntry[] {
 	const sorted = [...entries];
 	if (sort === 'type') sorted.sort((a, b) => byType(typeOf(a), typeOf(b)));
 	if (sort === 'rating') sorted.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
-	if (sort === 'name') sorted.sort((a, b) => a.recipe.title.localeCompare(b.recipe.title));
+	if (sort === 'name') sorted.sort((a, b) => showName(a.recipe.title).localeCompare(showName(b.recipe.title)));
 	return sorted;
 }

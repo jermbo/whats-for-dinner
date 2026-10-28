@@ -41,6 +41,12 @@ Each photo of a brand with a verdict has a small mark: an olive check for "Buy a
 
 The note keeps the verdict after a middle dot, on the line of the brand: `- Brand A · buy again`, and `- Brand B · avoid`. The [food item note](food-item-note.md) page has the full form.
 
+## A barcode finds the package
+
+At the shelf, you do not type. You scan the barcode of the can. A brand keeps the barcode of its package on its line, after a middle dot: `- Bush's · 039400016045`. So the second scan of that can finds the food item and the brand with no connection.
+
+A barcode that the pantry does not know goes to Open Food Facts, a free and open database of food products. Only the barcode number leaves the device. The product gives a name, the brand, the size of the package, and a photo. "Add to pantry" proposes the food item whose name is in the name of the product: "Bush's Best Black Beans" proposes "Black beans". The brand gets the barcode, and a new brand gets the photo of the product. With no connection, or a product that the database does not have, you type the name, and the barcode stays with a brand with no name. The setting "Look up barcodes online" turns the request off.
+
 ## The brand that you bought
 
 In the [stage Shop](shopping.md), a tap on a photo shows it large, and "In cart" ticks the row with that brand. The [shopping note](shopping-note.md) keeps it after the link of the task. [Put away](put-away.md) starts from it, and the [receipt](receipt.md) keeps it with its own price.

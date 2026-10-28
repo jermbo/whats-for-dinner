@@ -29,8 +29,6 @@
 		// The place of the group that the card opened in. Its packages are dark.
 		place: string;
 		places: string[];
-		// The card opens with one new package, as after "+ Add package".
-		addFirst?: boolean;
 		// False while the card closes: its ink goes back.
 		open?: boolean;
 		// The rows to write, or null when nothing changed.
@@ -39,8 +37,7 @@
 		// Opens the form of the food item: its size, its other names, its staple, and its brands.
 		onfood: () => void;
 	};
-	let { item, place, places, addFirst = false, open = true, ondone, oncancel, onfood }: Props =
-		$props();
+	let { item, place, places, open = true, ondone, oncancel, onfood }: Props = $props();
 
 	const uid = $props.id();
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
@@ -66,9 +63,6 @@
 		packages = [...packages, { key, at: null, stock: fullPackage(place, text) }];
 		selected = key;
 	}
-	// The card opens with a new package after "Add to pantry". This runs one time, as the card opens.
-	const startWithNew = () => addFirst;
-	if (startWithNew()) add();
 
 	const on = $derived(shown.find(({ key }) => key === selected));
 	const stocks = $derived(shown.map(({ stock }) => stock));
@@ -152,7 +146,10 @@
 	const done = () => ondone(cardRows(item.stocks, packages, emptied));
 </script>
 
-<!-- The card opens with its ink, and the bar is ready under the thumb at once. -->
+<!--
+	The card opens with its ink, and the bar is ready under the thumb at once. On a phone, Obsidian
+	opens a side panel on a swipe to the side. The bar keeps its touches, so a drag sets a package.
+-->
 <InkCard {open}>
 	<div class="wfd-card" class:wfd-card--low={low}>
 		<div class="wfd-card__top">
@@ -180,6 +177,8 @@
 				onpointermove={move}
 				onpointerup={() => (dragging = false)}
 				onpointercancel={() => (dragging = false)}
+				ontouchstart={(event) => event.stopPropagation()}
+				ontouchmove={(event) => event.stopPropagation()}
 				onkeydown={key}
 			>
 				<span class="wfd-card__hidden" id="{uid}-name">{item.name}</span>

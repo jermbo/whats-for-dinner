@@ -62,6 +62,8 @@
 	--wfd-space-inset: 12px;
 	--wfd-space-group: 8px;
 	--wfd-space-tight: 4px;
+	/* The room that the bar of Obsidian covers on a phone. The kitchen measures it: see bar-room.ts. */
+	--wfd-space-bar: 0px;
 
 	--wfd-border-thin: 1px;
 	--wfd-border: 2px;

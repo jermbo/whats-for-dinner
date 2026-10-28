@@ -43,7 +43,7 @@ The tool must be on your phone and on your computer, and the data must stay your
 - Your recipes are notes in a vault. The plugin reads them where they are.
 - A vault is a folder of files. You can read a recipe or a photo with no plugin.
 - Obsidian moves the vault between your devices. The plugin needs no server and no account.
-- All functions work with no connection, in the kitchen and in the store.
+- All functions work with no connection, in the kitchen and in the store. One help needs the internet: a scan of a new barcode asks a free food database for the product, with only the barcode number. With no connection, you type the name.
 
 ## What the plugin is not
 

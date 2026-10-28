@@ -236,7 +236,7 @@
 		grid-template-columns: minmax(0, 1fr);
 		gap: var(--wfd-space-section);
 		padding: var(--wfd-space-page) var(--wfd-space-page)
-			max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-section));
+			calc(max(var(--safe-area-inset-bottom, 0px), var(--wfd-space-section)) + var(--wfd-space-bar));
 	}
 
 	/* The paper above the nav hides the lines that scroll past the padding of the kitchen. */

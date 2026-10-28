@@ -1,5 +1,6 @@
 import { lastRating, photoRecords } from '../cook/record';
 import { indexFoods, matchRecipe } from '../match/match';
+import { showName } from '../match/names';
 import type { FoodNote, Note } from '../note';
 import { readPrep } from '../recipes/prep';
 import type { RecipeEntry } from '../recipes/types';
@@ -27,7 +28,7 @@ export function recipesOf(
 			(a, b) =>
 				Number(b.match.useSoon.length > 0) - Number(a.match.useSoon.length > 0) ||
 				share(b) - share(a) ||
-				a.recipe.title.localeCompare(b.recipe.title)
+				showName(a.recipe.title).localeCompare(showName(b.recipe.title))
 		);
 }
 

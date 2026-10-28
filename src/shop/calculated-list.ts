@@ -1,6 +1,7 @@
 // The list that the plugin calculates for the week: what the meals that you did not cook need,
 // minus the pantry, and the food of those meals that is past its date.
 
+import { showName } from '../match/names';
 import type { Meal } from '../plan/types';
 import { pastDateRows } from './past-date';
 import { needsOf, shoppingList } from './shopping-list';
@@ -11,7 +12,7 @@ export function mealNeeds(meals: Meal[], pantryFolder: string) {
 	return needsOf(
 		meals.flatMap(({ cooked, path, entry, sides }) => {
 			if (cooked) return [];
-			const title = entry?.recipe.title ?? (path.split('/').pop() ?? path).replace(/\.md$/, '');
+			const title = showName(entry?.recipe.title ?? (path.split('/').pop() ?? path).replace(/\.md$/, ''));
 			return [entry, ...sides.map((side) => side.entry)].flatMap((dish) =>
 				dish ? [{ title, ingredients: dish.match.ingredients }] : []
 			);

@@ -2,7 +2,7 @@
 title: Space
 summary: "The six space jobs of the plugin, the three line widths, the corners, and the two heights of a control."
 parent: look.md
-updated: 2026-10-20
+updated: 2026-10-27
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Space
@@ -27,6 +27,12 @@ A space token names what the space does. You do not select a size. You ask "what
 `stack` and `inset` have the same value, but a different job. So you can change the gap between the lines of the Pantry and keep the padding of each card.
 
 A gap that seems to need a different value takes the nearest job. A value of its own is how drift starts. Room that must line up with a thing, such as the text after the box of the Shop, is the size of that thing plus a space token.
+
+## Room for the bar of Obsidian
+
+On a phone, Obsidian shows a bar at the bottom of the screen, over the kitchen. A button under that bar cannot be tapped. So the token `--wfd-space-bar` is the height that the bar covers, and each screen adds it to the space at its end. A control that stays at the bottom, such as the foot of a stage of the Shop, sits on top of this room, and its background fills the room.
+
+The kitchen measures the bar on the phone, so a new version of Obsidian with a different bar needs no change. The room stays when Obsidian hides its bar during a scroll, so the screen does not jump. On a computer, the token is 0.
 
 ## Three lines
 

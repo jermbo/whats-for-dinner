@@ -4,6 +4,7 @@
 	import type { PlannedSide } from '../../plan/plan-note';
 	import type { Meal } from '../../plan/types';
 	import { typeOf } from '../../recipes/browse';
+	import { showName } from '../../match/names';
 	import type { RecipeEntry } from '../../recipes/types';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
@@ -73,7 +74,7 @@
 <InkCard open={tonight}>
 	<article class="wfd-meal" class:wfd-meal--tonight={tonight}>
 		<div class="wfd-meal__top">
-			<h3 class="wfd-meal__name wfd-display">{entry?.recipe.title ?? path}</h3>
+			<h3 class="wfd-meal__name wfd-display">{showName(entry?.recipe.title ?? path)}</h3>
 			{#if entry}
 				<Count have={entry.match.inPantry} of={entry.match.ingredients.length} />
 			{/if}
@@ -90,7 +91,7 @@
 			<ul class="wfd-meal__sides">
 				{#each sides as side, index (`${index}-${side.path ?? side.name}`)}
 					<li class="wfd-meal__side" transition:slide={{ duration }}>
-						<span class="wfd-meal__side-name">{side.entry?.recipe.title ?? side.name}</span>
+						<span class="wfd-meal__side-name">{showName(side.entry?.recipe.title ?? side.name)}</span>
 						{#if side.entry}
 							<Count have={side.entry.match.inPantry} of={side.entry.match.ingredients.length} />
 						{/if}
@@ -146,7 +147,7 @@
 				class:wfd-meal__flag--on={tonight}
 				type="button"
 				aria-pressed={tonight}
-				aria-label="{entry?.recipe.title ?? path} for tonight"
+				aria-label="{showName(entry?.recipe.title ?? path)} for tonight"
 				data-ink-from
 				onclick={() => ontonight(!tonight)}
 			>

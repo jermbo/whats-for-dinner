@@ -24,6 +24,8 @@ Each package is one row, with its own size and its own use-by date, so the half 
 
 On a wide screen, each place goes across the full width, and its lines fill columns under its name, so the whole pantry fits in a few screens and no column is empty.
 
+Filling a shelf is fast. "Add to pantry" stays open until you are done, with the same place, and a count puts 4 cans in with one tap. On an Android phone or a Mac, you scan the barcode: the plugin proposes the food item, the brand, the size, and the photo, and the next scan of that can works with no connection.
+
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
 
 ## The recipes that use your food come first
@@ -84,7 +86,7 @@ Each photo of a recipe goes into the folder `Photos` next to your recipes, sharp
 
 ## Your phone and your computer, with no account
 
-The plugin works on the two devices and with no connection. Obsidian moves the vault between them. The plugin sends your data to no server.
+The plugin works on the two devices and with no connection. Obsidian moves the vault between them. The plugin sends your data to no server. Only a scan of a new barcode sends the barcode number to a free food database, and a setting turns that off.
 
 ## Further reading
 

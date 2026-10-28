@@ -51,6 +51,7 @@ A heading between the ingredients starts a group, such as "Dry" and "Wet". So if
 
 - **Properties.** The note can have properties above the title. The plugin reads the recipe below them, but it never writes a property.
 - **A link as a name.** An ingredient can be a link to its food item: `*300 g* [[Pantry/Rice|rice]]`. [Intake](intake.md) writes these links.
+- **A link as the title.** Some writers make the title a link, such as `# [[Apple Pie]]`, so that the title and the file name stay the same. The kitchen shows each link of the title as Obsidian does in reading view: "Apple Pie", or the name after `|`. The note keeps its brackets: "Edit" writes the title back as it was, and the link in the [meal plan note](plan-note.md) gets the name with no brackets.
 - **The source.** The first line of the description can be "Source: One Pan Wonders, page 46", with a source photo on each line below it. The description is free text in the format, so this is correct RecipeMD.
 - **Preparation.** A callout of the type "prep" tells what you must do [before you cook](preparation.md).
 - **Step photos.** A link to an image below the text of a step is a [step photo](steps.md), and `|best` marks the best one.
