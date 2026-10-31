@@ -30,9 +30,15 @@ The workflow skills hold the method, and they are the same in each project. This
 | Stories               | `docs/features/<version>/`                |
 | What the product does | `docs/features/README.md`                 |
 | Architecture          | `docs/architecture/`                      |
-| Page rules            | `docs/standards/documentation-standards.md` |
-| Code rules            | `docs/standards/code-standards.md`        |
-| Test rules            | `docs/standards/unit-tests.md`            |
+
+## Rules that differ
+
+This wiki has its own pages for the rules of the pages and of the code. For each subject that they tell, they win over the baseline of the skills.
+
+| Rules      | Path                                        |
+| ---------- | ------------------------------------------- |
+| Page rules | `docs/standards/documentation-standards.md` |
+| Code rules | `docs/standards/code-standards.md`          |
 
 ## Forms
 
@@ -58,6 +64,24 @@ The workflow skills hold the method, and they are the same in each project. This
 | Check   | `npm run check` |
 | Test    | `npm test`      |
 | Dev     | `npm run dev`   |
+
+## Sides of the code
+
+| Side     | Folders                                              |
+| -------- | ---------------------------------------------------- |
+| Frontend | `src/ui/`: the screens of the kitchen, and their parts |
+| Backend  | None. The plugin has no server.                      |
+
+## Layers
+
+The page [Layers](layers.md) tells each layer, and which layer can import which.
+
+| Layer     | Folders or files                                                     |
+| --------- | -------------------------------------------------------------------- |
+| Shell     | `main.ts`, `kitchen-view.svelte.ts`, `settings-tab.ts`               |
+| Interface | `ui/`                                                                |
+| State     | `kitchen-state.svelte.ts`, `kitchen/`, `read-properties.ts`          |
+| Domain    | Each other folder: one for each subject, and `units.ts`, `dates.ts` |
 
 ## Versions
 
@@ -95,12 +119,6 @@ The workflow skills hold the method, and they are the same in each project. This
 | Shared parts   | `src/ui/parts/`                                                              |
 | Variant folder | A folder `prototype/` next to the component that the variant replaces.       |
 | Dev-only flag  | `import.meta.env.MODE === 'development'`. That is the mode of `npm run dev`.  |
-
-## Packages
-
-| Fact          | Value                                          |
-| ------------- | ---------------------------------------------- |
-| A new package | Ask the owner first, with the reason.          |
 
 ## Further reading
 
