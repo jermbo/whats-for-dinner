@@ -11,11 +11,12 @@ export const homeFolders = (home: string) => [
 	`${home}/Shopping/Items`
 ];
 
-// The four path settings in the home.
+// The path settings in the home. The first occasion makes its folder, so setup does not.
 export const homePaths = (home: string) => ({
 	pantryFolder: `${home}/Pantry`,
 	shoppingFolder: `${home}/Shopping`,
 	itemsFolder: `${home}/Shopping/Items`,
+	occasionsFolder: `${home}/Occasions`,
 	planNote: `${home}/Meal plan.md`
 });
 

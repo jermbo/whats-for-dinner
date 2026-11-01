@@ -2,6 +2,8 @@
 
 The beef in the fridge is past its date, so the freezer pack is the one to use. There are fewer tortillas than the recipe needs.
 
+> [!prep] Take the ground beef out of the freezer in the morning.
+
 *dinner, mexican*
 
 **4 servings, 8 tacos**

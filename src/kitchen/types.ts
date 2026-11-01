@@ -17,9 +17,11 @@ export type KitchenPage =
 	| { is: 'intake' }
 	| { is: 'convert'; path: string }
 	| { is: 'edit'; path: string }
-	| { is: 'gallery'; path: string };
+	| { is: 'gallery'; path: string }
+	| { is: 'new-occasion' };
 
-export type Part = 'pantry' | 'recipes' | 'plan' | 'shop';
+// The fifth part is there only while an occasion is active.
+export type Part = 'pantry' | 'recipes' | 'plan' | 'shop' | 'occasion';
 
 // What the plugin keeps in its data file: the paths of the food items whose suggestion you skipped
 // for this trip, the settings, and the step of setup. The cart is not here. It is in the note of

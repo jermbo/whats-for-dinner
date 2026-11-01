@@ -21,13 +21,14 @@ Your vault has more than recipes. These settings keep the other notes out of the
 | Meal plan note     | `Larder/Meal plan.md`   | The note with the meals of the week.                                                   |
 | Shopping folder    | `Larder/Shopping`       | The note of each shopping trip is in this folder.                                      |
 | Items folder       | `Larder/Shopping/Items` | An item of your own that no note has links to a note of this folder.                   |
+| Occasions folder   | `Larder/Occasions`      | The note of each [occasion](occasion.md) is in this folder. The first occasion makes it. |
 | Place for new food | `Kitchen`               | The place that put away proposes for food that has no row in the pantry.               |
 
-With no recipes folder, the plugin does not try a note of the pantry folder, of the shopping folder, or of the items folder.
+With no recipes folder, the plugin does not try a note of the pantry folder, of the shopping folder, of the items folder, or of the occasions folder.
 
 ## The plugin home
 
-Each note of the plugin, but the recipes, is in one folder: the plugin home. Its name starts as `Larder`, and [setup](setup.md) can change it before it makes the folders. The four paths above start in it. The recipes folder is not in the home, because your recipes must stay when you remove the data of the plugin.
+Each note of the plugin, but the recipes, is in one folder: the plugin home. Its name starts as `Larder`, and [setup](setup.md) can change it before it makes the folders. The five paths above start in it. The recipes folder is not in the home, because your recipes must stay when you remove the data of the plugin.
 
 To remove the notes of the plugin, delete the home folder. The recipes stay. The plugin deletes no folder itself, also not when you put it off.
 

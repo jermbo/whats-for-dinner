@@ -15,6 +15,7 @@
 		cookSlideFrom,
 		cookTimerClock
 	} from '../../cook/cook-pages';
+	import type { CookedDish } from '../../kitchen/cook-actions';
 	import type { CookResult } from '../../kitchen/types';
 	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
@@ -28,8 +29,15 @@
 	import CookFinish from './CookFinish.svelte';
 	import StepPhoto from './StepPhoto.svelte';
 
-	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
-	let { kitchen, entry, onclose }: Props = $props();
+	// A dish of an occasion has a scale, such as 2, and the end of the meal marks it in its note.
+	type Props = {
+		kitchen: Kitchen;
+		entry: RecipeEntry;
+		scale?: number;
+		dish?: CookedDish | null;
+		onclose: () => void;
+	};
+	let { kitchen, entry, scale = 1, dish = null, onclose }: Props = $props();
 
 	const uid = $props.id();
 
@@ -160,7 +168,7 @@
 
 	let nav = $state<HTMLElement>();
 	async function finish(result: CookResult) {
-		if (!(await kitchen.cook.finishCooking(entry.path, result))) return;
+		if (!(await kitchen.cook.finishCooking(entry.path, result, dish))) return;
 		kitchen.notify('The pantry is correct again.');
 		closeFrom(nav?.querySelector('button[type="submit"]'));
 	}
@@ -203,7 +211,11 @@
 	{#key page}
 		<div class="wfd-cook__card" in:fly={{ x: from, duration }}>
 			<div class="wfd-cook__side">
-				<p class="wfd-cook__recipe wfd-label">{showName(entry.recipe.title)}</p>
+				<p class="wfd-cook__recipe wfd-label">
+					{showName(entry.recipe.title)}
+					<!-- You know how to make two pies: the amounts of the steps stay as the recipe has them. -->
+					{#if scale !== 1}<span class="wfd-cook__scale wfd-number">×{scale}</span>{/if}
+				</p>
 				{#if page === 0}
 					<h2 class="wfd-cook__title wfd-display">Get out</h2>
 					<Count have={gotOut} of={ingredients.length} label="on the counter" />
@@ -315,7 +327,7 @@
 						onbest={(name) => kitchen.cook.setBestPhoto(entry.path, page, name)}
 					/>
 				{:else}
-					<CookFinish id="{uid}-finish" {entry} {picked} ondone={finish} bind:busy={saving} />
+					<CookFinish id="{uid}-finish" {entry} {picked} {scale} ondone={finish} bind:busy={saving} />
 				{/if}
 			</div>
 
@@ -493,6 +505,12 @@
 		color: var(--wfd-color-text-muted);
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.wfd-cook__scale {
+		margin-inline-start: var(--wfd-space-group);
+		color: var(--wfd-color-text);
+		font-size: var(--wfd-font-size-name);
 	}
 
 	.wfd-cook__title {

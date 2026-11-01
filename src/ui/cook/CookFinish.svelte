@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { countMeal, stocksAfterMeal } from '../../cook/out-of-pantry';
 	import type { CookResult } from '../../kitchen/types';
+	import { scaleMatches } from '../../occasion/occasion-list';
 	import type { RecipeEntry } from '../../recipes/types';
 	import { showMeasure } from '../../units';
 	import Field from '../parts/Field.svelte';
@@ -11,16 +12,18 @@
 		entry: RecipeEntry;
 		// The food item that "Get out" selected for each ingredient, by its place in the matches.
 		picked: (string | null)[];
+		// How many times you made the recipe. Two pies take two times the food.
+		scale?: number;
 		ondone: (result: CookResult) => Promise<void>;
 		// True while the notes of the vault change.
 		busy?: boolean;
 	};
-	let { id, entry, picked, ondone, busy = $bindable(false) }: Props = $props();
+	let { id, entry, picked, scale = 1, ondone, busy = $bindable(false) }: Props = $props();
 
 	const uid = $props.id();
 
 	// The pantry as it is when this page opens. A change of a note after that does not move the rows.
-	const count = () => countMeal(entry.match.ingredients, picked);
+	const count = () => countMeal(scaleMatches(entry.match.ingredients, scale), picked);
 	const { counted, others, check } = count();
 
 	// For each counted ingredient: if you used it. The food item is the one of "Get out".

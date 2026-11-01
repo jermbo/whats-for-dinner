@@ -4,6 +4,7 @@
 
 import type { FoodNote, Note } from '../note';
 import { readFoodItem } from '../pantry/food-item';
+import { readOccasionNote, type Occasion } from '../occasion/occasions';
 import { readPlan, type PlannedMeal } from '../plan/plan-note';
 import { readProperties } from '../read-properties';
 import { readRecipe } from '../recipemd/parse';
@@ -24,6 +25,7 @@ export type VaultSnapshot = {
 	receipts: Receipt[];
 	active: ActiveReceipt | null;
 	tripStore: string;
+	occasions: Occasion[];
 };
 
 export class VaultBuffer {
@@ -35,6 +37,7 @@ export class VaultBuffer {
 	itemPaths = new Set<string>();
 	receiptsByPath = new Map<string, Receipt>();
 	activePath: string | null = null;
+	occasionsByPath = new Map<string, Occasion>();
 
 	clear() {
 		this.notesByPath.clear();
@@ -45,6 +48,7 @@ export class VaultBuffer {
 		this.activePath = null;
 		this.itemPaths.clear();
 		this.receiptsByPath.clear();
+		this.occasionsByPath.clear();
 	}
 
 	forget(path: string, openNote: string, planPath: string) {
@@ -58,6 +62,7 @@ export class VaultBuffer {
 		this.receiptsByPath.delete(path);
 		this.notesByPath.delete(path);
 		this.foodsByPath.delete(path);
+		this.occasionsByPath.delete(path);
 	}
 
 	// Applies one note that was just read. `kind` is from `noteKind` at the time of the read.
@@ -84,6 +89,8 @@ export class VaultBuffer {
 		} else if (kind === 'food') {
 			const item = readFoodItem(basename, properties, body);
 			this.foodsByPath.set(path, { path, item });
+		} else if (kind === 'occasion') {
+			this.occasionsByPath.set(path, readOccasionNote(path, basename, properties, body));
 		} else if (kind === 'recipe') {
 			this.notesByPath.set(path, { path, result: readRecipe(text) });
 		}
@@ -107,7 +114,8 @@ export class VaultBuffer {
 			tripStore: this.tripStoreNow,
 			itemNotes: [...this.itemPaths],
 			receipts,
-			active
+			active,
+			occasions: [...this.occasionsByPath.values()]
 		};
 	}
 }

@@ -5,7 +5,7 @@ parent: occasion-stories.md
 updated: 2026-10-31
 persona: Planner
 depends-on: [occasion-start-an-occasion.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Occasion stories](occasion-stories.md) / Start from a past occasion
@@ -30,12 +30,13 @@ As the [planner](../../personas.md), I want to start a new occasion from a past 
    - f. With no task to copy, the new note has no heading `## To do`
 3. The new note gets the name and the day of the form, as in "Start an occasion"
 4. The past note does not change
+5. The copy gets the guest list of the past note, with each party size
 
 ## Acceptance criteria
 
 Each criterion starts with the notes "Thanksgiving 2025", "Thanksgiving 2026", and "Sam's birthday" of the test vault, as the [occasion stories](occasion-stories.md#the-test-data) page gives them, and today is 2026-10-31.
 
-1. GIVEN the Plan part WHEN the planner taps "New occasion" THEN the form has the chip "Thanksgiving 2025"
+1. GIVEN the Occasions part WHEN the planner taps "New occasion" THEN the form has the chip "Thanksgiving 2025"
    - a. AND the form has no chip "Thanksgiving 2026" and no chip "Sam's birthday"
 2. GIVEN the occasions folder has no note with a date before today WHEN the planner opens the form THEN the form has no chips
 3. GIVEN 6 notes with dates from 2020-11-26 to 2025-11-27 WHEN the planner opens the form THEN the form has 5 chips
@@ -52,6 +53,7 @@ Each criterion starts with the notes "Thanksgiving 2025", "Thanksgiving 2026", a
 7. GIVEN the chip "Thanksgiving 2025" is selected WHEN the planner taps it again THEN no chip is selected
    - a. AND "Start" writes a note with the property `date` only
 8. GIVEN a past note with no task that has no day WHEN the planner starts from it THEN the new note has no heading `## To do`
+9. GIVEN a past note with `## Guests` and the line `- The Smiths ×4` WHEN the planner starts from it THEN the new note has `## Guests` with `- The Smiths ×4`
 
 ## Depends on
 
@@ -59,4 +61,6 @@ Each criterion starts with the notes "Thanksgiving 2025", "Thanksgiving 2026", a
 
 ## Architecture
 
-- [Plan](../../architecture/plan.md): the head of the Plan part, where "New occasion" is.
+- [Occasion](../../architecture/occasion.md): what an occasion is, when it is active, and its part.
+- [Occasion note](../../architecture/occasion-note.md): the form of the note, and what the plugin changes.
+- [Occasion](../../architecture/occasion.md): the Occasions part, where "New occasion" is.

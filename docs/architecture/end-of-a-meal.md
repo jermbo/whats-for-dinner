@@ -28,6 +28,8 @@ For each ingredient with a mark, the plugin takes the amount out of its food ite
 
 The omelette needs 3 eggs. The open carton with 4 eggs gives 3 and has 1 left. The new carton stays at 12.
 
+A dish of an [occasion](occasion.md) with a scale, such as ×2, takes each amount times the scale, and the page shows that amount. You made two times the carrots, so the pantry loses 1000 g and not 500 g.
+
 A package that gives all that it has is [empty](food-item-note.md#an-empty-package-goes-out), and its row goes out of the note. With less food than the meal needs, each package gives all that it has, and the food item is out.
 
 A measured package gets the nearest [level](level.md) of what is left, and the middle of two levels goes up: a jug of 1 gal at 1/2 less 1 cup is 7/16 gal, which is the level 1/2. A package with food left is 1/4 or more. A package that was full and gave food is 3/4 or less: a cup at a time must change a full jug. A counted package loses its count: 4 eggs less 2 are 2.
@@ -56,6 +58,8 @@ The photo goes into the folder `Photos` of the recipes folder, with a name that 
 ## The plan and the next time
 
 If the recipe is the main dish of a meal of the plan, the meal leaves the [plan note](plan-note.md): its task and its sides go out. A side that you cook alone does not change the plan note.
+
+A dish that you cook from an occasion gets its mark in the [occasion note](occasion-note.md), and the plan note does not change, also when the same recipe is a meal of the week.
 
 The next time that you cook the recipe, each page of Cook Mode shows the newest note of the record. Thus you see "Less curry paste" before you add the curry paste.
 

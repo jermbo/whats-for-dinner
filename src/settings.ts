@@ -13,6 +13,8 @@ export type Settings = AlarmOptions & {
 	planNote: string;
 	// The note of each shopping trip is in this folder.
 	shoppingFolder: string;
+	// The note of each occasion, such as Thanksgiving, is in this folder.
+	occasionsFolder: string;
 	// An item of your own that no note has links to a note of this folder. The plugin makes no note
 	// there.
 	itemsFolder: string;
@@ -45,6 +47,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	pantryFolder: 'Larder/Pantry',
 	planNote: 'Larder/Meal plan.md',
 	shoppingFolder: 'Larder/Shopping',
+	occasionsFolder: 'Larder/Occasions',
 	itemsFolder: 'Larder/Shopping/Items',
 	newPlace: 'Kitchen',
 	places: [],

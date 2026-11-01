@@ -5,7 +5,7 @@ parent: occasion-stories.md
 updated: 2026-10-31
 persona: Cook
 depends-on: [occasion-see-an-occasion.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Occasion stories](occasion-stories.md) / Cook and tick the dishes
@@ -35,42 +35,43 @@ As the [cook](../../personas.md), I want to cook my dishes of the occasion at th
    - d. A tap on the check does not open the dish
 6. A dish that gets its mark shows it at once
    - a. The check fills with the accent colour and draws its mark, and a line strikes the name, as a tick in the Shop does
-   - b. The dish keeps its place in its group
+   - b. The dish keeps its place in its card
 
 ## Acceptance criteria
 
-Each criterion starts with the test vault, as the [occasion stories](occasion-stories.md#the-test-data) page gives it: the note "Thanksgiving 2026" with its part open, and 450 g of carrots.
+Each criterion starts with the test vault, as the [occasion stories](occasion-stories.md#the-test-data) page gives it: the note "Thanksgiving 2026" with its screen open, and 450 g of carrots.
 
-1. GIVEN the part WHEN the cook looks at "Beef tacos" THEN it has "Cook"
-2. GIVEN the part WHEN the cook looks at "Pumpkin pie" THEN it has no "Cook"
+1. GIVEN the screen WHEN the cook looks at "Beef tacos" THEN it has "Cook"
+2. GIVEN the screen WHEN the cook looks at "Pumpkin pie" THEN it has no "Cook"
 3. GIVEN the line `- [ ] [[Recipes/Apple crumble|Apple crumble]] · dessert · Mum` WHEN the cook looks at "Apple crumble" THEN it has no "Cook"
 4. GIVEN the line `- [ ] Cheese board` WHEN the cook looks at "Cheese board" THEN it has no "Cook"
-5. GIVEN the part WHEN the cook taps "Cook" on "Honey glazed carrots" THEN Cook Mode opens on "Get out"
+5. GIVEN the screen WHEN the cook taps "Cook" on "Honey glazed carrots" THEN Cook Mode opens on "Get out"
    - a. AND the top of the page shows "×2"
    - b. AND "Get out" shows "500 g" for the carrots
-6. GIVEN the part WHEN the cook taps "Cook" on "Beef tacos" THEN the top of the page shows no scale
-7. GIVEN Cook Mode of "Honey glazed carrots" from the part WHEN the cook reaches the last page THEN the carrots show "1000 g"
-8. GIVEN the last page of "Honey glazed carrots" from the part WHEN the cook taps "Update the pantry" THEN the pantry has no carrots
+6. GIVEN the screen WHEN the cook taps "Cook" on "Beef tacos" THEN the top of the page shows no scale
+7. GIVEN Cook Mode of "Honey glazed carrots" from the screen WHEN the cook reaches the last page THEN the carrots show "1000 g"
+8. GIVEN the last page of "Honey glazed carrots" from the screen WHEN the cook taps "Update the pantry" THEN the pantry has no carrots
    - a. AND the line is `- [x] [[Recipes/Honey glazed carrots|Honey glazed carrots]] · side · ×2`
    - b. AND the note "Honey glazed carrots" has a new line below "Cooked" with the date of today
-9. GIVEN the plan has the meal "Beef tacos" WHEN the cook finishes Cook Mode of "Beef tacos" from the part THEN the plan note still has the meal "Beef tacos"
+9. GIVEN the plan has the meal "Beef tacos" WHEN the cook finishes Cook Mode of "Beef tacos" from the screen THEN the plan note still has the meal "Beef tacos"
    - a. AND the line of "Beef tacos" in the occasion note has its mark
-10. GIVEN Cook Mode of "Beef tacos" from the part WHEN the cook taps "Exit" on a step THEN the line of "Beef tacos" has no mark
-11. GIVEN the part WHEN the cook taps the check of "Pumpkin pie" THEN the line is `- [x] Pumpkin pie · dessert · Mum`
+10. GIVEN Cook Mode of "Beef tacos" from the screen WHEN the cook taps "Exit" on a step THEN the line of "Beef tacos" has no mark
+11. GIVEN the screen WHEN the cook taps the check of "Pumpkin pie" THEN the line is `- [x] Pumpkin pie · dessert · Mum`
     - a. AND "Pumpkin pie" shows a full check and a line through its name
-    - b. AND "Pumpkin pie" is still in the group "Mum"
-12. GIVEN the part WHEN the cook taps the check of "Rolls" THEN the line is `- [ ] Rolls · bread · Sam`
-13. GIVEN the part WHEN the cook taps the check of "Apple crumble" THEN the line is `- [x] [[Recipes/Apple crumble|Apple crumble]] · dessert`
+    - b. AND "Pumpkin pie" is still in the card "Mum"
+12. GIVEN the screen WHEN the cook taps the check of "Rolls" THEN the line is `- [ ] Rolls · bread · Sam`
+13. GIVEN the screen WHEN the cook taps the check of "Apple crumble" THEN the line is `- [x] [[Recipes/Apple crumble|Apple crumble]] · dessert`
     - a. AND the pantry does not change
     - b. AND "Apple crumble" has no "Cook"
-14. GIVEN the part WHEN the cook taps the check of "Pumpkin pie" THEN the chips of "Pumpkin pie" do not open
+14. GIVEN the screen WHEN the cook taps the check of "Pumpkin pie" THEN the sheet "Who brings?" does not open
 
 ## Depends on
 
-- [See an occasion](occasion-see-an-occasion.md): the part, and the reading of the scale, the person, and the mark of a dish.
+- [See an occasion](occasion-see-an-occasion.md): the screen, and the reading of the scale, the person, and the mark of a dish.
 
 ## Architecture
 
+- [Occasion note](../../architecture/occasion-note.md): the form of the note, and what the plugin changes.
 - [Cook Mode](../../architecture/cook-mode.md): the pages of Cook Mode, and its two buttons.
 - [End of a meal](../../architecture/end-of-a-meal.md): what "Update the pantry" takes out, and the record in the recipe note.
 - [Plan note](../../architecture/plan-note.md): what the end of a meal changes in the plan note.

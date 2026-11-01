@@ -5,7 +5,7 @@ parent: occasion-stories.md
 updated: 2026-10-31
 persona: Planner
 depends-on: [occasion-see-an-occasion.md]
-status: ready
+status: built
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / [Occasion stories](occasion-stories.md) / Shop for an occasion
@@ -25,7 +25,7 @@ As the [planner](../../personas.md), I want to see what my dishes of the occasio
    - a. One food item is one row, also when the week and the occasion need it
    - b. A row names the occasion as its reason, as a row names its meal
    - c. In the sequence "By meal", the occasion has one bin with its name
-3. The part has the section "To buy", below the dishes
+3. The screen has the section "To buy", below the dishes
    - a. It has each row that the list has, or would have, for the food of the occasion
    - b. Each row shows the name of the food item and the amount that is missing
    - c. With no row, the section shows "All in the pantry"
@@ -44,10 +44,10 @@ Each criterion starts with the test vault, as the [occasion stories](occasion-st
    - a. AND the list has the row "Carrots" with the reason "Thanksgiving 2026"
 3. GIVEN today is 2026-11-27 WHEN the planner opens the Shop THEN the list has the row "Apples" with the reason "Thanksgiving 2026"
 4. GIVEN today is 2026-11-28 WHEN the planner opens the Shop THEN the list has no row with the reason "Thanksgiving 2026"
-5. GIVEN today is 2026-11-10 WHEN the planner opens the part THEN "To buy" has "Apples" with the amount 2
+5. GIVEN today is 2026-11-10 WHEN the planner opens the screen THEN "To buy" has "Apples" with the amount 2
    - a. AND "To buy" has "Carrots" with the amount 550 g
    - b. AND each row has "Add to the list"
-6. GIVEN the line `- [ ] [[Recipes/Honey glazed carrots|Honey glazed carrots]] · side` WHEN the planner opens the part THEN "To buy" has "Carrots" with the amount 50 g
+6. GIVEN the line `- [ ] [[Recipes/Honey glazed carrots|Honey glazed carrots]] · side` WHEN the planner opens the screen THEN "To buy" has "Carrots" with the amount 50 g
 7. GIVEN the line `- [ ] [[Recipes/Apple crumble|Apple crumble]] · dessert · Mum` and today is 2026-11-19 WHEN the planner opens the Shop THEN the list has no row "Apples"
    - a. AND "To buy" has no row "Apples"
 8. GIVEN the line `- [x] [[Recipes/Apple crumble|Apple crumble]] · dessert` and today is 2026-11-19 WHEN the planner opens the Shop THEN the list has no row "Apples"
@@ -58,18 +58,19 @@ Each criterion starts with the test vault, as the [occasion stories](occasion-st
 11. GIVEN today is 2026-11-10 WHEN the planner taps "Add to the list" on "Apples" THEN the next trip has a task with no mark for "Apples"
     - a. AND the row "Apples" of "To buy" shows "On the list"
     - b. AND the list has the row "Apples"
-12. GIVEN today is 2026-11-20 WHEN the planner opens the part THEN each row of "To buy" shows "On the list"
+12. GIVEN today is 2026-11-20 WHEN the planner opens the screen THEN each row of "To buy" shows "On the list"
     - a. AND no row has "Add to the list"
 13. GIVEN a note "Game night" with no date and the line `- [ ] [[Recipes/Apple crumble|Apple crumble]]` WHEN the planner opens the Shop THEN the list has no row with the reason "Game night"
     - a. AND the row "Apples" of its "To buy" has "Add to the list"
-14. GIVEN the pantry has 10 apples and 1000 g of carrots WHEN the planner opens the part THEN "To buy" shows "All in the pantry"
+14. GIVEN the pantry has 10 apples and 1000 g of carrots WHEN the planner opens the screen THEN "To buy" shows "All in the pantry"
 
 ## Depends on
 
-- [See an occasion](occasion-see-an-occasion.md): the part, and the reading of the scale, the person, and the mark of a dish.
+- [See an occasion](occasion-see-an-occasion.md): the screen, and the reading of the scale, the person, and the mark of a dish.
 
 ## Architecture
 
+- [Occasion](../../architecture/occasion.md): what an occasion is, when it is active, and its part.
 - [Shopping](../../architecture/shopping.md): how the list is the plan minus the pantry, and how a row names its meal.
 - [Shopping note](../../architecture/shopping-note.md): the task that "Add to the list" adds.
 - [Amounts](../../architecture/amounts.md): which amounts add up and compare.

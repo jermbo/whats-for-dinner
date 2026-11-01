@@ -15,7 +15,7 @@ The Pantry part and the Shop part both show the milk. If each screen read the no
 
 The copy and the fields are in two files:
 
-1. The vault buffer, in `kitchen/vault-buffer.ts`, is the working copy of the vault. It has the last read of each recipe, food item, plan, trip, and receipt. Only the buffer changes this copy.
+1. The vault buffer, in `kitchen/vault-buffer.ts`, is the working copy of the vault. It has the last read of each recipe, food item, plan, trip, receipt, and occasion. Only the buffer changes this copy.
 2. The kitchen state, in `kitchen-state.svelte.ts`, has the fields that the screens read, such as the food items, the trip, and the cart.
 
 Svelte draws a screen again when a field changes, but it does not see a change in the buffer. So after each read, the state copies a snapshot of the buffer into its fields. A screen reads the fields, never the buffer.
@@ -39,7 +39,7 @@ The recipes with their match, the shopping list, the cart, and the suggestions a
 
 ## The actions of each subject
 
-A screen does not call a write directly. It calls an action of one subject of the kitchen, such as `kitchen.pantry.setSize` or `kitchen.shop.putInCart`. There are seven subjects, and each one has its own file in `kitchen/`:
+A screen does not call a write directly. It calls an action of one subject of the kitchen, such as `kitchen.pantry.setSize` or `kitchen.shop.putInCart`. There are eight subjects, and each one has its own file in `kitchen/`:
 
 | Subject           | File                | What it writes                                                                       |
 | ----------------- | ------------------- | ------------------------------------------------------------------------------------ |
@@ -50,6 +50,7 @@ A screen does not call a write directly. It calls an action of one subject of th
 | `kitchen.cook`    | `cook-actions.ts`   | The end of a meal: the food out of the pantry, the cook record, and the step photos. |
 | `kitchen.intake`  | `intake-actions.ts` | A new or a changed recipe, and a stub for each new food.                             |
 | `kitchen.setup`   | `setup-actions.ts`  | The plugin home, its folders, the places, and the first food of setup.               |
+| `kitchen.occasion` | `occasion-actions.ts` | The notes of the [occasions](occasion.md): a new occasion, its dishes, their marks, its guests, its tasks, and its deletion. |
 
 Two more files help them. `photo-actions.ts` puts a photo of a recipe or of a brand in its folder `Photos`. `tried.ts` shows a notice when a write fails.
 
@@ -64,7 +65,7 @@ The kitchen state does not change. It changes only when the action needs a field
 
 ## The part on the screen
 
-The state also keeps the part that the kitchen shows: Pantry, Recipes, Plan, or Shop. It is in the state and not in a screen, so it stays when the tab closes. The state writes it to the local storage of the vault too, so it stays after a restart. That storage is on one device, so the phone and the desktop each open where they were. The rest of a screen, such as the bars and Cook Mode, starts again with the tab.
+The state also keeps the part that the kitchen shows: Pantry, Recipes, Plan, Shop, or Occasions, and the occasion whose screen is open in Occasions. When that note is gone, Occasions shows its list. It is in the state and not in a screen, so it stays when the tab closes. The state writes it to the local storage of the vault too, so it stays after a restart. That storage is on one device, so the phone and the desktop each open where they were. The rest of a screen, such as the bars and Cook Mode, starts again with the tab.
 
 ## A new kind of note
 
