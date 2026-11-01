@@ -32,6 +32,14 @@ export default class WhatsForDinnerPlugin extends Plugin {
 			}
 		});
 		this.addCommand({
+			id: 'new-occasion',
+			name: 'New occasion',
+			callback: async () => {
+				kitchen.openPage({ is: 'new-occasion' });
+				await this.openKitchen();
+			}
+		});
+		this.addCommand({
 			id: 'edit-recipe',
 			name: 'Edit recipe',
 			checkCallback: (checking) => {

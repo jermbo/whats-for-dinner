@@ -45,6 +45,10 @@ The Plan has no find field, no sequence, and no filters. A week has 7 to 10 meal
 
 "Add a meal" is the first control of the Plan, in the same place with 0 meals or 20. It opens the [Recipes](recipes.md) part in the sequence "Best for the pantry", so the recipes that use up your food come first. The recipe card adds the meal.
 
+## An occasion is not in the Plan
+
+An [occasion](occasion.md), such as Thanksgiving, has a note and a part of its own: Occasions, where "New occasion" is. The Plan does not show the occasion, and the occasion takes no place of the week. So the meals of the week and the dishes of the day stay apart.
+
 ## A cooked meal leaves
 
 When you finish Cook Mode for the main dish, the meal and its sides leave the plan. The record of the meal stays in the recipe note, below "Cooked", as the [end of a meal](end-of-a-meal.md) tells. A meal that you did not cook stays as an option until you cook it or tap "Remove". So the plan has no "new week" to start: you add meals when you plan, and the plan is never empty by accident.

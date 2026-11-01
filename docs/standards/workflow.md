@@ -9,7 +9,7 @@ updated: 2026-10-20
 
 # Workflow
 
-Each change of the plugin starts as words and ends as code. This page tells the steps between the two, and which folder of the wiki holds the work at each step.
+Each change of the plugin starts as words and ends as code. This page tells the steps between the two, and which folder of the wiki holds the work at each step. The skills of each step read the facts of this project from the [project facts](project.md).
 
 ## Why the pages come before the code
 

@@ -15,7 +15,7 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Word        | Meaning                                                                                                                          |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------- |
 | Kitchen     | The tab of the plugin in Obsidian.                                                                                               |
-| Part        | One of the four screens of the kitchen: Pantry, Recipes, Plan, and Shop.                                                         |
+| Part        | One of the screens of the kitchen: Pantry, Recipes, Plan, Shop, and Occasions, the part of each [occasion](architecture/occasion.md). |
 | Data file   | The file of the plugin with your settings. It is not a note.                                                                     |
 | Setup       | The [steps](architecture/setup.md) that the kitchen shows the first time, before the four parts.                              |
 | Plugin home | The one folder that holds each note of the plugin, but the recipes. You delete it to remove the notes of the plugin.            |
@@ -68,10 +68,28 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Step photo  | A photo that shows one [step](architecture/steps.md) of a recipe, in the note below that step. The mark `\|best` tells the best one. |
 | Gallery     | The [view](architecture/gallery.md) of the records of a recipe that have a photo: each photo with its date, its rating, and its note. |
 | Meal        | A main dish and its sides, which you eat at one time. A meal is in the [plan](architecture/plan.md) until you cook it. |
-| Dish        | One part of a meal: a recipe, or only a name, such as "Salad".                                           |
+| Dish        | One part of a meal, or one food of an occasion: a recipe, or only a name, such as "Salad".                |
 | Main dish   | The first dish of a meal: a recipe. The card of the meal has its name.                                    |
 | Side        | A dish that goes with a main dish, such as mashed potatoes. "Side" is also the type of a recipe with the tag "side".                  |
 | Week        | The meals of the plan: the options that you planned at a calm moment.                                     |
+
+## The occasion
+
+| Word             | Meaning                                                                                                                                       |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Occasion         | One day on which you cook many dishes, often with other people: Thanksgiving, or "Sam's birthday". It has a name and a date. See [occasion](architecture/occasion.md). |
+| Occasion note    | The one [note](architecture/occasion-note.md) of an occasion, in the occasions folder. It holds the date, each dish, and your tasks.          |
+| Occasions folder | The folder of the occasion notes. It is a setting, and it starts as `Larder/Occasions`.                                                       |
+| Active           | An occasion is active from the moment that its note exists, up to the day after its date. It is "Next up" or in "Upcoming" in the Occasions part.  |
+| Course           | Where a dish goes in the menu: starter, main, side, dessert, drink, or a word of your own.                                                     |
+| Person           | Who brings a dish of an occasion, such as "Mum". A dish with no person is yours, and a dish with the person `?` is open.                     |
+| Your dish        | A dish of an occasion with no person. Only your dishes put food on the list, and only they have "Cook".                                       |
+| Scale            | How many times you make a dish for the occasion, such as `×3`. With no scale, it is `×1`.                                                      |
+| Occasion task    | A task of your own below the heading `## To do` of the occasion note, such as "Borrow chairs". It can have a day.                              |
+| Guest            | A person who comes to the occasion, on the guest list of the note. A guest with no job is a visitor.                                            |
+| Party size       | How many people come with one line of the guest list, such as "The Smiths ×4". With no number, it is 1.                                        |
+| Job              | A thing that a person brings: a dish, a course with no dish yet, such as "Dessert", or a thing that is not food, such as "Plates".             |
+| Open job         | A job with the person `?`: nobody brings it yet. The screen shows "Who brings?".                                                              |
 
 ## The store and the stove
 

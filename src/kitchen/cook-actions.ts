@@ -3,6 +3,7 @@ import { addRecord } from '../cook/record';
 import { addStepPhoto as addPhotoLine, markBest } from '../cook/step-photo';
 import type { RecipeEntry } from '../recipes/types';
 import type { CookResult } from './types';
+import { markDishReady, type OccasionActionsHost } from './occasion-actions';
 import { isPlanned, markCooked } from './plan-actions';
 import type { PlanActionsHost } from './plan-actions';
 import { setCheck, setStocks } from './pantry-actions';
@@ -12,14 +13,23 @@ import { tried } from './tried';
 
 export type CookActionsHost = PantryActionsHost &
 	PlanActionsHost &
-	PhotoActionsHost & {
+	PhotoActionsHost &
+	OccasionActionsHost & {
 		app: App;
 		today: string;
 		recipes: RecipeEntry[];
 		fileAt(path: string): TFile | null;
 	};
 
-async function finishCooking(host: CookActionsHost, path: string, result: CookResult) {
+// A dish of an occasion that Cook Mode cooks: the occasion note, and the place of the dish in it.
+export type CookedDish = { occasion: string; index: number };
+
+async function finishCooking(
+	host: CookActionsHost,
+	path: string,
+	result: CookResult,
+	dish: CookedDish | null
+) {
 	for (const [foodPath, stocks] of result.stocks) await setStocks(host, foodPath, stocks);
 	for (const foodPath of result.check) await setCheck(host, foodPath, true);
 
@@ -35,7 +45,9 @@ async function finishCooking(host: CookActionsHost, path: string, result: CookRe
 		await host.app.vault.process(file, (text) => addRecord(text, hasInstructions, record));
 	}
 
-	if (isPlanned(host, path)) await markCooked(host, path);
+	// The week and the occasion stay apart: a dish of an occasion does not change the plan.
+	if (dish) await markDishReady(host, dish.occasion, dish.index);
+	else if (isPlanned(host, path)) await markCooked(host, path);
 }
 
 // A step photo goes into the vault at once, so that it stays when you close Cook Mode early.
@@ -55,8 +67,8 @@ async function setBestPhoto(host: CookActionsHost, path: string, step: number, n
 // What Cook Mode can write. Each write tells you in a notice when it fails.
 export function cookActions(host: CookActionsHost) {
 	return {
-		finishCooking: (path: string, result: CookResult) =>
-			tried('The meal is not saved', () => finishCooking(host, path, result)),
+		finishCooking: (path: string, result: CookResult, dish: CookedDish | null) =>
+			tried('The meal is not saved', () => finishCooking(host, path, result, dish)),
 		addStepPhoto: (path: string, step: number, photo: Blob) =>
 			tried('The photo is not saved', () => addStepPhoto(host, path, step, photo)),
 		setBestPhoto: (path: string, step: number, name: string | null) =>

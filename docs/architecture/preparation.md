@@ -33,12 +33,13 @@ A callout is plain Markdown, so the note stays a correct recipe. In Obsidian, th
 | The recipe list    | The sticker "Prep" on the recipe, and the text when you open the recipe. |
 | The meal flagged for tonight | The text, with the check box "Prep is done".                   |
 | Each other meal of the week | The sticker "Prep".                                              |
+| Each of your dishes of an [occasion](occasion.md) | The text, with the check box "Prep is done". |
 
 The description of the recipe shows without the callout, because the preparation has its own box. The callout is not a step of Cook Mode.
 
 ## You confirm it, and the plan keeps that
 
-When you set the check box, the edge of the box becomes olive. The task of the meal in the [plan note](plan-note.md) gets the words "prep done".
+When you set the check box, the edge of the box becomes olive. The task of the meal in the [plan note](plan-note.md) gets the words "prep done", and so does the line of a dish in the [occasion note](occasion-note.md).
 
 For the meal flagged for tonight, "Cook" is the quiet button while the preparation waits. After you confirm, "Cook" is the main button. The button is never locked: you know your kitchen better than the plugin does.
 

@@ -18,6 +18,10 @@ One meal needs 1 onion and a second meal needs 2. The pantry has 1 onion. The li
 
 The plugin adds and compares [amounts](amounts.md) only if their units compare. The pantry can have the food in a different unit, such as "1 bag" for an ingredient of 20 g. Then the plugin does not ask for more.
 
+## An occasion adds your dishes a week before
+
+An [occasion](occasion.md), such as Thanksgiving, adds the food of your dishes to the food of the week, from 7 days before its date. Each ingredient counts its amount times the scale of its dish, so green beans ×2 need two times the beans. A dish that a different person brings adds nothing, and a dish that is ready adds nothing. The pantry is one pantry, so the plugin adds the week and the occasion first, and then takes off what you have. A row names the occasion as its reason, as a row names its meal.
+
 ## A low staple that a meal needs is on the list
 
 A [staple](staples.md) is food that you always want. When a meal needs a staple that is [low](level.md) or out, the meal uses what is left. So the plugin puts the staple on the list with no action from you, also when the pantry has enough for the meal. The row asks for the larger of two amounts: what the meals need, and one package of the staple.

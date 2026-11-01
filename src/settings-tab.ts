@@ -32,6 +32,7 @@ type TextKey =
 	| 'planNote'
 	| 'shoppingFolder'
 	| 'itemsFolder'
+	| 'occasionsFolder'
 	| 'newPlace'
 	| 'fontName';
 type NumberKey = 'volume' | 'soonDays';
@@ -109,6 +110,13 @@ export class KitchenSettingTab extends PluginSettingTab {
 			'Items folder',
 			'An item of your own that no note has links to a note of this folder. The plugin makes no note there.',
 			'Larder/Shopping/Items',
+			folders
+		);
+		this.text(
+			'occasionsFolder',
+			'Occasions folder',
+			'The note of each occasion, such as Thanksgiving, is in this folder. The first occasion makes it.',
+			'Larder/Occasions',
 			folders
 		);
 		this.text(

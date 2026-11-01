@@ -1,5 +1,6 @@
 <script lang="ts" generics="Value extends string">
-	// A count shows next to the label, such as the number of items to buy.
+	// A count shows next to the label, such as the number of items to buy. On a narrow screen, the
+	// options can take a second row, and each label stays complete.
 	type Option = { value: Value; label: string; count?: number };
 	type Props = {
 		label: string;
@@ -11,10 +12,45 @@
 
 	const uid = $props.id();
 	const at = $derived(options.findIndex((option) => option.value === value));
+
+	// The ink takes the box of the option that is on, so it also finds an option on a second row.
+	let nav = $state<HTMLFieldSetElement>();
+	let ink = $state<{ x: number; y: number; width: number; height: number } | null>(null);
+	// The first box shows at once. After that, the ink slides.
+	let placed = $state(false);
+
+	function measure() {
+		const on = nav?.querySelectorAll<HTMLElement>('.wfd-nav__option')[at];
+		if (!on) return;
+		ink = { x: on.offsetLeft, y: on.offsetTop, width: on.offsetWidth, height: on.offsetHeight };
+		if (!placed) requestAnimationFrame(() => (placed = true));
+	}
+
+	$effect(() => {
+		// A new count, such as the number of items to buy, can move the options.
+		void options.map((option) => `${option.label}${option.count ?? ''}`).join();
+		void at;
+		measure();
+	});
+
+	$effect(() => {
+		if (!nav) return;
+		const observer = new ResizeObserver(measure);
+		observer.observe(nav);
+		return () => observer.disconnect();
+	});
 </script>
 
 <!-- One row of options, of which one is on. The ink slides to the option that is on. -->
-<fieldset class="wfd-nav" style:--count={options.length} style:--at={at}>
+<fieldset
+	class="wfd-nav"
+	class:wfd-nav--placed={placed}
+	style:--ink-x="{ink?.x ?? 0}px"
+	style:--ink-y="{ink?.y ?? 0}px"
+	style:--ink-width="{ink?.width ?? 0}px"
+	style:--ink-height="{ink?.height ?? 0}px"
+	bind:this={nav}
+>
 	<legend class="wfd-nav__legend">{label}</legend>
 	{#each options as option}
 		<label class="wfd-nav__option wfd-label">
@@ -38,8 +74,8 @@
 <style>
 	.wfd-nav {
 		position: relative;
-		display: grid;
-		grid-template-columns: repeat(var(--count), 1fr);
+		display: flex;
+		flex-wrap: wrap;
 		min-inline-size: 0;
 		margin: 0;
 		padding: 0;
@@ -51,18 +87,25 @@
 		&::before {
 			content: '';
 			position: absolute;
-			inset-block: 0;
+			inset-block-start: 0;
 			inset-inline-start: 0;
-			inline-size: calc(100% / var(--count));
+			inline-size: var(--ink-width);
+			block-size: var(--ink-height);
 			background: var(--wfd-color-selected);
-			translate: calc(var(--at) * 100%) 0;
-			transition: translate var(--wfd-motion-change) var(--wfd-ease-out);
+			translate: var(--ink-x) var(--ink-y);
 		}
 
 		&:has(:focus-visible) {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
 			outline-offset: 2px;
 		}
+	}
+
+	.wfd-nav--placed::before {
+		transition:
+			translate var(--wfd-motion-change) var(--wfd-ease-out),
+			inline-size var(--wfd-motion-change) var(--wfd-ease-out),
+			block-size var(--wfd-motion-change) var(--wfd-ease-out);
 	}
 
 	.wfd-nav__legend,
@@ -75,14 +118,18 @@
 		white-space: nowrap;
 	}
 
+	/* The options share the row. A label stays complete, so an option goes to a new row first. */
 	.wfd-nav__option {
 		position: relative;
 		display: flex;
+		flex: 1 1 0;
 		gap: var(--wfd-space-group);
 		align-items: center;
 		justify-content: center;
 		min-block-size: var(--wfd-control-min);
+		padding-inline: var(--wfd-space-tight);
 		color: var(--wfd-color-text);
+		white-space: nowrap;
 		cursor: pointer;
 		transition: color var(--wfd-motion-change) var(--wfd-ease-out);
 

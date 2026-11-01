@@ -6,6 +6,7 @@ import { debounce, Notice, TFile, type App, type Component, type TAbstractFile }
 import { brandActions, type BrandActionsHost } from './kitchen/brand-actions';
 import { cookActions, type CookActionsHost } from './kitchen/cook-actions';
 import { intakeActions, type IntakeActionsHost } from './kitchen/intake-actions';
+import { occasionActions, type OccasionActionsHost } from './kitchen/occasion-actions';
 import { mealsOf } from './kitchen/meals-view';
 import {
 	addStockByName,
@@ -37,11 +38,14 @@ import { calculatedList, mealNeeds } from './shop/calculated-list';
 import type { Disk, KitchenPage, Part } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import { indexFoods } from './match/match';
+import { listedDishes, toBuyOf } from './occasion/occasion-list';
+import type { Occasion } from './occasion/occasions';
 import type { FoodNote, Note } from './note';
 import { notePathIn } from './note-path';
 import { placesOf } from './pantry/places';
 import type { PlannedMeal } from './plan/plan-note';
 import { DEFAULT_SETTINGS, folderPath, notePath, type Settings } from './settings';
+import { homeOf } from './setup/home';
 import { hasKitchenNotes, screenOf, type Setup } from './setup/screen';
 import type { Receipt } from './shop/read-receipt';
 import type { ReceiptLine } from './shop/receipt';
@@ -52,7 +56,7 @@ import { today } from './dates';
 export type { CookResult, KitchenPage, Part } from './kitchen/types';
 
 const PART_KEY = 'whats-for-dinner-part';
-const PARTS: unknown[] = ['pantry', 'recipes', 'plan', 'shop'];
+const PARTS: unknown[] = ['pantry', 'recipes', 'plan', 'shop', 'occasion'];
 
 export class Kitchen {
 	notes = $state.raw<Note[]>([]);
@@ -63,6 +67,7 @@ export class Kitchen {
 	private active = $state.raw<{ path: string; lines: ReceiptLine[] } | null>(null);
 	itemNotes = $state.raw<string[]>([]);
 	private receipts = $state.raw<Receipt[]>([]);
+	occasions = $state.raw<Occasion[]>([]);
 	private skipped = $state.raw<string[]>([]);
 	settings = $state.raw<Settings>(DEFAULT_SETTINGS);
 	today = $state(today());
@@ -77,6 +82,8 @@ export class Kitchen {
 	// The part on the screen. It is here so that it stays when the tab closes, and the local storage
 	// keeps it after a restart. That storage is per device, so Sync does not move it.
 	part = $state<Part>('pantry');
+	// The occasion whose screen is open in the Occasions part, or null for the list.
+	private occasionPath = $state<string | null>(null);
 	// The line of the note that you converted last. The Recipes part shows it once more when it opens,
 	// so that you see the line go out of the list of notes that fail.
 	private converted: { path: string; reason: string } | null = null;
@@ -104,13 +111,17 @@ export class Kitchen {
 	get setup() {
 		return setupActions(this.setupHost);
 	}
+	get occasion() {
+		return occasionActions(this.occasionHost);
+	}
 
 	private where = $derived({
 		recipes: folderPath(this.settings.recipesFolder),
 		pantry: folderPath(this.settings.pantryFolder) || DEFAULT_SETTINGS.pantryFolder,
 		plan: notePath(this.settings.planNote) || DEFAULT_SETTINGS.planNote,
 		shopping: folderPath(this.settings.shoppingFolder) || DEFAULT_SETTINGS.shoppingFolder,
-		items: folderPath(this.settings.itemsFolder) || DEFAULT_SETTINGS.itemsFolder
+		items: folderPath(this.settings.itemsFolder) || DEFAULT_SETTINGS.itemsFolder,
+		occasions: folderPath(this.settings.occasionsFolder) || DEFAULT_SETTINGS.occasionsFolder
 	});
 	private openNote = $derived(openNotePath(this.where.shopping));
 	private newPlace = $derived(this.settings.newPlace.trim() || DEFAULT_SETTINGS.newPlace);
@@ -122,8 +133,12 @@ export class Kitchen {
 	foodIndex = $derived(indexFoods(this.foods));
 	places = $derived(placesOf(this.settings.places, this.foods));
 	meals = $derived(mealsOf(this.plannedMeals, this.recipes));
+	// When the note is gone, such as after "Delete occasion", the part shows the list again.
+	openOccasion = $derived(this.occasions.find((occasion) => occasion.path === this.occasionPath) ?? null);
 
-	private needs = $derived(mealNeeds(this.meals, this.where.pantry));
+	private needs = $derived(
+		mealNeeds(this.meals, this.where.pantry, listedDishes(this.occasions, this.recipes, this.today))
+	);
 	private calculated = $derived(calculatedList(this.needs, this.today));
 	private shopLists = $derived.by(() =>
 		cartItems(
@@ -197,11 +212,30 @@ export class Kitchen {
 		this.app.saveLocalStorage(PART_KEY, part);
 	}
 
+	showOccasion(path: string) {
+		this.occasionPath = path;
+		this.showPart('occasion');
+	}
+
+	closeOccasion() {
+		this.occasionPath = null;
+	}
+
+	// What the occasion needs to buy, as the list has it, or will have it.
+	toBuyOf(occasion: Occasion) {
+		return toBuyOf(occasion, this.meals, this.occasions, this.recipes, this.today, this.where.pantry);
+	}
+
 	async loadSaved() {
 		const saved = await this.disk.load();
 		this.skipped = saved?.skipped ?? [];
 		this.setupStep = saved?.setup ?? null;
 		this.settings = { ...DEFAULT_SETTINGS, ...saved?.settings };
+		// A vault from before the occasions keeps them in its own plugin home.
+		const home = homeOf(this.settings.pantryFolder);
+		if (saved?.settings && !saved.settings.occasionsFolder && home) {
+			this.settings = { ...this.settings, occasionsFolder: `${home}/Occasions` };
+		}
 		// A new install writes the defaults, so that the data file and the settings tab agree.
 		if (!saved?.settings) await this.save();
 	}
@@ -212,7 +246,8 @@ export class Kitchen {
 			'pantryFolder',
 			'planNote',
 			'shoppingFolder',
-			'itemsFolder'
+			'itemsFolder',
+			'occasionsFolder'
 		] as const;
 		const moved = paths.some((key) => key in change && change[key] !== this.settings[key]);
 		this.settings = { ...this.settings, ...change };
@@ -481,9 +516,39 @@ export class Kitchen {
 		};
 	}
 
+	private get occasionHost(): OccasionActionsHost {
+		const k = this;
+		return {
+			get occasions() {
+				return k.occasions;
+			},
+			get where() {
+				return k.where;
+			},
+			readNote: async (path) => {
+				const file = k.fileAt(path);
+				return file ? k.app.vault.cachedRead(file) : '';
+			},
+			createNote: async (path, text) => {
+				await k.app.vault.create(path, text);
+			},
+			makeFolderOf: (path) => k.makeFolderOf(path),
+			writeOccasion: async (path, change) => {
+				const file = k.fileAt(path);
+				if (!file) throw new Error(`The note "${path}" is not in the vault now.`);
+				await k.app.vault.process(file, change);
+			},
+			trash: async (path) => {
+				const file = k.fileAt(path);
+				if (file) await k.app.fileManager.trashFile(file);
+			}
+		};
+	}
+
 	private get cookHost(): CookActionsHost {
 		const k = this;
 		return {
+			...k.occasionHost,
 			...k.pantryHost,
 			...k.planHost,
 			app: k.app,
@@ -597,5 +662,6 @@ export class Kitchen {
 		this.itemNotes = snap.itemNotes;
 		this.receipts = snap.receipts;
 		this.active = snap.active;
+		this.occasions = snap.occasions;
 	}
 }

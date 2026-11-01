@@ -1,6 +1,6 @@
 ---
 title: Notes of the kitchen
-summary: "Where the plugin keeps its data: four kinds of notes in your vault, and the path that each change takes."
+summary: "Where the plugin keeps its data: five kinds of notes in your vault, and the path that each change takes."
 parent: ../README.md
 ---
 
@@ -14,7 +14,7 @@ The plugin has no database. All that it knows is in notes of your vault. This pa
 
 Only its program can read a database. If the program stops, your data stops with it. A note is text that you can read and change with no plugin. So the vault is the only source of the kitchen.
 
-## Four kinds of notes
+## Five kinds of notes
 
 | Note      | One note for            | Where it is                                   |
 | --------- | ----------------------- | --------------------------------------------- |
@@ -22,12 +22,13 @@ Only its program can read a database. If the program stops, your data stops with
 | Food item | Each food of the pantry | The pantry folder of the settings             |
 | Plan      | The meals of the week   | The plan note of the settings: `Meal plan.md` |
 | Shopping  | Each shopping trip      | The shopping folder of the settings           |
+| Occasion  | Each [occasion](occasion.md), such as Thanksgiving | The occasions folder of the settings |
 
 A food item note can also come from a recipe: [intake](intake.md) makes a stub in the pantry folder for each new food.
 
 The photos of a recipe are not notes. They are in the folder `Photos` of the recipes folder, such as `Recipes/Photos`, so that a recipe and its photos move as one unit. The plugin makes that folder when it saves the first photo. The photos of the [brands](brands.md) are in the folder `Photos` of the pantry folder, such as `Larder/Pantry/Photos`, for the same reason.
 
-A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md), the [plan](plan.md), and a [shopping trip](shopping-note.md) have a form of the plugin, and you can write each of them by hand.
+A [recipe](recipes.md) follows a public format. A [food item](food-item-note.md), the [plan](plan.md), a [shopping trip](shopping-note.md), and an [occasion](occasion-note.md) have a form of the plugin, and you can write each of them by hand.
 
 ## Each change goes through a note
 

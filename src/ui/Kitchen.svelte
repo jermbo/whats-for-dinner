@@ -4,6 +4,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, fly } from 'svelte/transition';
 	import type { Kitchen, Part } from '../kitchen-state.svelte';
+	import type { CookedDish } from '../kitchen/cook-actions';
 	import type { Only as PantryOnly, Sort as PantrySort } from '../pantry/views';
 	import type { Only as RecipeOnly, Sort as RecipeSort } from '../recipes/browse';
 	import type { Only as ShopOnly, Sort as ShopSort } from '../shop/browse';
@@ -16,6 +17,8 @@
 	import PlanPart from './plan/PlanPart.svelte';
 	import RecipesPart from './recipes/RecipesPart.svelte';
 	import Intake from './intake/Intake.svelte';
+	import NewOccasion from './occasion/NewOccasion.svelte';
+	import OccasionsPart from './occasion/OccasionsPart.svelte';
 	import Gallery from './recipes/Gallery.svelte';
 	import HasNotes from './setup/HasNotes.svelte';
 	import Setup from './setup/Setup.svelte';
@@ -25,17 +28,21 @@
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
-	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop'];
+	const sequence: Part[] = ['pantry', 'recipes', 'plan', 'shop', 'occasion'];
 
 	const toCook = $derived(kitchen.meals.length);
 	const options = $derived([
 		{ value: 'pantry' as const, label: 'Pantry' },
 		{ value: 'recipes' as const, label: 'Recipes' },
 		{ value: 'plan' as const, label: 'Plan', count: toCook },
-		{ value: 'shop' as const, label: 'Shop', count: kitchen.list.length }
+		{ value: 'shop' as const, label: 'Shop', count: kitchen.list.length },
+		{ value: 'occasion' as const, label: 'Occasions' }
 	]);
 
 	const part = $derived(kitchen.part);
+	// On a narrow phone, the nav can take a second row. The top of a part sticks under the nav, so
+	// it needs the real height.
+	let navHeight = $state(0);
 	// The new part comes in from the side of its option in the navigation.
 	let from = $state(-16);
 	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
@@ -67,10 +74,19 @@
 		show('recipes');
 	}
 
-	// The path of the recipe that is in Cook Mode.
-	let cooking = $state<string | null>(null);
-	const cooked = $derived(kitchen.recipes.find((entry) => entry.path === cooking));
-	const cook = (path: string) => (cooking = path);
+	// The recipe that is in Cook Mode. A dish of an occasion has its scale, and its place in the note.
+	type Cooking = { path: string; scale: number; dish: CookedDish | null };
+	let cooking = $state<Cooking | null>(null);
+	const cooked = $derived(kitchen.recipes.find((entry) => entry.path === cooking?.path));
+	const cook = (path: string) => (cooking = { path, scale: 1, dish: null });
+	const cookDish = (path: string, scale: number, dish: CookedDish) => (cooking = { path, scale, dish });
+
+	// After "Start", the screen of the new occasion shows. "Cancel" goes back to the occasions.
+	function closeNewOccasion(path: string | null) {
+		kitchen.closePage();
+		if (path) kitchen.showOccasion(path);
+		else show('occasion');
+	}
 	const page = $derived(kitchen.page);
 	const inGallery = $derived(
 		page?.is === 'gallery' ? kitchen.recipes.find((entry) => entry.path === page.path) : undefined
@@ -124,14 +140,28 @@
 			{@render gone(page.path)}
 		{/await}
 	</div>
+{:else if page?.is === 'new-occasion'}
+	<div class="wfd-kitchen" in:fade={{ duration }}>
+		<NewOccasion {kitchen} onclose={closeNewOccasion} />
+	</div>
 {:else if inGallery}
 	<Gallery {kitchen} entry={inGallery} onclose={() => kitchen.closePage()} />
 {:else if cooked}
-	<CookMode {kitchen} entry={cooked} onclose={() => (cooking = null)} />
+	<CookMode
+		{kitchen}
+		entry={cooked}
+		scale={cooking?.scale ?? 1}
+		dish={cooking?.dish ?? null}
+		onclose={() => (cooking = null)}
+	/>
 {:else}
-	<div class="wfd-kitchen" in:fade={{ duration: inSetup ? duration : 0 }}>
+	<div
+		class="wfd-kitchen"
+		style:--wfd-nav-size={navHeight ? `${navHeight}px` : undefined}
+		in:fade={{ duration: inSetup ? duration : 0 }}
+	>
 		<!-- The nav stays at the top while a part scrolls. -->
-		<div class="wfd-kitchen__nav">
+		<div class="wfd-kitchen__nav" bind:clientHeight={navHeight}>
 			<Nav label="Part of the kitchen" {options} value={part} onchange={show} />
 		</div>
 
@@ -143,6 +173,8 @@
 					<RecipesPart {kitchen} oncook={cook} bar={bars.recipes} />
 				{:else if part === 'plan'}
 					<PlanPart {kitchen} oncook={cook} onadd={addMeal} />
+				{:else if part === 'occasion'}
+					<OccasionsPart {kitchen} oncook={cookDish} />
 				{:else}
 					<ShopPart {kitchen} bar={bars.shop} {draft} bind:stage={shopStage} />
 				{/if}

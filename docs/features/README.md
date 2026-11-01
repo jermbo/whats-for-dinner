@@ -48,6 +48,12 @@ You write the preparation in the recipe note, as a callout of the type "prep". A
 > [!prep] Take the ground beef out of the freezer in the morning.
 ```
 
+## A holiday has a plan of its own
+
+For Thanksgiving or a birthday, you cook many dishes, and other people bring some of them. The kitchen has a fifth part, Occasions, with each [occasion](../architecture/occasion.md): the next one first, with how many people come and what is still open, and the others below it. "New occasion" starts one with a name and a day, or a copy of last year. Tap an occasion, and one page shows who brings what, the guest list with the size of each party, the menu by course with an empty card for each course that nobody brings yet, your tasks, and what to buy. A tap on a dish opens "Who brings?", with one large button for each guest.
+
+Seven days before the day, the food of your dishes goes on the list, at its scale. Mum buys her own pumpkins, so her pie puts nothing there. On the day, "Cook" opens a dish with its scale at the top, and the pantry loses what you used. Each dish has a check, so you see at a glance what is ready and what is still to come.
+
 ## The shopping list has only the missing items
 
 The [list](../architecture/shopping.md) is the plan minus the pantry. If two meals need onions, the list has one row with the total. In the store, the list is in bins, as the Pantry. One tap ticks an item: its name flies to the cart at the top right, and the row leaves. A wrong tap costs nothing: "Undo" is under your thumb for a few seconds, and later a tap on the item in the cart puts it back.

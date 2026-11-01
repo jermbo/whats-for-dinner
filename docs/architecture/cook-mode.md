@@ -16,6 +16,8 @@ When you cook, your hands are dirty and your eyes are on the pan. So Cook Mode s
 2. **The steps.** One page for each step, with its text and the ingredients that the text names.
 3. **Done.** You confirm what you used. You can add a rating, a note, and a photo.
 
+A dish of an [occasion](occasion.md) can have a scale, such as ×2. Cook Mode shows it at the top of each page. The amounts of "Get out" and of the steps stay as the recipe has them, because you know how to make two pies.
+
 The two buttons do not move from page to page. A new page slides in from the side to which you go, and its piece of the bar fills from the left. "Update the pantry" and "Exit" close Cook Mode with a circle of paper from the button, as "Cook" opened it with a dark circle. On "Get out", "Back" closes Cook Mode, as "Exit" does: the thumb is already on it. The screen stays on while Cook Mode is open.
 
 ## Get out selects the food item
@@ -48,7 +50,7 @@ The [last page](end-of-a-meal.md) lists each ingredient that the plugin can coun
 
 - It takes each amount out of its food item in the [pantry](pantry.md). The row with the first use-by date gives its food first.
 - It adds a line below the heading "Cooked" of the recipe note: the date, the rating, your note, and the photo.
-- It marks the meal as cooked in the [plan](plan.md).
+- It marks the meal as cooked in the [plan](plan.md), or the dish as ready in its occasion.
 
 The photo from a phone is large, so the plugin makes it smaller, with no visible loss, before it goes into the folder `Photos` of the recipes folder.
 
