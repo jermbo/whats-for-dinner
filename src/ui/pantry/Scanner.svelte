@@ -1,14 +1,22 @@
+<script lang="ts" module>
+	// Obsidian on Android does not ask for the camera, so it gives a plugin no live view, and it
+	// does not give one later in the same run. After the first no, each scan goes straight to the
+	// camera of the phone.
+	let noLiveView = false;
+</script>
+
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Button from '../parts/Button.svelte';
 	import type { ReadBarcode } from './barcode-reader';
 
 	// The scan of a barcode. The live view of the camera reads the code with no shutter. When
-	// Obsidian gives no live view, the camera of the phone takes one photo, and the same reader
-	// looks for the code in it. `onread` gets the code, or null for a photo with no code. Two quiet
-	// ways out: `ontype` is for the digits typed by hand, and `oncancel` goes to the name.
+	// Obsidian gives no live view, the camera of the phone opens by itself and takes one photo, and
+	// the same reader looks for the code in it. `onread` gets the code, or null for a photo with no
+	// code. Two quiet ways out: `ontype` is for the digits typed by hand, and `oncancel` goes to the
+	// name.
 	type Props = {
 		read: ReadBarcode;
 		onread: (code: string | null) => void;
@@ -21,7 +29,16 @@
 	const uid = $props.id();
 
 	let video = $state<HTMLVideoElement>();
-	let live = $state(true);
+	let photo = $state<HTMLInputElement>();
+	let live = $state(!noLiveView);
+
+	// A browser opens the camera only soon after a tap. The tap on + or on a date is that tap. When
+	// it is too late, the camera stays shut, and the button is there.
+	async function toPhoto() {
+		live = false;
+		await tick();
+		photo?.click();
+	}
 
 	onMount(() => {
 		let stream: MediaStream | null = null;
@@ -48,6 +65,7 @@
 		}
 
 		async function start() {
+			if (noLiveView) return void toPhoto();
 			try {
 				stream = await navigator.mediaDevices.getUserMedia({
 					video: { facingMode: 'environment' },
@@ -59,7 +77,8 @@
 				void look();
 			} catch {
 				stop();
-				live = false;
+				noLiveView = true;
+				void toPhoto();
 			}
 		}
 
@@ -67,10 +86,16 @@
 		return stop;
 	});
 
+	// A photo with no code opens the camera again for a second try. The field forgets the file, so
+	// that the same photo counts again.
 	async function fromPhoto(event: Event & { currentTarget: HTMLInputElement }) {
-		const file = event.currentTarget.files?.[0];
+		const input = event.currentTarget;
+		const file = input.files?.[0];
 		if (!file) return;
-		onread(await read(await createImageBitmap(file)));
+		const code = await read(await createImageBitmap(file));
+		input.value = '';
+		onread(code);
+		if (!code) input.click();
 	}
 </script>
 
@@ -87,6 +112,7 @@
 			Take a photo of the barcode
 			<input
 				id="{uid}-photo"
+				bind:this={photo}
 				class="wfd-scan__hidden"
 				type="file"
 				accept="image/*"

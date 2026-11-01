@@ -2,7 +2,7 @@
 title: Occasion stories
 summary: "The user stories of version 0.11.0 for an occasion with many dishes, such as Thanksgiving: eleven pieces of work, with the sequence in which they depend on each other."
 parent: ../README.md
-updated: 2026-10-31
+updated: 2026-11-01
 ---
 
 [Wiki](../../README.md) / [Features](../README.md) / Occasion stories
@@ -125,3 +125,4 @@ A criterion with a date, such as "today is 2026-11-19", needs the date of the de
 
 - [Decision log: holiday planner](../../initiatives/holiday-planner/decision-log.md): the reason for each rule of these stories.
 - [Glossary: holiday planner](../../initiatives/holiday-planner/glossary.md): the words "occasion", "dish", "course", "person", and "scale".
+- [Pantry scan stories](pantry-scan-stories.md): the other stories of version 0.11.0.

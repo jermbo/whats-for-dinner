@@ -21,9 +21,9 @@ export function replaceStocks(text: string, stocks: Stock[]): string {
 
 // A new package is a new row. It never adds to a row that has food, because each package has its
 // own date: 6 apples are a package of 6 next to the 2 that you have. The rows come from the text,
-// so two writes one after the other do not lose a row.
-export function addPackage(text: string, stock: Stock): string {
-	return replaceStocks(text, withPackage(readStocks(text), stock));
+// so two writes one after the other do not lose a row. The packages of one add, such as 4 cans,
+// are one change of the note.
+export function addPackages(text: string, stocks: Stock[]): string {
+	return replaceStocks(text, [...readStocks(text), ...stocks]);
 }
 
-export const withPackage = (stocks: Stock[], stock: Stock): Stock[] => [...stocks, stock];

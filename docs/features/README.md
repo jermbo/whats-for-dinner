@@ -24,7 +24,7 @@ Each package is one row, with its own size and its own use-by date, so the half 
 
 On a wide screen, each place goes across the full width, and its lines fill columns under its name, so the whole pantry fits in a few screens and no column is empty.
 
-Filling a shelf is fast. "Add to pantry" stays open until you are done, with the same place, and a count puts 4 cans in with one tap. On an Android phone or a Mac, you scan the barcode: the plugin proposes the food item, the brand, the size, and the photo, and the next scan of that can works with no connection.
+Filling a shelf is fast. "Add to pantry" stays open until you are done, with the same place, and a count puts 4 cans in with one tap. On an Android phone or a Mac, you scan the barcode: the camera opens by itself, and the plugin fills in the food item, the brand, the size, the place, and the photo. You check the facts, tap the use-by date, such as "2 years", and "Correct", and the camera opens for the next can. The next scan of that can works with no connection.
 
 In the store, you ask "do I have this?". You type a name, a brand, or a different name of the food, and the pantry shows it. One tap shows only the food that is low, the food to use soon, the food that is out, or one place.
 

@@ -22,7 +22,15 @@ export type Product = {
 };
 
 // The fields that the lookup asks for. The answer of Open Food Facts has them in `product`.
-export const PRODUCT_FIELDS = ['product_name', 'generic_name', 'brands', 'quantity', 'image_front_url'];
+export const PRODUCT_FIELDS = [
+	'product_name',
+	'generic_name',
+	'brands',
+	'quantity',
+	'product_quantity',
+	'product_quantity_unit',
+	'image_front_url'
+];
 
 const textOf = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
 
@@ -39,7 +47,7 @@ export function productOf(barcode: string, answer: unknown): Product | null {
 		barcode,
 		name,
 		brand,
-		size: sizeOfQuantity(textOf(product.quantity)),
+		size: sizeOfProduct(textOf(product.quantity), product.product_quantity, textOf(product.product_quantity_unit)),
 		photo: textOf(product.image_front_url) || null,
 		newName: capital(common || withoutBrand(name, brand))
 	};
@@ -55,20 +63,48 @@ function withoutBrand(name: string, brand: string) {
 
 const METRIC = /(\d+(?:[.,]\d+)?)\s*(kg|g|cl|ml|l)\b/i;
 const IMPERIAL = /(\d+(?:[.,]\d+)?)\s*(fl\.?\s*oz|oz|lbs?)\b/i;
+const MULTIPACK = /\d\s*[x×]\s*\d/i;
 
-// The size of one package, from the quantity of the label. The pantry is metric, so a label with
-// two units gives its metric part: "15 oz (425 g)" is "425 g". A multipack, such as "6 x 330 ml",
-// is not one package, so it gives no size.
+const numberOf = (text: string) => Number(text.replace(',', '.'));
+
+// The size of one package of a product. The pantry is metric, so a size is in grams or
+// millilitres where the product has a weight or a volume. The number of the database comes first,
+// because it is already in grams or millilitres. A multipack, such as "6 x 330 ml", is not one
+// package, and its number is the total of the pack, so it gives no size.
+export function sizeOfProduct(quantity: string, number: unknown, unit: string): string | null {
+	if (MULTIPACK.test(quantity)) return null;
+	const value = Number(number);
+	if (value > 0 && /^(g|ml)$/i.test(unit)) return metricSize(value, unit.toLowerCase() as 'g' | 'ml');
+	return sizeOfQuantity(quantity);
+}
+
+// The size of one package, from the quantity of the label. A label with two units gives its
+// metric part: "15 oz (425 g)" is "425 g". A label in ounces or pounds becomes grams, and fluid
+// ounces become millilitres: "16 oz" is "454 g".
 export function sizeOfQuantity(quantity: string): string | null {
-	if (!quantity || /\d\s*[x×]\s*\d/i.test(quantity)) return null;
+	if (!quantity || MULTIPACK.test(quantity)) return null;
 	const metric = METRIC.exec(quantity);
-	const found = metric ?? IMPERIAL.exec(quantity);
-	if (!found) return null;
-	let value = Number(found[1].replace(',', '.'));
-	let unit = found[2].toLowerCase().replace(/\s+/g, ' ').replace('.', '');
-	if (unit === 'cl') [value, unit] = [value * 10, 'ml'];
-	if (unit === 'lbs') unit = 'lb';
-	const size = `${Number(value.toFixed(2))} ${unit}`;
+	if (metric) {
+		const unit = metric[2].toLowerCase();
+		const factor = { kg: 1000, g: 1, l: 1000, cl: 10, ml: 1 }[unit] ?? 1;
+		return metricSize(numberOf(metric[1]) * factor, unit === 'kg' || unit === 'g' ? 'g' : 'ml');
+	}
+	const imperial = IMPERIAL.exec(quantity);
+	if (!imperial) return null;
+	const unit = imperial[2].toLowerCase();
+	const [factor, to]: [number, 'g' | 'ml'] = unit.startsWith('fl')
+		? [29.5735, 'ml']
+		: unit === 'oz'
+			? [28.3495, 'g']
+			: [453.592, 'g'];
+	return metricSize(numberOf(imperial[1]) * factor, to);
+}
+
+// Grams and millilitres in whole numbers, and kilograms or litres from 1000, as on a label.
+function metricSize(value: number, unit: 'g' | 'ml'): string | null {
+	const grams = Math.round(value);
+	const size =
+		grams >= 1000 ? `${Number((grams / 1000).toFixed(2))} ${unit === 'g' ? 'kg' : 'l'}` : `${grams} ${unit}`;
 	return entryOf(size) === size ? size : null;
 }
 

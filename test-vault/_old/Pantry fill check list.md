@@ -1,6 +1,6 @@
 # Check list: pantry fill
 
-This list tests the two [pantry fill stories](../docs/features/v0.10.0/pantry-fill-stories.md) of version 0.10.0. Each line has one action and what you must see. The text in brackets is the criterion or the requirement. Section B needs the Android phone or the Mac, a can of Bush's Best Black Beans (or any can with a barcode), and a connection.
+This list tests the two [pantry fill stories](../../docs/features/v0.10.0/pantry-fill-stories.md) of version 0.10.0. Each line has one action and what you must see. The text in brackets is the criterion or the requirement. Section B needs the Android phone or the Mac, a can of Bush's Best Black Beans (or any can with a barcode), and a connection.
 
 ## Before you start
 

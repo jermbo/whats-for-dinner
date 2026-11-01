@@ -206,16 +206,22 @@
 		if (form.brands.length) await kitchen.brands.saveBrands(food.item.name, form.brands);
 	}
 
-	// "Add to pantry" writes one full row for each package, and then the barcode of a scan. The
-	// filters go, so that the new line shows behind the form, which stays open for the next food.
-	async function addPackages({ name, size, place, count, scan }: Added) {
+	// "Add to pantry" does not wait for its writes, so they go in a queue, in the sequence of the
+	// taps. One add writes one full row for each package, with its date, and then the barcode of a
+	// scan. The filters go, so that the new line shows behind the form, which stays open for the
+	// next food.
+	let adds = Promise.resolve();
+
+	function addPackages(added: Added) {
 		bar.clear();
 		bar.find = '';
-		for (let at = 0; at < count; at++) {
-			if (!(await kitchen.pantry.addStock(name, fullPackage(place, size)))) return false;
-		}
+		adds = adds.then(() => writeAdd(added));
+	}
+
+	async function writeAdd({ name, size, place, count, useBy, scan }: Added) {
+		const rows = Array.from({ length: count }, () => fullPackage(place, size, useBy));
+		if (!(await kitchen.pantry.addStocks(name, rows))) return;
 		if (scan) await kitchen.brands.keepBarcode(name, scan);
-		return true;
 	}
 
 	// A card that opens out of view, such as after "Add to pantry", comes into view.
