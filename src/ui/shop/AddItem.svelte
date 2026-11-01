@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { FoodNote } from '../../note';
 	import { proposalsFor } from '../../shop/proposals';
 	import Button from '../parts/Button.svelte';
 	import Field from '../parts/Field.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		foods: FoodNote[];
@@ -18,7 +18,7 @@
 	};
 	let { foods, itemNotes, onadd, onaddnew }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	let field = $state<HTMLInputElement>();
 	let text = $state('');
@@ -120,7 +120,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -3px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 </style>

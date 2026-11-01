@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { addPlace, renamePlace } from '../../pantry/places';
@@ -10,10 +9,11 @@
 	import HiddenName from '../parts/HiddenName.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import StepFrame from './StepFrame.svelte';
+	import { tokenTime } from '../motion';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	let places = $state([...FIRST_PLACES]);
 	let newPlace = $state(firstNewPlace(FIRST_PLACES));

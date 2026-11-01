@@ -82,7 +82,7 @@
 	.wfd-field :global(:is(input, textarea, select):focus-visible) {
 		border-color: var(--wfd-color-focus);
 		outline: var(--wfd-border) solid var(--wfd-color-focus);
-		outline-offset: 2px;
+		outline-offset: var(--wfd-focus-offset);
 		box-shadow: none;
 	}
 

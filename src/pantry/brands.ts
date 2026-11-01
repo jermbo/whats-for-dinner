@@ -62,6 +62,9 @@ const photosIn = (text: string) => [...text.matchAll(PHOTO)].map((match) => matc
 // dot. A barcode is only digits, so it does not clash with a verdict or a name.
 const BARCODE = /(?:^|\s)·\s*(\d{8,14})\s*$/;
 const VERDICT = /(?:^|\s)·\s*(buy again|avoid)\s*$/i;
+// The pattern finds only the two verdicts, in any case of letters.
+const verdictOf = (text: string): Verdict =>
+	text.toLowerCase() === 'avoid' ? 'avoid' : 'buy again';
 
 function brandOf(own: string, below: string[]): Brand | null {
 	let text = own.replace(PHOTO, ' ').replace(/\s+/g, ' ').trim();
@@ -69,7 +72,7 @@ function brandOf(own: string, below: string[]): Brand | null {
 	const barcode = code ? code[1] : null;
 	if (code) text = text.slice(0, code.index).trim();
 	const found = VERDICT.exec(text);
-	const verdict = found ? (found[1].toLowerCase() as Verdict) : null;
+	const verdict: Verdict | null = found ? verdictOf(found[1]) : null;
 	const name = found ? text.slice(0, found.index).trim() : text;
 	const photos = [own, ...below].flatMap(photosIn);
 	return name || photos.length || verdict || barcode ? { name, verdict, barcode, photos } : null;

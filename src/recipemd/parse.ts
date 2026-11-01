@@ -45,12 +45,13 @@ function parse(markdown: string): Recipe {
 	let yields: Amount[] | null = null;
 	for (; at < blocks.length && isTagsOrYields(blocks[at]); at++) {
 		const tagText = textIn(blocks[at], ITALICS);
+		const yieldText = textIn(blocks[at], BOLD);
 		if (tagText !== null) {
 			if (tags) throw new RecipeError('The note has two paragraphs of tags.');
 			tags = splitList(tagText);
-		} else {
+		} else if (yieldText !== null) {
 			if (yields) throw new RecipeError('The note has two paragraphs of yields.');
-			yields = splitList(textIn(blocks[at], BOLD)!).map(readYield);
+			yields = splitList(yieldText).map(readYield);
 		}
 	}
 

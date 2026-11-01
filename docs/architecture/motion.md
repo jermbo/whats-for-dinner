@@ -2,7 +2,7 @@
 title: Motion
 summary: "The three durations and the one easing of the plugin, the press of a button, the motion of each piece, the rule for less motion, and the transitions of Svelte that stay."
 parent: look.md
-updated: 2026-10-21
+updated: 2026-11-01
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Motion
@@ -60,9 +60,9 @@ A tick in the Shop sends the name of the item to the cart button, so you see whe
 
 A device can have the setting for less motion. Then the file of the tokens sets each duration to 0. Each transition and each animation of a screen uses a token, so no screen needs a rule of its own for less motion.
 
-## The transitions of Svelte stay
+## The transitions of Svelte read the tokens too
 
-Some motion is in the scripts, not in a style block: a part that slides in, a row that fades, a photo that grows. Svelte makes these smooth, and each one checks the setting for less motion itself. They do not use the tokens.
+Some motion is in the scripts, not in a style block: a part that slides in, a row that fades, a photo that grows. Svelte makes these smooth. Each one gets its time from `tokenTime` in `ui/motion.ts`, which reads a duration token of the kitchen tab. A transition that changes a control uses `--wfd-motion-change`, and a number that counts up uses `--wfd-motion-move`. So with less motion they take no time, as each other motion does.
 
 ## Further reading
 

@@ -30,7 +30,7 @@
 
 		&:focus-visible .wfd-chip__face {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

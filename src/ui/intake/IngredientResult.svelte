@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import type { IngredientLine } from '../../intake/line';
 	import type { FoodNote } from '../../note';
+	import { tokenTime } from '../motion';
 
 	type Props = { line: IngredientLine; foods: FoodNote[] };
 	let { line, foods }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
+	const duration = $derived(tokenTime('change'));
 	// Two food items get no link: Cook Mode selects one on the day. A line of "Edit" that keeps its
 	// text can have no food item.
 	const food = $derived(

@@ -41,15 +41,19 @@ export function listedDishes(occasions: Occasion[], recipes: RecipeEntry[], toda
 		.flatMap((occasion) => yourDishes(occasion, recipes));
 }
 
+export type ToBuyContext = {
+	meals: Meal[];
+	occasions: Occasion[];
+	recipes: RecipeEntry[];
+	today: string;
+	pantryFolder: string;
+};
+
 // What the occasion needs to buy, as the list has it, or will have it from 7 days before: the
 // week, the other occasions on the list, and your dishes of this one, minus the pantry.
 export function toBuyOf(
 	occasion: Occasion,
-	meals: Meal[],
-	occasions: Occasion[],
-	recipes: RecipeEntry[],
-	today: string,
-	pantryFolder: string
+	{ meals, occasions, recipes, today, pantryFolder }: ToBuyContext
 ): ShoppingRow[] {
 	const others = listedDishes(occasions.filter((one) => one.path !== occasion.path), recipes, today);
 	const needs = mealNeeds(meals, pantryFolder, [...others, ...yourDishes(occasion, recipes)]);

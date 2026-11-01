@@ -56,8 +56,14 @@ export function nextSize(item: FoodItem, place: string): string | null {
 	return newest?.sizeText || null;
 }
 
-// A new package is full, in the place of the card, with no date.
-export const fullPackage = (place: string, size: string) => makeStock(place, size, '', size);
+// A new package is full, in the place of the card. It has no date, unless "Add to pantry" gives one.
+export const fullPackage = (place: string, size: string, useBy = '') => makeStock(place, size, useBy, size);
+
+// The place of the newest package that is not empty, or null. A new package of a known food goes
+// there, so that a scan does not ask for a place that the pantry already has.
+export function newestPlace(item: FoodItem): string | null {
+	return item.stocks.filter((stock) => stock.place && !isEmpty(stock)).at(-1)?.place ?? null;
+}
 
 // The rows that "Done" writes, or null when nothing changed. A package at 0 is empty, and the
 // write takes its row out.

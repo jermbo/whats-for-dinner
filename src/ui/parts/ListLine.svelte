@@ -41,7 +41,7 @@
 		<span class="wfd-list-line__end">
 			{#if number}<span class="wfd-list-line__number wfd-number">{@render text(number)}</span>{/if}
 			{#if numberSmall}<span class="wfd-list-line__small">{@render text(numberSmall)}</span>{/if}
-			{#if hint}<span class="wfd-list-line__hidden">{hint}</span>{/if}
+			{#if hint}<span class="wfd-hidden">{hint}</span>{/if}
 		</span>
 	{/if}
 	{#if control}{@render control()}{/if}
@@ -108,15 +108,6 @@
 
 	.wfd-list-line__number {
 		font-size: var(--wfd-font-size-title);
-		white-space: nowrap;
-	}
-
-	.wfd-list-line__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 		white-space: nowrap;
 	}
 </style>

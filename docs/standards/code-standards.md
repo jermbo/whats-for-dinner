@@ -27,6 +27,9 @@ The test of a file is one question: can that reader find the line to change, and
 | [A comment gives the reason](comments.md)       | The code tells how. A comment tells why, and only when the code cannot.         |
 | [Repeat first, share later](repeat-or-share.md) | Shared code must earn its place: it is one rule, or it is the third copy.       |
 | [An error is a part of the design](errors.md)   | A bad note gives a reason that you can read. A missing value shows in its type. |
+| [A type is a check, not a promise](types.md)    | No `!`, and `as` only for an element of the page. A value from outside gets a check. |
+| [State has one place](svelte-state.md)          | A value from other values is derived. An effect is only for a thing outside Svelte. |
+| No dead code                                    | A function that no file of the plugin calls goes, also when a test calls it. An export that only its own file uses is not an export. |
 | Simple first                                    | No code for a need that no story has: no option and no layer "for later".       |
 | One kind of change                              | A step is a move, a new name, or a new behaviour. It is not two of them.        |
 | [A rule has a test](unit-tests.md)                | A critical path of the domain has a unit test that names the value that it expects. |

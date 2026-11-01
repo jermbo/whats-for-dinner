@@ -2,7 +2,7 @@
 title: "Spec: pantry fill"
 summary: "The scope that is agreed for a fast first fill: a barcode scan with an online lookup, and a form that stays open with a count."
 parent: decision-log.md
-updated: 2026-10-27
+updated: 2026-11-01
 status: agreed
 ---
 
@@ -18,31 +18,33 @@ The **keeper** fills the pantry for the first time, at the shelf. Each new food 
 
 ## The solution
 
-The keeper opens "Add to pantry", points the phone at a can, and the form shows the food item, the brand, the size, and the photo. One tap on the count and one on "Add", and the form is ready for the next can.
+The keeper opens "Add to pantry", and the camera opens. One photo of the barcode, and the form shows the food item, the brand, the size, the place, and the photo, all filled in. One tap on a use-by date and one on "Correct" add the can, and the camera opens for the next can.
 
-An example: the keeper scans a can of Bush's Best Black Beans. The form proposes "Black beans", with "Bush's" and 425 g. The keeper taps "Black beans", the count 4, and "Add". The pantry has 4 full cans of 425 g in "Kitchen pantry", the brand "Bush's" has its photo and its barcode, and the form waits for the next food.
+An example: the keeper scans a can of Bush's Best Black Beans. The form shows "Black beans", "Bush's", 425 g, and "Kitchen pantry". The keeper taps "2 years" and "Correct". The pantry has a full can of 425 g in "Kitchen pantry" that keeps 2 years, the brand "Bush's" has its photo and its barcode, and the camera waits for the next can.
 
 ## In scope
 
 1. "Add to pantry" has a scan button on each device with a barcode reader in its browser, the phone and the computer (decisions 3 and 13)
    - a. On a device with no reader, the button is not there, and the form is as today (decision 13)
 2. The scan shows a live view of the camera, and reads the barcode with no shutter (decision 12)
-   - a. When the live view does not open, the camera of the phone takes one photo, and the plugin reads the barcode in it (decision 12)
+   - a. When the live view does not open, such as on Android, the camera of the phone opens at once and takes one photo, and the plugin reads the barcode in it (decision 12)
 3. A barcode that a brand of the pantry has finds that food item and that brand, with no connection (decision 4)
 4. A barcode that the pantry does not have gets a lookup at Open Food Facts (decisions 1 and 2)
    - a. Only the barcode number leaves the phone (decision 1)
    - b. The product gives the brand, the size, and the photo (decisions 5 and 6)
    - c. The size is metric when the label has it (decision 6)
-5. The form proposes the food item of a product, and one tap accepts it (decision 14)
-   - a. The other food items are a list, as the name field finds them today (decision 14)
-   - b. "New" proposes a name from the product (decision 14)
+5. The form selects the food item of a product, or a new food item with a name from the product (decision 14)
+   - a. One tap on the name opens the list of the other food items, as the name field finds them today (decision 14)
 6. With no connection, an unknown barcode, or the setting off, the form asks for the name as today, and keeps the barcode (decisions 9 and 10)
 7. The note keeps the barcode on the line of its brand, after a middle dot (decision 4)
    - a. A new brand of a product gets the photo of the product, when it has one (decision 5)
-8. The last step of the form has a count of packages: 1, 2, 3, 4, 6, 12, and a field (decision 8)
-9. After "Add", the form stays open at the name, with the same place, and "Done" closes it (decision 7)
+8. The last step shows the food item, the size, the place, and the count as chips that you can tap (decisions 8 and 15)
+   - a. The count is 1, with chips 1, 2, 3, 4, 6, 12, and a field (decision 8)
+   - b. The place is the place of the newest package of the food item, or of the last add (decision 7)
+9. The last step asks for the use-by date, and "Correct" adds the packages (decision 11)
+10. After an add, the form stays open at the scan (or the name), and "Done" closes it (decision 7)
    - a. A known food goes to the last step with its size, as a new food does (decision 7)
-10. A setting "Look up barcodes online" is on at the start (decision 10)
+11. A setting "Look up barcodes online" is on at the start (decision 10)
 
 ## Out of scope
 

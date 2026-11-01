@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { FoodNote } from '../../note';
 	import FindField from '../parts/FindField.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The name of the line, with a capital first letter: "Kosher salt".
@@ -14,7 +14,7 @@
 	};
 	let { name, foods, onpick, onname }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 160);
+	const duration = $derived(tokenTime('change'));
 	let open = $state(false);
 	let find = $state('');
 
@@ -103,7 +103,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -143,7 +143,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -2px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

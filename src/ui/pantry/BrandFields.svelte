@@ -123,7 +123,7 @@
 			Add brand
 			<input
 				id="{uid}-add"
-				class="wfd-brand-fields__hidden"
+				class="wfd-hidden"
 				type="file"
 				accept="image/*"
 				capture="environment"
@@ -167,7 +167,7 @@
 				New photo
 				<input
 					id="{uid}-photo"
-					class="wfd-brand-fields__hidden"
+					class="wfd-hidden"
 					type="file"
 					accept="image/*"
 					capture="environment"
@@ -232,22 +232,13 @@
 		&:focus-within,
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
 	.wfd-brand-fields__add {
 		border-style: dashed;
 	}
-
-	.wfd-brand-fields__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-	}
-
 
 	.wfd-brand-fields__actions {
 		display: grid;

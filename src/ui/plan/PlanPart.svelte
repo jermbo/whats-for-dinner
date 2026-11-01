@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { crossfade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { Meal } from '../../plan/types';
@@ -8,6 +7,7 @@
 	import PartHead from '../parts/PartHead.svelte';
 	import PartTop from '../parts/PartTop.svelte';
 	import MealCard from './MealCard.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		kitchen: Kitchen;
@@ -18,7 +18,7 @@
 	let { kitchen, oncook, onadd }: Props = $props();
 	const headId = $props.id();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	// A flag moves the card between "Tonight" and the list, so you see where it went.
 	const [send, receive] = crossfade({
 		duration: () => duration,

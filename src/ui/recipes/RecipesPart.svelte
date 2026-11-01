@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
@@ -23,7 +22,7 @@
 	import PartTop from '../parts/PartTop.svelte';
 	import { coverThen } from '../cover';
 	import { glide } from '../glide';
-	import { timeOf } from '../motion';
+	import { timeOf, tokenTime } from '../motion';
 	import RecipeCard from './RecipeCard.svelte';
 
 	type Props = {
@@ -34,13 +33,14 @@
 	let { kitchen, oncook, bar }: Props = $props();
 	const headId = $props.id();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// When the part opens, the cards come in one after the other. A card that a filter brings back
 	// later only slides in, so the deal is for the first moment only.
+	const DEAL_MS = 1000;
 	let dealing = $state(true);
 	$effect(() => {
-		const timer = setTimeout(() => (dealing = false), 1000);
+		const timer = setTimeout(() => (dealing = false), DEAL_MS);
 		return () => clearTimeout(timer);
 	});
 
@@ -350,7 +350,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

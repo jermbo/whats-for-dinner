@@ -29,7 +29,10 @@ export function readPrep(recipe: Recipe): string | null {
 		if (!found) continue;
 
 		const [first, ...others] = lines.slice(found.start, found.end);
-		const texts = [START.exec(first)![1], ...others.map((line) => QUOTE.exec(line)![1])];
+		const texts = [
+			START.exec(first)?.[1] ?? '',
+			...others.map((line) => QUOTE.exec(line)?.[1] ?? '')
+		];
 		const text = texts.map((line) => line.trim()).filter(Boolean).join('\n');
 		if (text) return text;
 	}

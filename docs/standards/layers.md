@@ -34,7 +34,7 @@ flowchart TD
 | State  | `kitchen-state.svelte.ts`, `kitchen/`, `read-properties.ts`        | Keeps the notes of the vault current, and has each action.           | Know a component.                                |
 | Domain | All other files: a folder for each subject, `units.ts`, `dates.ts` | The rules of the kitchen.                                            | Import Obsidian, Svelte, the state, or a screen. |
 
-The shell and the state are the only files that import Obsidian. That is 13 files: the 3 files of the shell, and 10 files of the state. When Obsidian changes, no other file changes.
+The shell and the state are the only files that import Obsidian. That is 14 files: the 3 files of the shell, and 11 files of the state. When Obsidian changes, no other file changes.
 
 ## The folders of the domain tell what the plugin is
 

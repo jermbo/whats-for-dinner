@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import { photoRecords } from '../../cook/record';
 	import { showName } from '../../match/names';
@@ -8,6 +7,7 @@
 	import type { RecipeEntry } from '../../recipes/types';
 	import Button from '../parts/Button.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = { kitchen: Kitchen; entry: RecipeEntry; onclose: () => void };
 	let { kitchen, entry, onclose }: Props = $props();
@@ -17,7 +17,7 @@
 	const record = $derived(records[Math.min(at, records.length - 1)]);
 	const url = $derived(record ? kitchen.photoUrl(record.photo, entry.path) : null);
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 220);
+	const duration = $derived(tokenTime('change'));
 	// The next record comes in from the side to which you go.
 	let from = $state(0);
 	function go(to: number) {

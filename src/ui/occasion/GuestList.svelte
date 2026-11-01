@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { GuestRow } from '../../occasion/guests';
 	import Field from '../parts/Field.svelte';
+	import { tokenTime } from '../motion';
 
 	// One short row for each guest: most guests only come, so a row is enough. The list is who
 	// "Who brings?" can pick.
@@ -16,7 +16,7 @@
 	};
 	let { guests, coming, jobsOf, onadd, onsize, onremove }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	let typed = $state('');
 
 	function add(event: SubmitEvent) {

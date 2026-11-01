@@ -73,7 +73,7 @@ export function cartOf(
 }
 
 // The row with what makes its food item full again, if that is more than the row has.
-export function withFill(row: ShoppingRow): ShoppingRow {
+function withFill(row: ShoppingRow): ShoppingRow {
 	const fill = row.food ? fillOf(row.food.item) : null;
 	const short = row.buy.find((part) => part.kind === fill?.kind)?.value ?? 0;
 	if (!fill || short >= fill.value) return row;

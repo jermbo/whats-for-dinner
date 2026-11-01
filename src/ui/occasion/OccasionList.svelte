@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import { daysBetween, showDate } from '../../dates';
 	import type { Kitchen } from '../../kitchen-state.svelte';
@@ -12,10 +11,11 @@
 	import GroupHead from '../parts/GroupHead.svelte';
 	import PartHead from '../parts/PartHead.svelte';
 	import OccasionCard from './OccasionCard.svelte';
+	import { tokenTime } from '../motion';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 	const headId = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	let only = $state<Only>('upcoming');
 	let sort = $state<Sort>('near');
@@ -143,7 +143,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

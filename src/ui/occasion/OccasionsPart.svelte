@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { CookedDish } from '../../kitchen/cook-actions';
 	import OccasionList from './OccasionList.svelte';
 	import OccasionScreen from './OccasionScreen.svelte';
+	import { tokenTime } from '../motion';
 
 	// The fifth part: the list of the occasions, or the screen of one of them. The screen comes in
 	// from the right, as a step deeper, and the list from the left.
@@ -14,7 +14,7 @@
 	};
 	let { kitchen, oncook }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	const open = $derived(kitchen.openOccasion);
 </script>
 

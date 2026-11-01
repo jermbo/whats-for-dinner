@@ -1,7 +1,7 @@
 <script lang="ts">
 	import './fonts.css';
 	import './tokens.css';
-	import { prefersReducedMotion } from 'svelte/motion';
+	import './hidden.css';
 	import { fade, fly } from 'svelte/transition';
 	import type { Kitchen, Part } from '../kitchen-state.svelte';
 	import type { CookedDish } from '../kitchen/cook-actions';
@@ -25,6 +25,7 @@
 	import { PutAwayDraft } from './shop/put-away-draft.svelte';
 	import ShopPart from './shop/ShopPart.svelte';
 	import type { Stage } from './shop/stage';
+	import { tokenTime } from './motion';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
@@ -45,7 +46,7 @@
 	let navHeight = $state(0);
 	// The new part comes in from the side of its option in the navigation.
 	let from = $state(-16);
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	// The kitchen fades in at the end of setup. A tab that opens on the four parts shows them at once.
 	let inSetup = $state(false);
 	$effect.pre(() => {
@@ -253,7 +254,7 @@
 
 	:global(.wfd input[type='checkbox']:focus-visible) {
 		outline: var(--wfd-border) solid var(--wfd-color-focus);
-		outline-offset: 2px;
+		outline-offset: var(--wfd-focus-offset);
 		box-shadow: none;
 	}
 

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Button from '../parts/Button.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The photos stay on the device until "Save", so that intake with no "Save" leaves nothing.
@@ -16,14 +16,17 @@
 	let { photos = $bindable(), kept = $bindable(), urlOf: keptUrlOf }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// A small image of each photo. The address of each one is freed when its fade ends, so that
 	// the image shows until it is gone.
 	const urls = new Map<Blob, string>();
 	const urlOf = (photo: Blob) => {
-		if (!urls.has(photo)) urls.set(photo, URL.createObjectURL(photo));
-		return urls.get(photo)!;
+		const known = urls.get(photo);
+		if (known) return known;
+		const url = URL.createObjectURL(photo);
+		urls.set(photo, url);
+		return url;
 	};
 	const remove = (photo: Blob) => (photos = photos.filter((one) => one !== photo));
 	function free(photo: Blob) {
@@ -63,7 +66,7 @@
 		<!-- No "capture": the phone then offers the camera and its photos, such as a photo of a cookbook. -->
 		<input
 			id="{uid}-photo"
-			class="wfd-sources__field"
+			class="wfd-hidden"
 			type="file"
 			accept="image/*"
 			multiple
@@ -117,15 +120,7 @@
 
 		&:focus-within {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
-	}
-
-	.wfd-sources__field {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 	}
 </style>

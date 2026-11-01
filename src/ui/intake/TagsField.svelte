@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { crossfade, scale } from 'svelte/transition';
 	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The tags of the recipes of the vault, from A to Z.
@@ -14,7 +14,7 @@
 	let { known, tags = $bindable() }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	// A chip that you tap moves from one list to the other. A new tag has no chip to move from, so
 	// it grows in place.
 	const [send, receive] = crossfade({

@@ -20,11 +20,11 @@
 	count, so that you see where the items are. An ink line slides under the stage that is open.
 -->
 <fieldset class="wfd-stages" style:--at={at}>
-	<legend class="wfd-stages__legend">Stage of the trip</legend>
+	<legend class="wfd-hidden">Stage of the trip</legend>
 	{#each STAGES as stage, index}
 		<label class="wfd-stages__stage">
 			<input
-				class="wfd-stages__input"
+				class="wfd-hidden"
 				type="radio"
 				name={uid}
 				checked={stage === value}
@@ -63,18 +63,8 @@
 
 		&:has(:focus-visible) {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
-	}
-
-	.wfd-stages__legend,
-	.wfd-stages__input {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 
 	.wfd-stages__stage {

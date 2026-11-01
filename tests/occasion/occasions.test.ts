@@ -4,7 +4,6 @@ import { comingOf, guestsOf, openJobsOf } from '../../src/occasion/guests';
 import { nextUp, occasionRows } from '../../src/occasion/occasion-browse';
 import { readOccasion } from '../../src/occasion/occasion-note';
 import {
-	activeOccasions,
 	dayProblem,
 	daysLabel,
 	isActive,
@@ -45,11 +44,6 @@ describe('an active occasion and its days', () => {
 	it('Game night with no date is active, and has no days', () => {
 		expect(isActive(GAME_NIGHT, '2030-01-01')).toBe(true);
 		expect(daysLabel(GAME_NIGHT.date, '2030-01-01')).toBeNull();
-	});
-
-	it("on 2026-11-10, Sam's birthday comes first, then Thanksgiving, then Game night", () => {
-		const names = activeOccasions([GAME_NIGHT, THANKSGIVING, BIRTHDAY], '2026-11-10').map((one) => one.name);
-		expect(names).toEqual(["Sam's birthday", 'Thanksgiving 2026', 'Game night']);
 	});
 
 	it('the property `date` of a note is its day, as text or as a date of the YAML', () => {

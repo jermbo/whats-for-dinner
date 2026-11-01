@@ -56,6 +56,11 @@ import { today } from './dates';
 export type { CookResult, KitchenPage, Part } from './kitchen/types';
 
 const PART_KEY = 'whats-for-dinner-part';
+// A write waits this long after the last key, so that each key that you type is not a write.
+const TYPING_WAIT_MS = 600;
+// A move of folders in the settings is a few changes. The vault is read again once, after the last.
+const SETTINGS_WAIT_MS = 500;
+const MINUTE_MS = 60_000;
 const PARTS: unknown[] = ['pantry', 'recipes', 'plan', 'shop', 'occasion'];
 
 export class Kitchen {
@@ -124,7 +129,8 @@ export class Kitchen {
 		occasions: folderPath(this.settings.occasionsFolder) || DEFAULT_SETTINGS.occasionsFolder
 	});
 	private openNote = $derived(openNotePath(this.where.shopping));
-	private newPlace = $derived(this.settings.newPlace.trim() || DEFAULT_SETTINGS.newPlace);
+	// The place for new food. An empty setting is the default place.
+	newPlace = $derived(this.settings.newPlace.trim() || DEFAULT_SETTINGS.newPlace);
 
 	recipes = $derived.by(() =>
 		recipesOf(this.notes, this.foods, this.today, this.settings.soonDays)
@@ -141,14 +147,13 @@ export class Kitchen {
 	);
 	private calculated = $derived(calculatedList(this.needs, this.today));
 	private shopLists = $derived.by(() =>
-		cartItems(
-			this.calculated,
-			this.trip,
-			this.foods,
-			this.receipts,
-			this.pathOf,
-			this.active
-		)
+		cartItems(this.calculated, {
+			trip: this.trip,
+			foods: this.foods,
+			receipts: this.receipts,
+			active: this.active,
+			pathOf: this.pathOf
+		})
 	);
 
 	list = $derived(this.shopLists.list);
@@ -157,26 +162,24 @@ export class Kitchen {
 	stores = $derived(storesOf(this.receipts));
 	storeOrder = $derived.by(() => storeOrderOf(this.receipts, this.tripStore, this.pathOf));
 	toPutAway = $derived.by(() =>
-		putAwayCartItems(
-			this.cart,
-			this.trip,
-			this.shopLists.bought,
-			this.where.pantry,
-			this.active,
-			this.pathOf,
-			{ today: this.today, newPlace: this.newPlace }
-		)
+		putAwayCartItems(this.cart, {
+			trip: this.trip,
+			bought: this.shopLists.bought,
+			pantryFolder: this.where.pantry,
+			active: this.active,
+			pathOf: this.pathOf,
+			now: { today: this.today, newPlace: this.newPlace }
+		})
 	);
 	suggestions = $derived(
 		tripSuggestions(
 			this.foods,
+			{ today: this.today, soonDays: this.settings.soonDays },
 			{
-				today: this.today,
-				soonDays: this.settings.soonDays
-			},
-			this.skipped,
-			this.trip,
-			this.calculated.missing.map((row) => row.key)
+				skipped: this.skipped,
+				trip: this.trip,
+				missingKeys: this.calculated.missing.map((row) => row.key)
+			}
 		)
 	);
 
@@ -189,13 +192,13 @@ export class Kitchen {
 	private shopMutable: ShopMutable = { puttingAway: false, pendingFacts: new Map() };
 	private writeFacts = debounce(
 		() => void tried('The receipt did not change', () => flushReceiptFacts(this.shopHost)),
-		600,
+		TYPING_WAIT_MS,
 		true
 	);
 	private writeStore = debounce(
 		(store: string) =>
 			void tried('The store is not saved', () => saveTripStore(this.shopHost, store)),
-		600,
+		TYPING_WAIT_MS,
 		true
 	);
 
@@ -223,7 +226,13 @@ export class Kitchen {
 
 	// What the occasion needs to buy, as the list has it, or will have it.
 	toBuyOf(occasion: Occasion) {
-		return toBuyOf(occasion, this.meals, this.occasions, this.recipes, this.today, this.where.pantry);
+		return toBuyOf(occasion, {
+			meals: this.meals,
+			occasions: this.occasions,
+			recipes: this.recipes,
+			today: this.today,
+			pantryFolder: this.where.pantry
+		});
 	}
 
 	async loadSaved() {
@@ -282,7 +291,7 @@ export class Kitchen {
 		const checkToday = () => {
 			this.today = today();
 		};
-		plugin.registerInterval(window.setInterval(checkToday, 60_000));
+		plugin.registerInterval(window.setInterval(checkToday, MINUTE_MS));
 		plugin.registerDomEvent(document, 'visibilitychange', checkToday);
 	}
 
@@ -325,103 +334,103 @@ export class Kitchen {
 	}
 
 	private get photoHost(): PhotoActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
-			app: k.app,
+			app: kitchen.app,
 			get where() {
-				return k.where;
+				return kitchen.where;
 			},
 			get today() {
-				return k.today;
+				return kitchen.today;
 			},
-			makeFolderOf: (path) => k.makeFolderOf(path)
+			makeFolderOf: (path) => kitchen.makeFolderOf(path)
 		};
 	}
 
 	private get intakeHost(): IntakeActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
-			...k.photoHost,
+			...kitchen.photoHost,
 			get rejected() {
-				return k.rejected;
+				return kitchen.rejected;
 			},
 			keepConverted: (line) => {
-				k.converted = line;
+				kitchen.converted = line;
 			}
 		};
 	}
 
 	private get brandHost(): BrandActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
-			...k.photoHost,
+			...kitchen.photoHost,
 			get foods() {
-				return k.foods;
+				return kitchen.foods;
 			},
-			fileAt: (path) => k.fileAt(path)
+			fileAt: (path) => kitchen.fileAt(path)
 		};
 	}
 
 	private get pantryHost(): PantryActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
 			get foods() {
-				return k.foods;
+				return kitchen.foods;
 			},
 			get where() {
-				return k.where;
+				return kitchen.where;
 			},
-			fileAt: (path) => k.fileAt(path),
-			makeFolderOf: (path) => k.makeFolderOf(path),
+			fileAt: (path) => kitchen.fileAt(path),
+			makeFolderOf: (path) => kitchen.makeFolderOf(path),
 			processFile: async (path, change) => {
-				const file = k.fileAt(path);
-				if (file) await k.app.vault.process(file, change);
+				const file = kitchen.fileAt(path);
+				if (file) await kitchen.app.vault.process(file, change);
 			},
 			processFrontMatter: async (path, change) => {
-				const file = k.fileAt(path);
-				if (file) await k.app.fileManager.processFrontMatter(file, change);
+				const file = kitchen.fileAt(path);
+				if (file) await kitchen.app.fileManager.processFrontMatter(file, change);
 			},
-			createFile: async (path, text) => k.app.vault.create(path, text)
+			createFile: async (path, text) => kitchen.app.vault.create(path, text)
 		};
 	}
 
 	private get setupHost(): SetupActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
 			get settings() {
-				return k.settings;
+				return kitchen.settings;
 			},
 			get foodCount() {
-				return k.foods.length;
+				return kitchen.foods.length;
 			},
-			exists: (path) => Boolean(k.app.vault.getAbstractFileByPath(path)),
+			exists: (path) => Boolean(kitchen.app.vault.getAbstractFileByPath(path)),
 			createFolder: async (path) => {
-				await k.app.vault.createFolder(path);
+				await kitchen.app.vault.createFolder(path);
 			},
 			createFile: async (path, text) => {
-				await k.app.vault.create(path, text);
+				await kitchen.app.vault.create(path, text);
 			},
-			changeSettings: (change) => k.changeSettings(change),
+			changeSettings: (change) => kitchen.changeSettings(change),
 			goTo: async (setup) => {
-				k.setupStep = setup;
-				await k.save();
+				kitchen.setupStep = setup;
+				await kitchen.save();
 			},
 			// The action and not the method, so that an error stops setup, and setup tells it once.
-			addStock: (name, stock) => addStockByName(k.pantryHost, name, stock),
+			addStock: (name, stock) => addStockByName(kitchen.pantryHost, name, stock),
 			trash: async (path) => {
-				const folder = k.app.vault.getAbstractFileByPath(path);
+				const folder = kitchen.app.vault.getAbstractFileByPath(path);
 				// The trash of the vault, and not of the system: a phone can have no system trash.
-				if (folder) await k.app.vault.trash(folder, false);
+				if (folder) await kitchen.app.vault.trash(folder, false);
 			},
 			forgetAll: async () => {
-				k.skipped = [];
-				k.setupStep = null;
-				k.settings = DEFAULT_SETTINGS;
-				await k.save();
-				if (k.started) await k.readAll();
+				kitchen.skipped = [];
+				kitchen.setupStep = null;
+				kitchen.settings = DEFAULT_SETTINGS;
+				await kitchen.save();
+				if (kitchen.started) await kitchen.readAll();
 			},
 			folders: () =>
-				k.app.vault
+				kitchen.app.vault
 					.getAllFolders()
 					.map((folder) => folder.path)
 					.sort()
@@ -429,136 +438,136 @@ export class Kitchen {
 	}
 
 	private get planHost(): PlanActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
 			get plan() {
-				return k.plannedMeals;
+				return kitchen.plannedMeals;
 			},
 			get meals() {
-				return k.meals;
+				return kitchen.meals;
 			},
 			get recipes() {
-				return k.recipes;
+				return kitchen.recipes;
 			},
 			get today() {
-				return k.today;
+				return kitchen.today;
 			},
-			notify: (text) => k.notify(text),
-			writePlan: (change) => k.writePlan(change)
+			notify: (text) => kitchen.notify(text),
+			writePlan: (change) => kitchen.writePlan(change)
 		};
 	}
 
 	private get shopHost(): ShopActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
-			app: k.app,
-			vault: k.vault,
+			app: kitchen.app,
+			vault: kitchen.vault,
 			get where() {
-				return k.where;
+				return kitchen.where;
 			},
 			get openNote() {
-				return k.openNote;
+				return kitchen.openNote;
 			},
 			get today() {
-				return k.today;
+				return kitchen.today;
 			},
 			get newPlace() {
-				return k.newPlace;
+				return kitchen.newPlace;
 			},
 			get tripStore() {
-				return k.tripStore;
+				return kitchen.tripStore;
 			},
 			get trip() {
-				return k.trip;
+				return kitchen.trip;
 			},
 			get calculated() {
-				return k.calculated;
+				return kitchen.calculated;
 			},
 			get cart() {
-				return k.cart;
+				return kitchen.cart;
 			},
 			get toPutAway() {
-				return k.toPutAway;
+				return kitchen.toPutAway;
 			},
 			get activeLines() {
-				return k.active?.lines ?? [];
+				return kitchen.active?.lines ?? [];
 			},
 			get hasPutAway() {
-				return k.hasPutAway;
+				return kitchen.hasPutAway;
 			},
 			get foods() {
-				return k.foods;
+				return kitchen.foods;
 			},
-			mutable: k.shopMutable,
-			onTripComplete: () => k.onTripComplete(),
-			pathOf: (link) => k.pathOf(link),
-			fileAt: (path) => k.fileAt(path),
-			makeFolderOf: (path) => k.makeFolderOf(path),
-			inTurn: (change) => k.inTurn(change),
-			writeTrip: (change) => k.writeTrip(change),
-			notify: (text) => k.notify(text),
-			save: () => k.save(),
+			mutable: kitchen.shopMutable,
+			onTripComplete: () => kitchen.onTripComplete(),
+			pathOf: (link) => kitchen.pathOf(link),
+			fileAt: (path) => kitchen.fileAt(path),
+			makeFolderOf: (path) => kitchen.makeFolderOf(path),
+			inTurn: (change) => kitchen.inTurn(change),
+			writeTrip: (change) => kitchen.writeTrip(change),
+			notify: (text) => kitchen.notify(text),
+			save: () => kitchen.save(),
 			get skipped() {
-				return k.skipped;
+				return kitchen.skipped;
 			},
 			setSkipped: (paths) => {
-				k.skipped = paths;
+				kitchen.skipped = paths;
 			},
 			setTripStoreValue: (store) => {
-				k.tripStore = store;
+				kitchen.tripStore = store;
 			},
-			writeFactsSoon: () => k.writeFacts(),
-			cancelFactsWrite: () => k.writeFacts.cancel(),
-			writeStoreSoon: (store) => k.writeStore(store),
-			cancelTripStoreWrite: () => k.writeStore.cancel(),
-			addStockTo: (path, stock) => addStockTo(k.pantryHost, path, stock),
-			setStaple: (path, label) => setStaple(k.pantryHost, path, label)
+			writeFactsSoon: () => kitchen.writeFacts(),
+			cancelFactsWrite: () => kitchen.writeFacts.cancel(),
+			writeStoreSoon: (store) => kitchen.writeStore(store),
+			cancelTripStoreWrite: () => kitchen.writeStore.cancel(),
+			addStockTo: (path, stock) => addStockTo(kitchen.pantryHost, path, stock),
+			setStaple: (path, label) => setStaple(kitchen.pantryHost, path, label)
 		};
 	}
 
 	private get occasionHost(): OccasionActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
 			get occasions() {
-				return k.occasions;
+				return kitchen.occasions;
 			},
 			get where() {
-				return k.where;
+				return kitchen.where;
 			},
 			readNote: async (path) => {
-				const file = k.fileAt(path);
-				return file ? k.app.vault.cachedRead(file) : '';
+				const file = kitchen.fileAt(path);
+				return file ? kitchen.app.vault.cachedRead(file) : '';
 			},
 			createNote: async (path, text) => {
-				await k.app.vault.create(path, text);
+				await kitchen.app.vault.create(path, text);
 			},
-			makeFolderOf: (path) => k.makeFolderOf(path),
+			makeFolderOf: (path) => kitchen.makeFolderOf(path),
 			writeOccasion: async (path, change) => {
-				const file = k.fileAt(path);
+				const file = kitchen.fileAt(path);
 				if (!file) throw new Error(`The note "${path}" is not in the vault now.`);
-				await k.app.vault.process(file, change);
+				await kitchen.app.vault.process(file, change);
 			},
 			trash: async (path) => {
-				const file = k.fileAt(path);
-				if (file) await k.app.fileManager.trashFile(file);
+				const file = kitchen.fileAt(path);
+				if (file) await kitchen.app.fileManager.trashFile(file);
 			}
 		};
 	}
 
 	private get cookHost(): CookActionsHost {
-		const k = this;
+		const kitchen = this;
 		return {
-			...k.occasionHost,
-			...k.pantryHost,
-			...k.planHost,
-			app: k.app,
+			...kitchen.occasionHost,
+			...kitchen.pantryHost,
+			...kitchen.planHost,
+			app: kitchen.app,
 			get today() {
-				return k.today;
+				return kitchen.today;
 			},
 			get recipes() {
-				return k.recipes;
+				return kitchen.recipes;
 			},
-			fileAt: (path) => k.fileAt(path)
+			fileAt: (path) => kitchen.fileAt(path)
 		};
 	}
 
@@ -621,6 +630,7 @@ export class Kitchen {
 		if (!noteKind(file.path, this.where, this.openNote)) return false;
 		const text = await this.app.vault.cachedRead(file);
 		const { path } = file;
+		// A change of a folder in the settings can come during the read, so the kind is found again.
 		const kind = noteKind(path, this.where, this.openNote);
 		if (!kind) return false;
 		this.vault.applyRead(path, kind, text, file.basename);
@@ -638,7 +648,7 @@ export class Kitchen {
 		this.show();
 	}
 
-	private readAgain = debounce(() => void this.readAll(), 500, true);
+	private readAgain = debounce(() => void this.readAll(), SETTINGS_WAIT_MS, true);
 
 	// A different note of the vault changes nothing, so the lists of the kitchen do not run again.
 	// A photo shows the kitchen again: Sync can bring it after the note that links to it.

@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { PlannedSide } from '../../plan/plan-note';
 	import type { Meal } from '../../plan/types';
@@ -13,6 +12,7 @@
 	import PrepNote from '../recipes/PrepNote.svelte';
 	import { coverThen } from '../cover';
 	import SideField from './SideField.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		meal: Meal;
@@ -39,7 +39,7 @@
 		onremoveside
 	}: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	const { path, entry, prepDone, sides } = $derived(meal);
 	// Preparation that waits comes before "Cook": the main button is the one that you need next.
 	const ready = $derived(!entry?.prep || prepDone);
@@ -282,7 +282,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

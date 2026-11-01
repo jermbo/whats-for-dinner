@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Button from '../parts/Button.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The food item is a row of the list, or an item of the cart.
@@ -10,7 +10,7 @@
 	};
 	let { onList, onadd }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 </script>
 
 <!-- You see that the milk is low while you look at the fridge, so the list is one tap away. -->

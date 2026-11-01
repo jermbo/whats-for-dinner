@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import { showName } from '../../match/names';
 	import type { MenuDish } from '../../occasion/menu';
@@ -11,6 +10,7 @@
 	import Struck from '../parts/Struck.svelte';
 	import Tick from '../parts/Tick.svelte';
 	import PrepNote from '../recipes/PrepNote.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		one: MenuDish;
@@ -23,7 +23,7 @@
 	};
 	let { one, entry, onpick, onready, onchange, oncook }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	const { dish, course } = $derived(one);
 	const name = $derived(entry ? showName(entry.recipe.title) : dish.name);
 	const person = $derived(dish.person === null ? null : personName(dish.person));
@@ -94,7 +94,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -4px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 
@@ -122,7 +122,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

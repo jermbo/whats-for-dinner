@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { fade, slide } from 'svelte/transition';
 	import type { FoodNote } from '../../note';
@@ -14,6 +13,7 @@
 	import Sticker from '../parts/Sticker.svelte';
 	import FoodCard from './FoodCard.svelte';
 	import StockLine from './StockLine.svelte';
+	import { tokenTime } from '../motion';
 
 	// The weekly audit: one place at a time. "Right" confirms a food item, and a tap opens its card.
 	type Props = {
@@ -31,7 +31,7 @@
 	let { foods, settingsPlaces, places, done, onwrite, onright, onfinish, onopen, onstop }: Props =
 		$props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// The places as the audit started, so that a moved package does not change the walk.
 	const first = () => {
@@ -119,7 +119,7 @@
 						/>
 						{#if confirmed.has(food.path)}
 							<span class="wfd-audit__mark" in:fade={{ duration }}
-								><span aria-hidden="true">✓</span><span class="wfd-audit__hidden">Confirmed</span></span
+								><span aria-hidden="true">✓</span><span class="wfd-hidden">Confirmed</span></span
 							>
 						{:else}
 							<div class="wfd-audit__right">
@@ -191,19 +191,10 @@
 		transition: opacity var(--wfd-row-motion);
 	}
 
-	.wfd-audit__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
-	}
-
 	.wfd-audit__mark {
 		display: grid;
 		place-items: center;
-		inline-size: 44px;
+		inline-size: var(--wfd-control-min);
 		block-size: var(--wfd-control-min);
 		color: var(--wfd-color-primary);
 		font-size: var(--wfd-font-size-title);

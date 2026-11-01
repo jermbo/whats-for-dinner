@@ -5,7 +5,7 @@ import { notePathIn } from '../note-path';
 import { readStocks } from '../pantry/food-item';
 import type { StapleLabel } from '../pantry/staple';
 import type { Stock } from '../pantry/types';
-import { addPackage, replaceStocks, showStocks } from '../pantry/write';
+import { addPackages, replaceStocks, showStocks } from '../pantry/write';
 import type { KitchenWhere } from './note-kind';
 import { tried } from './tried';
 
@@ -29,12 +29,17 @@ export function foodPath(host: FoodPathHost, name: string) {
 
 // A package goes into its own row.
 export async function addStockTo(host: PantryActionsHost, path: string, stock: Stock) {
+	await addStocksTo(host, path, [stock]);
+}
+
+// Each package gets its own row, and the note changes one time.
+async function addStocksTo(host: PantryActionsHost, path: string, stocks: Stock[]) {
 	if (host.fileAt(path)) {
-		await host.processFile(path, (text) => addPackage(text, stock));
+		await host.processFile(path, (text) => addPackages(text, stocks));
 		return;
 	}
 	await host.makeFolderOf(path);
-	await host.createFile(path, `${showStocks([stock])}\n`);
+	await host.createFile(path, `${showStocks(stocks)}\n`);
 }
 
 export async function setStocks(host: PantryActionsHost, path: string, stocks: Stock[]) {
@@ -97,6 +102,8 @@ export function pantryActions(host: PantryActionsHost) {
 			tried('The pantry did not change', () => changeStocks(host, path, change)),
 		addStock: (name: string, stock: Stock) =>
 			tried('The food is not in the pantry', () => addStockByName(host, name, stock)),
+		addStocks: (name: string, stocks: Stock[]) =>
+			tried('The food is not in the pantry', () => addStocksTo(host, foodPath(host, name), stocks)),
 		setCheck: (path: string, check: boolean) =>
 			tried('The check did not change', () => setCheck(host, path, check)),
 		setSize: (path: string, size: string) =>

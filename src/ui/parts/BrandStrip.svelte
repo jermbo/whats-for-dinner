@@ -1,12 +1,12 @@
 <script module lang="ts">
 	import type { Verdict } from '../../pantry/brands';
+	import { tokenTime } from '../motion';
 
 	// One brand as the strip shows it: its first photo, or its name as a chip, and its verdict.
 	export type BrandTile = { key: string; name: string; verdict: Verdict | null; url: string | null };
 </script>
 
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { scale } from 'svelte/transition';
 
 	type Props = {
@@ -26,7 +26,7 @@
 	let { brands, ontap, tapChips = true, onrest, selected, ontake, of }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	const tiles: HTMLElement[] = $state([]);
 	// The ring is one element, so that it can slide from one brand to the next.
@@ -65,7 +65,7 @@
 	{#if brand.verdict}
 		<span class="wfd-brands__mark wfd-brands__mark--{brand.verdict === 'avoid' ? 'avoid' : 'again'}">
 			<span aria-hidden="true">{brand.verdict === 'avoid' ? '✕' : '✓'}</span>
-			<span class="wfd-brands__hidden">, {brand.verdict === 'avoid' ? 'avoid' : 'buy again'}</span>
+			<span class="wfd-hidden">, {brand.verdict === 'avoid' ? 'avoid' : 'buy again'}</span>
 		</span>
 	{/if}
 {/snippet}
@@ -85,7 +85,7 @@
 				in:scale={{ duration, start: 0.6 }}
 			>
 				<img src={brand.url} alt="" />
-				<span class="wfd-brands__hidden">{nameOf(brand)}</span>
+				<span class="wfd-hidden">{nameOf(brand)}</span>
 				{@render mark(brand)}
 			</button>
 		{:else if tapChips}
@@ -119,10 +119,10 @@
 				<path d="M4 8h3l2-3h6l2 3h3v11H4z" />
 				<circle cx="12" cy="13" r="3.5" />
 			</svg>
-			<span class="wfd-brands__hidden">Photo of a new brand of {of}</span>
+			<span class="wfd-hidden">Photo of a new brand of {of}</span>
 			<input
 				id="{uid}-camera"
-				class="wfd-brands__hidden"
+				class="wfd-hidden"
 				type="file"
 				accept="image/*"
 				capture="environment"
@@ -210,7 +210,7 @@
 		&:focus-visible,
 		&:focus-within {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -241,7 +241,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -261,14 +261,6 @@
 
 	.wfd-brands__camera--saving {
 		opacity: 0.5;
-	}
-
-	.wfd-brands__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 	}
 
 	.wfd-brands__ring {

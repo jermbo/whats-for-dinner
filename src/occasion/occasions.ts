@@ -49,14 +49,6 @@ export function daysLabel(date: string | null, today: string): string | null {
 // An occasion is past when its date is before today. A note with no date is never past.
 export const isPast = ({ date }: Pick<Occasion, 'date'>, today: string) => date !== null && date < today;
 
-// The nearest date first. A note with no date comes after each note with a date.
-export function activeOccasions(occasions: Occasion[], today: string): Occasion[] {
-	const key = (occasion: Occasion) => occasion.date ?? '9999-12-31';
-	return occasions
-		.filter((occasion) => isActive(occasion, today))
-		.sort((a, b) => key(a).localeCompare(key(b)) || a.name.localeCompare(b.name));
-}
-
 // The occasions that a new one can start from: the 5 newest with a date before today.
 export function pastOccasions(occasions: Occasion[], today: string): Occasion[] {
 	return occasions

@@ -73,7 +73,7 @@
 
 					<!-- The name is hidden text, because Obsidian shows each aria-label as a tooltip. -->
 					<div class="wfd-bar__chips" role="group" aria-labelledby="{more}-chips">
-						<span class="wfd-bar__hidden" id="{more}-chips">Filters</span>
+						<span class="wfd-hidden" id="{more}-chips">Filters</span>
 						{@render chips()}
 					</div>
 				</div>
@@ -87,14 +87,6 @@
 </div>
 
 <style>
-	.wfd-bar__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
-	}
 
 	/* The bar asks its own width: a phone gets two rows, and a wide tab gets one row. */
 	.wfd-bar {
@@ -131,7 +123,7 @@
 		display: grid;
 		grid-area: toggle;
 		place-items: center;
-		inline-size: 50px;
+		inline-size: var(--wfd-control);
 		block-size: var(--wfd-control);
 		padding: 0;
 		border: var(--wfd-border) solid var(--wfd-color-border);
@@ -152,7 +144,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

@@ -1,5 +1,6 @@
 <script lang="ts" module>
 	import Field from '../parts/Field.svelte';
+	import { tokenTime } from '../motion';
 	export type Line = { id: number; text: string };
 
 	export const linesOf = (texts: string[]): Line[] =>
@@ -8,7 +9,6 @@
 
 <script lang="ts">
 	import { tick, type Snippet } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
@@ -22,7 +22,7 @@
 	let { label, hint, lines = $bindable(), result }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 160);
+	const duration = $derived(tokenTime('change'));
 	const fields = new Map<number, HTMLInputElement>();
 	let next = Math.max(0, ...lines.map((line) => line.id)) + 1;
 

@@ -9,7 +9,7 @@ import { needsOf, shoppingList } from './shopping-list';
 
 // A meal that you cooked took its food already, and a dish with no recipe note needs nothing. The
 // food of a side has the main dish as its meal, so a row of the list names the meal.
-export function mealDishes(meals: Meal[]): ListDish[] {
+function mealDishes(meals: Meal[]): ListDish[] {
 	return meals.flatMap(({ cooked, path, entry, sides }) => {
 		if (cooked) return [];
 		const title = showName(entry?.recipe.title ?? (path.split('/').pop() ?? path).replace(/\.md$/, ''));

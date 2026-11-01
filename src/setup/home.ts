@@ -27,7 +27,7 @@ export function homeOf(pantryFolder: string): string {
 	return pantryFolder.endsWith(end) ? pantryFolder.slice(0, -end.length) : '';
 }
 
-export const isInFolder = (path: string, folder: string) =>
+const isInFolder = (path: string, folder: string) =>
 	path === folder || path.startsWith(`${folder}/`);
 
 // The recipes folder and the home are two folders, and neither is in the other.

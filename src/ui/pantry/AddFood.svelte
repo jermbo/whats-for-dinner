@@ -1,30 +1,45 @@
 <script lang="ts" module>
 	import type { ScannedBrand } from '../../kitchen/brand-actions';
+	import type { Product } from '../../pantry/product';
+	import { tokenTime } from '../motion';
 
-	// What one "Add" writes: the packages of one food item, and the barcode of a scan.
-	export type Added = { name: string; size: string; place: string; count: number; scan: ScannedBrand | null };
+	// What one add writes: the packages of one food item, with their date, and the barcode of a scan.
+	export type Added = {
+		name: string;
+		size: string;
+		place: string;
+		count: number;
+		useBy: string;
+		scan: ScannedBrand | null;
+	};
+
+	// Each barcode that the form added, until Obsidian starts again. A second scan of that can
+	// needs no lookup, also before the queue wrote its brand into the note.
+	const scanned = new Map<string, { name: string; size: string; product: Product | null }>();
 </script>
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
+	import { showDate } from '../../dates';
 	import type { FoodNote } from '../../note';
-	import { foodOfBarcode, proposedFoods, type Product } from '../../pantry/product';
+	import { newestPlace } from '../../pantry/card';
+	import { foodOfBarcode, proposedFoods } from '../../pantry/product';
 	import { isFound } from '../../pantry/views';
 	import Button from '../parts/Button.svelte';
-	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
 	import Panel from '../parts/Panel.svelte';
 	import { barcodeReader, type ReadBarcode } from './barcode-reader';
+	import PackageFacts from './PackageFacts.svelte';
 	import Scanner from './Scanner.svelte';
 	import SizeField from './SizeField.svelte';
+	import UseByCorrect from './UseByCorrect.svelte';
 
 	// "Add to pantry" is for a full shelf: it stays open until "Done". It opens on the scan when the
 	// device can read barcodes. Without a camera, or when the scan does not work, you type the
-	// digits of the barcode, or the name. A new food asks for its package size. The last step has
-	// the place and a count, and "Add" writes one full row for each package. Then the form starts
-	// again at the scan (or the name), with the same place.
+	// digits of the barcode, or the name. The last step fills in each fact of the package, and asks
+	// only for the use-by date: "Correct" writes one full row for each package. Then the
+	// form starts again at the scan (or the name) at once, and the writes go on behind it.
 	type Props = {
 		foods: FoodNote[];
 		places: string[];
@@ -34,13 +49,12 @@
 		sizeOf: (food: FoodNote, place: string) => string | null;
 		// Null when the setting "Look up barcodes online" is off.
 		lookUp: ((barcode: string) => Promise<Product | null>) | null;
-		onadd: (added: Added) => Promise<boolean>;
+		onadd: (added: Added) => void;
 		ondone: () => void;
 	};
 	let { foods, places, startName, startPlace, sizeOf, lookUp, onadd, ondone }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
-	const COUNTS = [1, 2, 3, 4, 6, 12];
+	const duration = $derived(tokenTime('change'));
 	// The browser tells which codes it reads only after a moment, so the scan comes then. If the
 	// form is still empty by then, and it did not start from a name, it turns to the scan.
 	let read = $state<ReadBarcode | null>(null);
@@ -53,19 +67,21 @@
 	let name = $state(first().name);
 	let step = $state<'name' | 'scan' | 'type-code' | 'looking' | 'size' | 'last'>('name');
 	let size = $state('');
+	// The place of the last step, and the place of the last add, which a new food item gets.
 	let place = $state(first().place);
+	let lastPlace = $state(first().place);
 	let count = $state(1);
-	let countText = $state('');
 	// The barcode of the last scan, and its product when the database knows it.
 	let barcode = $state<string | null>(null);
 	let product = $state<Product | null>(null);
+	// The barcode and the date of the last add. A second can of the same row gets "Same date".
+	let lastAdd = $state<{ barcode: string | null; useBy: string } | null>(null);
 	// The digits in the barcode field of the name step, and in the step where the code is typed.
 	// A code is 8 to 14 digits: EAN-8, UPC-A, EAN-13 and GTIN-14.
 	let draft = $state('');
 	let typed = $state('');
-	// What the last "Add" wrote, or why a scan found nothing.
+	// What the last add wrote, or why a scan found nothing.
 	let told = $state('');
-	let saving = $state(false);
 	let nameField = $state<HTMLInputElement>();
 
 	const text = $derived(name.trim());
@@ -79,28 +95,41 @@
 					.sort((a, b) => a.item.name.localeCompare(b.item.name))
 			: []
 	);
+	const isNew = $derived(!foods.some((food) => food.item.name.toLowerCase() === text.toLowerCase()));
+	const same = $derived(
+		barcode && lastAdd?.useBy && lastAdd.barcode === barcode ? lastAdd.useBy : null
+	);
 
-	function toLast(foodName: string, start: string | null) {
+	// The last step, with each fact filled in. A known food goes to the place of its newest
+	// package; a new one goes where the last add went.
+	function toLast(foodName: string, food: FoodNote | null, start: string | null = null) {
 		name = foodName;
-		size = product?.size ?? start ?? '';
+		place = (food && newestPlace(food.item)) || lastPlace;
+		size = product?.size ?? start ?? (food && sizeOf(food, place)) ?? '';
 		count = 1;
-		countText = '';
 		told = '';
 		step = size ? 'last' : 'size';
 	}
 
-	const pick = (food: FoodNote) => toLast(food.item.name, sizeOf(food, place));
+	const pick = (food: FoodNote) => toLast(food.item.name, food);
 
+	// A photo with no code stays on the scan, which opens the camera again.
 	async function onread(code: string | null) {
-		step = 'name';
 		if (!code) {
 			told = 'No barcode in the photo.';
 			return;
 		}
+		told = '';
+		step = 'name';
 		barcode = code;
 		draft = code;
 		typed = '';
 		product = null;
+		const again = scanned.get(code);
+		if (again) {
+			product = again.product;
+			return toLast(again.name, foods.find((food) => food.item.name === again.name) ?? null, again.size);
+		}
 		const known = foodOfBarcode(foods, code);
 		if (known) return pick(known);
 		if (lookUp) {
@@ -108,26 +137,24 @@
 			product = await lookUp(code);
 			step = 'name';
 		}
-		if (product) {
-			name = product.newName;
-			told = '';
-		} else told = 'No product for this barcode.';
+		if (!product) {
+			told = 'No product for this barcode.';
+			return;
+		}
+		const [match] = proposedFoods(product, foods);
+		if (match) pick(match);
+		else toLast(product.newName, null);
 	}
 
-	function setCount(next: string) {
-		countText = next;
-		const typed = Number(next);
-		if (Number.isInteger(typed) && typed >= 1 && typed <= 99) count = typed;
-	}
-
-	async function add() {
-		if (saving) return;
-		saving = true;
+	// The form does not wait for the note: the next can matters more than this one.
+	async function add(useBy: string) {
+		if (!place) return;
 		const scan = barcode ? { barcode, brand: product?.brand ?? '', photo: product?.photo ?? null } : null;
-		const done = await onadd({ name: text, size, place, count, scan });
-		saving = false;
-		if (!done) return;
-		told = `Added ${count} × ${text}`;
+		onadd({ name: text, size, place, count, useBy, scan });
+		if (barcode) scanned.set(barcode, { name: text, size, product });
+		told = `Added ${count} × ${text}${useBy ? ` · ${showDate(useBy)}` : ''}`;
+		lastAdd = { barcode, useBy };
+		lastPlace = place;
 		startAgain();
 		await tick();
 		if (step === 'name') nameField?.focus();
@@ -145,6 +172,7 @@
 	}
 
 	const typeCode = () => ((told = ''), (typed = ''), (step = 'type-code'));
+	const cancel = () => ((told = ''), startAgain());
 
 	function startAgain() {
 		name = '';
@@ -166,7 +194,7 @@
 			{:else if step === 'type-code'}
 				<Button kind="link" onclick={() => (step = read ? 'scan' : 'name')}>Cancel</Button>
 			{:else if step !== 'looking'}
-				<Button kind="link" onclick={() => (step = 'name')}>Cancel</Button>
+				<Button kind="link" onclick={cancel}>Cancel</Button>
 			{/if}
 		</div>
 
@@ -268,36 +296,27 @@
 			<SizeField value={size} onchange={(next) => (size = next)} />
 			<Button kind="main" disabled={!size} onclick={() => (step = 'last')}>Next</Button>
 		{:else}
-			<p class="wfd-add__what">{text} · {size}</p>
-			<div class="wfd-add__chips" role="group" aria-label="Place">
-				{#each places as option (option)}
-					<Chip label={option} on={place === option} onclick={() => (place = option)} />
-				{/each}
-			</div>
-			<div class="wfd-add__chips" role="group" aria-label="Packages">
-				{#each COUNTS as option (option)}
-					<Chip
-						label={String(option)}
-						on={count === option && !countText}
-						onclick={() => ((count = option), (countText = ''))}
+			<!-- The screen of the date: the facts are small at the top, because you only check them. -->
+			<div class="wfd-add__last" in:fade={{ duration }}>
+				<div class="wfd-add__head">
+					{#if product?.photo}
+						<img class="wfd-add__photo" src={product.photo} alt="" />
+					{/if}
+					<PackageFacts
+						name={text}
+						{isNew}
+						{size}
+						{place}
+						{places}
+						{count}
+						onname={() => (step = 'name')}
+						onsize={() => (step = 'size')}
+						onplace={(next) => (place = next)}
+						oncount={(next) => (count = next)}
 					/>
-				{/each}
-				<div class="wfd-add__count">
-					<Field kind="number">
-						<input
-							type="text"
-							inputmode="numeric"
-							placeholder="More"
-							aria-label="Number of packages"
-							value={countText}
-							oninput={(event) => setCount(event.currentTarget.value)}
-						/>
-					</Field>
 				</div>
+				<UseByCorrect {same} busy={!place} oncorrect={add} />
 			</div>
-			<Button kind="main" disabled={!place || saving} onclick={add}>
-				Add {count > 1 ? `${count} packages` : ''}
-			</Button>
 		{/if}
 	</div>
 </Panel>
@@ -397,14 +416,14 @@
 		font-weight: 600;
 	}
 
-	.wfd-add__chips {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 0 var(--wfd-space-group);
-		align-items: center;
+	.wfd-add__last {
+		display: grid;
+		gap: var(--wfd-space-stack);
 	}
 
-	.wfd-add__count {
-		inline-size: calc(2 * var(--wfd-control));
+	.wfd-add__head {
+		display: flex;
+		gap: var(--wfd-space-group);
+		align-items: start;
 	}
 </style>

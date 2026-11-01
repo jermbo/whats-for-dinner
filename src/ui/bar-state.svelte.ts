@@ -6,7 +6,7 @@ export class BarState<Sort extends string, Only extends string> {
 	open = $state(false);
 	// The text that finds a line.
 	find = $state('');
-	sort = $state<Sort>() as Sort;
+	sort: Sort;
 	// The filters that are on. A line shows only if it passes each of them.
 	only = new SvelteSet<Only>();
 	// The one place or type that is on. A line has one of them, so two cannot be on together.
@@ -14,7 +14,7 @@ export class BarState<Sort extends string, Only extends string> {
 
 	// The sequence is the one that the part starts with.
 	constructor(sort: Sort) {
-		this.sort = sort;
+		this.sort = $state(sort);
 	}
 
 	// Puts a filter on, or puts it off when it is on.

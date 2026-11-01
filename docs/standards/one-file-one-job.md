@@ -34,6 +34,7 @@ At about 600 lines, look for the second job. But the number is a sign, not the t
 | A read or a write of the vault                  | The kitchen state                             |
 | A thing that only Obsidian can start            | The shell: the plugin, the view, the settings |
 | A piece of the markup with its own state        | A child component, in the same folder         |
+| State with rules of its own and no markup       | A class in a `.svelte.ts` file, in the same folder |
 | A piece of the screen that knows no kitchen     | `ui/parts`: a chip, a button, the bar         |
 
 The [layers](layers.md) page tells which of these can import which.
