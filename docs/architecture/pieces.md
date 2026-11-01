@@ -2,7 +2,7 @@
 title: Pieces
 summary: "The shared pieces of the screen, each with its kinds and when to use it, so that a thing looks the same in each part."
 parent: look.md
-updated: 2026-10-21
+updated: 2026-11-01
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Pieces
@@ -46,6 +46,10 @@ On the ink panel, the roles of the text, the edges, and the controls take the co
 | Group head | The title of a group, such as a place, with its count.                                                           |
 | Sticker   | A fact in a small box: tomato for use first, amber for low, olive for done, an outline for a fact, a dashed edge for an empty place. |
 | Count     | "7 of 9" as a number and a bar.                                                                                    |
+
+## Text for a screen reader
+
+Some text is only for a screen reader: the name of a list, the word "Confirmed" after a tick mark, or a file field under its button. Such text has the class `wfd-hidden` of `ui/hidden.css`. The class keeps the text in the page for the screen reader, with no size on the screen. The hidden name of a list is the piece `HiddenName`, which `aria-labelledby` points to.
 
 ## The pieces of a part
 

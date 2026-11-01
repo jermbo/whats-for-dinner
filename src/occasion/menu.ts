@@ -4,7 +4,7 @@
 import { OPEN, personName, type Dish } from './occasion-note';
 
 // "things" are the jobs that are not food, such as plates. They come after the drinks.
-export const COURSES = ['starter', 'main', 'side', 'dessert', 'drink', 'things'];
+const COURSES = ['starter', 'main', 'side', 'dessert', 'drink', 'things'];
 const OTHER = 'other';
 
 export type MenuDish = { dish: Dish; index: number; course: string };

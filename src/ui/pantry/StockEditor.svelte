@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
 	import type { Brand } from '../../pantry/brands';
@@ -11,6 +10,7 @@
 	import Field from '../parts/Field.svelte';
 	import BrandFields from './BrandFields.svelte';
 	import Panel from '../parts/Panel.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		title: string;
@@ -60,7 +60,7 @@
 	}: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	// The fields start with the row as it is. After that, they are yours.
 	const first = () => stock;
 	const firstName = () => startName;
@@ -283,7 +283,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

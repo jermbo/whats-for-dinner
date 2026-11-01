@@ -150,7 +150,7 @@ export function showMeasure({ kind, value }: Measure): string {
 
 // A number in a unit: eighths of a fraction unit as a fraction, and each other number with 2
 // decimals at most. 0.375 gal is "3/8", 1.5 gal is "1 1/2", and 7.5 oz is "7.5".
-export function showNumber(value: number, unit: string | null): string {
+function showNumber(value: number, unit: string | null): string {
 	const eighths = Math.round(value * 8);
 	const isEighth = Math.abs(value * 8 - eighths) < 1e-6;
 	if (!unit || !FRACTION_UNITS.has(unitKey(unit)) || !isEighth || eighths % 8 === 0) {

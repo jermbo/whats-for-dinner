@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
+	import { tokenTime } from '../motion';
 
 	// The facts of the package in the last step of "Add to pantry", all filled in. They are small,
 	// because you look, and you tap a fact only when it is wrong. The food item and the size open their own steps; the place
@@ -21,7 +21,7 @@
 	};
 	let { name, isNew, size, place, places, count, onname, onsize, onplace, oncount }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
+	const duration = $derived(tokenTime('change'));
 	const COUNTS = [1, 2, 3, 4, 6, 12];
 
 	// With no place, the row of places is open, because a package needs one.
@@ -138,7 +138,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 
 		&[aria-expanded='true'] {

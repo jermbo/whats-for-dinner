@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import { showName } from '../../match/names';
 	import { courseCards, personOf, type MenuDish } from '../../occasion/menu';
@@ -9,6 +8,7 @@
 	import Struck from '../parts/Struck.svelte';
 	import AddInCard from './AddInCard.svelte';
 	import PlaceCard from './PlaceCard.svelte';
+	import { tokenTime } from '../motion';
 
 	// The menu as a sign-up sheet: one card for each course. A known course with no dish is an empty
 	// slot, so you see that nobody brings a dessert yet. A dish shows a sticker of its person.
@@ -21,7 +21,7 @@
 	};
 	let { menu, offered, entryOf, onpick, onadd }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	const cards = $derived(courseCards(menu));
 	let adding = $state<string | null>(null);
 
@@ -91,7 +91,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

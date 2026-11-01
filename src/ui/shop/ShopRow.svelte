@@ -27,11 +27,13 @@
 	let { row, price, pack, mixed, ticked, back, open, ontick, onback, onpack, onremove, brands }: Props =
 		$props();
 
-	// A row that comes back starts ticked for one frame, so that the tick can go back.
+	// A row that comes back starts ticked for one frame, so that the tick can go back. Then the
+	// tick shows this long, so that you see which row came back.
+	const BACK_TICK_MS = 400;
 	let settled = $state(false);
 	onMount(() => {
 		const frame = requestAnimationFrame(() => (settled = true));
-		const timer = back ? setTimeout(onback, 400) : undefined;
+		const timer = back ? setTimeout(onback, BACK_TICK_MS) : undefined;
 		return () => (cancelAnimationFrame(frame), clearTimeout(timer));
 	});
 	const shown = $derived(ticked || (back && !settled));
@@ -136,7 +138,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -3px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 
@@ -261,7 +263,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

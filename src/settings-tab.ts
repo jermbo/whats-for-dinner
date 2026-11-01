@@ -38,6 +38,22 @@ type TextKey =
 type NumberKey = 'volume' | 'soonDays';
 type SwitchKey = 'vibrate' | 'keepScreenOn' | 'lookUpBarcodes';
 
+// The options of each dropdown, by the value that the setting keeps.
+const FONTS: Record<Settings['font'], string> = {
+	bricolage: 'Bricolage Grotesque',
+	obsidian: 'Font of Obsidian',
+	device: 'A font of this device'
+};
+const ACCENTS: Record<Settings['accent'], string> = {
+	olive: 'Larder olive',
+	obsidian: 'Accent colour of Obsidian'
+};
+const SOUNDS: Record<Sound, string> = { beeps: 'Beeps', chime: 'Chime', off: 'No sound' };
+
+// A dropdown gives text. Only an option of the dropdown is a value of the setting.
+const isOption = <T extends string>(options: Record<T, string>, value: string): value is T =>
+	Object.hasOwn(options, value);
+
 const days = (count: number) => `${count} ${count === 1 ? 'day' : 'days'}`;
 
 export class KitchenSettingTab extends PluginSettingTab {
@@ -136,14 +152,10 @@ export class KitchenSettingTab extends PluginSettingTab {
 			.setDesc('All other text has the font of Obsidian.')
 			.addDropdown((list) =>
 				list
-					.addOptions({
-						bricolage: 'Bricolage Grotesque',
-						obsidian: 'Font of Obsidian',
-						device: 'A font of this device'
-					})
+					.addOptions(FONTS)
 					.setValue(kitchen.settings.font)
 					.onChange((value) => {
-						this.change({ font: value as Settings['font'] });
+						if (isOption(FONTS, value)) this.set('font', value);
 						// The field for the name of the font shows only for a font of the device.
 						this.display();
 					})
@@ -163,9 +175,11 @@ export class KitchenSettingTab extends PluginSettingTab {
 			)
 			.addDropdown((list) =>
 				list
-					.addOptions({ olive: 'Larder olive', obsidian: 'Accent colour of Obsidian' })
+					.addOptions(ACCENTS)
 					.setValue(kitchen.settings.accent)
-					.onChange((value) => this.change({ accent: value as Settings['accent'] }))
+					.onChange((value) => {
+						if (isOption(ACCENTS, value)) this.set('accent', value);
+					})
 			);
 
 		this.heading('Cook Mode');
@@ -174,9 +188,11 @@ export class KitchenSettingTab extends PluginSettingTab {
 			.setDesc('The sound when a timer ends. It repeats until you tap "OK".')
 			.addDropdown((list) =>
 				list
-					.addOptions({ beeps: 'Beeps', chime: 'Chime', off: 'No sound' })
+					.addOptions(SOUNDS)
 					.setValue(kitchen.settings.sound)
-					.onChange((value) => this.change({ sound: value as Sound }))
+					.onChange((value) => {
+						if (isOption(SOUNDS, value)) this.set('sound', value);
+					})
 			)
 			.addButton((button) =>
 				button.setButtonText('Test').onClick(() => this.alarm.once(kitchen.settings))
@@ -213,6 +229,12 @@ export class KitchenSettingTab extends PluginSettingTab {
 		void this.kitchen.changeSettings(change);
 	}
 
+	private set<K extends keyof Settings>(key: K, value: Settings[K]) {
+		const change: Partial<Settings> = {};
+		change[key] = value;
+		this.change(change);
+	}
+
 	private heading(name: string) {
 		new Setting(this.containerEl).setName(name).setHeading();
 	}
@@ -226,13 +248,13 @@ export class KitchenSettingTab extends PluginSettingTab {
 				field
 					.setPlaceholder(hint)
 					.setValue(this.kitchen.settings[key])
-					.onChange((value) => this.change({ [key]: value } as Partial<Settings>));
+					.onChange((value) => this.set(key, value));
 				if (!texts) return;
 
 				const suggest = new TextSuggest(this.app, field.inputEl, texts);
 				suggest.onSelect((text) => {
 					field.setValue(text);
-					this.change({ [key]: text } as Partial<Settings>);
+					this.set(key, text);
 					suggest.close();
 				});
 			});
@@ -295,7 +317,7 @@ export class KitchenSettingTab extends PluginSettingTab {
 				.setDynamicTooltip()
 				.onChange((value) => {
 					setting.setDesc(desc(value));
-					this.change({ [key]: value } as Partial<Settings>);
+					this.set(key, value);
 				})
 		);
 	}
@@ -307,7 +329,7 @@ export class KitchenSettingTab extends PluginSettingTab {
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.kitchen.settings[key])
-					.onChange((value) => this.change({ [key]: value } as Partial<Settings>))
+					.onChange((value) => this.set(key, value))
 			);
 	}
 }

@@ -101,7 +101,7 @@
 
 <section class="wfd-occasion" aria-labelledby={headId}>
 	<div><Button kind="link" onclick={() => kitchen.closeOccasion()}>← Occasions</Button></div>
-	<h2 class="wfd-occasion__hidden" id={headId}>{occasion.name}</h2>
+	<h2 class="wfd-hidden" id={headId}>{occasion.name}</h2>
 
 	<OccasionCard {kitchen} {occasion} onpick={go}>
 		{#snippet side()}
@@ -201,12 +201,4 @@
 	}
 
 	/* The name is on the ink card. A screen reader gets it as the head of the section. */
-	.wfd-occasion__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
-	}
 </style>

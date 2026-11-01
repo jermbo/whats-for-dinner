@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
+	import { tokenTime } from '../motion';
 
 	type Props = { name: string; onundo: () => void };
 	let { name, onundo }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 </script>
 
 <!-- The full bar is one button, so that the thumb finds it with no aim. -->
@@ -37,7 +37,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

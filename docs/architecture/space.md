@@ -1,8 +1,8 @@
 ---
 title: Space
-summary: "The six space jobs of the plugin, the three line widths, the corners, and the two heights of a control."
+summary: "The six space jobs of the plugin, the three line widths, the place of a focus ring, the corners, and the two heights of a control."
 parent: look.md
-updated: 2026-10-27
+updated: 2026-11-01
 ---
 
 [Wiki](../README.md) / [Look](look.md) / Space
@@ -41,6 +41,17 @@ The kitchen measures the bar on the phone, so a new version of Obsidian with a d
 | `--wfd-border-thin` | 1 px  | A thin rule between rows                    |
 | `--wfd-border`      | 2 px  | The edge of a control, a chip, or a field   |
 | `--wfd-border-rule` | 4 px  | The heavy rule of a card or a head          |
+
+## Two places for a focus ring
+
+A keyboard shows where you are with a ring around the control that has the focus. The ring has the width `--wfd-border`.
+
+| Token                | Value  | Job                                                        |
+| -------------------- | ------ | ---------------------------------------------------------- |
+| `--wfd-focus-offset` | 2 px   | The ring is outside its control, with a small gap.         |
+| `--wfd-focus-inset`  | −3 px  | The ring is inside a control that fills its box, such as a row. |
+
+A row fills the width of its list, so a ring outside it is under the next row. That is why it has the ring inside.
 
 ## Three corners
 

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { SvelteMap } from 'svelte/reactivity';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
@@ -12,10 +11,11 @@
 	import StockEditor from '../pantry/StockEditor.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 	import StepFrame from './StepFrame.svelte';
+	import { tokenTime } from '../motion';
 
 	let { kitchen }: { kitchen: Kitchen } = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// The staples that you tapped, each with the amount that you typed.
 	const picked = new SvelteMap<string, string>();
@@ -163,7 +163,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -2px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

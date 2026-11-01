@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import { tokenTime } from '../motion';
 	// Obsidian on Android does not ask for the camera, so it gives a plugin no live view, and it
 	// does not give one later in the same run. After the first no, each scan goes straight to the
 	// camera of the phone.
@@ -7,7 +8,6 @@
 
 <script lang="ts">
 	import { onMount, tick } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Button from '../parts/Button.svelte';
 	import type { ReadBarcode } from './barcode-reader';
@@ -25,8 +25,10 @@
 	};
 	let { read, onread, ontype, oncancel }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
+	const duration = $derived(tokenTime('change'));
 	const uid = $props.id();
+	// The camera reads a frame this often, until it finds a barcode.
+	const LOOK_EVERY_MS = 150;
 
 	let video = $state<HTMLVideoElement>();
 	let photo = $state<HTMLInputElement>();
@@ -61,7 +63,7 @@
 				onread(code);
 				return;
 			}
-			timer = setTimeout(look, 150);
+			timer = setTimeout(look, LOOK_EVERY_MS);
 		}
 
 		async function start() {
@@ -113,7 +115,7 @@
 			<input
 				id="{uid}-photo"
 				bind:this={photo}
-				class="wfd-scan__hidden"
+				class="wfd-hidden"
 				type="file"
 				accept="image/*"
 				capture="environment"
@@ -186,15 +188,7 @@
 
 		&:focus-within {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
-	}
-
-	.wfd-scan__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 	}
 </style>

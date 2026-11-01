@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { flushSync, untrack } from 'svelte';
-	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { Tween } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { fade } from 'svelte/transition';
 	import { showDate } from '../../dates';
@@ -15,7 +15,7 @@
 	} from '../../shop/put-away-view';
 	import { readPrice } from '../../shop/price';
 	import { glide, glideOnNextChange } from '../glide';
-	import { timeOf } from '../motion';
+	import { timeOf, tokenTime } from '../motion';
 	import Button from '../parts/Button.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
@@ -32,7 +32,7 @@
 	};
 	let { kitchen, draft, ondone }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// One line for each package of the cart.
 	const lines = $derived(
@@ -54,7 +54,7 @@
 	// The count of the known items runs to its new number, so that you see the items go in.
 	const knownCount = new Tween(untrack(() => known.length));
 	$effect(() => {
-		knownCount.set(known.length, { duration: prefersReducedMotion.current ? 0 : 300 });
+		knownCount.set(known.length, { duration: tokenTime('move') });
 	});
 
 	// The receipt starts when the stage opens with a cart, and it gets a row for each item that you
@@ -348,7 +348,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -3px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

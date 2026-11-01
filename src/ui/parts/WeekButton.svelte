@@ -21,7 +21,7 @@
 <style>
 	button.wfd-week {
 		flex: none;
-		inline-size: 46px;
+		inline-size: var(--wfd-control-min);
 		block-size: var(--wfd-control-min);
 		padding: 0;
 		border: var(--wfd-border) solid var(--wfd-color-border);
@@ -40,7 +40,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 			box-shadow: none;
 		}
 	}

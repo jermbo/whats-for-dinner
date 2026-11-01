@@ -67,7 +67,7 @@ function matchIngredient(ingredient: Ingredient, index: FoodIndex): IngredientMa
 	return { ingredient, candidates, food, status, need };
 }
 
-export const isInPantry = (match: IngredientMatch) =>
+const isInPantry = (match: IngredientMatch) =>
 	match.status === 'enough' || match.status === 'unknown';
 
 // Food with a use-by date in `soonDays` days, or less, is food to use soon.

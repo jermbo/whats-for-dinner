@@ -14,9 +14,11 @@ import {
 	withLines,
 	type ReceiptLine
 } from '../shop/receipt';
-import { lineKey, partsOfLineKey } from '../shop/package-lines';
+import { partsOfLineKey } from '../shop/package-lines';
+import { putAwayNotice } from '../shop/put-away-notice';
 import { isLineOf, rowsOf } from '../shop/receipt-line';
 import { startLines } from '../shop/start-put-away';
+import { hasOtherLines, isAllPutAway, isLastNotBought } from '../shop/trip-end';
 import {
 	addExtra as addExtraLine,
 	putInCart as putInCartNote,
@@ -192,9 +194,9 @@ export async function saveTripStore(host: ShopActionsHost, store: string) {
 	});
 }
 
-function changeFacts(host: ShopActionsHost, key: string, facts: Facts, schedule: () => void) {
+function changeFacts(host: ShopActionsHost, key: string, facts: Facts) {
 	host.mutable.pendingFacts.set(key, facts);
-	schedule();
+	host.writeFactsSoon();
 }
 
 function startPutAway(host: ShopActionsHost) {
@@ -219,45 +221,61 @@ function startPutAway(host: ShopActionsHost) {
 	});
 }
 
+type GivenLine = { item: TripItem; at: number; facts: Facts };
+type DoneLine = { item: TripItem; at: number; line: ReceiptLine };
+
 // `given` has the facts of each line that goes into the pantry, by the key of its line.
 async function putAway(host: ShopActionsHost, given: Map<string, Facts>) {
-	const lines = [...given].flatMap(([key, facts]) => {
-		const { item: itemKey, at } = partsOfLineKey(key);
-		const item = host.trip.find((one) => one.inCart && one.key === itemKey);
-		return item ? [{ key, item, at, facts }] : [];
-	});
+	const lines = givenLines(host, given);
 	if (host.mutable.puttingAway || !lines.length) return false;
-	const isLast = host.toPutAway.every((item) =>
-		item.lines.every(({ at }) => given.has(lineKey(item.key, at)))
-	);
+	const isLast = isAllPutAway(host.toPutAway, given);
 	host.mutable.puttingAway = true;
 	try {
 		await flushReceiptFacts(host);
-		const done: { item: TripItem; at: number; line: ReceiptLine }[] = [];
-		for (const { item, at, facts } of lines) {
-			const link = await buy(host, item, facts);
-			done.push({ item, at, line: { link, name: item.name, facts, done: true } });
-		}
-		await changeReceipt(host, (rows) => {
-			const next = [...rows];
-			for (const { item, at, line } of done) {
-				const index = rowsOf(next, item, host.pathOf)[at];
-				if (index === undefined) next.push(line);
-				else next[index] = line;
-			}
-			return next;
-		});
-
-		const items = new Set(done.filter(({ line }) => line.facts.intoPantry).map(({ item }) => item));
-		const names = [...items].map((item) => item.name);
-		if (names.length === 1) host.notify(`${names[0]} is in the pantry.`);
-		if (names.length > 1) host.notify(`${names.length} items are in the pantry.`);
+		const done = await buyEach(host, lines);
+		await markDone(host, done);
+		const notice = putAwayNotice(namesInPantry(done));
+		if (notice) host.notify(notice);
 		if (isLast) await completeTrip(host);
 		return isLast;
 	} finally {
 		host.mutable.puttingAway = false;
 	}
 }
+
+function givenLines(host: ShopActionsHost, given: Map<string, Facts>): GivenLine[] {
+	return [...given].flatMap(([key, facts]) => {
+		const { item: itemKey, at } = partsOfLineKey(key);
+		const item = host.trip.find((one) => one.inCart && one.key === itemKey);
+		return item ? [{ item, at, facts }] : [];
+	});
+}
+
+// One after the other, so that two lines of one food do not write its note at the same time.
+async function buyEach(host: ShopActionsHost, lines: GivenLine[]): Promise<DoneLine[]> {
+	const done: DoneLine[] = [];
+	for (const { item, at, facts } of lines) {
+		const link = await buy(host, item, facts);
+		done.push({ item, at, line: { link, name: item.name, facts, done: true } });
+	}
+	return done;
+}
+
+function markDone(host: ShopActionsHost, done: DoneLine[]) {
+	return changeReceipt(host, (rows) => {
+		const next = [...rows];
+		for (const { item, at, line } of done) {
+			const index = rowsOf(next, item, host.pathOf)[at];
+			if (index === undefined) next.push(line);
+			else next[index] = line;
+		}
+		return next;
+	});
+}
+
+const namesInPantry = (done: DoneLine[]) => [
+	...new Set(done.filter(({ line }) => line.facts.intoPantry).map(({ item }) => item.name))
+];
 
 // "+ package": a copy of the open line, as a new row after the rows of its item.
 async function addPackageLine(host: ShopActionsHost, key: string, facts: Facts) {
@@ -278,9 +296,8 @@ async function notBought(host: ShopActionsHost, key: string) {
 	const { item: itemKey, at } = partsOfLineKey(key);
 	const item = host.trip.find((one) => one.key === itemKey);
 	const cartItem = host.toPutAway.find((one) => one.key === itemKey);
-	const left = host.toPutAway.flatMap((one) => one.lines.map((line) => lineKey(one.key, line.at)));
-	const ends = left.every((other) => other === key) && host.hasPutAway;
-	const others = host.activeLines.filter((line) => item && isLineOf(line, item, host.pathOf)).length > 1;
+	const ends = isLastNotBought(host.toPutAway, key, host.hasPutAway);
+	const others = item ? hasOtherLines(host.activeLines, item, host.pathOf) : false;
 
 	await flushReceiptFacts(host);
 	if (item && cartItem && others) {
@@ -349,8 +366,7 @@ export function shopActions(host: ShopActionsHost) {
 		neverAsk: (path: string) =>
 			tried('The staple did not change', () => host.setStaple(path, 'never')),
 		startPutAway: () => tried(receiptChanged, () => startPutAway(host)),
-		changeFacts: (key: string, facts: Facts) =>
-			changeFacts(host, key, facts, () => host.writeFactsSoon()),
+		changeFacts: (key: string, facts: Facts) => changeFacts(host, key, facts),
 		putAway: (given: Map<string, Facts>) => {
 			host.cancelFactsWrite();
 			return triedFor('The food is not in the pantry', () => putAway(host, given), false);

@@ -3,7 +3,7 @@ import { lastTap } from './tap';
 
 // The point in a card where its circle starts: an element of the card that asks for it, such as
 // the star of "Tonight", or the last tap in the card, or the middle of the head of the card.
-export function originOf(card: HTMLElement): { x: number; y: number } {
+function originOf(card: HTMLElement): { x: number; y: number } {
 	const box = card.getBoundingClientRect();
 	const asked = card.querySelector<HTMLElement>('[data-ink-from]')?.getBoundingClientRect();
 	if (asked) return { x: asked.left + asked.width / 2 - box.left, y: asked.top + asked.height / 2 - box.top };

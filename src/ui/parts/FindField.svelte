@@ -80,7 +80,7 @@
 		inset-inline-end: 0;
 		display: grid;
 		place-items: center;
-		inline-size: 46px;
+		inline-size: var(--wfd-control-min);
 		block-size: auto;
 		padding: 0;
 		border: 0;
@@ -92,7 +92,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -6px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

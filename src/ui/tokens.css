@@ -68,6 +68,9 @@
 	--wfd-border-thin: 1px;
 	--wfd-border: 2px;
 	--wfd-border-rule: 4px;
+	/* A focus ring outside its control, or inside a control that fills its box. */
+	--wfd-focus-offset: 2px;
+	--wfd-focus-inset: -3px;
 
 	--wfd-radius-card: 12px;
 	--wfd-radius-button: 8px;

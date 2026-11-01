@@ -10,13 +10,19 @@ import { storeOrderOf } from '../shop/store-order';
 import { storesOf } from '../shop/stores';
 import { cartOf, isPantryItem, listOf, type TripItem } from '../shop/trip';
 
+type ActiveReceipt = { lines: ReceiptLine[] } | null;
+
+export type TripSources = {
+	trip: TripItem[];
+	foods: FoodNote[];
+	receipts: Receipt[];
+	active: ActiveReceipt;
+	pathOf: (link: string) => string;
+};
+
 export function cartItems(
 	calculated: ReturnType<typeof calculatedList>,
-	trip: TripItem[],
-	foods: FoodNote[],
-	receipts: Receipt[],
-	pathOf: (link: string) => string,
-	active: { lines: ReceiptLine[] } | null
+	{ trip, foods, receipts, active, pathOf }: TripSources
 ) {
 	const bought = lastRows(receipts, pathOf);
 	const inCart = trip.filter((item) => !active || !isAllDone(active.lines, item, pathOf));
@@ -27,14 +33,15 @@ export function cartItems(
 	};
 }
 
+export type PutAwaySources = Pick<TripSources, 'trip' | 'active' | 'pathOf'> & {
+	bought: ReturnType<typeof lastRows>;
+	pantryFolder: string;
+	now: { today: string; newPlace: string };
+};
+
 export function putAwayCartItems(
 	cart: ReturnType<typeof cartOf>,
-	trip: TripItem[],
-	bought: ReturnType<typeof lastRows>,
-	pantryFolder: string,
-	active: { lines: ReceiptLine[] } | null,
-	pathOf: (link: string) => string,
-	now: { today: string; newPlace: string }
+	{ trip, bought, pantryFolder, active, pathOf, now }: PutAwaySources
 ): CartItem[] {
 	return cart.map((row): CartItem => {
 		const item = trip.find((item) => item.key === row.key);
@@ -49,12 +56,13 @@ export function putAwayCartItems(
 	});
 }
 
+// A food that you skipped, or that is on the trip or on the list already, is no suggestion.
+export type NotSuggested = { skipped: string[]; trip: TripItem[]; missingKeys: string[] };
+
 export function tripSuggestions(
 	foods: FoodNote[],
 	when: { today: string; soonDays: number },
-	skipped: string[],
-	trip: TripItem[],
-	missingKeys: string[]
+	{ skipped, trip, missingKeys }: NotSuggested
 ) {
 	return suggestionsOf(foods, when, {
 		hidden: new Set([...skipped, ...trip.map((item) => item.key), ...missingKeys])

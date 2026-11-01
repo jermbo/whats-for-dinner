@@ -77,7 +77,8 @@ function endOfFence(lines: string[], start: number, open: string) {
 // A list item stops a paragraph only if it has text and is a bullet or the number 1.
 function stopsParagraph(line: string) {
 	const item = ITEM.exec(line);
-	return Boolean(item?.[3]?.trim()) && /^([-+*]|1[.)])$/.test(item![2]);
+	if (!item?.[3]?.trim()) return false;
+	return /^([-+*]|1[.)])$/.test(item[2]);
 }
 
 function readParagraph(lines: string[], start: number): Block {
@@ -103,7 +104,9 @@ function readList(lines: string[], start: number): Block {
 
 	while (i < lines.length && isItem(lines[i])) {
 		starts.push(i);
-		const [, indent, marker, first = ''] = ITEM.exec(lines[i])!;
+		const item = ITEM.exec(lines[i]);
+		if (!item) break;
+		const [, indent, marker, first = ''] = item;
 		// The text of an item continues on lines with an indent to this column or more.
 		const column = indent.length + marker.length + 1;
 		const text = [first];

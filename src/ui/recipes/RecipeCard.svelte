@@ -69,12 +69,12 @@
 	});
 
 	// Edit: paper spreads from the button, and the form comes in on it when the paper covers about
-	// half the card. A card that closes closes its form too.
-	let editing = $state(false);
-	let showForm = $state(false);
-	$effect(() => {
-		if (!open) editing = false;
+	// half the card. A card that opens or closes starts with no form, so a closed card has none.
+	let editing = $derived.by(() => {
+		void open;
+		return false;
 	});
+	let showForm = $state(false);
 	$effect(() => {
 		const form = open && editing;
 		const timer = setTimeout(() => (showForm = form), card ? inkLength(card) / 4 : 0);
@@ -200,7 +200,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -227,7 +227,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 4px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

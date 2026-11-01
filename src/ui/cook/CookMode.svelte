@@ -1,17 +1,11 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
-	import { fade, fly } from 'svelte/transition';
-	import { Alarm } from '../../cook/alarm';
-	import { getOutGroups, type GetOutGroup } from '../../cook/get-out';
-	import { optionsOf, pickFood } from '../../cook/pick-food';
+	import { fly } from 'svelte/transition';
+	import { pickFood } from '../../cook/pick-food';
 	import { lastNote } from '../../cook/record';
 	import { readSteps } from '../../cook/steps';
 	import {
 		cookGotOutCount,
-		cookGotOutOf,
 		cookPageCount,
-		cookSecondsLeft,
 		cookSlideFrom,
 		cookTimerClock
 	} from '../../cook/cook-pages';
@@ -21,12 +15,14 @@
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import { showName } from '../../match/names';
 	import { cover } from '../cover';
+	import { keepScreenOn } from '../keep-screen-on';
 	import Button from '../parts/Button.svelte';
 	import Count from '../parts/Count.svelte';
-	import GroupHead from '../parts/GroupHead.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
-	import Sticker from '../parts/Sticker.svelte';
+	import { tokenTime } from '../motion';
+	import { CookTimers } from './cook-timers.svelte';
 	import CookFinish from './CookFinish.svelte';
+	import GetOut from './GetOut.svelte';
 	import StepPhoto from './StepPhoto.svelte';
 
 	// A dish of an occasion has a scale, such as 2, and the end of the meal marks it in its note.
@@ -52,7 +48,7 @@
 
 	// A page comes in from the side to which you go.
 	let from = $state(24);
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	function go(to: number) {
 		from = cookSlideFrom(page, to);
 		page = Math.max(0, Math.min(last, to));
@@ -60,90 +56,27 @@
 		asking = false;
 	}
 
-	// The ingredients that are on the counter. You mark them before you start.
+	// The ingredients that are on the counter, and the food item of each line. They stay here, so
+	// that they stay when "Get out" closes for a step.
 	const ingredients = $derived(entry.match.ingredients);
 	let onCounter = $state<boolean[]>([]);
 	const gotOut = $derived(cookGotOutCount(onCounter));
-	// The list has the groups of the recipe, each with its own count.
-	const getOut = $derived(getOutGroups(entry.recipe, ingredients));
-	const gotOf = (group: GetOutGroup) => cookGotOutOf(group, onCounter);
-
-	// A line that fits two food items has one selected, and the last page takes the food out of it.
-	// Until you tap, the line asks "Which one?".
-	const options = $derived(ingredients.map(optionsOf));
 	// The selection starts once, with the pantry as it is when Cook Mode opens.
 	let picked = $state(
 		(() => entry.match.ingredients.map((match) => pickFood(match)?.path ?? null))()
 	);
 	let checked = $state<boolean[]>([]);
-	function pick(at: number, path: string) {
-		picked[at] = path;
-		checked[at] = true;
-		onCounter[at] = true;
-	}
 
-	// --- Timers. A timer continues when you go to a different step. ---
+	const timers = new CookTimers(
+		(timer) => kitchen.notify(`${showName(entry.recipe.title)}, step ${timer.step}: the time is up.`),
+		() => kitchen.settings
+	);
+	const timer = $derived(timers.all.find((one) => one.step === page));
+	const others = $derived(timers.all.filter((one) => one.step !== page));
 
-	type Timer = { step: number; end: number; rung: boolean };
-	let timers = $state<Timer[]>([]);
-	let now = $state(Date.now());
-	const timer = $derived(timers.find((one) => one.step === page));
-	const others = $derived(timers.filter((one) => one.step !== page));
-
-	const secondsLeft = (one: Timer) => cookSecondsLeft(one.end, now);
-	const clock = cookTimerClock;
-
-	const alarm = new Alarm();
-	onDestroy(() => alarm.close());
-
-	function start(seconds: number) {
-		// This tap is what lets the alarm make sound later.
-		alarm.ready();
-		now = Date.now();
-		timers.push({ step: page, end: now + seconds * 1000, rung: false });
-	}
-	// The alarm is quiet when no timer waits for your "OK".
-	function stop(one: Timer) {
-		timers = timers.filter((other) => other.step !== one.step);
-		if (!timers.some((other) => other.rung)) alarm.quiet();
-	}
-
-	function ring(one: Timer) {
-		one.rung = true;
-		kitchen.notify(`${showName(entry.recipe.title)}, step ${one.step}: the time is up.`);
-		alarm.ring(kitchen.settings);
-	}
-
+	// The screen stays on while you cook, if the settings say so.
 	$effect(() => {
-		if (!timers.length) return;
-		const tick = setInterval(() => {
-			now = Date.now();
-			for (const one of timers) if (!one.rung && one.end <= now) ring(one);
-		}, 250);
-		return () => clearInterval(tick);
-	});
-
-	// --- The screen stays on while you cook, if the settings say so. ---
-
-	$effect(() => {
-		if (!kitchen.settings.keepScreenOn) return;
-		let lock: WakeLockSentinel | undefined;
-		const keepOn = async () => {
-			try {
-				lock = await navigator.wakeLock?.request('screen');
-			} catch {
-				// The device can refuse, for example when the battery is low.
-			}
-		};
-		// The device releases the lock when the app is not in view.
-		const again = () => document.visibilityState === 'visible' && void keepOn();
-
-		void keepOn();
-		document.addEventListener('visibilitychange', again);
-		return () => {
-			document.removeEventListener('visibilitychange', again);
-			void lock?.release();
-		};
+		if (kitchen.settings.keepScreenOn) return keepScreenOn();
 	});
 
 	let saving = $state(false);
@@ -152,9 +85,9 @@
 	// for your "OK", so it counts too.
 	let asking = $state(false);
 	const question = $derived(
-		timers.length === 1
+		timers.all.length === 1
 			? '1 timer is running. Exit and stop it?'
-			: `${timers.length} timers are running. Exit and stop them?`
+			: `${timers.all.length} timers are running. Exit and stop them?`
 	);
 
 	// Cook Mode closes with a circle of paper from the button, as "Cook" opened it with a dark one.
@@ -162,7 +95,7 @@
 		source instanceof HTMLElement ? cover(source, 'bg', onclose) : onclose();
 
 	function leave(event: MouseEvent) {
-		if (timers.length) asking = true;
+		if (timers.all.length) asking = true;
 		else closeFrom(event.currentTarget);
 	}
 
@@ -201,7 +134,9 @@
 						onclick={() => go(one.step)}
 					>
 						<span class="wfd-label">Step {one.step}</span>
-						<span class="wfd-display">{one.rung ? 'Time is up' : clock(secondsLeft(one))}</span>
+						<span class="wfd-display">
+							{one.rung ? 'Time is up' : cookTimerClock(timers.secondsLeft(one))}
+						</span>
 					</button>
 				</li>
 			{/each}
@@ -232,59 +167,7 @@
 
 			<div class="wfd-cook__main">
 				{#if page === 0}
-					<div class="wfd-cook__groups">
-						{#each getOut as group}
-							<section>
-								{#if group.title}
-									<GroupHead title={group.title} note={gotOf(group)} />
-								{/if}
-								<ul class="wfd-cook__list">
-									{#each group.rows as { at, match: { ingredient, status } }}
-										<li class="wfd-cook__row">
-											<label class="wfd-cook__item" class:wfd-cook__item--got={onCounter[at]}>
-												<input type="checkbox" bind:checked={onCounter[at]} />
-												<span class="wfd-cook__name">{showName(ingredient.name)}</span>
-												{#if status === 'missing'}
-													<Sticker label="None" kind="dashed" />
-												{:else if status === 'short'}
-													<Sticker label="Low" kind="amber" />
-												{:else if status === 'unknown'}
-													<Sticker label="Check" />
-												{/if}
-												<span class="wfd-cook__amount wfd-number">
-													{ingredient.amount?.text ?? ''}
-												</span>
-											</label>
-											{#if options[at].length > 1}
-												<div
-													class="wfd-cook__pick"
-													role="group"
-													aria-label="The food item for {showName(ingredient.name)}"
-												>
-													{#each options[at] as option (option.path)}
-														<button
-															class="wfd-cook__option"
-															class:wfd-cook__option--on={picked[at] === option.path}
-															type="button"
-															aria-pressed={picked[at] === option.path}
-															onclick={() => pick(at, option.path)}
-														>
-															{option.item.name}
-														</button>
-													{/each}
-													{#if !checked[at]}
-														<span out:fade={{ duration }}>
-															<Sticker label="Which one?" kind="olive" />
-														</span>
-													{/if}
-												</div>
-											{/if}
-										</li>
-									{/each}
-								</ul>
-							</section>
-						{/each}
-					</div>
+					<GetOut {entry} {duration} bind:onCounter bind:picked bind:checked />
 					{#if !steps.length}
 						<p class="wfd-cook__hint">This recipe has no steps.</p>
 					{/if}
@@ -307,15 +190,15 @@
 						<div class="wfd-cook__timer" class:wfd-cook__timer--rung={timer?.rung} role="timer">
 							<span class="wfd-cook__clock wfd-number">
 								{#if timer}
-									{timer.rung ? 'Time is up' : clock(secondsLeft(timer))}
+									{timer.rung ? 'Time is up' : cookTimerClock(timers.secondsLeft(timer))}
 								{:else}
-									{clock(step.seconds ?? 0)}
+									{cookTimerClock(step.seconds ?? 0)}
 								{/if}
 							</span>
 							{#if timer}
-								<Button onclick={() => stop(timer)}>{timer.rung ? 'OK' : 'Stop'}</Button>
+								<Button onclick={() => timers.stop(timer)}>{timer.rung ? 'OK' : 'Stop'}</Button>
 							{:else}
-								<Button kind="main" onclick={() => start(step.seconds ?? 0)}>Start</Button>
+								<Button kind="main" onclick={() => timers.start(page, step.seconds ?? 0)}>Start</Button>
 							{/if}
 						</div>
 					{/if}
@@ -465,7 +348,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid currentcolor;
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -549,91 +432,6 @@
 			linear-gradient(var(--wfd-color-border), var(--wfd-color-border)) bottom / 100% 2px no-repeat scroll;
 	}
 
-	/* The space between two groups is here, and not above the head of each group. */
-	.wfd-cook__groups {
-		display: grid;
-		gap: var(--wfd-space-section);
-	}
-
-	.wfd-cook__groups :global(.wfd-group) {
-		margin-block-start: 0;
-	}
-
-	.wfd-cook__list {
-		margin: 0;
-		padding: 0;
-		list-style: none;
-	}
-
-	.wfd-cook__item {
-		display: grid;
-		grid-template-columns: auto 1fr auto auto;
-		gap: var(--wfd-space-section);
-		align-items: center;
-		min-block-size: 58px;
-		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
-		cursor: pointer;
-		transition: color var(--wfd-motion-change) var(--wfd-ease-out);
-	}
-
-	.wfd-cook__row {
-		border-block-end: var(--wfd-border-thin) solid var(--wfd-color-border);
-
-		& .wfd-cook__item {
-			border-block-end: 0;
-		}
-	}
-
-	/* The options of a line that fits two food items. The selected one is ink. */
-	.wfd-cook__pick {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--wfd-space-group);
-		align-items: center;
-		padding-block-end: var(--wfd-space-inset);
-		padding-inline-start: calc(var(--checkbox-size) + var(--wfd-space-section));
-	}
-
-	button.wfd-cook__option {
-		block-size: auto;
-		min-block-size: var(--wfd-control-min);
-		padding: 0 var(--wfd-space-inset);
-		border: var(--wfd-border) solid var(--wfd-color-border);
-		border-radius: var(--wfd-radius-button);
-		background: var(--wfd-color-control);
-		box-shadow: none;
-		color: var(--wfd-color-text);
-		font-family: inherit;
-		font-size: var(--wfd-font-size-text);
-		font-weight: 600;
-		cursor: pointer;
-		transition: background-color var(--wfd-chip-motion);
-
-		&:focus-visible {
-			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
-		}
-	}
-
-	button.wfd-cook__option--on {
-		border-color: var(--wfd-color-selected);
-		background: var(--wfd-color-selected);
-		color: var(--wfd-color-on-selected);
-	}
-
-	.wfd-cook__item--got {
-		color: var(--wfd-color-text-faint);
-	}
-
-	.wfd-cook__name {
-		font-size: var(--wfd-font-size-name);
-		font-weight: 500;
-	}
-
-	.wfd-cook__amount {
-		font-size: var(--wfd-font-size-name);
-	}
-
 	.wfd-cook__hint {
 		margin: 0;
 		color: var(--wfd-color-text-muted);
@@ -714,7 +512,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-on-primary);
-			outline-offset: -4px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

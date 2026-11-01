@@ -55,11 +55,14 @@ const FIELDS = /\s+·\s+/;
 const withMd = (path: string) => (path.endsWith('.md') ? path : `${path}.md`);
 const linesOf = (text: string) => text.split(/\r?\n/);
 
+// The name that a link shows: its alias, or the name of its note.
+const shownName = (target: string, alias: string | undefined) =>
+	(alias ?? target.split('/').pop() ?? target).trim();
+
 // The name of a person: "[[People/Mum|Mum]]" and "[[Mum]]" are "Mum".
 export function personName(person: string): string {
 	const link = LINK.exec(person.trim());
-	if (!link) return person.trim();
-	return (link[2] ?? link[1].split('/').pop() ?? link[1]).trim();
+	return link ? shownName(link[1], link[2]) : person.trim();
 }
 
 // The first part of a dish line stays as you wrote it, so a change does not change its name.
@@ -73,7 +76,7 @@ function readDish(line: string): DishLine | null {
 	const target = link?.[1].trim();
 	const dish: Dish = {
 		path: target ? withMd(target) : null,
-		name: target ? (link?.[2] ?? target.split('/').pop() ?? target).trim() : head,
+		name: target ? shownName(target, link?.[2]) : head,
 		course: null,
 		scale: 1,
 		person: null,
@@ -168,22 +171,36 @@ function headOf(dish: Pick<Dish, 'path' | 'name'>): string {
 	return dish.path ? `[[${dish.path.replace(/\.md$/, '')}|${dish.name}]]` : dish.name;
 }
 
-// A line goes after the last line of its kind. With none, it goes above the first heading that the
-// test finds, with an empty line, or at the end of the note.
-function insert(text: string, line: string, after: (role: Role) => boolean, above: (role: Role) => boolean) {
+// Where a new line goes. `isKind` finds the lines of its kind. A guest and a task have a heading
+// of their own. `above` finds the part of the note that comes after the new part.
+type Place = {
+	isKind: (role: Role) => boolean;
+	heading?: { is: 'guests' | 'to do'; text: string };
+	above?: (role: Role) => boolean;
+};
+
+// A line goes after the last line of its kind, or below its heading with an empty line. With
+// neither, the line and its heading go above the next part of the note, or at the end.
+function insert(text: string, line: string, { isKind, heading, above }: Place): string {
 	const lines = linesOf(text);
 	const roles = rolesOf(lines);
-	const last = roles.findLastIndex(after);
+	const last = roles.findLastIndex(isKind);
 	if (last !== -1) {
 		lines.splice(last + 1, 0, line);
 		return lines.join('\n');
 	}
-	const heading = roles.findIndex(above);
-	if (heading !== -1) {
-		lines.splice(heading, 0, line, '');
+	const under = heading ? roles.findIndex((role) => role?.is === heading.is) : -1;
+	if (under !== -1) {
+		lines.splice(under + 1, 0, '', line);
 		return lines.join('\n');
 	}
-	return `${text.trimEnd()}\n\n${line}\n`.trimStart();
+	const part = heading ? [heading.text, '', line] : [line];
+	const next = above ? roles.findIndex(above) : -1;
+	if (next !== -1) {
+		lines.splice(next, 0, ...part, '');
+		return lines.join('\n');
+	}
+	return `${text.trimEnd()}\n\n${part.join('\n')}\n`.trimStart();
 }
 
 export type NewDish = Pick<Dish, 'path' | 'name'> & Partial<Pick<Dish, 'course' | 'person'>>;
@@ -194,28 +211,18 @@ export function addDish(text: string, dish: NewDish): string {
 		{ course: null, person: null, ...dish, scale: 1, ready: false, prepDone: false },
 		headOf(dish)
 	);
-	return insert(
-		text,
-		line,
-		(role) => role?.is === 'dish',
-		(role) => role?.is === 'guests' || role?.is === 'to do'
-	);
+	return insert(text, line, {
+		isKind: (role) => role?.is === 'dish',
+		above: (role) => role?.is === 'guests' || role?.is === 'to do'
+	});
 }
 
 // A new task comes after the last task. With no heading "To do", the heading comes at the end.
 export function addTask(text: string, task: string): string {
-	const line = `- [ ] ${task.trim()}`;
-	const lines = linesOf(text);
-	const roles = rolesOf(lines);
-	const last = roles.findLastIndex((role) => role?.is === 'task');
-	if (last !== -1) {
-		lines.splice(last + 1, 0, line);
-		return lines.join('\n');
-	}
-	const head = roles.findIndex((role) => role?.is === 'to do');
-	if (head === -1) return `${text.trimEnd()}\n\n## To do\n\n${line}\n`;
-	lines.splice(head + 1, 0, '', line);
-	return lines.join('\n');
+	return insert(text, `- [ ] ${task.trim()}`, {
+		isKind: (role) => role?.is === 'task',
+		heading: { is: 'to do', text: '## To do' }
+	});
 }
 
 const isGuest = (role: Role, name: string): role is { is: 'guest'; guest: Guest } =>
@@ -223,25 +230,11 @@ const isGuest = (role: Role, name: string): role is { is: 'guest'; guest: Guest 
 
 // A new guest comes after the last guest. With no guest list, the list comes above "To do".
 function writeGuest(text: string, guest: Guest): string {
-	const line = showGuest(guest);
-	const lines = linesOf(text);
-	const roles = rolesOf(lines);
-	const last = roles.findLastIndex((role) => role?.is === 'guest');
-	if (last !== -1) {
-		lines.splice(last + 1, 0, line);
-		return lines.join('\n');
-	}
-	const head = roles.findIndex((role) => role?.is === 'guests');
-	if (head !== -1) {
-		lines.splice(head + 1, 0, '', line);
-		return lines.join('\n');
-	}
-	const toDo = roles.findIndex((role) => role?.is === 'to do');
-	if (toDo !== -1) {
-		lines.splice(toDo, 0, '## Guests', '', line, '');
-		return lines.join('\n');
-	}
-	return `${text.trimEnd()}\n\n## Guests\n\n${line}\n`.trimStart();
+	return insert(text, showGuest(guest), {
+		isKind: (role) => role?.is === 'guest',
+		heading: { is: 'guests', text: '## Guests' },
+		above: (role) => role?.is === 'to do'
+	});
 }
 
 // A name that is a guest already adds nothing.
@@ -254,10 +247,11 @@ export function addGuest(text: string, name: string): string {
 // A person of a dish with no line gets a line. The name stays as you wrote it, also a link.
 export function setGuestSize(text: string, name: string, size: number): string {
 	const lines = linesOf(text);
-	const at = rolesOf(lines).findIndex((role) => isGuest(role, name));
+	const roles = rolesOf(lines);
+	const at = roles.findIndex((role) => isGuest(role, name));
 	const next = Math.max(1, Math.round(size));
 	if (at === -1) return writeGuest(text, { name, size: next });
-	const role = rolesOf(lines)[at];
+	const role = roles[at];
 	if (role?.is !== 'guest') return text;
 	lines[at] = lines[at].replace(/^(\s*)[-*]\s+.*$/, `$1${showGuest({ ...role.guest, size: next })}`);
 	return lines.join('\n');

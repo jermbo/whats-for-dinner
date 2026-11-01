@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fly } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { SetupStep } from '../../setup/screen';
@@ -7,10 +6,11 @@
 	import HomeStep from './HomeStep.svelte';
 	import PlacesStep from './PlacesStep.svelte';
 	import RecipesStep from './RecipesStep.svelte';
+	import { tokenTime } from '../motion';
 
 	let { kitchen, step }: { kitchen: Kitchen; step: SetupStep } = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 </script>
 
 <!-- Setup has no control to skip it: each step goes on only to the next. -->

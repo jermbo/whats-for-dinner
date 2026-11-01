@@ -18,7 +18,7 @@ function cellsOf(line: string): string[] {
 }
 
 // The lines of the first table: `start` is the header, and `end` is the first line after the table.
-export function findTable(lines: string[]): { start: number; end: number } | null {
+function findTable(lines: string[]): { start: number; end: number } | null {
 	const start = lines.findIndex((line, i) => isRow(line) && DIVIDER.test(lines[i + 1] ?? ''));
 	if (start === -1) return null;
 

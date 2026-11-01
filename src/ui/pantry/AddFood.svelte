@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	import type { ScannedBrand } from '../../kitchen/brand-actions';
 	import type { Product } from '../../pantry/product';
+	import { tokenTime } from '../motion';
 
 	// What one add writes: the packages of one food item, with their date, and the barcode of a scan.
 	export type Added = {
@@ -19,7 +20,6 @@
 
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import { showDate } from '../../dates';
 	import type { FoodNote } from '../../note';
@@ -54,7 +54,7 @@
 	};
 	let { foods, places, startName, startPlace, sizeOf, lookUp, onadd, ondone }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 150);
+	const duration = $derived(tokenTime('change'));
 	// The browser tells which codes it reads only after a moment, so the scan comes then. If the
 	// form is still empty by then, and it did not start from a name, it turns to the scan.
 	let read = $state<ReadBarcode | null>(null);

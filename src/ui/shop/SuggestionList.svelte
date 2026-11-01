@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import {
 		factsOf,
@@ -15,6 +14,7 @@
 	import HiddenName from '../parts/HiddenName.svelte';
 	import ListLine from '../parts/ListLine.svelte';
 	import Sticker from '../parts/Sticker.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		suggestions: Suggestion[];
@@ -25,7 +25,7 @@
 	};
 	let { suggestions, onadd, onskip, onunskip, onneverask }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// The need first: what you have none of, then what is low, then the dates, then a reminder of time.
 	const groups = $derived(

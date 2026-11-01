@@ -43,10 +43,14 @@ const rawOf = (lines: string[], block: Block) => lines.slice(block.start, block.
 function descriptionParts(description: string) {
 	const lines = description.split('\n');
 	const blocks = readBlocks(lines).map((block) => rawOf(lines, block).trim());
-	const source = SOURCE.test(blocks[0] ?? '') ? blocks.shift()!.replace(SOURCE, '') : '';
+	const isSource = SOURCE.test(blocks[0] ?? '');
+	const source = isSource ? (blocks[0] ?? '').replace(SOURCE, '') : '';
+	if (isSource) blocks.shift();
 	const photoLines = (blocks[0] ?? '').split('\n');
 	const isPhotos = Boolean(blocks[0]) && photoLines.every((line) => PHOTO_LINE.test(line.trim()));
-	const sourcePhotos = isPhotos ? photoLines.map((line) => PHOTO_LINE.exec(line.trim())![1]) : [];
+	const sourcePhotos = isPhotos
+		? photoLines.map((line) => PHOTO_LINE.exec(line.trim())?.[1] ?? '')
+		: [];
 	if (isPhotos) blocks.shift();
 	return { source, sourcePhotos, description: blocks.filter(Boolean).join('\n\n') };
 }

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { tick } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, scale } from 'svelte/transition';
 	import type { Step } from '../../cook/steps';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		step: Step;
@@ -14,7 +14,7 @@
 	let { step, urlOf, ontake, onbest }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 	const url = $derived(step.photo ? urlOf(step.photo) : null);
 	// The view of all photos of the step, newest first.
 	let open = $state(false);
@@ -76,7 +76,7 @@
 		{saving ? 'One moment' : 'Photo of this step'}
 		<input
 			id="{uid}-camera"
-			class="wfd-step-photo__field"
+			class="wfd-hidden"
 			type="file"
 			accept="image/*"
 			capture="environment"
@@ -154,7 +154,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -175,16 +175,8 @@
 
 		&:focus-within {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
-	}
-
-	.wfd-step-photo__field {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
 	}
 
 	/* The photos of the step cover the work of the card, and the two buttons of Cook Mode stay. */

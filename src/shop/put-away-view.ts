@@ -1,6 +1,6 @@
 import type { CartItem, Facts } from './facts';
 
-export const PUT_AWAY_OUTSIDE = 'Not in the pantry';
+const PUT_AWAY_OUTSIDE = 'Not in the pantry';
 
 // One package of the cart on the screen of put away. Its key is the key of its receipt row. It
 // starts with the facts of its row, and `facts` has your changes too.

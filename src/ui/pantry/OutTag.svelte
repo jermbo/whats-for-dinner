@@ -4,7 +4,7 @@
 
 <!-- Food that is out: only its name, dashed as an empty place. A tap opens its card. -->
 <button class="wfd-tag" type="button" {onclick}>
-	{name}<span class="wfd-tag__hidden">, out</span>
+	{name}<span class="wfd-hidden">, out</span>
 </button>
 
 <style>
@@ -28,7 +28,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 
 		&:active {
@@ -41,14 +41,5 @@
 			border-color: var(--wfd-color-border);
 			color: var(--wfd-color-text);
 		}
-	}
-
-	.wfd-tag__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 </style>

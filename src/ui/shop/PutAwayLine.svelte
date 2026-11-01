@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { showDate } from '../../dates';
-	import { prefersReducedMotion as reduced } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import { entriesOf, refusal } from '../../pantry/unit-list';
 	import { brandAt, brandCell } from '../../shop/bought-brand';
@@ -16,6 +14,7 @@
 	import ListLine from '../parts/ListLine.svelte';
 	import PickOne from '../parts/PickOne.svelte';
 	import UseByPick from './UseByPick.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		item: CartItem;
@@ -65,7 +64,7 @@
 	}: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// The item is not food of the pantry. "Into the pantry" makes a food item of it.
 	const own = $derived(!item.start.intoPantry);
@@ -118,7 +117,7 @@
 		<span
 			class:wfd-away-line__price--missing={price === '–'}
 			class:wfd-away-line__price--bad={badPrice}
-			in:fade={{ duration: reduced.current ? 0 : 300 }}
+			in:fade={{ duration: tokenTime('move') }}
 		>
 			{price}
 		</span>
@@ -275,7 +274,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 

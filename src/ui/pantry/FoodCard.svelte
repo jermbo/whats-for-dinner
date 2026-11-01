@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { SvelteSet } from 'svelte/reactivity';
 	import { slide } from 'svelte/transition';
 	import {
@@ -23,6 +22,7 @@
 	import Field from '../parts/Field.svelte';
 	import InkCard from '../parts/InkCard.svelte';
 	import Panel from '../parts/Panel.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		item: FoodItem;
@@ -40,7 +40,7 @@
 	let { item, place, places, open = true, ondone, oncancel, onfood }: Props = $props();
 
 	const uid = $props.id();
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	// The packages as the card opened, in a sequence that stays until it closes.
 	const first = () => cardPackages(item.stocks, place);
@@ -181,7 +181,7 @@
 				ontouchmove={(event) => event.stopPropagation()}
 				onkeydown={key}
 			>
-				<span class="wfd-card__hidden" id="{uid}-name">{item.name}</span>
+				<span class="wfd-hidden" id="{uid}-name">{item.name}</span>
 				{#each layout as part (part.key)}
 					<span
 						class="wfd-card__part"
@@ -315,7 +315,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-on-selected);
-			outline-offset: 7px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -406,15 +406,5 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0 var(--wfd-space-group);
-	}
-
-
-	.wfd-card__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 </style>

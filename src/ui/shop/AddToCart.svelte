@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { slide } from 'svelte/transition';
 	import type { Proposal } from '../../shop/proposals';
 	import Button from '../parts/Button.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The text of the field to find, which found no row of the list.
@@ -15,7 +15,7 @@
 	};
 	let { text, proposals, onadd, onaddnew }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 </script>
 
 <!--

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade } from 'svelte/transition';
 	import Button from '../parts/Button.svelte';
 	import PickOne from '../parts/PickOne.svelte';
+	import { tokenTime } from '../motion';
 
 	type Props = {
 		// The store of the trip, or no text.
@@ -14,7 +14,7 @@
 	};
 	let { store, stores, onchange, ondone }: Props = $props();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 </script>
 
 <!--

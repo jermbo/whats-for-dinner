@@ -142,7 +142,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: -3px;
+			outline-offset: var(--wfd-focus-inset);
 		}
 	}
 

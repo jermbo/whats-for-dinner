@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
-	import { prefersReducedMotion } from 'svelte/motion';
 	import { fade, slide } from 'svelte/transition';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { BrandDraft } from '../../kitchen/brand-actions';
@@ -40,13 +39,13 @@
 	import OutTag from './OutTag.svelte';
 	import StockLine from './StockLine.svelte';
 	import { glide } from '../glide';
-	import { timeOf } from '../motion';
+	import { timeOf, tokenTime } from '../motion';
 	import { scrollToTop } from '../scroll-to-top';
 
 	let { kitchen, bar }: { kitchen: Kitchen; bar: BarState<Sort, Only> } = $props();
 	const headId = $props.id();
 
-	const duration = $derived(prefersReducedMotion.current ? 0 : 200);
+	const duration = $derived(tokenTime('change'));
 
 	const sorts: { value: Sort; label: string }[] = [
 		{ value: 'place', label: 'By place' },
@@ -167,7 +166,7 @@
 	let auditing = $state(false);
 
 	// Food that is out has no place, so its card opens in the place for new food.
-	const outPlace = $derived(kitchen.settings.newPlace.trim() || 'Kitchen');
+	const outPlace = $derived(kitchen.newPlace);
 
 	const urlFor = (food: FoodNote) => (photo: string) => kitchen.photoUrl(photo, food.path);
 
@@ -223,12 +222,6 @@
 		if (!(await kitchen.pantry.addStocks(name, rows))) return;
 		if (scan) await kitchen.brands.keepBarcode(name, scan);
 	}
-
-	// A card that opens out of view, such as after "Add to pantry", comes into view.
-	// An open card moves to the top of the screen, under the head of the part.
-	function intoView(node: HTMLElement) {
-		scrollToTop(node);
-	}
 </script>
 
 <section class="wfd-pantry" aria-labelledby={headId}>
@@ -281,7 +274,7 @@
 				{#snippet end()}
 					<Button kind="main" onclick={() => (adding ? (adding = false) : startNew(bar.find.trim()))}>
 						<span class="wfd-pantry__plus" aria-hidden="true">+</span>
-						<span class="wfd-pantry__hidden">Add food</span>
+						<span class="wfd-hidden">Add food</span>
 					</Button>
 				{/snippet}
 			</Bar>
@@ -324,12 +317,13 @@
 	{#snippet cardOf(food: FoodNote, place: string)}
 		{@const shown = isOpen(food.item.name, place) ? open : closing}
 		{@const leaving = !isOpen(food.item.name, place)}
-		<!-- The card shows at its full height at once, so that no frame needs a new layout of the bins. -->
+		<!-- The card shows at its full height at once, so that no frame needs a new layout of the bins.
+		     A card that opens out of view, such as after "Add to pantry", moves to the top. -->
 		<div
 			class="wfd-pantry__open"
 			class:wfd-pantry__open--leaving={leaving}
 			in:fade={{ duration }}
-			use:intoView
+			use:scrollToTop
 		>
 			{#if shown?.form}
 				{@const start = nextSize(food.item, place) ?? ''}
@@ -466,15 +460,6 @@
 
 	.wfd-pantry__number {
 		font-size: var(--wfd-font-size-title);
-	}
-
-	.wfd-pantry__hidden {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 
 	.wfd-pantry__plus {

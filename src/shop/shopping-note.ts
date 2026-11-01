@@ -48,7 +48,7 @@ export function readItem(text: string): Item | null {
 }
 
 // The link tells which item a task has. A task with no link has only its name.
-export const isSameItem = (a: TripTask, b: TripTask) =>
+const isSameItem = (a: TripTask, b: TripTask) =>
 	a.link === b.link && (a.link !== null || a.name === b.name);
 
 // The task of an item that the note does not have yet. The link has the path of the note of the

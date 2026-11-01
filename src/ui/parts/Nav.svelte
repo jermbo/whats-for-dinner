@@ -51,11 +51,11 @@
 	style:--ink-height="{ink?.height ?? 0}px"
 	bind:this={nav}
 >
-	<legend class="wfd-nav__legend">{label}</legend>
+	<legend class="wfd-hidden">{label}</legend>
 	{#each options as option}
 		<label class="wfd-nav__option wfd-label">
 			<input
-				class="wfd-nav__input"
+				class="wfd-hidden"
 				type="radio"
 				name={uid}
 				checked={option.value === value}
@@ -97,7 +97,7 @@
 
 		&:has(:focus-visible) {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
@@ -106,16 +106,6 @@
 			translate var(--wfd-motion-change) var(--wfd-ease-out),
 			inline-size var(--wfd-motion-change) var(--wfd-ease-out),
 			block-size var(--wfd-motion-change) var(--wfd-ease-out);
-	}
-
-	.wfd-nav__legend,
-	.wfd-nav__input {
-		position: absolute;
-		inline-size: 1px;
-		block-size: 1px;
-		overflow: hidden;
-		clip-path: inset(50%);
-		white-space: nowrap;
 	}
 
 	/* The options share the row. A label stays complete, so an option goes to a new row first. */

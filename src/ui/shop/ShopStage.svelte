@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { flushSync } from 'svelte';
-	import { SvelteSet } from 'svelte/reactivity';
 	import type { Kitchen } from '../../kitchen-state.svelte';
-	import { brandAt, brandCell } from '../../shop/bought-brand';
+	import { brandCell } from '../../shop/bought-brand';
 	import type { Only, Sort } from '../../shop/browse';
 	import {
 		anyRegularPrice,
@@ -18,6 +17,7 @@
 	import { tilesOf } from '../brand-tiles';
 	import { flyTo } from '../fly';
 	import { glide, glideOnNextChange } from '../glide';
+	import { keepScreenOn } from '../keep-screen-on';
 	import { timeOf } from '../motion';
 	import Bar from '../parts/Bar.svelte';
 	import BrandPhoto from '../parts/BrandPhoto.svelte';
@@ -26,6 +26,7 @@
 	import Chip from '../parts/Chip.svelte';
 	import HiddenName from '../parts/HiddenName.svelte';
 	import AddToCart from './AddToCart.svelte';
+	import { BrandPhotos } from './brand-photos.svelte';
 	import CartView from './CartView.svelte';
 	import type { ShopMoves } from './shop-moves.svelte';
 	import ShopBin from './ShopBin.svelte';
@@ -110,11 +111,14 @@
 	// The row fades after one press, in one move. Then it leaves, and the vault gets the tick.
 	const fadeTime = () => (listBox ? timeOf(listBox, 'press') + timeOf(listBox, 'move') : 0);
 
+	// A short buzz under the finger tells that the tick counted.
+	const TICK_BUZZ_MS = 8;
+
 	// With a brand, the task keeps the brand that you took.
 	function tick(row: ShoppingRow, brand?: string) {
 		const { key } = row;
 		if (moves.ticking.has(key)) return untick(row);
-		navigator.vibrate?.(8);
+		navigator.vibrate?.(TICK_BUZZ_MS);
 		moves.ticking.add(key);
 		moves.flying.add(key);
 		fly(row.name, middleOf(checkOf(key)), buttonOf('cart'), () => {
@@ -182,63 +186,19 @@
 
 	// --- The photos of the brands. ---
 
-	const urlFor = (row: ShoppingRow) => (photo: string) =>
-		kitchen.photoUrl(photo, row.food?.path ?? '');
-	const brandsOf = (row: ShoppingRow) => row.food?.item.brands ?? [];
-
-	// The package of a row: the photo of its first brand, or its name, or nothing.
-	function packOf(row: ShoppingRow): { url: string } | { name: string } | null {
-		const brand = brandsOf(row)[0];
-		const url = brand?.photos[0] ? urlFor(row)(brand.photos[0]) : null;
-		if (url) return { url };
-		return brand?.name ? { name: brand.name } : null;
-	}
-
-	// The rows that show their brands below them. A tap on the package opens them.
-	const packsOpen = new SvelteSet<string>();
-	const flipPack = (key: string) => (packsOpen.has(key) ? packsOpen.delete(key) : packsOpen.add(key));
-
-	// The photo that shows large: its row, the name of its file, and the small photo that it grows
-	// from. The brand comes from the note, so a new photo gets its brand when the note is read.
-	let large = $state<{ key: string; path: string; photo: string; from: HTMLElement } | null>(null);
-	const largeBrand = $derived.by(() => {
-		const row = large && all.find((one) => one.key === large?.key);
-		return row ? brandsOf(row).find((brand) => brand.photos[0] === large?.photo) : undefined;
-	});
-
-	function showLarge(row: ShoppingRow, at: number, from: HTMLElement) {
-		const photo = brandsOf(row)[at]?.photos[0];
-		if (photo && row.food) large = { key: row.key, path: row.food.path, photo, from };
-	}
+	const photos = new BrandPhotos(() => kitchen, () => all);
 
 	// "In cart" ticks the row with the brand of the large photo. An item of the cart gets the new
 	// brand in place of its own.
 	function intoCart() {
-		if (!large) return;
-		const { key, photo } = large;
-		const brand = largeBrand ? brandCell(largeBrand) : `[[${photo}]]`;
-		large = null;
-		opened.delete(key);
+		if (!photos.large) return;
+		const { key, photo } = photos.large;
+		const brand = photos.largeBrand ? brandCell(photos.largeBrand) : `[[${photo}]]`;
+		photos.large = null;
+		photos.opened.delete(key);
 		const row = all.find((one) => one.key === key);
 		if (inCart.some((one) => one.key === key)) void kitchen.shop.putInCart(key, brand);
 		else if (row) tick(row, brand);
-	}
-
-	// The photo of a new package is a new brand with no name. It shows large at once, so that "In
-	// cart" is one tap away.
-	async function takeNew(row: ShoppingRow, photo: Blob, from: HTMLElement) {
-		if (!row.food) return;
-		const { path } = row.food;
-		const name = await kitchen.brands.addBrandPhoto(path, photo);
-		if (name) large = { key: row.key, path, photo: name, from };
-	}
-
-	// An item of the cart shows only the brand that you took. A tap on it shows each brand again,
-	// so that you can take a different one.
-	const opened = new SvelteSet<string>();
-	function cartBrandOf(row: ShoppingRow): number | null {
-		const item = kitchen.trip.find((one) => one.key === row.key);
-		return item ? brandAt(item.brand, brandsOf(row)) : null;
 	}
 
 	// The text found no row, so it can add an item that is not on the list. With a filter on, the
@@ -270,24 +230,7 @@
 	// --- The screen stays on in the store, if the settings say so. ---
 
 	$effect(() => {
-		if (!kitchen.settings.keepScreenOn) return;
-		let lock: WakeLockSentinel | undefined;
-		const keepOn = async () => {
-			try {
-				lock = await navigator.wakeLock?.request('screen');
-			} catch {
-				// The device can refuse, for example when the battery is low.
-			}
-		};
-		// The device releases the lock when the app is not in view.
-		const again = () => document.visibilityState === 'visible' && void keepOn();
-
-		void keepOn();
-		document.addEventListener('visibilitychange', again);
-		return () => {
-			document.removeEventListener('visibilitychange', again);
-			void lock?.release();
-		};
+		if (kitchen.settings.keepScreenOn) return keepScreenOn();
 	});
 
 	const uid = $props.id();
@@ -367,25 +310,25 @@
 									<ShopRow
 										{row}
 										price={priceOf(row.key)}
-										pack={packOf(row)}
+										pack={photos.packOf(row)}
 										{mixed}
 										ticked={moves.ticking.has(row.key)}
 										back={moves.back.has(row.key)}
-										open={packsOpen.has(row.key)}
+										open={photos.packsOpen.has(row.key)}
 										ontick={() => tick(row)}
 										onback={() => moves.back.delete(row.key)}
-										onpack={() => flipPack(row.key)}
+										onpack={() => photos.flipPack(row.key)}
 										onremove={row.extra ? () => remove(row.key) : undefined}
 									>
 										{#snippet brands()}
 											{#if row.food}
 												<BrandStrip
-													brands={tilesOf(brandsOf(row), urlFor(row))}
+													brands={tilesOf(photos.brandsOf(row), photos.urlFor(row))}
 													of={row.name}
 													tapChips={false}
-													ontap={(at, tile) => showLarge(row, at, tile)}
+													ontap={(at, tile) => photos.showLarge(row, at, tile)}
 													onrest={() => tick(row)}
-													ontake={(photo, tile) => takeNew(row, photo, tile)}
+													ontake={(photo, tile) => photos.takeNew(row, photo, tile)}
 												/>
 											{/if}
 										{/snippet}
@@ -401,15 +344,15 @@
 		<div class="wfd-shop__cart">
 			<CartView cart={inCart} {priceOf} onback={backFromCart}>
 				{#snippet brands(row)}
-					{@const all = brandsOf(row)}
-					{@const chosen = cartBrandOf(row)}
-					{@const only = chosen !== null && !opened.has(row.key)}
+					{@const all = photos.brandsOf(row)}
+					{@const chosen = photos.cartBrandOf(row)}
+					{@const only = chosen !== null && !photos.opened.has(row.key)}
 					{#if all.length}
 						<BrandStrip
-							brands={tilesOf(chosen !== null && only ? [all[chosen]] : all, urlFor(row))}
+							brands={tilesOf(chosen !== null && only ? [all[chosen]] : all, photos.urlFor(row))}
 							of={row.name}
 							tapChips={false}
-							ontap={(at, tile) => (only ? opened.add(row.key) : showLarge(row, at, tile))}
+							ontap={(at, tile) => (only ? photos.opened.add(row.key) : photos.showLarge(row, at, tile))}
 						/>
 					{/if}
 				{/snippet}
@@ -417,12 +360,12 @@
 		</div>
 	</div>
 
-	{#if large}
+	{#if photos.large}
 		<BrandPhoto
-			url={kitchen.photoUrl(large.photo, large.path)}
-			name={largeBrand?.name ?? ''}
-			from={large.from}
-			onclose={() => (large = null)}
+			url={kitchen.photoUrl(photos.large.photo, photos.large.path)}
+			name={photos.largeBrand?.name ?? ''}
+			from={photos.large.from}
+			onclose={() => (photos.large = null)}
 		>
 			<Button kind="main" onclick={intoCart}>In cart</Button>
 		</BrandPhoto>
@@ -502,7 +445,7 @@
 
 		&:focus-visible {
 			outline: var(--wfd-border) solid var(--wfd-color-focus);
-			outline-offset: 2px;
+			outline-offset: var(--wfd-focus-offset);
 		}
 	}
 
