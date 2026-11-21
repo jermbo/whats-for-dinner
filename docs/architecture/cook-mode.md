@@ -22,7 +22,7 @@ The two buttons do not move from page to page. A new page slides in from the sid
 
 ## Cook Mode inside Cook day
 
-On the day of an [occasion](occasion.md), "Cook day" shows Cook Mode for many dishes. Each dish that you opened keeps its own Cook Mode: its page, its counter, its choice of food, and its timers stay while another dish shows. "Exit" closes only that dish. Cook Mode tells "Cook day" its timers and where it is (its page and its number of steps), so that the chip and the row of the dish can show them.
+On the day of an [occasion](occasion.md), "Cook day" shows Cook Mode for many dishes. Each dish that you opened keeps its own Cook Mode: its page, its counter, its choice of food, and its timers stay while another dish shows. "Exit" only leaves the dish: "Cook day" shows its schedule, and the dish stays open with its page and its timers, with no question. A dish ends alone, on its last page. Cook Mode tells "Cook day" its timers and where it is (its page and its number of steps), so that the chip and the row of the dish can show them. It also gives "Cook day" what a restart would lose: its page, its counter, its choice of food, and its timers. Cook day saves this on the device, and it gives it back when the dish opens again. A timer that ended while you were away says "Time is up". See [Cook day](cook-day.md#the-session-stays).
 
 ## Get out selects the food item
 

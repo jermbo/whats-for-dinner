@@ -54,7 +54,7 @@ For Thanksgiving or a birthday, you cook many dishes, and other people bring som
 
 Seven days before the day, the food of your dishes goes on the list, at its scale. Mum buys her own pumpkins, so her pie puts nothing there. On the day, "Cook" opens a dish with its scale at the top, and the pantry loses what you used. Each dish has a check, so you see at a glance what is ready and what is still to come.
 
-On the day, you give the occasion a serve time, and each dish a time. The plugin counts back and tells you when to start each dish. "Cook day" lists your dishes in the sequence of their starts. You swap between the dishes that you cook, and each one keeps its page and its timers. A bar shows the next timer of any dish, and the alarm rings at the start of a dish that you did not open.
+On the day, you give the occasion a serve time, and each dish a time. The plugin counts back and tells you when to start each dish. "Cook day" is the screen of the day: a place card with the name, "Serve in 3h 12m", and "2 of 6 done", then your dishes in the sequence of their starts. You swap between the dishes that you cook, and each one keeps its page and its timers. A dish that must start soon turns amber, and a dish that is late turns tomato. A dish with a running timer shows the time on its chip. The alarm rings at the start of a dish that you did not open. "Timeline" shows the whole day on one axis of hours, also the dishes that are done, with the hour at which you finished each one. "Running late" moves the serve time by 15 minutes. If you leave "Cook day" or restart Obsidian, "Resume cook day" brings you back to the same dishes, pages, and timers.
 
 ## The shopping list has only the missing items
 

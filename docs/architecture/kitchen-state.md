@@ -74,6 +74,10 @@ The state also keeps the part that the kitchen shows: Pantry, Recipes, Plan, Sho
 3. If a screen needs it, add it to the snapshot and to a field of the state.
 4. Write it with an action file. Do not change a field: the event of the vault reads the note again.
 
+## The cook session of the day
+
+The state also reads and writes the saved session of [Cook day](cook-day.md#the-session-stays). The session is in the local storage of Obsidian, one entry for each occasion, on this device only. The state gives a session back only when it is fresh: the occasion is active, and the session is less than 36 hours old. A session with nothing to keep is removed. It is not in the vault, so it does not sync.
+
 ## Further reading
 
 - [Layers](../standards/layers.md): why only the state and the shell import Obsidian.

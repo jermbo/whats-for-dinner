@@ -16,11 +16,12 @@ An occasion is one note. You can read it and change it with no plugin. This page
 ```markdown
 ---
 date: 2026-11-26
+serve: "15:00"
 ---
-Dinner at 15:00.
 
-- [ ] [[Recipes/Roast turkey|Roast turkey]] · main · prep done
-- [ ] [[Recipes/Green beans|Green beans]] · side · ×2
+- [ ] [[Recipes/Roast turkey|Roast turkey]] · main · 3h · prep done
+- [ ] [[Recipes/Green beans|Green beans]] · side · ×2 · start 13:30
+- [x] Gravy · side · 20 min · done 14:40
 - [ ] Pumpkin pie · dessert · Mum
 - [x] Rolls · bread · Sam
 - [ ] Plates · things · ?

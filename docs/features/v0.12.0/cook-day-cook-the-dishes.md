@@ -19,7 +19,7 @@ As the [cook](../../personas.md), I want one screen for the dishes of the day, i
 1. The screen of the occasion has the button "Cook day"
    - a. It is there when the occasion has a dish of yours with no mark
    - b. It has no date rule: it opens a week before the day too
-2. "Cook day" opens a screen with a row of chips: "Schedule", and one chip for each dish of yours with a recipe and no mark
+2. "Cook day" opens a screen with a row of chips: "Schedule", "Timeline", and one chip for each dish of yours with a recipe and no mark
    - a. The chips go in the sequence of the start times. A dish with no start comes last
    - b. A chip shows the name and the start
 3. "Schedule" shows each of your dishes in the same sequence
@@ -37,7 +37,7 @@ As the [cook](../../personas.md), I want one screen for the dishes of the day, i
 ## Acceptance criteria
 
 1. GIVEN the screen of "Thanksgiving 2026" WHEN the cook looks below the ink card THEN there is the button "Cook day"
-2. GIVEN the screen WHEN the cook taps "Cook day" THEN the chips are "Schedule", "Beef tacos", "Apple crumble", and "Honey glazed carrots"
+2. GIVEN the screen WHEN the cook taps "Cook day" THEN the chips are "Schedule", "Timeline", "Beef tacos", "Apple crumble", and "Honey glazed carrots"
    - a. AND "Pumpkin pie" has no chip, because Mum brings it
    - b. AND "Gravy" has no chip, because it has no recipe. It is in "Schedule"
 3. GIVEN the chips WHEN the cook looks at their sequence THEN "Beef tacos" (12:00) is before "Apple crumble" (13:30), and "Honey glazed carrots" has no start and is last

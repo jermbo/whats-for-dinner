@@ -45,9 +45,14 @@ Today is the day of the occasion, and the time is 12:00, for the criteria that n
 
 | Page                                                 | Stories that update it                                     |
 | ---------------------------------------------------- | ---------------------------------------------------------- |
-| [Occasion note](../../architecture/occasion-note.md) | 1: the property `serve`, and the fields of time and start. |
-| [Occasion](../../architecture/occasion.md)           | 1: the times. 2: "Cook day". 3: the alarm.                 |
-| [Cook Mode](../../architecture/cook-mode.md)         | 2: Cook Mode inside "Cook day". 3, 4: the timers and the progress that it reports. |
+| [Occasion note](../../architecture/occasion-note.md) | 1: the property `serve`, and the fields time and start. 5: the field `done`. |
+| [Occasion](../../architecture/occasion.md)           | 1: the times. 2: "Cook day".                               |
+| [Cook day](../../architecture/cook-day.md)           | 1 to 6: the plan of the day, the screen, the states, the timeline, and the session. |
+| [Cook Mode](../../architecture/cook-mode.md)         | 2: Cook Mode inside "Cook day". 3, 4, 6: the timers, the progress, and the session that it reports. |
+| [Timers](../../architecture/timers.md)               | 3: the badges. 6: a timer that ended while you were away. |
+| [Settings](../../architecture/settings.md)           | 6: the sound for a timer that ended while you were away.  |
+| [Kitchen state](../../architecture/kitchen-state.md) | 6: the saved session.                                     |
+| [Space](../../architecture/space.md)                 | 5: the rules that keep a box closed on a narrow screen.   |
 
 ## Further reading
 
