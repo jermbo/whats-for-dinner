@@ -10,6 +10,7 @@
 	import type { Only as ShopOnly, Sort as ShopSort } from '../shop/browse';
 	import { BarState } from './bar-state.svelte';
 	import CookMode from './cook/CookMode.svelte';
+	import CookDay from './occasion/CookDay.svelte';
 	import PantryPart from './pantry/PantryPart.svelte';
 	import Button from './parts/Button.svelte';
 	import Nav from './parts/Nav.svelte';
@@ -82,6 +83,10 @@
 	const cook = (path: string) => (cooking = { path, scale: 1, dish: null });
 	const cookDish = (path: string, scale: number, dish: CookedDish) => (cooking = { path, scale, dish });
 
+	// Cook day: the occasion whose dishes are in Cook Mode together. The note can go, so the occasion is found each time.
+	let dayPath = $state<string | null>(null);
+	const day = $derived(kitchen.occasions.find((occasion) => occasion.path === dayPath));
+
 	// After "Start", the screen of the new occasion shows. "Cancel" goes back to the occasions.
 	function closeNewOccasion(path: string | null) {
 		kitchen.closePage();
@@ -147,6 +152,8 @@
 	</div>
 {:else if inGallery}
 	<Gallery {kitchen} entry={inGallery} onclose={() => kitchen.closePage()} />
+{:else if day}
+	<CookDay {kitchen} occasion={day} onclose={() => (dayPath = null)} />
 {:else if cooked}
 	<CookMode
 		{kitchen}
@@ -175,7 +182,7 @@
 				{:else if part === 'plan'}
 					<PlanPart {kitchen} oncook={cook} onadd={addMeal} />
 				{:else if part === 'occasion'}
-					<OccasionsPart {kitchen} oncook={cookDish} />
+					<OccasionsPart {kitchen} oncook={cookDish} oncookday={(path) => (dayPath = path)} />
 				{:else}
 					<ShopPart {kitchen} bar={bars.shop} {draft} bind:stage={shopStage} />
 				{/if}
@@ -206,6 +213,11 @@
 	/* The parts set their own space, so that Cook Mode can fill the tab. */
 	:global(.workspace-leaf-content .view-content.wfd) {
 		padding: 0;
+	}
+
+	/* Obsidian does not wrap the text of a button, so a long name pushes its box wider. Here it wraps. */
+	:global(.wfd button) {
+		white-space: normal;
 	}
 
 	/* Names and titles: the few words that you must find at a glance. */

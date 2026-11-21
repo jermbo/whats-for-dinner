@@ -16,9 +16,12 @@
 <style>
 	.wfd-place {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--wfd-space-group);
 		align-content: start;
 		min-inline-size: 0;
+		/* The size of the card comes from its grid, never from its longest line. */
+		contain: inline-size;
 		padding: var(--wfd-space-inset);
 		border: var(--wfd-border) solid var(--wfd-color-border);
 		border-radius: var(--wfd-radius-card);
@@ -41,8 +44,10 @@
 		overflow-wrap: anywhere;
 	}
 
+	/* The column may be narrower than its widest line, so that a long name wraps and does not push out. */
 	.wfd-place__body {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		min-inline-size: 0;
 	}
 </style>

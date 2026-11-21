@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import { fly } from 'svelte/transition';
 	import { pickFood } from '../../cook/pick-food';
 	import { lastNote } from '../../cook/record';
@@ -7,9 +8,11 @@
 		cookGotOutCount,
 		cookPageCount,
 		cookSlideFrom,
-		cookTimerClock
+		cookTimerClock,
+		type CookProgress
 	} from '../../cook/cook-pages';
 	import type { CookedDish } from '../../kitchen/cook-actions';
+	import type { SavedCook } from '../../occasion/day-session';
 	import type { CookResult } from '../../kitchen/types';
 	import type { RecipeEntry } from '../../recipes/types';
 	import type { Kitchen } from '../../kitchen-state.svelte';
@@ -32,8 +35,32 @@
 		scale?: number;
 		dish?: CookedDish | null;
 		onclose: () => void;
+		// Cook day shows the timers of all its dishes, so it asks for the timers of this one.
+		ontimers?: (timers: CookTimers) => void;
+		// Cook day also shows where each dish is: its page, and how many steps it has.
+		onprogress?: (progress: CookProgress) => void;
+		// A saved session gives the page, the counter, and the timers back. Cook day also asks for
+		// what Cook Mode keeps, each time that it changes, so that the session survives a restart.
+		restore?: SavedCook | null;
+		onsave?: (saved: SavedCook) => void;
+		// In Cook day, "Exit" only leaves the dish. The dish keeps its page and its timers, and no
+		// question comes. `onclose` is then only for a dish that is finished.
+		onleave?: () => void;
 	};
-	let { kitchen, entry, scale = 1, dish = null, onclose }: Props = $props();
+	let {
+		kitchen,
+		entry,
+		scale = 1,
+		dish = null,
+		onclose,
+		ontimers,
+		onprogress,
+		restore = null,
+		onsave,
+		onleave
+	}: Props = $props();
+	// The saved session is read one time, when Cook Mode starts.
+	const saved = untrack(() => restore);
 
 	const uid = $props.id();
 
@@ -43,7 +70,7 @@
 	let noteOpen = $state(false);
 	// Page 0 is "Get out". Then there is one page for each step. The last page is the finish.
 	const last = $derived(cookPageCount(steps.length));
-	let page = $state(0);
+	let page = $state(Math.min(saved?.page ?? 0, cookPageCount(untrack(() => steps.length))));
 	const step = $derived(steps[page - 1]);
 
 	// A page comes in from the side to which you go.
@@ -59,18 +86,38 @@
 	// The ingredients that are on the counter, and the food item of each line. They stay here, so
 	// that they stay when "Get out" closes for a step.
 	const ingredients = $derived(entry.match.ingredients);
-	let onCounter = $state<boolean[]>([]);
+	let onCounter = $state<boolean[]>(saved?.onCounter ?? []);
 	const gotOut = $derived(cookGotOutCount(onCounter));
 	// The selection starts once, with the pantry as it is when Cook Mode opens.
 	let picked = $state(
-		(() => entry.match.ingredients.map((match) => pickFood(match)?.path ?? null))()
+		saved?.picked ?? (() => entry.match.ingredients.map((match) => pickFood(match)?.path ?? null))()
 	);
-	let checked = $state<boolean[]>([]);
+	let checked = $state<boolean[]>(saved?.checked ?? []);
 
 	const timers = new CookTimers(
 		(timer) => kitchen.notify(`${showName(entry.recipe.title)}, step ${timer.step}: the time is up.`),
 		() => kitchen.settings
 	);
+	if (saved) timers.restore(saved.timers, untrack(() => kitchen.settings.missedTimerSound));
+
+	// After the first render, so that the parent does not change its state while this one starts.
+	$effect(() => {
+		ontimers?.(timers);
+	});
+	$effect(() => {
+		onprogress?.({ page, steps: steps.length });
+	});
+	// Everything that a restart would lose, as plain data. The list of timers is read in full, so a
+	// timer that starts, stops, or rings gives a new copy.
+	$effect(() => {
+		onsave?.({
+			page,
+			onCounter: [...onCounter],
+			picked: [...picked],
+			checked: [...checked],
+			timers: timers.all.map((one) => ({ ...one }))
+		});
+	});
 	const timer = $derived(timers.all.find((one) => one.step === page));
 	const others = $derived(timers.all.filter((one) => one.step !== page));
 
@@ -95,7 +142,8 @@
 		source instanceof HTMLElement ? cover(source, 'bg', onclose) : onclose();
 
 	function leave(event: MouseEvent) {
-		if (timers.all.length) asking = true;
+		if (onleave) onleave();
+		else if (timers.all.length) asking = true;
 		else closeFrom(event.currentTarget);
 	}
 

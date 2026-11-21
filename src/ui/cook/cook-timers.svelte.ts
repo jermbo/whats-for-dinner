@@ -2,7 +2,8 @@ import { onDestroy } from 'svelte';
 import { Alarm, type AlarmOptions } from '../../cook/alarm';
 import { cookSecondsLeft } from '../../cook/cook-pages';
 
-export type Timer = { step: number; end: number; rung: boolean };
+// `seconds` is the full length of the timer, so that a screen can show how far it is.
+export type Timer = { step: number; end: number; rung: boolean; seconds: number };
 
 // A clock that shows seconds must tick more often than each second, or it skips a number.
 const TICK_MS = 250;
@@ -34,11 +35,27 @@ export class CookTimers {
 		return cookSecondsLeft(timer.end, this.now);
 	}
 
+	// The timers of a saved session. A timer whose time went while you were away is ended: it says
+	// "Time is up" at once, and the alarm rings only when `sounds` is true.
+	restore(saved: Timer[], sounds: boolean) {
+		this.now = Date.now();
+		let missed = false;
+		for (const one of saved) {
+			const ended = one.rung || one.end <= this.now;
+			this.all.push({ ...one, rung: ended });
+			if (ended && !one.rung) {
+				missed = true;
+				this.onring(one);
+			}
+		}
+		if (missed && sounds) this.alarm.ring(this.sound());
+	}
+
 	start(step: number, seconds: number) {
 		// This tap is what lets the alarm make sound later.
 		this.alarm.ready();
 		this.now = Date.now();
-		this.all.push({ step, end: this.now + seconds * 1000, rung: false });
+		this.all.push({ step, end: this.now + seconds * 1000, rung: false, seconds });
 	}
 
 	stop(timer: Timer) {

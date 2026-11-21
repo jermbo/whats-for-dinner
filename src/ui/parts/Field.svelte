@@ -33,7 +33,7 @@
 	}
 
 	/* The selectors name the elements, so that they are stronger than the field rules of Obsidian. */
-	.wfd-field :global(:is(input[type='text'], input[type='date'], textarea, select)) {
+	.wfd-field :global(:is(input[type='text'], input[type='date'], input[type='time'], textarea, select)) {
 		box-sizing: border-box;
 		inline-size: 100%;
 		min-block-size: var(--wfd-control);

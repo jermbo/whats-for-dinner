@@ -41,6 +41,11 @@ Only your dishes put food on the [list](shopping.md), because Mum buys her own p
 
 On the day, "Cook" opens a dish of yours in [Cook Mode](cook-mode.md), with its scale at the top. Each dish has a check: a dish is ready when you cooked it, or when it came.
 
+## The day: time, start, and "Cook day"
+
+The occasion has a serve time, and each of your dishes has a time and a start. "Cook day" is the screen that shows the day: your dishes in the sequence of their starts, the state of each one, a timeline, and one list of the food to get out. The [Cook day](cook-day.md) page tells the rules.
+
 ## Further reading
 
+- [Cook day](cook-day.md): the serve time, the start of each dish, and the screen of the day.
 - [Preparation](preparation.md): the work before the day, which the part shows for each of your dishes.

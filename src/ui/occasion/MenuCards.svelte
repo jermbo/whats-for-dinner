@@ -38,7 +38,7 @@
 			{#each card.dishes as one (`${one.index}:${one.dish.path ?? one.dish.name}`)}
 				{@const person = personOf(one.dish)}
 				<button class="wfd-menu__dish" type="button" aria-haspopup="dialog" onclick={() => onpick(one.index)} in:fade={{ duration }}>
-					<span class="wfd-menu__name"><Struck on={one.dish.ready}>{nameOf(one)}</Struck></span>
+					<span class="wfd-menu__name" title={nameOf(one)}><Struck on={one.dish.ready}>{nameOf(one)}</Struck></span>
 					{#if person === null}
 						<Sticker label="You" kind="olive" />
 					{:else if person === OPEN}
@@ -87,6 +87,7 @@
 		color: var(--wfd-color-text);
 		font-family: inherit;
 		text-align: start;
+		white-space: normal;
 		cursor: pointer;
 
 		&:focus-visible {
@@ -101,6 +102,20 @@
 		font-size: var(--wfd-font-size-name);
 		font-weight: 600;
 		overflow-wrap: anywhere;
+		/* Two lines at most: a long name ends in "…", and the sticker keeps its place. */
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+	}
+
+	/* The sticker keeps its size, but a long name of a person ends in "…" and stays in the card. */
+	.wfd-menu__dish > :global(.wfd-sticker) {
+		flex: none;
+		max-inline-size: 50%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.wfd-menu__none {

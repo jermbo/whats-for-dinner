@@ -1,7 +1,7 @@
 // An occasion is a note with one task line for each dish, the guests below the heading "Guests",
 // and the tasks of the day below the heading "To do":
 //
-//   - [ ] [[Recipes/Roast turkey|Roast turkey]] · main · prep done
+//   - [ ] [[Recipes/Roast turkey|Roast turkey]] · main · 3h · start 12:00 · prep done
 //   - [ ] Pumpkin pie · dessert · Mum
 //   - [ ] Plates · things · ?
 //
@@ -13,10 +13,12 @@
 //
 //   - [ ] Borrow chairs · 2026-11-24
 //
-// The fields of a dish come after " · ". The scale and "prep done" have a fixed form. Of the other
+// The fields of a dish come after " · ". The scale, the time, the start, and "prep done" have a fixed form. Of the other
 // words, the first is the course and the second is the person, so "Rolls · Sam" has the course
 // "Sam". The person "?" is nobody yet. The note is yours: a change starts from its text and changes
 // only the task lines and the guest lines.
+
+import { clockToMinutes, lengthToMinutes, minutesToClock, showLength } from './clock';
 
 export type Dish = {
 	// The recipe note, or null for a dish with only a name, such as "Pumpkin pie".
@@ -24,6 +26,10 @@ export type Dish = {
 	name: string;
 	course: string | null;
 	scale: number;
+	// How long the dish takes, in minutes, or null when the line has no time.
+	minutes: number | null;
+	// The start as hour:minute, or null: then the serve time decides.
+	start: string | null;
 	// The person as the note has it: "Mum", or a link such as "[[Mum]]". Null: your dish.
 	person: string | null;
 	// You cooked the dish, or it came.
@@ -39,7 +45,7 @@ export type Guest = { name: string; size: number };
 // The person of a job that nobody brings yet.
 export const OPEN = '?';
 
-export type DishChange = Partial<Pick<Dish, 'course' | 'scale' | 'person' | 'prepDone'>>;
+export type DishChange = Partial<Pick<Dish, 'course' | 'scale' | 'person' | 'prepDone' | 'minutes' | 'start'>>;
 
 const TASK = /^(\s*[-*]\s+\[)([ xX])(\]\s+)(.+)$/;
 const TO_DO = /^#{1,6}\s+to do\s*$/i;
@@ -49,8 +55,15 @@ const GUEST = /^\s*[-*]\s+(?!\[[ xX]\])(.+?)(?:\s+×\s*(\d+))?\s*$/;
 const LINK = /^\[\[([^\]|#]+)[^\]|]*(?:\|([^\]]+))?\]\]$/;
 const SCALE = /^×\s*(\d+(?:[.,]\d+)?)$/;
 const PREP_DONE = /^prep done$/i;
+const START = /^start\s+(\d{1,2}:\d{2})$/i;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const FIELDS = /\s+·\s+/;
+
+// "start 13:30" is the start 13:30. A time that is not a time of day is a word of the line.
+function startOf(field: string): string | null {
+	const minutes = clockToMinutes(START.exec(field)?.[1] ?? '');
+	return minutes === null ? null : minutesToClock(minutes);
+}
 
 const withMd = (path: string) => (path.endsWith('.md') ? path : `${path}.md`);
 const linesOf = (text: string) => text.split(/\r?\n/);
@@ -79,6 +92,8 @@ function readDish(line: string): DishLine | null {
 		name: target ? shownName(target, link?.[2]) : head,
 		course: null,
 		scale: 1,
+		minutes: null,
+		start: null,
 		person: null,
 		ready: task[2] !== ' ',
 		prepDone: false
@@ -88,6 +103,8 @@ function readDish(line: string): DishLine | null {
 		const scale = SCALE.exec(field);
 		if (scale) dish.scale = Number(scale[1].replace(',', '.'));
 		else if (PREP_DONE.test(field)) dish.prepDone = true;
+		else if (startOf(field) !== null) dish.start = startOf(field);
+		else if (lengthToMinutes(field) !== null) dish.minutes = lengthToMinutes(field);
 		else words.push(field);
 	}
 	dish.course = words[0] ?? null;
@@ -105,8 +122,18 @@ function readTask(line: string): OccasionTask | null {
 
 const showScale = (scale: number) => `×${String(scale)}`;
 
-function showDish({ ready, course, scale, person, prepDone }: Dish, head: string): string {
-	const fields = [course, scale === 1 ? null : showScale(scale), person, prepDone ? 'prep done' : null];
+function showDish(
+	{ ready, course, scale, minutes, start, person, prepDone }: Dish,
+	head: string
+): string {
+	const fields = [
+		course,
+		scale === 1 ? null : showScale(scale),
+		minutes === null ? null : showLength(minutes),
+		start === null ? null : `start ${start}`,
+		person,
+		prepDone ? 'prep done' : null
+	];
 	return [`- [${ready ? 'x' : ' '}] ${head}`, ...fields.filter(Boolean)].join(' · ');
 }
 
@@ -208,7 +235,7 @@ export type NewDish = Pick<Dish, 'path' | 'name'> & Partial<Pick<Dish, 'course' 
 // A new dish comes after the last dish. With no dish, it goes above "Guests" or "To do".
 export function addDish(text: string, dish: NewDish): string {
 	const line = showDish(
-		{ course: null, person: null, ...dish, scale: 1, ready: false, prepDone: false },
+		{ course: null, person: null, ...dish, scale: 1, minutes: null, start: null, ready: false, prepDone: false },
 		headOf(dish)
 	);
 	return insert(text, line, {

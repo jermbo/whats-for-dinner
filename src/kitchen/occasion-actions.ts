@@ -14,6 +14,7 @@ import {
 	type NewDish
 } from '../occasion/occasion-note';
 import type { Occasion } from '../occasion/occasions';
+import { setServe } from '../occasion/serve-property';
 import { tried, triedFor } from './tried';
 
 export type OccasionActionsHost = {
@@ -54,6 +55,7 @@ export function occasionActions(host: OccasionActionsHost) {
 		removeDish: (path: string, index: number) => change(host, path, (text) => removeDish(text, index)),
 		changeDish: (path: string, index: number, dishChange: DishChange) =>
 			change(host, path, (text) => changeDish(text, index, dishChange)),
+		setServe: (path: string, time: string | null) => change(host, path, (text) => setServe(text, time)),
 		setReady: (path: string, index: number, ready: boolean) =>
 			change(host, path, (text) => setDishReady(text, index, ready)),
 		setTaskDone: (path: string, index: number, done: boolean) =>

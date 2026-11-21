@@ -36,7 +36,7 @@ type TextKey =
 	| 'newPlace'
 	| 'fontName';
 type NumberKey = 'volume' | 'soonDays';
-type SwitchKey = 'vibrate' | 'keepScreenOn' | 'lookUpBarcodes';
+type SwitchKey = 'vibrate' | 'keepScreenOn' | 'missedTimerSound' | 'lookUpBarcodes';
 
 // The options of each dropdown, by the value that the setting keeps.
 const FONTS: Record<Settings['font'], string> = {
@@ -199,6 +199,11 @@ export class KitchenSettingTab extends PluginSettingTab {
 			);
 		this.slider('volume', 'Volume', (value) => `${value} of 10.`, 1, 10, 1);
 		this.switch('vibrate', 'Vibrate', 'A phone that can vibrate does so when a timer ends.');
+		this.switch(
+			'missedTimerSound',
+			'Sound for a timer that ended while you were away',
+			'When you come back to a cook session, a timer that ended shows "Time is up". Turn this on to ring the alarm too.'
+		);
 		this.switch(
 			'keepScreenOn',
 			'Keep the screen on',

@@ -32,6 +32,9 @@ export type Settings = AlarmOptions & {
 	accent: 'olive' | 'obsidian';
 
 	keepScreenOn: boolean;
+	// A timer that ended while you were away shows "Time is up" when you come back. With this on, the
+	// alarm rings too.
+	missedTimerSound: boolean;
 
 	// Food with a use-by date in this number of days, or less, is food to use soon.
 	soonDays: number;
@@ -58,6 +61,7 @@ export const DEFAULT_SETTINGS: Settings = {
 	volume: 7,
 	vibrate: true,
 	keepScreenOn: true,
+	missedTimerSound: false,
 	soonDays: 5,
 	lookUpBarcodes: true,
 	auditDone: ''

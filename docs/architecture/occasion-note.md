@@ -37,7 +37,7 @@ Dinner at 15:00.
 - [ ] Buy candles
 ```
 
-The note is in the occasions folder, which starts as `Larder/Occasions`. Its name is the name of the occasion. The property `date` is the day, as year-month-day. A note with no `date` is active with no end, and it puts food on the list only with "Add to the list".
+The note is in the occasions folder, which starts as `Larder/Occasions`. Its name is the name of the occasion. The property `date` is the day, as year-month-day. The optional property `serve` is the hour at which the food is on the table, as hour:minute in quotes, such as `serve: "17:00"`. The quotes stop YAML from reading it as a number. A note with no `date` is active with no end, and it puts food on the list only with "Add to the list".
 
 ## One task line is one dish
 
@@ -47,11 +47,13 @@ Each task line above the heading `## To do` is a dish, also called a job. The fi
 | ----------------- | -------------------------------------------------------------------------------- |
 | `×2`              | The scale: how many times you make the dish. With no scale, it is ×1.            |
 | `prep done`       | You confirmed the [preparation](preparation.md) of the recipe.                   |
+| `3h`, `45 min`, `1h30` | The time of the dish, from its start to the table. With no field, the plugin guesses it from the steps of the recipe. |
+| `start 13:30`     | The start of the dish. With no field, the start is the serve time minus the time. |
 | The first word    | The course, such as `main` or `bread`.                                           |
 | The second word   | The person who brings the dish, as text or as a link, such as `[[Mum]]`. `?` is nobody yet: the job is open. |
 | `[x]`             | The dish is ready: you cooked it, or it came.                                    |
 
-The scale and `prep done` have a fixed form, so the plugin finds them at any place. The other words have a fixed sequence: course first, then person. So in `Rolls · Sam`, "Sam" is the course. When a dish has a person, the plugin also writes its course.
+The scale, `prep done`, the time, and the start have a fixed form, so the plugin finds them at any place. The other words have a fixed sequence: course first, then person. So in `Rolls · Sam`, "Sam" is the course. When a dish has a person, the plugin also writes its course.
 
 ## A line below "Guests" is a guest
 
@@ -70,7 +72,8 @@ The plugin changes only the task lines and the guest lines. All other text stays
 - **A party size** writes the line of the guest again. A size of 1 has no `×`. A person of a dish with no line gets a line.
 - **A removed guest** loses the line, and each dish of that guest gets the person `?`.
 - **A new task** is a line after the last task. With no `## To do`, the plugin writes the heading at the end of the note.
-- **A change of a dish** writes its line again, in the sequence course, scale, person, `prep done`. The link, the name, the mark, and a person that is a link stay as you wrote them.
+- **A change of a dish** writes its line again, in the sequence course, scale, time, start, person, `prep done`. The link, the name, the mark, and a person that is a link stay as you wrote them.
+- **The serve time** writes the property `serve`, and "Clear" takes it out. With no block of properties, the plugin writes one at the top.
 - **"Remove dish"** takes the line of the dish out.
 - **A check** changes only `[ ]` or `[x]`, of a dish or of a task.
 - **The end of Cook Mode** for a dish gives its line the mark.

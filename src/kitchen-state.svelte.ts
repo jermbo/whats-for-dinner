@@ -39,6 +39,7 @@ import type { Disk, KitchenPage, Part } from './kitchen/types';
 import { noteKind, VaultBuffer } from './kitchen/vault-buffer';
 import { indexFoods } from './match/match';
 import { listedDishes, toBuyOf } from './occasion/occasion-list';
+import { isEmpty as isEmptySession, isFresh, readSession, writeSession, type DaySession } from './occasion/day-session';
 import type { Occasion } from './occasion/occasions';
 import type { FoodNote, Note } from './note';
 import { notePathIn } from './note-path';
@@ -56,6 +57,8 @@ import { today } from './dates';
 export type { CookResult, KitchenPage, Part } from './kitchen/types';
 
 const PART_KEY = 'whats-for-dinner-part';
+// The cook session of an occasion, on this device only. The key has the path of the occasion.
+const DAY_KEY = 'whats-for-dinner-day:';
 // A write waits this long after the last key, so that each key that you type is not a write.
 const TYPING_WAIT_MS = 600;
 // A move of folders in the settings is a few changes. The vault is read again once, after the last.
@@ -222,6 +225,19 @@ export class Kitchen {
 
 	closeOccasion() {
 		this.occasionPath = null;
+	}
+
+	// The cook session that this device saved for the occasion, or null. A session of an earlier day
+	// is no session. Local storage is not synced, so a timer on one device does not ring on another.
+	readDaySession(occasion: Occasion): DaySession | null {
+		const session = readSession(this.app.loadLocalStorage(DAY_KEY + occasion.path));
+		return session && isFresh(session, occasion, this.today, Date.now()) ? session : null;
+	}
+
+	// A session with nothing to keep is removed.
+	writeDaySession(path: string, session: DaySession | null) {
+		const keep = session && !isEmptySession(session);
+		this.app.saveLocalStorage(DAY_KEY + path, keep ? writeSession(session) : null);
 	}
 
 	// What the occasion needs to buy, as the list has it, or will have it.
