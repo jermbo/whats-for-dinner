@@ -19,9 +19,8 @@ As the [cook](../../personas.md), I want Cook day to keep my place when I leave 
 1. Cook day saves its session on this device, a short time after each change
    - a. The open dishes, in the sequence in which you opened them
    - b. The view that is shown: a view, or a dish
-   - c. For each open dish: its page, its ticks of "Get out", its choice of food, and its timers
-   - d. The ticks of the list "Get out" of Cook day
-   - e. The session is not in a note, and it does not sync to another device
+   - c. For each open dish: its page, its ticks of its own "Get out", its choice of food, and its timers
+   - d. The session is not in a note, and it does not sync to another device
 2. A dish is known by its recipe or its name, and its count among the lines with the same one. It is not known by its place in the note
    - a. A dish line that moves in the note keeps its session
    - b. A dish that is gone from the note, or has its mark, is not restored

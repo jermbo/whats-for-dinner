@@ -1,6 +1,6 @@
 ---
 title: Cook day stories
-summary: "The user stories of version 0.12.0 for the day of an occasion: a serve time, a time and a start for each dish, and one screen to cook many dishes at the same time, with a place card, the state of each dish, a timeline, and one list of food to get out."
+summary: "The user stories of version 0.12.0 for the day of an occasion: a serve time, a time and a start for each dish, and one screen to cook many dishes at the same time, with a place card, the state of each dish, and a timeline of the whole day."
 parent: ../README.md
 updated: 2026-11-21
 ---
@@ -19,7 +19,7 @@ On Thanksgiving you cook a turkey and three sides, and each one needs its own st
 | 2. [Cook the dishes at the same time](cook-day-cook-the-dishes.md)          | Cook    | Story 1    | `built` |
 | 3. [Know when to start](cook-day-know-when-to-start.md)                     | Cook    | Story 2    | `built` |
 | 4. [See where the day is](cook-day-see-where-the-day-is.md)                 | Cook    | Story 3    | `built` |
-| 5. [See the day on a timeline, and get out the food](cook-day-timeline-and-get-out.md) | Cook | Story 2 | `built` |
+| 5. [See the day on a timeline](cook-day-see-the-timeline.md) | Cook | Story 2 | `built` |
 | 6. [Keep the session](cook-day-keep-the-session.md)                         | Cook    | Story 2    | `built` |
 
 ## The test data
@@ -51,5 +51,5 @@ Today is the day of the occasion, and the time is 12:00, for the criteria that n
 
 ## Further reading
 
-- [Decision log: holiday planner](../../initiatives/holiday-planner/decision-log.md): decisions 33 to 53 give the reason for each rule.
+- [Decision log: holiday planner](../../initiatives/holiday-planner/decision-log.md): decisions 33 to 57 give the reason for each rule.
 - [Occasion stories](../v0.11.0/occasion-stories.md): the stories that this work builds on.

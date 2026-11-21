@@ -43,7 +43,7 @@ On the day, "Cook" opens a dish of yours in [Cook Mode](cook-mode.md), with its 
 
 ## The day: time, start, and "Cook day"
 
-The occasion has a serve time, and each of your dishes has a time and a start. "Cook day" is the screen that shows the day: your dishes in the sequence of their starts, the state of each one, a timeline, and one list of the food to get out. The [Cook day](cook-day.md) page tells the rules.
+The occasion has a serve time, and each of your dishes has a time and a start. "Cook day" is the screen that shows the day: your dishes in the sequence of their starts, the state of each one, and a timeline of the whole day. The [Cook day](cook-day.md) page tells the rules.
 
 ## Further reading
 

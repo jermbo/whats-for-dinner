@@ -14,7 +14,6 @@
 	import { keepScreenOn } from '../keep-screen-on';
 	import Button from '../parts/Button.svelte';
 	import DayChips, { type DayChip, type DayKey } from './DayChips.svelte';
-	import DayGetOut from './DayGetOut.svelte';
 	import DayHeader from './DayHeader.svelte';
 	import DayNotice from './DayNotice.svelte';
 	import { DayClock } from './day-clock.svelte';
@@ -55,7 +54,7 @@
 	let started = $state<number[]>(openOnes.map((one) => one.index));
 	const startView = (): DayKey => {
 		const view = session?.view ?? 'schedule';
-		if (view === 'timeline' || view === 'get-out') return view;
+		if (view === 'timeline') return view;
 		const one = openOnes.find((dish) => `dish:${dish.key}` === view);
 		return one ? one.index : 'schedule';
 	};
@@ -65,7 +64,6 @@
 	const progressOf = $state<Record<number, CookProgress>>({});
 	// What Cook Mode keeps for each open dish, by the key of the dish. This is what the session saves.
 	const kept = $state<Record<string, SavedCook>>({ ...restores });
-	let ticked = $state<Record<string, boolean>>({ ...session?.ticked });
 
 	const clock = new DayClock();
 	const alarm = new Alarm();
@@ -92,8 +90,7 @@
 			savedAt: Date.now(),
 			view,
 			order,
-			cooks: Object.fromEntries(order.flatMap((key) => (kept[key] ? [[key, $state.snapshot(kept[key])]] : []))),
-			ticked: $state.snapshot(ticked)
+			cooks: Object.fromEntries(order.flatMap((key) => (kept[key] ? [[key, $state.snapshot(kept[key])]] : [])))
 		};
 		clearTimeout(wait);
 		wait = setTimeout(flush, WAIT_MS);
@@ -113,9 +110,9 @@
 	};
 
 	const chips = $derived<DayChip[]>([
-		...(['schedule', 'timeline', 'get-out'] as const).map((key) => ({
+		...(['schedule', 'timeline'] as const).map((key) => ({
 			key,
-			label: key === 'schedule' ? 'Schedule' : key === 'timeline' ? 'Timeline' : 'Get out',
+			label: key === 'schedule' ? 'Schedule' : 'Timeline',
 			start: null,
 			urgency: 'later' as const,
 			cooking: false,
@@ -265,10 +262,6 @@
 					onopen={show}
 				/>
 			</div>
-		</div>
-
-		<div class="wfd-day__panel" hidden={active !== 'get-out'}>
-			<div class="wfd-day__card"><DayGetOut {plan} bind:ticked /></div>
 		</div>
 
 		{#each started as index (index)}

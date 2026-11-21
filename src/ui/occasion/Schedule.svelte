@@ -22,6 +22,7 @@
 	let { plan, started, progressOf, timersOf, urgencyOf, onopen, onready }: Props = $props();
 
 	function detail(one: PlanDish) {
+		if (one.dish.ready) return 'Done';
 		if (one.minutes === null) return one.entry ? 'Set time' : 'No recipe';
 		return `${one.guessed ? '~' : ''}${showLength(one.minutes)}${one.entry ? '' : ' · No recipe'}`;
 	}
@@ -44,7 +45,9 @@
 			>
 				<Tick on={one.dish.ready} />
 			</button>
-			<span class="wfd-schedule__start wfd-number">{one.start ?? '–'}</span>
+			<span class="wfd-schedule__start wfd-number">
+				{one.dish.ready ? (one.doneAt ?? '–') : (one.start ?? '–')}
+			</span>
 			<span class="wfd-schedule__what">
 				<span class="wfd-schedule__name"><Struck on={one.dish.ready}>{one.name}</Struck></span>
 				<span class="wfd-schedule__detail wfd-label">

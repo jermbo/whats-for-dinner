@@ -2,10 +2,10 @@
 	import type { Urgency } from '../../occasion/cook-plan';
 	import TimerBadge, { type TimerInfo } from './TimerBadge.svelte';
 
-	// The row of "Cook day": the views, and one chip for each dish with a recipe. A dish that you
+	// The row of "Cook day": the two views, and one chip for each dish with a recipe. A dish that you
 	// opened is olive, with a line of its progress, and a dish with a running timer shows the timer.
 	// A dish that must start soon is amber, and a dish that is late is tomato.
-	export type DayKey = 'schedule' | 'timeline' | 'get-out' | number;
+	export type DayKey = 'schedule' | 'timeline' | number;
 	export type DayChip = {
 		key: DayKey;
 		label: string;

@@ -49,11 +49,12 @@ Each task line above the heading `## To do` is a dish, also called a job. The fi
 | `prep done`       | You confirmed the [preparation](preparation.md) of the recipe.                   |
 | `3h`, `45 min`, `1h30` | The time of the dish, from its start to the table. With no field, the plugin guesses it from the steps of the recipe. |
 | `start 13:30`     | The start of the dish. With no field, the start is the serve time minus the time. |
+| `done 14:50`      | The hour at which the dish was done. The plugin writes it, at the end of the line, when the dish gets its mark. |
 | The first word    | The course, such as `main` or `bread`.                                           |
 | The second word   | The person who brings the dish, as text or as a link, such as `[[Mum]]`. `?` is nobody yet: the job is open. |
 | `[x]`             | The dish is ready: you cooked it, or it came.                                    |
 
-The scale, `prep done`, the time, and the start have a fixed form, so the plugin finds them at any place. The other words have a fixed sequence: course first, then person. So in `Rolls · Sam`, "Sam" is the course. When a dish has a person, the plugin also writes its course.
+The scale, `prep done`, the time, the start, and `done` have a fixed form, so the plugin finds them at any place. The other words have a fixed sequence: course first, then person. So in `Rolls · Sam`, "Sam" is the course. When a dish has a person, the plugin also writes its course.
 
 ## A line below "Guests" is a guest
 
@@ -72,11 +73,11 @@ The plugin changes only the task lines and the guest lines. All other text stays
 - **A party size** writes the line of the guest again. A size of 1 has no `×`. A person of a dish with no line gets a line.
 - **A removed guest** loses the line, and each dish of that guest gets the person `?`.
 - **A new task** is a line after the last task. With no `## To do`, the plugin writes the heading at the end of the note.
-- **A change of a dish** writes its line again, in the sequence course, scale, time, start, person, `prep done`. The link, the name, the mark, and a person that is a link stay as you wrote them.
+- **A change of a dish** writes its line again, in the sequence course, scale, time, start, person, `prep done`, `done`. The link, the name, the mark, and a person that is a link stay as you wrote them.
 - **The serve time** writes the property `serve`, and "Clear" takes it out. With no block of properties, the plugin writes one at the top.
 - **"Remove dish"** takes the line of the dish out.
-- **A check** changes only `[ ]` or `[x]`, of a dish or of a task.
-- **The end of Cook Mode** for a dish gives its line the mark.
+- **A check** changes `[ ]` or `[x]`, of a dish or of a task. A dish that gets its mark also gets `· done 14:50` at the end of its line, with the hour on the device. A dish that loses its mark loses that field. The other text of the line stays.
+- **The end of Cook Mode** for a dish gives its line the mark and the hour, as a check does.
 - **A copy** of a past occasion gets its dishes, its guests, and its tasks with no day, each with no mark and no `prep done`.
 - **"Delete occasion"** moves the note to the trash.
 

@@ -18,13 +18,11 @@ export type SavedCook = {
 export type DaySession = {
 	v: 1;
 	savedAt: number;
-	// "schedule", "timeline", "get-out", or "dish:" and the key of a dish.
+	// "schedule", "timeline", or "dish:" and the key of a dish.
 	view: string;
 	// The keys of the open dishes, in the sequence in which you opened them.
 	order: string[];
 	cooks: Record<string, SavedCook>;
-	// The ticks of the list "Get out" of Cook day.
-	ticked: Record<string, boolean>;
 };
 
 const HOUR = 60 * 60 * 1000;
@@ -60,8 +58,6 @@ export function readSession(text: unknown): DaySession | null {
 		if (!isRecord(value) || value.v !== 1 || typeof value.savedAt !== 'number') return null;
 		if (typeof value.view !== 'string' || !isList(value.order, (one) => typeof one === 'string')) return null;
 		if (!isRecord(value.cooks) || !Object.values(value.cooks).every(isCook)) return null;
-		if (!isRecord(value.ticked) || !Object.values(value.ticked).every((one) => typeof one === 'boolean'))
-			return null;
 		return value as DaySession;
 	} catch {
 		return null;
@@ -76,8 +72,7 @@ export function isFresh(session: DaySession, occasion: Pick<Occasion, 'date'>, t
 }
 
 // A session with nothing to keep is no session.
-export const isEmpty = (session: DaySession) =>
-	!session.order.length && !Object.values(session.ticked).some(Boolean);
+export const isEmpty = (session: DaySession) => !session.order.length;
 
 // What the occasion screen tells about a session: the open dishes, and the timers that run.
 export function describeSession(session: DaySession) {

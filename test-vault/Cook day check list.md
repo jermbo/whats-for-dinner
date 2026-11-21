@@ -2,14 +2,14 @@
 
 This list tests the five cook day stories of version 0.12.0, on the phone and on the desktop. Each line has one action and what you must see. The text in brackets is the story and its criterion.
 
-The stories are: 1 [Set the serve time and the times of the dishes](../docs/features/v0.12.0/cook-day-set-the-times.md), 2 [Cook the dishes at the same time](../docs/features/v0.12.0/cook-day-cook-the-dishes.md), 3 [Know when to start](../docs/features/v0.12.0/cook-day-know-when-to-start.md), 4 [See where the day is](../docs/features/v0.12.0/cook-day-see-where-the-day-is.md), 5 [See the day on a timeline, and get out the food](../docs/features/v0.12.0/cook-day-timeline-and-get-out.md).
+The stories are: 1 [Set the serve time and the times of the dishes](../docs/features/v0.12.0/cook-day-set-the-times.md), 2 [Cook the dishes at the same time](../docs/features/v0.12.0/cook-day-cook-the-dishes.md), 3 [Know when to start](../docs/features/v0.12.0/cook-day-know-when-to-start.md), 4 [See where the day is](../docs/features/v0.12.0/cook-day-see-where-the-day-is.md), 5 [See the day on a timeline](../docs/features/v0.12.0/cook-day-see-the-timeline.md).
 
 ## Before you start
 
 - [ ] The build made `main.js` again. Put the plugin off and on, or restart Obsidian.
 - [ ] `Larder/Occasions/Thanksgiving 2026.md` has the property `serve: "15:00"` and the lines of the [cook day stories](../docs/features/v0.12.0/cook-day-stories.md#the-test-data): Beef tacos with `3h`, Apple crumble with `start 13:30`, Gravy with `20 min`.
 - [ ] The recipe "Honey glazed carrots" has no time in its steps. The recipe "Beef tacos" has a step with a time, such as "Cook for 8 minutes".
-- [ ] The note `Cook day trial` is for 2026-11-21 only: serve 12:00, and the starts are from 10:45 to 11:55. Use it for parts C, E, F, and G on that day. On a later day, set its `date` to today, and change `serve` and the `start` of Cranberry sauce to a time near now.
+- [ ] The note `Cook day trial` is for 2026-11-21 only: serve 12:00, and the starts are from 10:45 to 11:55. Use it for parts C, E, and F on that day. On a later day, set its `date` to today, and change `serve` and the `start` of Cranberry sauce to a time near now.
 - [ ] For the colours and the alarm (part C), set the `date` of the note to today, and set the starts a few minutes after the time of the device.
 
 ## A. The serve time and the times
@@ -69,13 +69,18 @@ Open Thanksgiving 2026.
 - [ ] Gravy has a hatched bar. A tap does nothing. (5, AC 6)
 - [ ] Tap the bar of Honey glazed carrots. Its Cook Mode shows. (5, AC 5)
 - [ ] On the note `Thanksgiving Feast` (date in 5 days), the timeline has no "Now" line. (5, AC 4)
+- [ ] Tick Gravy in "Schedule" (or finish a dish). Its line in the note ends with `· done HH:MM` (the hour now). Open "Timeline": Gravy stays, muted, with a check, a struck name, and the label "Done HH:MM · 20 min". The axis did not change. Untick it: the field is gone, and the bar is a normal bar again. (5, AC 8, 9, 13)
+- [ ] Finish a dish in Cook Mode. Its line has `done`, and its bar is muted in the timeline. (5, AC 8)
+- [ ] The red "Now" line is in view, also when all dishes are done or late. (5, AC 10)
+- [ ] A dish that you opened has a darker share up to the red line. (5, AC 11)
+- [ ] Tap "Running late". The bars of done dishes do not move. (5, AC 14)
+- [ ] The bars go in the sequence of their starts, from top to bottom. (5, req 1 l)
+- [ ] Phone (about 360 px): each name is on one line above its bar, and its label is on a second line. The hour marks are 2 hours apart (or more), and no two labels touch. (5, AC 15 and 17)
+- [ ] Tablet (about 768 px) and desktop: the names are in a column at the left, and the bars are at their right. (5, AC 16)
+- [ ] Make the window narrow and wide again. The layout changes by itself, with no reload, at about 640 px. Open the occasion in a split view: the chart follows the width of its own pane. (decision 57)
+- [ ] The tags of "Now" and "Serve" are in two rows, and none of them is cut by the card. When the serve time is within about 15 minutes, there is one tag, "Now · Serve". (5, AC 18 and 19)
+- [ ] The bar of a short dish (10 minutes on a long axis) is a visible block. A tap on its name, or on its bar, opens the dish. (5, AC 20 and 21)
 - [ ] On a phone, the bars, the names, and the hour marks fit. Nothing runs out of the card. The last hour mark is complete.
-
-## G. Get out
-
-- [ ] Tap "Get out". Each of your dishes with a recipe is a group, and Honey glazed carrots shows "×2". (5, AC 8)
-- [ ] Tap a row: it is ticked, and "N of M on the counter" goes up. The pantry does not change. (5, AC 9)
-- [ ] Gravy has no group, because it has no recipe. A dish with a mark has no group. (5, AC 10)
 
 ## H. Timer badge with a short timer (use `Timer test toast`)
 
@@ -93,9 +98,9 @@ Open Thanksgiving 2026.
 
 ## J. The session stays (story 6)
 
-- [ ] In "Cook day trial", open Roast turkey and go to step 2. Open Sage stuffing and tick 2 rows on "Get out" of the dish. Tick 2 rows on "Get out" of Cook day. Start a timer of 1 minute on a step. (6, AC 1)
+- [ ] In "Cook day trial", open Roast turkey and go to step 2. Open Sage stuffing and tick 2 rows on its "Get out". Start a timer of 1 minute on a step. (6, AC 1)
 - [ ] Tap "Exit". The notice says the timer keeps its time and rings only while Cook day is open. The occasion screen shows "Resume cook day", "2 open · 1 timer", and "Discard". (6, AC 3; 2, AC 11)
-- [ ] Tap "Resume cook day". The same view shows. Roast turkey is on step 2, Sage stuffing has its 2 ticks, "Get out" has its ticks, and the timer shows the time that is left. (6, AC 1 and 4)
+- [ ] Tap "Resume cook day". The same view shows. Roast turkey is on step 2, Sage stuffing has its 2 ticks, and the timer shows the time that is left. (6, AC 1 and 4)
 - [ ] Exit, and restart Obsidian. Open the occasion. "Resume cook day" is there, and the same state comes back. (6, AC 2)
 - [ ] Start a timer of 1 minute. Exit, and wait 2 minutes. Resume: the timer says "Time is up", with no sound. (6, AC 5 a)
 - [ ] Turn on "Sound for a timer that ended while you were away" in the settings, and repeat. The alarm rings. Turn it off again. (6, AC 5 b)

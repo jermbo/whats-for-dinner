@@ -1,7 +1,7 @@
 // An occasion is a note with one task line for each dish, the guests below the heading "Guests",
 // and the tasks of the day below the heading "To do":
 //
-//   - [ ] [[Recipes/Roast turkey|Roast turkey]] · main · 3h · start 12:00 · prep done
+//   - [x] [[Recipes/Roast turkey|Roast turkey]] · main · 3h · start 12:00 · prep done · done 14:50
 //   - [ ] Pumpkin pie · dessert · Mum
 //   - [ ] Plates · things · ?
 //
@@ -30,6 +30,9 @@ export type Dish = {
 	minutes: number | null;
 	// The start as hour:minute, or null: then the serve time decides.
 	start: string | null;
+	// The hour at which the dish was done, as hour:minute, or null. The plugin writes it when a dish
+	// gets its mark.
+	doneAt: string | null;
 	// The person as the note has it: "Mum", or a link such as "[[Mum]]". Null: your dish.
 	person: string | null;
 	// You cooked the dish, or it came.
@@ -56,12 +59,15 @@ const LINK = /^\[\[([^\]|#]+)[^\]|]*(?:\|([^\]]+))?\]\]$/;
 const SCALE = /^×\s*(\d+(?:[.,]\d+)?)$/;
 const PREP_DONE = /^prep done$/i;
 const START = /^start\s+(\d{1,2}:\d{2})$/i;
+const DONE = /^done\s+(\d{1,2}:\d{2})$/i;
+const DONE_FIELD = /\s+·\s+done\s+\d{1,2}:\d{2}(?=\s+·|\s*$)/i;
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const FIELDS = /\s+·\s+/;
 
-// "start 13:30" is the start 13:30. A time that is not a time of day is a word of the line.
-function startOf(field: string): string | null {
-	const minutes = clockToMinutes(START.exec(field)?.[1] ?? '');
+// "start 13:30" is the start 13:30, and "done 14:50" is the hour of the end. A time that is not a
+// time of day is a word of the line.
+function clockOf(pattern: RegExp, field: string): string | null {
+	const minutes = clockToMinutes(pattern.exec(field)?.[1] ?? '');
 	return minutes === null ? null : minutesToClock(minutes);
 }
 
@@ -94,6 +100,7 @@ function readDish(line: string): DishLine | null {
 		scale: 1,
 		minutes: null,
 		start: null,
+		doneAt: null,
 		person: null,
 		ready: task[2] !== ' ',
 		prepDone: false
@@ -103,7 +110,8 @@ function readDish(line: string): DishLine | null {
 		const scale = SCALE.exec(field);
 		if (scale) dish.scale = Number(scale[1].replace(',', '.'));
 		else if (PREP_DONE.test(field)) dish.prepDone = true;
-		else if (startOf(field) !== null) dish.start = startOf(field);
+		else if (clockOf(START, field) !== null) dish.start = clockOf(START, field);
+		else if (clockOf(DONE, field) !== null) dish.doneAt = clockOf(DONE, field);
 		else if (lengthToMinutes(field) !== null) dish.minutes = lengthToMinutes(field);
 		else words.push(field);
 	}
@@ -123,7 +131,7 @@ function readTask(line: string): OccasionTask | null {
 const showScale = (scale: number) => `×${String(scale)}`;
 
 function showDish(
-	{ ready, course, scale, minutes, start, person, prepDone }: Dish,
+	{ ready, course, scale, minutes, start, doneAt, person, prepDone }: Dish,
 	head: string
 ): string {
 	const fields = [
@@ -132,7 +140,8 @@ function showDish(
 		minutes === null ? null : showLength(minutes),
 		start === null ? null : `start ${start}`,
 		person,
-		prepDone ? 'prep done' : null
+		prepDone ? 'prep done' : null,
+		doneAt === null ? null : `done ${doneAt}`
 	];
 	return [`- [${ready ? 'x' : ' '}] ${head}`, ...fields.filter(Boolean)].join(' · ');
 }
@@ -235,7 +244,7 @@ export type NewDish = Pick<Dish, 'path' | 'name'> & Partial<Pick<Dish, 'course' 
 // A new dish comes after the last dish. With no dish, it goes above "Guests" or "To do".
 export function addDish(text: string, dish: NewDish): string {
 	const line = showDish(
-		{ course: null, person: null, ...dish, scale: 1, minutes: null, start: null, ready: false, prepDone: false },
+		{ course: null, person: null, ...dish, scale: 1, minutes: null, start: null, doneAt: null, ready: false, prepDone: false },
 		headOf(dish)
 	);
 	return insert(text, line, {
@@ -316,17 +325,23 @@ export function changeDish(text: string, index: number, change: DishChange): str
 	return lines.join('\n');
 }
 
-// A mark changes only the box, so the other text of the line stays.
-function setMark(text: string, is: 'dish' | 'task', index: number, done: boolean): string {
+// A mark changes the box, so the other text of the line stays. A dish that gets its mark also gets
+// the hour of the end, `done 14:50`, at the end of its line. A dish that loses its mark loses it.
+function setMark(text: string, is: 'dish' | 'task', index: number, done: boolean, time?: string): string {
 	const lines = linesOf(text);
 	const at = lineAt(rolesOf(lines), is, index);
 	if (at === -1) return text;
-	lines[at] = lines[at].replace(TASK, (_, start, __, end, rest) => `${start}${done ? 'x' : ' '}${end}${rest}`);
+	let line = lines[at].replace(TASK, (_, start, __, end, rest) => `${start}${done ? 'x' : ' '}${end}${rest}`);
+	if (is === 'dish') {
+		line = line.replace(DONE_FIELD, '');
+		if (done && time) line = `${line.trimEnd()} · done ${time}`;
+	}
+	lines[at] = line;
 	return lines.join('\n');
 }
 
-export const setDishReady = (text: string, index: number, ready: boolean) =>
-	setMark(text, 'dish', index, ready);
+export const setDishReady = (text: string, index: number, ready: boolean, time?: string) =>
+	setMark(text, 'dish', index, ready, time);
 
 export const setTaskDone = (text: string, index: number, done: boolean) =>
 	setMark(text, 'task', index, done);
@@ -340,7 +355,7 @@ export function newOccasionText(date: string, past?: string): string {
 	const roles = rolesOf(linesOf(past));
 	const dishes = roles.flatMap((role) =>
 		role?.is === 'dish'
-			? [showDish({ ...role.line.dish, ready: false, prepDone: false }, role.line.head)]
+			? [showDish({ ...role.line.dish, ready: false, prepDone: false, doneAt: null }, role.line.head)]
 			: []
 	);
 	const tasks = roles.flatMap((role) =>

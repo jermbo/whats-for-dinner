@@ -22,8 +22,11 @@ export type PlanDish = {
 	minutes: number | null;
 	// The time is a guess from the steps of the recipe, not a field of the line.
 	guessed: boolean;
-	// The hour at which you start, as hour:minute, or null. A dish that is ready has none.
+	// The hour at which you start, as hour:minute, or null. A dish that is ready keeps its planned
+	// start, for a mark with no `done` hour.
 	start: string | null;
+	// The hour at which the dish was done, as hour:minute, or null.
+	doneAt: string | null;
 };
 
 // The steps tell the time: the first time of each step, added, and rounded up to 5 minutes. A recipe
@@ -34,7 +37,6 @@ export function guessMinutes(entry: RecipeEntry): number | null {
 }
 
 function startOf(dish: Dish, minutes: number | null, serve: string | null): string | null {
-	if (dish.ready) return null;
 	if (dish.start !== null) return dish.start;
 	const end = serve === null ? null : clockToMinutes(serve);
 	return end === null || minutes === null ? null : minutesToClock(roundDown(end - minutes));
@@ -61,7 +63,8 @@ export function planOf(occasion: Occasion, entryOf: (path: string | null) => Rec
 				entry,
 				minutes,
 				guessed: guess !== null,
-				start: startOf(dish, minutes, occasion.serve)
+				start: startOf(dish, minutes, occasion.serve),
+				doneAt: dish.doneAt
 			}
 		];
 	});
