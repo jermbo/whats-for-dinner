@@ -1,6 +1,9 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { CookedDish } from '../../kitchen/cook-actions';
+	import { planOf } from '../../occasion/cook-plan';
+	import { describeSession } from '../../occasion/day-session';
 	import { comingOf, guestsOf, jobsOf } from '../../occasion/guests';
 	import { showName } from '../../match/names';
 	import { courseOptions, menuDishes, personOf } from '../../occasion/menu';
@@ -9,6 +12,7 @@
 	import type { Occasion } from '../../occasion/occasions';
 	import { typeOf } from '../../recipes/browse';
 	import type { RecipeEntry } from '../../recipes/types';
+	import { coverThen } from '../cover';
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import GroupHead from '../parts/GroupHead.svelte';
@@ -17,9 +21,10 @@
 	import OccasionCard, { type Section } from './OccasionCard.svelte';
 	import OccasionMenu from './OccasionMenu.svelte';
 	import OccasionTasks from './OccasionTasks.svelte';
+	import ServeTime from './ServeTime.svelte';
 	import ToBuy from './ToBuy.svelte';
 	import WhoBrings from './WhoBrings.svelte';
-	import WhoSheet, { type SheetDish } from './WhoSheet.svelte';
+	import WhoSheet, { type SheetDish, type SheetTime } from './WhoSheet.svelte';
 
 	// The screen of one occasion, as one page: the ink card, who brings what with the guest list,
 	// the menu by course, what to buy, and the tasks.
@@ -27,8 +32,9 @@
 		kitchen: Kitchen;
 		occasion: Occasion;
 		oncook: (path: string, scale: number, dish: CookedDish) => void;
+		oncookday: (path: string) => void;
 	};
-	let { kitchen, occasion, oncook }: Props = $props();
+	let { kitchen, occasion, oncook, oncookday }: Props = $props();
 	const headId = $props.id();
 
 	const { path } = $derived(occasion);
@@ -46,6 +52,18 @@
 	const inOccasion = $derived(new Set(occasion.dishes.flatMap((dish) => (dish.path ? [dish.path] : []))));
 	const offered = $derived(kitchen.recipes.filter((entry) => !inOccasion.has(entry.path)));
 
+	const plan = $derived(planOf(occasion, entryOf));
+	const canCookDay = $derived(plan.some((one) => !one.dish.ready));
+	// The cook session of this device. Local storage does not tell when it changes, so the screen reads
+	// it when it opens, and again after "Discard". Cook day replaces this screen, so it reads it again
+	// when you come back.
+	let saved = $state(untrack(() => kitchen.readDaySession(occasion)));
+	const summary = $derived(saved ? describeSession(saved) : null);
+	function discard() {
+		kitchen.writeDaySession(path, null);
+		saved = null;
+	}
+
 	const toBuy = $derived(kitchen.toBuyOf(occasion));
 	const listed = $derived(isOnTheList(occasion, kitchen.today));
 	const isOnList = (key: string) =>
@@ -62,6 +80,14 @@
 
 	// The dish of "Who brings?", by its place in the note.
 	let picking = $state<number | null>(null);
+	// The time of one of your dishes, for the sheet. A dish of a different person has none.
+	function timeOf(index: number): SheetTime | null {
+		const one = plan.find((day) => day.index === index);
+		return one
+			? { minutes: one.minutes, guessed: one.guessed, start: one.start, fixed: one.dish.start !== null }
+			: null;
+	}
+
 	const sheetDish = $derived.by((): SheetDish | null => {
 		const one = menu.find((dish) => dish.index === picking);
 		if (!one) return null;
@@ -70,7 +96,8 @@
 			name: entry ? showName(entry.recipe.title) : one.dish.name,
 			person: personOf(one.dish),
 			course: one.course,
-			scale: one.dish.scale
+			scale: one.dish.scale,
+			time: one.dish.person === null ? timeOf(one.index) : null
 		};
 	});
 
@@ -113,6 +140,25 @@
 		{/snippet}
 	</OccasionCard>
 
+	<div class="wfd-occasion__when">
+		<ServeTime serve={occasion.serve} onchange={(time) => kitchen.occasion.setServe(path, time)} />
+		{#if canCookDay}
+			<div class="wfd-occasion__day">
+				<Button kind="olive" arrow onclick={(event) => coverThen(event, 'frame', () => oncookday(path))}>
+					{summary ? 'Resume cook day' : 'Cook day'}
+				</Button>
+				{#if summary}
+					<span class="wfd-occasion__saved">
+						<span class="wfd-label">
+							{summary.open} open{summary.timers ? ` · ${summary.timers} ${summary.timers === 1 ? 'timer' : 'timers'}` : ''}
+						</span>
+						<Button kind="link" onclick={discard}>Discard</Button>
+					</span>
+				{/if}
+			</div>
+		{/if}
+	</div>
+
 	<div class="wfd-occasion__section" bind:this={boxes.who}>
 		<div class="wfd-occasion__tabs" role="group" aria-label="People">
 			<Chip label="Who brings" on={!guestTab} onclick={() => (guestTab = false)} />
@@ -135,6 +181,7 @@
 				guests={names}
 				{offered}
 				{entryOf}
+				{plan}
 				onpick={(index) => (picking = index)}
 				{oncook}
 			/>
@@ -172,6 +219,8 @@
 		}}
 		oncourse={(course) => picking !== null && kitchen.occasion.changeDish(path, picking, { course })}
 		onscale={(scale) => picking !== null && kitchen.occasion.changeDish(path, picking, { scale })}
+		onminutes={(minutes) => picking !== null && kitchen.occasion.changeDish(path, picking, { minutes })}
+		onstart={(start) => picking !== null && kitchen.occasion.changeDish(path, picking, { start })}
 		onremove={() => {
 			if (picking !== null) void kitchen.occasion.removeDish(path, picking);
 			close();
@@ -191,6 +240,29 @@
 	/* The nav sticks at the top, so a section stops below it. */
 	.wfd-occasion__section {
 		scroll-margin-block-start: calc(var(--wfd-nav-size) + var(--wfd-space-section));
+	}
+
+	.wfd-occasion__when {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--wfd-space-stack);
+		align-items: start;
+		justify-content: space-between;
+	}
+
+	.wfd-occasion__day {
+		display: grid;
+		gap: var(--wfd-space-tight);
+		justify-items: end;
+		min-inline-size: 0;
+	}
+
+	.wfd-occasion__saved {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--wfd-space-group);
+		align-items: center;
+		color: var(--wfd-color-text-muted);
 	}
 
 	.wfd-occasion__tabs {

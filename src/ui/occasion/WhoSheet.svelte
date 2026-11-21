@@ -3,10 +3,19 @@
 	import Button from '../parts/Button.svelte';
 	import Chip from '../parts/Chip.svelte';
 	import Field from '../parts/Field.svelte';
+	import TimeFields from './TimeFields.svelte';
 
 	// "Who brings?": a sheet from the bottom, with one large button for each person, for the thumb.
 	// A dialog is in the top layer, so the main area needs no fixed position.
-	export type SheetDish = { name: string; person: string | null; course: string; scale: number };
+	export type SheetTime = { minutes: number | null; guessed: boolean; start: string | null; fixed: boolean };
+	export type SheetDish = {
+		name: string;
+		person: string | null;
+		course: string;
+		scale: number;
+		// Only your dish has a time.
+		time: SheetTime | null;
+	};
 	type Props = {
 		// The dish of the sheet, or null when the sheet is closed.
 		dish: SheetDish | null;
@@ -16,11 +25,24 @@
 		onnewperson: (name: string) => void;
 		oncourse: (course: string) => void;
 		onscale: (scale: number) => void;
+		onminutes: (minutes: number) => void;
+		onstart: (start: string | null) => void;
 		onremove: () => void;
 		onclose: () => void;
 	};
-	let { dish, guests, courses, onperson, onnewperson, oncourse, onscale, onremove, onclose }: Props =
-		$props();
+	let {
+		dish,
+		guests,
+		courses,
+		onperson,
+		onnewperson,
+		oncourse,
+		onscale,
+		onminutes,
+		onstart,
+		onremove,
+		onclose
+	}: Props = $props();
 
 	const SCALES = [1, 1.5, 2, 3, 4];
 	let dialog = $state<HTMLDialogElement>();
@@ -109,6 +131,10 @@
 					<Chip label="×{one}" on={dish.scale === one} onclick={() => onscale(one)} />
 				{/each}
 			</div>
+
+			{#if dish.time}
+				<TimeFields {...dish.time} {onminutes} {onstart} />
+			{/if}
 
 			<div class="wfd-sheet__end">
 				<Button kind="danger" onclick={onremove}>Remove dish</Button>

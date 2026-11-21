@@ -51,6 +51,7 @@ Start with the page that has your question. Each page goes one step down, to mor
 | How does the week work?                   | [Plan](architecture/plan.md)                                 |
 | How does the list know what is missing?   | [Shopping](architecture/shopping.md)                         |
 | What occurs when you cook?                | [Cook Mode](architecture/cook-mode.md)                       |
+| How do you cook many dishes in one day?   | [Cook day](architecture/cook-day.md)                         |
 | How does a new vault start?               | [Setup](architecture/setup.md)                               |
 | Which settings are there?                 | [Settings](architecture/settings.md)                         |
 | How does each screen get the same look?   | [Look](architecture/look.md)                                 |

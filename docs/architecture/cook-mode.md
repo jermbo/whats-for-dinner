@@ -20,6 +20,10 @@ A dish of an [occasion](occasion.md) can have a scale, such as ×2. Cook Mode sh
 
 The two buttons do not move from page to page. A new page slides in from the side to which you go, and its piece of the bar fills from the left. "Update the pantry" and "Exit" close Cook Mode with a circle of paper from the button, as "Cook" opened it with a dark circle. On "Get out", "Back" closes Cook Mode, as "Exit" does: the thumb is already on it. The screen stays on while Cook Mode is open.
 
+## Cook Mode inside Cook day
+
+On the day of an [occasion](occasion.md), "Cook day" shows Cook Mode for many dishes. Each dish that you opened keeps its own Cook Mode: its page, its counter, its choice of food, and its timers stay while another dish shows. "Exit" only leaves the dish: "Cook day" shows its schedule, and the dish stays open with its page and its timers, with no question. A dish ends alone, on its last page. Cook Mode tells "Cook day" its timers and where it is (its page and its number of steps), so that the chip and the row of the dish can show them. It also gives "Cook day" what a restart would lose: its page, its counter, its choice of food, and its timers. Cook day saves this on the device, and it gives it back when the dish opens again. A timer that ended while you were away says "Time is up". See [Cook day](cook-day.md#the-session-stays).
+
 ## Get out selects the food item
 
 An ingredient such as "pasta" can fit two food items: elbow pasta and shell pasta. On "Get out", that line shows each of them that has a row with an amount that [compares](amounts.md) with the recipe, and the plugin selects one before you tap, so that the food is used wisely. Three rules decide, in this sequence. A rule that keeps one food item decides.

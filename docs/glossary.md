@@ -86,6 +86,10 @@ The wiki and the screens of the plugin use one word for one thing. Two words for
 | Your dish        | A dish of an occasion with no person. Only your dishes put food on the list, and only they have "Cook".                                       |
 | Scale            | How many times you make a dish for the occasion, such as `×3`. With no scale, it is `×1`.                                                      |
 | Occasion task    | A task of your own below the heading `## To do` of the occasion note, such as "Borrow chairs". It can have a day.                              |
+| Serve time       | The hour at which the food is on the table: the property `serve` of the [occasion note](architecture/occasion-note.md), such as `"15:00"`. |
+| Dish time        | How long a dish takes, from its start to the table, such as `3h`. With no field, a guess from the times of its steps, shown with "~". |
+| Start time       | The hour at which you start a dish: the serve time minus the dish time, or the field `start 13:30`. |
+| Cook day         | The [screen](architecture/cook-day.md) of the day of an occasion: your dishes by start time, the state of each one, and a timeline of the whole day. |
 | Guest            | A person who comes to the occasion, on the guest list of the note. A guest with no job is a visitor.                                            |
 | Party size       | How many people come with one line of the guest list, such as "The Smiths ×4". With no number, it is 1.                                        |
 | Job              | A thing that a person brings: a dish, a course with no dish yet, such as "Dessert", or a thing that is not food, such as "Plates".             |

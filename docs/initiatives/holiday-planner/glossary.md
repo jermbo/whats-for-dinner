@@ -28,6 +28,10 @@ The [decision log](decision-log.md) uses words that the [glossary](../../glossar
 | Party size       | How many people come with one line of the guest list, such as "The Smiths ×4". With no number, it is 1.                                        |
 | Job              | A thing that a person brings: a dish, a course with no dish yet, such as "Dessert", or a thing that is not food, such as "Plates".             |
 | Open job         | A job with the person `?`: nobody brings it yet. The screen shows "Who brings?".                                                              |
+| Serve time       | The hour at which the food is on the table, the property `serve` of the occasion note, such as `"17:00"`.                                      |
+| Dish time        | How long a dish takes, from its start to the table, such as `3h`. A dish with no field gets a guess from the times of its steps.                |
+| Start time       | The hour at which you start a dish: the serve time minus the dish time, or the field `start 13:30`.                                            |
+| Cook day         | The screen that shows your dishes in the sequence of their start times, and lets you cook them at the same time.                              |
 
 "Meal" keeps its meaning: a recipe in the weekly plan. So the plugin does not call a dish of an occasion a meal.
 

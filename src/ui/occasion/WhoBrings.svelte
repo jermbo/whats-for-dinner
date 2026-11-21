@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Kitchen } from '../../kitchen-state.svelte';
 	import type { CookedDish } from '../../kitchen/cook-actions';
+	import type { PlanDish } from '../../occasion/cook-plan';
 	import { courseOf, personCards, type MenuDish } from '../../occasion/menu';
 	import { OPEN } from '../../occasion/occasion-note';
 	import type { Occasion } from '../../occasion/occasions';
@@ -19,10 +20,11 @@
 		guests: string[];
 		offered: RecipeEntry[];
 		entryOf: (path: string | null) => RecipeEntry | null;
+		plan: PlanDish[];
 		onpick: (index: number) => void;
 		oncook: (path: string, scale: number, dish: CookedDish) => void;
 	};
-	let { kitchen, occasion, menu, guests, offered, entryOf, onpick, oncook }: Props = $props();
+	let { kitchen, occasion, menu, guests, offered, entryOf, plan, onpick, oncook }: Props = $props();
 
 	const { path } = $derived(occasion);
 	const cards = $derived(personCards(menu, guests));
@@ -46,6 +48,7 @@
 				<DishRow
 					{one}
 					{entry}
+					time={plan.find((day) => day.index === one.index)}
 					onpick={() => onpick(one.index)}
 					onready={(ready) => kitchen.occasion.setReady(path, one.index, ready)}
 					onchange={(change) => kitchen.occasion.changeDish(path, one.index, change)}

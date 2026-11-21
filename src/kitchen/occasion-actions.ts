@@ -1,4 +1,5 @@
 import { notePathIn } from '../note-path';
+import { minutesNow, minutesToClock } from '../occasion/clock';
 import {
 	addDish,
 	addGuest,
@@ -14,6 +15,7 @@ import {
 	type NewDish
 } from '../occasion/occasion-note';
 import type { Occasion } from '../occasion/occasions';
+import { setServe } from '../occasion/serve-property';
 import { tried, triedFor } from './tried';
 
 export type OccasionActionsHost = {
@@ -41,9 +43,12 @@ async function start(host: OccasionActionsHost, name: string, date: string, from
 const change = (host: OccasionActionsHost, path: string, edit: (text: string) => string) =>
 	tried('The occasion did not change', () => host.writeOccasion(path, edit));
 
-// A dish of the occasion that you finished in Cook Mode is ready.
+// The hour on the device, as the note writes it: the hour at which a dish is done.
+const hourNow = () => minutesToClock(minutesNow());
+
+// A dish of the occasion that you finished in Cook Mode is ready, and the line has the hour.
 export const markDishReady = (host: OccasionActionsHost, path: string, index: number) =>
-	host.writeOccasion(path, (text) => setDishReady(text, index, true));
+	host.writeOccasion(path, (text) => setDishReady(text, index, true, hourNow()));
 
 // What a screen can do with an occasion. Each write tells you in a notice when it fails.
 export function occasionActions(host: OccasionActionsHost) {
@@ -54,8 +59,9 @@ export function occasionActions(host: OccasionActionsHost) {
 		removeDish: (path: string, index: number) => change(host, path, (text) => removeDish(text, index)),
 		changeDish: (path: string, index: number, dishChange: DishChange) =>
 			change(host, path, (text) => changeDish(text, index, dishChange)),
+		setServe: (path: string, time: string | null) => change(host, path, (text) => setServe(text, time)),
 		setReady: (path: string, index: number, ready: boolean) =>
-			change(host, path, (text) => setDishReady(text, index, ready)),
+			change(host, path, (text) => setDishReady(text, index, ready, hourNow())),
 		setTaskDone: (path: string, index: number, done: boolean) =>
 			change(host, path, (text) => setTaskDone(text, index, done)),
 		addTask: (path: string, task: string) => change(host, path, (text) => addTask(text, task)),

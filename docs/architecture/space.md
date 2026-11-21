@@ -66,6 +66,17 @@ A row fills the width of its list, so a ring outside it is under the next row. T
 
 The heights stay in px. A target is for the finger, and a finger does not get larger with the text. [Cook Mode](cook-mode.md) keeps its larger buttons, because you use them at arm's length.
 
+## A box holds its children
+
+A child never breaks out of its parent. The cause is always the same: a box takes the width of its longest line, and the parent grows to fit it. Obsidian adds to it, because a `button` does not wrap its text. Four rules keep each box closed, at each screen size.
+
+1. **A grid column may be narrower than its content.** Write `minmax(0, 1fr)`, never `1fr` or `auto`, for a column that holds text. Without the `0`, the column is as wide as its longest line.
+2. **A card takes its size from its grid.** A card that sits in a grid, such as a place card, has `contain: inline-size`, so that its longest line cannot widen its track.
+3. **A button wraps.** The kitchen sets `white-space: normal` on each button. Text that is too long for its line is clipped at two lines with "…", and the full text is its tooltip.
+4. **A small part keeps its size, and the text gives way.** A sticker, a check, or an action such as "Cook" has `flex: none`. The name beside it shrinks, wraps, or is clipped. A long name of a person in a sticker ends in "…" at half the width of the card.
+
+The check is a narrow screen with long names. If a part leaves its box there, one of the four rules is missing.
+
 ## Further reading
 
 - [Look](look.md): why a screen names a token and not a value.

@@ -2,6 +2,7 @@
 // name and day can start a new one.
 
 import { addDays, daysBetween } from '../dates';
+import { clockToMinutes, minutesToClock } from './clock';
 import { readOccasion, type Dish, type Guest, type OccasionTask } from './occasion-note';
 
 export type Occasion = {
@@ -10,6 +11,8 @@ export type Occasion = {
 	name: string;
 	// The property `date` as year-month-day, or null.
 	date: string | null;
+	// The property `serve`: the hour at which the food is on the table, as hour:minute, or null.
+	serve: string | null;
 	dishes: Dish[];
 	tasks: OccasionTask[];
 	guests: Guest[];
@@ -23,13 +26,20 @@ function dateOf(value: unknown): string | null {
 	return typeof value === 'string' && DAY.test(value.trim()) ? value.trim() : null;
 }
 
+// YAML 1.1 reads an unquoted 17:00 as the number 1020, so a number counts as minutes from midnight.
+function serveOf(value: unknown): string | null {
+	if (typeof value === 'number' && value >= 0 && value < 24 * 60) return minutesToClock(value);
+	const minutes = typeof value === 'string' ? clockToMinutes(value) : null;
+	return minutes === null ? null : minutesToClock(minutes);
+}
+
 export function readOccasionNote(
 	path: string,
 	name: string,
 	properties: Record<string, unknown>,
 	body: string
 ): Occasion {
-	return { path, name, date: dateOf(properties.date), ...readOccasion(body) };
+	return { path, name, date: dateOf(properties.date), serve: serveOf(properties.serve), ...readOccasion(body) };
 }
 
 // You made the note on purpose, so it is active from the start. The day after is for the dishes

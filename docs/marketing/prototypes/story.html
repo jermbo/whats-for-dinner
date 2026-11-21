@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>What's for Dinner — story concept</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --cream: #FBF6EC;
+    --cream-2: #F4ECDC;
+    --ink: #2A2420;
+    --ink-soft: #6B6157;
+    --amber: #E0922F;
+    --ember: #C84B31;
+    --olive: #6E7A4F;
+    --night: #1A1714;
+    --night-2: #241F1A;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--cream);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  .serif { font-family: 'Fraunces', Georgia, serif; }
+
+  /* progress pathfinder */
+  .pathfinder {
+    position: fixed;
+    top: 50%;
+    right: 28px;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 100;
+    mix-blend-mode: difference;
+  }
+  .pathfinder a {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #fff;
+    opacity: 0.35;
+    transition: opacity .3s, transform .3s;
+  }
+  .pathfinder a.active { opacity: 1; transform: scale(1.5); }
+
+  section {
+    padding: 11vh 7vw;
+    position: relative;
+  }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background:
+      radial-gradient(ellipse at 70% 20%, rgba(224,146,47,.16), transparent 55%),
+      var(--cream);
+  }
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .22em;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ember);
+    margin-bottom: 26px;
+  }
+  .hero h1 {
+    font-size: clamp(42px, 8vw, 104px);
+    font-weight: 600;
+    line-height: 0.98;
+    letter-spacing: -0.02em;
+    max-width: 14ch;
+  }
+  .hero h1 em { font-style: italic; color: var(--amber); }
+  .hero .sub {
+    margin-top: 34px;
+    font-size: clamp(17px, 2vw, 22px);
+    color: var(--ink-soft);
+    max-width: 46ch;
+  }
+  .cta-row { margin-top: 44px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .pill {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    padding: 15px 28px;
+    border-radius: 999px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform .2s, background .2s;
+  }
+  .pill:hover { transform: translateY(-2px); background: var(--ember); }
+  .pill.ghost { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1.5px rgba(42,36,32,.25); }
+  .pill.ghost:hover { background: rgba(42,36,32,.05); color: var(--ink); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px; left: 7vw;
+    font-size: 13px; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ink-soft);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .scroll-hint::before {
+    content: ""; width: 34px; height: 1px; background: var(--ink-soft);
+    animation: slide 1.8s ease-in-out infinite;
+  }
+  @keyframes slide { 0%,100%{opacity:.3;transform:scaleX(.5);transform-origin:left} 50%{opacity:1;transform:scaleX(1);transform-origin:left} }
+
+  /* ---------- ACT 1 : 6:14 pm (dark/cold) ---------- */
+  .night {
+    background:
+      radial-gradient(ellipse at 30% 30%, rgba(80,90,120,.18), transparent 60%),
+      var(--night);
+    color: #D9D2C8;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .clock {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(30px, 4vw, 48px);
+    color: #8891a8;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .night h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(30px, 5vw, 58px);
+    font-weight: 500;
+    line-height: 1.08;
+    max-width: 20ch;
+    color: #EDE6DA;
+  }
+  .night p {
+    margin-top: 26px;
+    font-size: clamp(16px, 1.6vw, 20px);
+    max-width: 52ch;
+    color: #9c93 86;
+    color: #A79D90;
+  }
+  .night .takeout {
+    margin-top: 40px;
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 12px 20px; border-radius: 12px;
+    background: rgba(200,75,49,.14);
+    color: #E8927A;
+    font-size: 15px;
+    box-shadow: inset 0 0 0 1px rgba(200,75,49,.25);
+  }
+
+  /* ---------- TURN ---------- */
+  .turn {
+    text-align: center;
+    background: linear-gradient(180deg, var(--night) 0%, var(--cream) 100%);
+    padding-top: 16vh; padding-bottom: 16vh;
+  }
+  .turn h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(32px, 6vw, 72px);
+    font-weight: 600;
+    line-height: 1.02;
+    max-width: 18ch; margin: 0 auto;
+    color: var(--ink);
+  }
+  .turn h2 em { font-style: italic; color: var(--amber); }
+  .turn p { margin: 28px auto 0; max-width: 48ch; color: var(--ink-soft); font-size: 19px; }
+
+  /* ---------- LOOP ---------- */
+  .loop { background: var(--cream-2); text-align: center; }
+  .loop .label { color: var(--ember); }
+  .loop h2 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(30px, 5vw, 60px);
+    font-weight: 600; line-height: 1.04;
+    max-width: 16ch; margin: 18px auto 10px;
+  }
+  .loop .lede { max-width: 50ch; margin: 0 auto 60px; color: var(--ink-soft); font-size: 18px; }
+  .ring {
+    max-width: 920px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+  }
+  .node {
+    background: var(--cream);
+    border-radius: 20px;
+    padding: 30px 28px;
+    text-align: left;
+    box-shadow: 0 1px 0 rgba(42,36,32,.06), 0 18px 40px -28px rgba(42,36,32,.4);
+    position: relative;
+    overflow: hidden;
+  }
+  .node .n { font-family:'Fraunces',serif; font-size: 14px; color: var(--amber); font-weight:600; }
+  .node h3 { font-family:'Fraunces',serif; font-size: 25px; font-weight:600; margin: 8px 0 10px; }
+  .node p { color: var(--ink-soft); font-size: 16px; }
+  .node::after {
+    content: "→";
+    position: absolute; top: 26px; right: 26px;
+    color: var(--olive); font-size: 20px; opacity:.5;
+  }
+
+  /* ---------- FEATURES ---------- */
+  .feature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7vw;
+    align-items: center;
+    min-height: 82vh;
+  }
+  .feature:nth-child(even) .copy { order: 2; }
+  .feature .kicker { color: var(--ember); text-transform: uppercase; letter-spacing:.2em; font-size:12px; font-weight:600; }
+  .feature h2 {
+    font-family:'Fraunces',serif;
+    font-size: clamp(28px, 3.6vw, 48px);
+    font-weight: 600; line-height: 1.05;
+    margin: 18px 0 18px;
+    max-width: 16ch;
+  }
+  .feature p { color: var(--ink-soft); font-size: 18px; max-width: 42ch; }
+  .feature .cool {
+    margin-top: 22px; font-size: 15px; color: var(--olive); font-weight: 500;
+    display: inline-flex; align-items:center; gap: 8px;
+  }
+
+  /* mock cards for the visual column */
+  .mock {
+    background: var(--cream-2);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 30px 60px -40px rgba(42,36,32,.6);
+  }
+  .bar {
+    height: 20px; border-radius: 6px; background: #E3D8C4; position: relative; overflow: hidden; margin: 8px 0 4px;
+    display: flex; gap: 3px;
+  }
+  .bar span { display:block; height:100%; border-radius: 4px; }
+  .bar .fill { background: var(--olive); }
+  .bar .fill.low { background: var(--amber); }
+  .bar .empty { background: #D8CBB4; }
+  .row-lbl { display:flex; justify-content:space-between; font-size:14px; color: var(--ink-soft); }
+  .chip { display:inline-block; font-size:13px; padding:5px 11px; border-radius:999px; background:#fff; color:var(--ink-soft); margin:4px 4px 0 0; box-shadow: inset 0 0 0 1px rgba(42,36,32,.08); }
+  .ready { color: var(--olive); font-weight:600; }
+
+  .codecard {
+    background: var(--night-2); color:#D9D2C8; border-radius: 20px; padding: 26px 28px;
+    font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: 14px; line-height:1.7;
+    box-shadow: 0 30px 60px -40px rgba(0,0,0,.8);
+  }
+  .codecard .c1 { color:#E8927A; } .codecard .c2 { color:#C9B88f; } .codecard .c3 { color:#8aa06a; }
+
+  /* ---------- CLOSER ---------- */
+  .closer { text-align:center; background: var(--ink); color: var(--cream); min-height: 92vh; display:flex; flex-direction:column; justify-content:center; }
+  .closer h2 { font-family:'Fraunces',serif; font-size: clamp(34px, 6vw, 80px); font-weight:600; line-height:1.0; max-width:16ch; margin:0 auto; }
+  .closer h2 em { font-style:italic; color: var(--amber); }
+  .closer .sub { margin: 30px auto 0; max-width: 46ch; color:#B8AEA0; font-size:18px; }
+  .closer .cta-row { justify-content:center; }
+  .closer .pill { background: var(--amber); color: var(--night); }
+  .closer .pill:hover { background: var(--cream); }
+  .trust { margin-top: 54px; font-size:14px; color:#8d8577; display:flex; gap:26px; justify-content:center; flex-wrap:wrap; }
+  .trust span::before { content:"• "; color: var(--olive); }
+
+  /* reveal animation */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity .9s cubic-bezier(.2,.7,.2,1), transform .9s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  @media (max-width: 760px) {
+    .feature { grid-template-columns: 1fr; gap: 40px; min-height:auto; }
+    .feature:nth-child(even) .copy { order: 0; }
+    .ring { grid-template-columns: 1fr; }
+    .pathfinder { display:none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { transition: none; opacity:1; transform:none; }
+    html { scroll-behavior:auto; }
+    .scroll-hint::before { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="pathfinder">
+  <a href="#hero" class="active"></a>
+  <a href="#wednesday"></a>
+  <a href="#turn"></a>
+  <a href="#loop"></a>
+  <a href="#pantry"></a>
+  <a href="#recipes"></a>
+  <a href="#notes"></a>
+  <a href="#closer"></a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="eyebrow reveal">An Obsidian plugin for your kitchen</div>
+  <h1 class="serif reveal">Plan dinner when you're <em>calm</em>. Eat well when you're not.</h1>
+  <p class="sub reveal">It knows what's in your pantry — so you plan, shop, and cook with the food you already have. No account. No cloud. Just your notes.</p>
+  <div class="cta-row reveal">
+    <button class="pill">Install from Obsidian</button>
+    <button class="pill ghost">See how it works ↓</button>
+  </div>
+  <div class="scroll-hint">Scroll to Wednesday</div>
+</section>
+
+<!-- ACT 1 -->
+<section class="night" id="wednesday">
+  <div class="clock serif reveal">6:14 pm, Wednesday</div>
+  <h2 class="reveal">You open the fridge. Nothing looks like dinner.</h2>
+  <p class="reveal">The chicken you meant to thaw is still a brick in the freezer. You know how this ends. Forty minutes and $38 later, you're eating takeout you didn't really want.</p>
+  <p class="reveal">It isn't that you don't care. It's that a tired brain at 6 pm takes the easy choice — and the easy choice is rarely the good one.</p>
+  <div class="takeout reveal">🥡 Ordering takeout — again</div>
+</section>
+
+<!-- TURN -->
+<section class="turn" id="turn">
+  <h2 class="reveal">So I built a way out — <br>so <em>tired Wednesday me</em> can't really fail.</h2>
+  <p class="reveal">The calm version of you, Sunday morning with a coffee, sets things up. It lives in Obsidian, right next to the recipes you already had.</p>
+</section>
+
+<!-- LOOP -->
+<section class="loop" id="loop">
+  <div class="eyebrow label reveal">Why it's different</div>
+  <h2 class="reveal">Everything is connected to one thing: your pantry.</h2>
+  <p class="lede reveal">A recipe app starts at the recipe. This starts at the food you actually have. The plan, the list, and the cooking all flow from it — and back into it.</p>
+  <div class="ring">
+    <div class="node reveal"><div class="n">01</div><h3 class="serif">Pantry → Recipes</h3><p>Recipes sort by what you have. Each shows "7 of 9 in the pantry," and food about to turn floats to the top.</p></div>
+    <div class="node reveal"><div class="n">02</div><h3 class="serif">Plan → Shopping list</h3><p>The list is your plan minus your pantry. You buy only the gaps, plus staples when they run low.</p></div>
+    <div class="node reveal"><div class="n">03</div><h3 class="serif">Shop → Pantry</h3><p>Back home, the cart becomes pantry rows and a receipt. Check the lines, tap put away, done.</p></div>
+    <div class="node reveal"><div class="n">04</div><h3 class="serif">Cook → Pantry</h3><p>Finish a meal and the ingredients come out of the pantry on their own. It's correct when you plate.</p></div>
+  </div>
+</section>
+
+<!-- FEATURE: PANTRY -->
+<section class="feature" id="pantry">
+  <div class="copy reveal">
+    <div class="kicker">The pantry</div>
+    <h2 class="serif">It knows every package, in every place.</h2>
+    <p>One note per food, one row per package — tracked per place: kitchen, fridge, freezer, downstairs. One bar shows how much is left, and turns amber when you're low. Drag it to what you see: half a jug, four eggs.</p>
+    <div class="cool">✦ You stop buying pasta you already own.</div>
+  </div>
+  <div class="mock reveal">
+    <div class="row-lbl"><strong>Milk</strong><span>1 1/4 gal · 2 packages</span></div>
+    <div class="bar"><span class="fill empty" style="flex:.25"></span><span class="fill" style="flex:1"></span></div>
+    <div class="row-lbl" style="margin-top:18px"><strong>Elbow pasta</strong><span>3 boxes</span></div>
+    <div class="bar"><span class="fill" style="flex:1"></span><span class="fill" style="flex:1"></span><span class="fill" style="flex:1"></span></div>
+    <div class="row-lbl" style="margin-top:18px"><strong>Eggs</strong><span class="ready" style="color:var(--amber)">Low · 4 left</span></div>
+    <div class="bar"><span class="fill low" style="flex:.33"></span><span class="empty" style="flex:.67"></span></div>
+    <div style="margin-top:20px"><span class="chip">Kitchen pantry</span><span class="chip">Fridge</span><span class="chip">Freezer</span></div>
+  </div>
+</section>
+
+<!-- FEATURE: RECIPES / PLAN -->
+<section class="feature" id="recipes">
+  <div class="copy reveal">
+    <div class="kicker">Plan &amp; cook</div>
+    <h2 class="serif">Plan calm on Sunday. Keep a backup for Wednesday.</h2>
+    <p>Pick the week's meals from recipes sorted by your pantry. Meals aren't pinned to days — forgot the chicken? Pick another one that's ready. Then Cook Mode walks you one step at a time, big type for messy hands, timers from the step.</p>
+    <div class="cool">✦ "Black bean soup — 9 of 9 in the pantry." Dinner, not takeout.</div>
+  </div>
+  <div class="mock reveal">
+    <div class="row-lbl"><strong class="serif" style="font-size:19px">This week</strong><span>Dinner 3/7</span></div>
+    <div style="margin-top:14px; display:flex; flex-direction:column; gap:10px;">
+      <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:inset 0 0 0 1px rgba(42,36,32,.06)"><strong>Black bean soup</strong><br><span class="ready">✓ 9 of 9 in the pantry</span></div>
+      <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:inset 0 0 0 1px rgba(42,36,32,.06)">Chicken curry<br><span style="color:var(--amber)">7 of 9 — thaw the chicken this morning</span></div>
+      <div style="background:#fff;border-radius:12px;padding:14px 16px;box-shadow:inset 0 0 0 1px rgba(42,36,32,.06)">Beef tacos<br><span style="color:var(--ink-soft)">6 of 9 in the pantry</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURE: NOTES -->
+<section class="feature" id="notes">
+  <div class="copy reveal">
+    <div class="kicker">Your kitchen, your notes</div>
+    <h2 class="serif">It's just Markdown. Yours in 20 years.</h2>
+    <p>Every recipe, every food, every receipt is a plain note in your vault. Works offline, stays on your devices, no account, no telemetry. Recipes follow the open RecipeMD standard — with step photos, ratings, and a "more garlic next time" history on top.</p>
+    <div class="cool">✦ To remove it all, delete one folder. Your recipes stay.</div>
+  </div>
+  <div class="codecard reveal">
+    <span class="c1"># Chicken curry</span><br><br>
+    A mild curry with coconut milk.<br><br>
+    <span class="c2">_dinner, chicken, one pot_</span><br>
+    <span class="c2">**4 servings**</span><br>
+    ---<br>
+    - <span class="c3">_500 g_</span> chicken thighs<br>
+    - <span class="c3">_1 can_</span> coconut milk<br>
+    - salt<br>
+    ---<br>
+    1. Cook the chicken for 5 minutes.<br>
+    2. Add the coconut milk. Cook 15 min.
+  </div>
+</section>
+
+<!-- CLOSER -->
+<section class="closer" id="closer">
+  <h2 class="serif reveal">Let the calm you<br>cook for the <em>tired</em> you.</h2>
+  <p class="sub reveal">Open Obsidian → Community plugins → Browse → "What's for Dinner." Tap the utensils icon, and the first open walks you through setup.</p>
+  <div class="cta-row reveal">
+    <button class="pill">Install the plugin</button>
+    <button class="pill ghost" style="color:var(--cream);box-shadow:inset 0 0 0 1.5px rgba(251,246,236,.3)">Read the docs</button>
+  </div>
+  <div class="trust reveal">
+    <span>Offline-first</span><span>No account</span><span>No telemetry</span><span>Open RecipeMD</span><span>MIT licensed</span>
+  </div>
+</section>
+
+<script>
+  // reveal on scroll
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el, i) => {
+    el.style.transitionDelay = (Math.min(i % 4, 3) * 0.08) + 's';
+    io.observe(el);
+  });
+
+  // pathfinder
+  const dots = [...document.querySelectorAll('.pathfinder a')];
+  const secs = dots.map(d => document.querySelector(d.getAttribute('href')));
+  const so = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const i = secs.indexOf(e.target);
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[i]) dots[i].classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+  secs.forEach(s => s && so.observe(s));
+</script>
+</body>
+</html>

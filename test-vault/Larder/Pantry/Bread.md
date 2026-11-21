@@ -1,6 +1,7 @@
 ---
 staple: often
 bought: 2026-10-17
+check: true
 ---
 
 | Place          | Left | Size  | Use by     |

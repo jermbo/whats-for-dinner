@@ -60,6 +60,7 @@ The accent colour is the colour of "ready", "done", and the current step. The ac
 | Timer sound        | Beeps     | The sound of the alarm: beeps, a chime, or no sound.                   |
 | Volume             | 7 of 10   | How loud the alarm is.                                                 |
 | Vibrate            | On        | A phone vibrates when a timer ends.                                    |
+| Sound for a timer that ended while you were away | Off | When you come back to a cook session, the alarm also rings for a timer that ended. With it off, the timer only says "Time is up". |
 | Keep the screen on | On        | The screen does not go dark while Cook Mode or the stage Shop is open. |
 
 The button "Test" plays the sound, so that you can select it before you cook.

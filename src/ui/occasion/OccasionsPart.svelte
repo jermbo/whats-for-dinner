@@ -11,8 +11,9 @@
 	type Props = {
 		kitchen: Kitchen;
 		oncook: (path: string, scale: number, dish: CookedDish) => void;
+		oncookday: (path: string) => void;
 	};
-	let { kitchen, oncook }: Props = $props();
+	let { kitchen, oncook, oncookday }: Props = $props();
 
 	const duration = $derived(tokenTime('change'));
 	const open = $derived(kitchen.openOccasion);
@@ -21,7 +22,7 @@
 {#key open?.path ?? ''}
 	<div in:fly={{ x: open ? 16 : -16, duration }}>
 		{#if open}
-			<OccasionScreen {kitchen} occasion={open} {oncook} />
+			<OccasionScreen {kitchen} occasion={open} {oncook} {oncookday} />
 		{:else}
 			<OccasionList {kitchen} />
 		{/if}
